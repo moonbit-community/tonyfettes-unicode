@@ -1,0 +1,24 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "tonyfettes/unicode/codepoint"
+
+// Values
+
+// Errors
+pub(all) suberror Invalid
+impl Show for Invalid
+impl ToJson for Invalid
+
+// Types and methods
+type CodePoint
+#as_free_fn
+fn CodePoint::of_int(Int) -> Self raise Invalid
+#as_free_fn
+fn CodePoint::of_int_unchecked(Int) -> Self
+fn CodePoint::to_int(Self) -> Int
+impl Show for CodePoint
+impl ToJson for CodePoint
+
+// Type aliases
+
+// Traits
+
