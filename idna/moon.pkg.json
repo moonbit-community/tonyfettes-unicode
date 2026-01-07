@@ -1,0 +1,14 @@
+{
+  "import": [
+    "tonyfettes/unicode/punycode",
+    "tonyfettes/unicode/normalization",
+    {
+      "path": "tonyfettes/unicode/internal/idna",
+      "alias": "idna_data"
+    },
+    {
+      "path": "tonyfettes/unicode/internal/ucd",
+      "alias": "ucd"
+    }
+  ]
+}

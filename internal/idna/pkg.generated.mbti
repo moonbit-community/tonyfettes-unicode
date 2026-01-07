@@ -1,0 +1,61 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "tonyfettes/unicode/internal/idna"
+
+// Values
+pub fn has_rtl(Array[Int]) -> Bool
+
+pub fn is_rtl(Int) -> Bool
+
+pub fn lookup_bidi_class(Int) -> BidiClass
+
+pub fn lookup_idna_mapping(Int) -> (IdnaStatus, Array[Int])
+
+pub fn lookup_joining_type(Int) -> JoiningType
+
+// Errors
+
+// Types and methods
+pub(all) enum BidiClass {
+  L
+  R
+  AL
+  AN
+  EN
+  ES
+  CS
+  ET
+  ON
+  BN
+  NSM
+  Other
+}
+pub impl Eq for BidiClass
+pub impl Show for BidiClass
+
+pub(all) enum IdnaStatus {
+  Valid
+  Ignored
+  Mapped
+  Deviation
+  Disallowed
+  DisallowedSTD3Valid
+  DisallowedSTD3Mapped
+}
+pub impl Eq for IdnaStatus
+pub impl Show for IdnaStatus
+
+pub(all) enum JoiningType {
+  LeftJoining
+  RightJoining
+  DualJoining
+  JoinCausing
+  Transparent
+  NonJoining
+}
+pub impl Eq for JoiningType
+pub impl Show for JoiningType
+
+// Type aliases
+
+// Traits
+
