@@ -5,18 +5,18 @@ package "tonyfettes/unicode/codepoint"
 
 // Errors
 pub(all) suberror Invalid
-impl Show for Invalid
-impl ToJson for Invalid
+pub impl Show for Invalid
+pub impl ToJson for Invalid
 
 // Types and methods
 type CodePoint
 #as_free_fn
-fn CodePoint::of_int(Int) -> Self raise Invalid
+pub fn CodePoint::of_int(Int) -> Self raise Invalid
 #as_free_fn
-fn CodePoint::of_int_unchecked(Int) -> Self
-fn CodePoint::to_int(Self) -> Int
-impl Show for CodePoint
-impl ToJson for CodePoint
+pub fn CodePoint::of_int_unchecked(Int) -> Self
+pub fn CodePoint::to_int(Self) -> Int
+pub impl Show for CodePoint
+pub impl ToJson for CodePoint
 
 // Type aliases
 

@@ -1,0 +1,22 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "tonyfettes/unicode/internal/ucd"
+
+// Values
+pub fn get_canonical_decomposition(Int) -> Array[Int]?
+
+pub fn get_compat_decomposition(Int) -> Array[Int]?
+
+pub fn is_composition_excluded(Int) -> Bool
+
+pub fn lookup_ccc(Int) -> Int
+
+pub fn lookup_composition(Int, Int) -> Int?
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+
