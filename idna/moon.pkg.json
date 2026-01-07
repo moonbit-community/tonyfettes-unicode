@@ -10,5 +10,8 @@
       "path": "tonyfettes/unicode/internal/ucd",
       "alias": "ucd"
     }
+  ],
+  "test-import": [
+    "tonyfettes/unicode/internal/fuzz"
   ]
 }
