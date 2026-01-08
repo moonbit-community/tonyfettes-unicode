@@ -12,6 +12,10 @@
     }
   ],
   "test-import": [
-    "tonyfettes/unicode/internal/fuzz"
+    "tonyfettes/unicode/internal/fuzz",
+    {
+      "path": "tonyfettes/unicode/idna/internal/fuzz",
+      "alias": "idna_fuzz"
+    }
   ]
 }
