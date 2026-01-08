@@ -38,70 +38,70 @@ let arabic_number_range : (Int, Int) = (0x0660, 0x0669) // Arabic-Indic digits
 
 ///|
 /// Characters that have interesting decompositions (singletons, multi-char)
-let decomposable_chars : Array[Int] = [
-  0x00C5, // Å - decomposes to A + combining ring
-   0x00D1, // Ñ - decomposes to N + combining tilde
-   0x00E9, // é - decomposes to e + combining acute
-   0x01FA, // Ǻ - multi-level decomposition
-   0x2126, // Ω (Ohm) - singleton decomposition to Greek Omega
-   0x212A, // K (Kelvin) - singleton decomposition to K
-   0x212B, // Å (Angstrom) - singleton decomposition to Å then to A + ring
-   0x1E69, // ṩ - multi-char decomposition
-   0x0132, // IJ ligature (compatibility)
-   0x00BC, // ¼ (compatibility)
-   0x2160, // Ⅰ Roman numeral (compatibility)
-   0xFF21, // Ａ Fullwidth A (compatibility)
+let decomposable_chars : Array[Char] = [
+  '\u{00C5}', // Å - decomposes to A + combining ring
+  '\u{00D1}', // Ñ - decomposes to N + combining tilde
+  '\u{00E9}', // é - decomposes to e + combining acute
+  '\u{01FA}', // Ǻ - multi-level decomposition
+  '\u{2126}', // Ω (Ohm) - singleton decomposition to Greek Omega
+  '\u{212A}', // K (Kelvin) - singleton decomposition to K
+  '\u{212B}', // Å (Angstrom) - singleton decomposition to Å then to A + ring
+  '\u{1E69}', // ṩ - multi-char decomposition
+  '\u{0132}', // IJ ligature (compatibility)
+  '\u{00BC}', // ¼ (compatibility)
+  '\u{2160}', // Ⅰ Roman numeral (compatibility)
+  '\u{FF21}', // Ａ Fullwidth A (compatibility)
 ]
 
 ///|
 /// Characters that are IGNORED in IDNA processing
-let idna_ignored_chars : Array[Int] = [
-  0x00AD, // Soft hyphen
-   0x034F, // Combining grapheme joiner
-   0x180B, // Mongolian free variation selector one
-   0xFE00,
-] // Variation selector-1
+let idna_ignored_chars : Array[Char] = [
+  '\u{00AD}', // Soft hyphen
+  '\u{034F}', // Combining grapheme joiner
+  '\u{180B}', // Mongolian free variation selector one
+  '\u{FE00}', // Variation selector-1
+]
 
 ///|
 /// Characters that are DISALLOWED in IDNA processing
-let idna_disallowed_chars : Array[Int] = [
-  0x0000, // NULL
-   0x0020, // SPACE
-   0x007F, // DELETE
-   0x00A0, // NO-BREAK SPACE
-   0x2028, // LINE SEPARATOR
-   0x2029, // PARAGRAPH SEPARATOR
-   0xFFFD, // REPLACEMENT CHARACTER
+let idna_disallowed_chars : Array[Char] = [
+  '\u{0000}', // NULL
+  '\u{0020}', // SPACE
+  '\u{007F}', // DELETE
+  '\u{00A0}', // NO-BREAK SPACE
+  '\u{2028}', // LINE SEPARATOR
+  '\u{2029}', // PARAGRAPH SEPARATOR
+  '\u{FFFD}', // REPLACEMENT CHARACTER
 ]
 
 ///|
 /// Deviation characters - treated as valid in nontransitional mode
-let idna_deviation_chars : Array[Int] = [
-  0x00DF, // ß (German sharp s)
-   0x03C2, // ς (Greek final sigma)
-   0x200C, // ZWNJ
-   0x200D,
-] // ZWJ
+let idna_deviation_chars : Array[Char] = [
+  '\u{00DF}', // ß (German sharp s)
+  '\u{03C2}', // ς (Greek final sigma)
+  '\u{200C}', // ZWNJ
+  '\u{200D}', // ZWJ
+]
 
 ///|
 /// Characters that are mapped to other characters in IDNA
-let idna_mapped_chars : Array[Int] = [
-  0xFF21, // Ａ Fullwidth A -> a
-   0xFF22, // Ｂ Fullwidth B -> b
-   0xFF23, // Ｃ Fullwidth C -> c
-   0x0041, // A -> a (case fold)
-   0x0042, // B -> b (case fold)
-   0x0043, // C -> c (case fold)
-   0x2126, // Ω (Ohm) -> ω
-   0x212A, // K (Kelvin) -> k
-   0x212B, // Å (Angstrom) -> å
+let idna_mapped_chars : Array[Char] = [
+  '\u{FF21}', // Ａ Fullwidth A -> a
+  '\u{FF22}', // Ｂ Fullwidth B -> b
+  '\u{FF23}', // Ｃ Fullwidth C -> c
+  '\u{0041}', // A -> a (case fold)
+  '\u{0042}', // B -> b (case fold)
+  '\u{0043}', // C -> c (case fold)
+  '\u{2126}', // Ω (Ohm) -> ω
+  '\u{212A}', // K (Kelvin) -> k
+  '\u{212B}', // Å (Angstrom) -> å
 ]
 
 ///|
 /// Generate a random code point within a range (inclusive)
-fn random_codepoint_in_range(rng : @random.Rand, range : (Int, Int)) -> Int {
+fn random_codepoint_in_range(rng : @random.Rand, range : (Int, Int)) -> Char {
   let (lo, hi) = range
-  lo + rng.int(limit=hi - lo + 1)
+  (lo + rng.int(limit=hi - lo + 1)).unsafe_to_char()
 }
 
 ///|
@@ -130,7 +130,7 @@ pub(all) enum CodePointCategory {
 pub fn random_codepoint(
   rng : @random.Rand,
   category : CodePointCategory,
-) -> Int {
+) -> Char {
   match category {
     Ascii => random_codepoint_in_range(rng, ascii_range)
     LatinExtended => random_codepoint_in_range(rng, latin_extended_range)
@@ -139,11 +139,7 @@ pub fn random_codepoint(
     HangulJamoV => random_codepoint_in_range(rng, hangul_jamo_v_range)
     HangulJamoT => random_codepoint_in_range(rng, hangul_jamo_t_range)
     HangulSyllable => random_codepoint_in_range(rng, hangul_syllable_range)
-    Supplementary => {
-      // Avoid surrogates (0xD800-0xDFFF)
-      let cp = random_codepoint_in_range(rng, supplementary_range)
-      cp
-    }
+    Supplementary => random_codepoint_in_range(rng, supplementary_range)
     Decomposable =>
       decomposable_chars[rng.int(limit=decomposable_chars.length())]
     ArabicRTL => random_codepoint_in_range(rng, arabic_range)
@@ -185,36 +181,25 @@ fn index_to_codepoint(index : Int) -> Int {
 
 ///|
 /// Generate a random non-ASCII code point (U+0080 to U+10FFFF, excluding surrogates)
-pub fn random_non_ascii_codepoint(rng : @random.Rand) -> Int {
+pub fn random_non_ascii_codepoint(rng : @random.Rand) -> Char {
   // Generate index in range [0, non_ascii_valid_count)
   // Then offset by 0x80 to skip ASCII, and apply surrogate skip
   let index = rng.int(limit=non_ascii_valid_count)
-  index_to_codepoint(index + 0x80)
+  index_to_codepoint(index + 0x80).unsafe_to_char()
 }
 
 ///|
 /// Generate a random Unicode code point (U+0000 to U+10FFFF, excluding surrogates)
-pub fn random_any_codepoint(rng : @random.Rand) -> Int {
+pub fn random_any_codepoint(rng : @random.Rand) -> Char {
   // Generate index in range [0, unicode_valid_count)
   let index = rng.int(limit=unicode_valid_count)
-  index_to_codepoint(index)
+  index_to_codepoint(index).unsafe_to_char()
 }
 
 ///|
-/// Convert a single code point to string (handling supplementary plane)
-pub fn codepoint_to_char(cp : Int) -> String {
-  let sb = StringBuilder::new()
-  if cp <= 0xFFFF {
-    sb.write_char(cp.unsafe_to_char())
-  } else {
-    // Encode as surrogate pair
-    let adjusted = cp - 0x10000
-    let high = 0xD800 + (adjusted >> 10)
-    let low = 0xDC00 + (adjusted & 0x3FF)
-    sb.write_char(high.unsafe_to_char())
-    sb.write_char(low.unsafe_to_char())
-  }
-  sb.to_string()
+/// Convert a code point to string
+pub fn codepoint_to_string(cp : Char) -> String {
+  cp.to_string()
 }
 
 ///|
@@ -235,7 +220,7 @@ pub fn random_unicode_string(rng : @random.Rand, max_len? : Int = 50) -> String 
   for _ in 0..<len {
     let cat = categories[rng.int(limit=categories.length())]
     let cp = random_codepoint(rng, cat)
-    sb.write_string(codepoint_to_char(cp))
+    sb.write_char(cp)
   }
   sb.to_string()
 }
@@ -252,12 +237,12 @@ pub fn random_combining_sequence(
   for _ in 0..<base_count {
     // Add a base character (Latin Extended has many decomposable base chars)
     let base = random_codepoint(rng, LatinExtended)
-    sb.write_string(codepoint_to_char(base))
+    sb.write_char(base)
     // Add random combining marks
     let marks = rng.int(limit=mark_count) + 1
     for _ in 0..<marks {
       let mark = random_codepoint(rng, CombiningMark)
-      sb.write_string(codepoint_to_char(mark))
+      sb.write_char(mark)
     }
   }
   sb.to_string()
@@ -280,7 +265,7 @@ pub fn random_hangul_string(rng : @random.Rand, max_len? : Int = 20) -> String {
     } else {
       random_codepoint(rng, HangulJamoT)
     }
-    sb.write_string(codepoint_to_char(cp))
+    sb.write_char(cp)
   }
   sb.to_string()
 }
@@ -295,7 +280,7 @@ pub fn random_deep_decomposition_string(
   let sb = StringBuilder::new()
   for _ in 0..<len {
     let cp = random_codepoint(rng, Decomposable)
-    sb.write_string(codepoint_to_char(cp))
+    sb.write_char(cp)
   }
   sb.to_string()
 }

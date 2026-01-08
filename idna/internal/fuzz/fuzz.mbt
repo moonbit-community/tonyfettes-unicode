@@ -46,7 +46,7 @@ pub fn random_label(rng : @random.Rand) -> String {
         @base_fuzz.random_codepoint(rng, Ascii)
       }
     }
-    sb.write_string(@base_fuzz.codepoint_to_char(cp))
+    sb.write_char(cp)
   }
   sb.to_string()
 }
@@ -58,7 +58,7 @@ pub fn random_ascii_label(rng : @random.Rand) -> String {
   let sb = StringBuilder::new()
   for _ in 0..<len {
     let cp = @base_fuzz.random_codepoint(rng, Ascii)
-    sb.write_string(@base_fuzz.codepoint_to_char(cp))
+    sb.write_char(cp)
   }
   sb.to_string()
 }
@@ -70,7 +70,7 @@ pub fn random_arabic_label(rng : @random.Rand) -> String {
   let sb = StringBuilder::new()
   for _ in 0..<len {
     let cp = @base_fuzz.random_codepoint(rng, ArabicRTL)
-    sb.write_string(@base_fuzz.codepoint_to_char(cp))
+    sb.write_char(cp)
   }
   sb.to_string()
 }
@@ -82,7 +82,7 @@ pub fn random_hebrew_label(rng : @random.Rand) -> String {
   let sb = StringBuilder::new()
   for _ in 0..<len {
     let cp = @base_fuzz.random_codepoint(rng, HebrewRTL)
-    sb.write_string(@base_fuzz.codepoint_to_char(cp))
+    sb.write_char(cp)
   }
   sb.to_string()
 }
@@ -92,17 +92,11 @@ pub fn random_hebrew_label(rng : @random.Rand) -> String {
 pub fn random_mixed_bidi_label(rng : @random.Rand) -> String {
   let sb = StringBuilder::new()
   // Start with LTR
-  sb.write_string(
-    @base_fuzz.codepoint_to_char(@base_fuzz.random_codepoint(rng, Ascii)),
-  )
+  sb.write_char(@base_fuzz.random_codepoint(rng, Ascii))
   // Add RTL in middle
-  sb.write_string(
-    @base_fuzz.codepoint_to_char(@base_fuzz.random_codepoint(rng, ArabicRTL)),
-  )
+  sb.write_char(@base_fuzz.random_codepoint(rng, ArabicRTL))
   // End with LTR
-  sb.write_string(
-    @base_fuzz.codepoint_to_char(@base_fuzz.random_codepoint(rng, Ascii)),
-  )
+  sb.write_char(@base_fuzz.random_codepoint(rng, Ascii))
   sb.to_string()
 }
 
@@ -115,27 +109,13 @@ pub fn random_label_with_joiners(
   let sb = StringBuilder::new()
   if at_boundary {
     // Joiner at start - invalid
-    sb.write_string(
-      @base_fuzz.codepoint_to_char(
-        @base_fuzz.random_codepoint(rng, IdnaDeviation),
-      ),
-    )
-    sb.write_string(
-      @base_fuzz.codepoint_to_char(@base_fuzz.random_codepoint(rng, Ascii)),
-    )
+    sb.write_char(@base_fuzz.random_codepoint(rng, IdnaDeviation))
+    sb.write_char(@base_fuzz.random_codepoint(rng, Ascii))
   } else {
     // Joiner in middle - may be valid depending on context
-    sb.write_string(
-      @base_fuzz.codepoint_to_char(@base_fuzz.random_codepoint(rng, Ascii)),
-    )
-    sb.write_string(
-      @base_fuzz.codepoint_to_char(
-        @base_fuzz.random_codepoint(rng, IdnaDeviation),
-      ),
-    )
-    sb.write_string(
-      @base_fuzz.codepoint_to_char(@base_fuzz.random_codepoint(rng, Ascii)),
-    )
+    sb.write_char(@base_fuzz.random_codepoint(rng, Ascii))
+    sb.write_char(@base_fuzz.random_codepoint(rng, IdnaDeviation))
+    sb.write_char(@base_fuzz.random_codepoint(rng, Ascii))
   }
   sb.to_string()
 }
@@ -145,21 +125,11 @@ pub fn random_label_with_joiners(
 pub fn random_label_with_ignored(rng : @random.Rand) -> String {
   let sb = StringBuilder::new()
   // Start with valid char
-  sb.write_string(
-    @base_fuzz.codepoint_to_char(
-      @base_fuzz.random_codepoint(rng, LatinExtended),
-    ),
-  )
+  sb.write_char(@base_fuzz.random_codepoint(rng, LatinExtended))
   // Add ignored character (soft hyphen, etc.)
-  sb.write_string(
-    @base_fuzz.codepoint_to_char(@base_fuzz.random_codepoint(rng, IdnaIgnored)),
-  )
+  sb.write_char(@base_fuzz.random_codepoint(rng, IdnaIgnored))
   // End with valid char
-  sb.write_string(
-    @base_fuzz.codepoint_to_char(
-      @base_fuzz.random_codepoint(rng, LatinExtended),
-    ),
-  )
+  sb.write_char(@base_fuzz.random_codepoint(rng, LatinExtended))
   sb.to_string()
 }
 
@@ -170,7 +140,7 @@ pub fn random_label_with_mapped(rng : @random.Rand) -> String {
   let len = rng.int(limit=5) + 1
   for _ in 0..<len {
     let cp = @base_fuzz.random_codepoint(rng, IdnaMapped)
-    sb.write_string(@base_fuzz.codepoint_to_char(cp))
+    sb.write_char(cp)
   }
   sb.to_string()
 }
@@ -180,15 +150,9 @@ pub fn random_label_with_mapped(rng : @random.Rand) -> String {
 pub fn random_label_leading_combining(rng : @random.Rand) -> String {
   let sb = StringBuilder::new()
   // Start with combining mark - invalid
-  sb.write_string(
-    @base_fuzz.codepoint_to_char(
-      @base_fuzz.random_codepoint(rng, CombiningMark),
-    ),
-  )
+  sb.write_char(@base_fuzz.random_codepoint(rng, CombiningMark))
   // Add base character
-  sb.write_string(
-    @base_fuzz.codepoint_to_char(@base_fuzz.random_codepoint(rng, Ascii)),
-  )
+  sb.write_char(@base_fuzz.random_codepoint(rng, Ascii))
   sb.to_string()
 }
 
@@ -199,7 +163,7 @@ pub fn random_long_label(rng : @random.Rand) -> String {
   // Generate 70+ characters
   for _ in 0..<70 {
     let cp = @base_fuzz.random_codepoint(rng, Ascii)
-    sb.write_string(@base_fuzz.codepoint_to_char(cp))
+    sb.write_char(cp)
   }
   sb.to_string()
 }
@@ -208,17 +172,9 @@ pub fn random_long_label(rng : @random.Rand) -> String {
 /// Generate a label with disallowed characters
 pub fn random_label_with_disallowed(rng : @random.Rand) -> String {
   let sb = StringBuilder::new()
-  sb.write_string(
-    @base_fuzz.codepoint_to_char(@base_fuzz.random_codepoint(rng, Ascii)),
-  )
-  sb.write_string(
-    @base_fuzz.codepoint_to_char(
-      @base_fuzz.random_codepoint(rng, IdnaDisallowed),
-    ),
-  )
-  sb.write_string(
-    @base_fuzz.codepoint_to_char(@base_fuzz.random_codepoint(rng, Ascii)),
-  )
+  sb.write_char(@base_fuzz.random_codepoint(rng, Ascii))
+  sb.write_char(@base_fuzz.random_codepoint(rng, IdnaDisallowed))
+  sb.write_char(@base_fuzz.random_codepoint(rng, Ascii))
   sb.to_string()
 }
 
@@ -230,21 +186,13 @@ pub fn random_label_boundary_hyphen(
 ) -> String {
   let sb = StringBuilder::new()
   if at_start {
-    sb.write_string("-")
-    sb.write_string(
-      @base_fuzz.codepoint_to_char(@base_fuzz.random_codepoint(rng, Ascii)),
-    )
-    sb.write_string(
-      @base_fuzz.codepoint_to_char(@base_fuzz.random_codepoint(rng, Ascii)),
-    )
+    sb.write_char('-')
+    sb.write_char(@base_fuzz.random_codepoint(rng, Ascii))
+    sb.write_char(@base_fuzz.random_codepoint(rng, Ascii))
   } else {
-    sb.write_string(
-      @base_fuzz.codepoint_to_char(@base_fuzz.random_codepoint(rng, Ascii)),
-    )
-    sb.write_string(
-      @base_fuzz.codepoint_to_char(@base_fuzz.random_codepoint(rng, Ascii)),
-    )
-    sb.write_string("-")
+    sb.write_char(@base_fuzz.random_codepoint(rng, Ascii))
+    sb.write_char(@base_fuzz.random_codepoint(rng, Ascii))
+    sb.write_char('-')
   }
   sb.to_string()
 }

@@ -55,7 +55,7 @@ test "fuzz: punycode roundtrip with latin extended" {
     let len = rng.int(limit=30) + 1
     for _ in 0..<len {
       let cp = @fuzz.random_codepoint(rng, LatinExtended)
-      sb.write_string(@fuzz.codepoint_to_char(cp))
+      sb.write_char(cp)
     }
     let s = sb.to_string()
     let result : Result[String, _] = try? {
@@ -109,7 +109,7 @@ test "fuzz: pure ASCII encodes with delimiter" {
     let len = rng.int(limit=20) + 1
     for _ in 0..<len {
       let cp = @fuzz.random_codepoint(rng, Ascii)
-      sb.write_string(@fuzz.codepoint_to_char(cp))
+      sb.write_char(cp)
     }
     let s = sb.to_string()
     let result : Result[String, _] = try? @punycode.encode(s)
@@ -164,7 +164,7 @@ test "fuzz: mixed ascii and unicode roundtrip" {
       } else {
         @fuzz.random_codepoint(rng, LatinExtended)
       }
-      sb.write_string(@fuzz.codepoint_to_char(cp))
+      sb.write_char(cp)
     }
     let s = sb.to_string()
     let result : Result[String, _] = try? {
@@ -194,7 +194,7 @@ test "fuzz: single character roundtrip" {
   let rng = @random.Rand::chacha8(seed=fuzz_seed)
   for _ in 0..<500 {
     let cp = @fuzz.random_codepoint(rng, LatinExtended)
-    let s = @fuzz.codepoint_to_char(cp)
+    let s = cp.to_string()
     let result : Result[String, _] = try? {
       let encoded = @punycode.encode(s)
       @punycode.decode(encoded)

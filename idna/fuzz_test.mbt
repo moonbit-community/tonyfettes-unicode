@@ -147,7 +147,7 @@ test "fuzz: to_ascii produces pure ASCII for any Unicode input" {
     let len = rng.int(limit=10) + 1
     for _ in 0..<len {
       let cp = @fuzz.random_any_codepoint(rng)
-      sb.write_string(@fuzz.codepoint_to_char(cp))
+      sb.write_char(cp)
     }
     let label = sb.to_string()
     let result : Result[String, _] = try? @idna.to_ascii(
@@ -218,7 +218,7 @@ test "fuzz: single character domains" {
   let rng = @random.Rand::chacha8(seed=fuzz_seed)
   for _ in 0..<200 {
     let cp = @fuzz.random_codepoint(rng, Ascii)
-    let s = @fuzz.codepoint_to_char(cp)
+    let s = cp.to_string()
     let result : Result[String, _] = try? @idna.to_ascii(
       s,
       use_std3_ascii_rules=false,
