@@ -330,15 +330,15 @@ def generate_bidi_mbt(entries: list[tuple], output_path: Path):
     # Filter and encode
     bidi_map = {"L": 0, "R": 1, "AL": 2, "AN": 3, "EN": 4, "ES": 5, "CS": 6, "ET": 7, "ON": 8, "BN": 9, "NSM": 10}
 
-    range_starts = []
-    range_ends = []
-    range_classes = []
+    # Filter relevant entries and sort by start code point for binary search
+    filtered_entries = [(start, end, bidi_map[bidi_class])
+                        for start, end, bidi_class in entries
+                        if bidi_class in bidi_map]
+    filtered_entries.sort(key=lambda x: x[0])  # Sort by start code point
 
-    for start, end, bidi_class in entries:
-        if bidi_class in bidi_map:
-            range_starts.append(start)
-            range_ends.append(end)
-            range_classes.append(bidi_map[bidi_class])
+    range_starts = [e[0] for e in filtered_entries]
+    range_ends = [e[1] for e in filtered_entries]
+    range_classes = [e[2] for e in filtered_entries]
 
     code = '''///|
 /// Bidi_Class lookup for IDNA Bidi validation (RFC 5893)
@@ -474,15 +474,15 @@ def generate_joining_mbt(entries: list[tuple], output_path: Path):
     # Joining types: L, R, D, C, T, U (non-joining)
     joining_map = {"L": 0, "R": 1, "D": 2, "C": 3, "T": 4, "U": 5}
 
-    range_starts = []
-    range_ends = []
-    range_types = []
+    # Filter relevant entries and sort by start code point for binary search
+    filtered_entries = [(start, end, joining_map[joining_type])
+                        for start, end, joining_type in entries
+                        if joining_type in joining_map]
+    filtered_entries.sort(key=lambda x: x[0])  # Sort by start code point
 
-    for start, end, joining_type in entries:
-        if joining_type in joining_map:
-            range_starts.append(start)
-            range_ends.append(end)
-            range_types.append(joining_map[joining_type])
+    range_starts = [e[0] for e in filtered_entries]
+    range_ends = [e[1] for e in filtered_entries]
+    range_types = [e[2] for e in filtered_entries]
 
     code = '''///|
 /// Joining_Type lookup for IDNA ContextJ validation (RFC 5892)
