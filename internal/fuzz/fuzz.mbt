@@ -57,44 +57,44 @@ let decomposable_chars : Array[Int] = [
 /// Characters that are IGNORED in IDNA processing
 let idna_ignored_chars : Array[Int] = [
   0x00AD, // Soft hyphen
-  0x034F, // Combining grapheme joiner
-  0x180B, // Mongolian free variation selector one
-  0xFE00, // Variation selector-1
-]
+   0x034F, // Combining grapheme joiner
+   0x180B, // Mongolian free variation selector one
+   0xFE00,
+] // Variation selector-1
 
 ///|
 /// Characters that are DISALLOWED in IDNA processing
 let idna_disallowed_chars : Array[Int] = [
   0x0000, // NULL
-  0x0020, // SPACE
-  0x007F, // DELETE
-  0x00A0, // NO-BREAK SPACE
-  0x2028, // LINE SEPARATOR
-  0x2029, // PARAGRAPH SEPARATOR
-  0xFFFD, // REPLACEMENT CHARACTER
+   0x0020, // SPACE
+   0x007F, // DELETE
+   0x00A0, // NO-BREAK SPACE
+   0x2028, // LINE SEPARATOR
+   0x2029, // PARAGRAPH SEPARATOR
+   0xFFFD, // REPLACEMENT CHARACTER
 ]
 
 ///|
 /// Deviation characters - treated as valid in nontransitional mode
 let idna_deviation_chars : Array[Int] = [
   0x00DF, // ß (German sharp s)
-  0x03C2, // ς (Greek final sigma)
-  0x200C, // ZWNJ
-  0x200D, // ZWJ
-]
+   0x03C2, // ς (Greek final sigma)
+   0x200C, // ZWNJ
+   0x200D,
+] // ZWJ
 
 ///|
 /// Characters that are mapped to other characters in IDNA
 let idna_mapped_chars : Array[Int] = [
   0xFF21, // Ａ Fullwidth A -> a
-  0xFF22, // Ｂ Fullwidth B -> b
-  0xFF23, // Ｃ Fullwidth C -> c
-  0x0041, // A -> a (case fold)
-  0x0042, // B -> b (case fold)
-  0x0043, // C -> c (case fold)
-  0x2126, // Ω (Ohm) -> ω
-  0x212A, // K (Kelvin) -> k
-  0x212B, // Å (Angstrom) -> å
+   0xFF22, // Ｂ Fullwidth B -> b
+   0xFF23, // Ｃ Fullwidth C -> c
+   0x0041, // A -> a (case fold)
+   0x0042, // B -> b (case fold)
+   0x0043, // C -> c (case fold)
+   0x2126, // Ω (Ohm) -> ω
+   0x212A, // K (Kelvin) -> k
+   0x212B, // Å (Angstrom) -> å
 ]
 
 ///|
@@ -161,10 +161,14 @@ pub fn random_codepoint(
 
 // Total valid Unicode code points (excluding surrogates U+D800-U+DFFF)
 // U+0000 to U+10FFFF = 1114112 total, minus 2048 surrogates = 1112064 valid
+
+///|
 let unicode_valid_count : Int = 0x110000 - 0x800 // 1112064
 
 // Non-ASCII valid code points (U+0080 to U+10FFFF, excluding surrogates)
 // 1112064 total minus 128 ASCII = 1111936
+
+///|
 let non_ascii_valid_count : Int = unicode_valid_count - 0x80 // 1111936
 
 ///|

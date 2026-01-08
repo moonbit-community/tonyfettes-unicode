@@ -418,8 +418,16 @@ test "combining mark: U+0300 grave at start fails" {
 test "error: domain too long" {
   // Create a domain > 253 characters
   let long_label = "a".repeat(50)
-  let domain = long_label + "." + long_label + "." + long_label + "." +
-    long_label + "." + long_label + ".com"
+  let domain = long_label +
+    "." +
+    long_label +
+    "." +
+    long_label +
+    "." +
+    long_label +
+    "." +
+    long_label +
+    ".com"
   let result : Result[String, Error] = try? to_ascii(domain)
   inspect(result, content="Err(DomainTooLong)")
 }
@@ -537,6 +545,9 @@ test "scripts: Thai domain" {
 ///|
 test "scripts: Arabic domain with digits" {
   // Arabic with Arabic-Indic digits
-  let result = to_ascii("مثال\u{0661}\u{0662}\u{0663}.com", check_bidi=false)
+  let result = to_ascii(
+    "مثال\u{0661}\u{0662}\u{0663}.com",
+    check_bidi=false,
+  )
   assert_true(result.has_prefix("xn--"))
 }
