@@ -40,61 +40,61 @@ let arabic_number_range : (Int, Int) = (0x0660, 0x0669) // Arabic-Indic digits
 /// Characters that have interesting decompositions (singletons, multi-char)
 let decomposable_chars : Array[Char] = [
   '\u{00C5}', // Å - decomposes to A + combining ring
-  '\u{00D1}', // Ñ - decomposes to N + combining tilde
-  '\u{00E9}', // é - decomposes to e + combining acute
-  '\u{01FA}', // Ǻ - multi-level decomposition
-  '\u{2126}', // Ω (Ohm) - singleton decomposition to Greek Omega
-  '\u{212A}', // K (Kelvin) - singleton decomposition to K
-  '\u{212B}', // Å (Angstrom) - singleton decomposition to Å then to A + ring
-  '\u{1E69}', // ṩ - multi-char decomposition
-  '\u{0132}', // IJ ligature (compatibility)
-  '\u{00BC}', // ¼ (compatibility)
-  '\u{2160}', // Ⅰ Roman numeral (compatibility)
-  '\u{FF21}', // Ａ Fullwidth A (compatibility)
+   '\u{00D1}', // Ñ - decomposes to N + combining tilde
+   '\u{00E9}', // é - decomposes to e + combining acute
+   '\u{01FA}', // Ǻ - multi-level decomposition
+   '\u{2126}', // Ω (Ohm) - singleton decomposition to Greek Omega
+   '\u{212A}', // K (Kelvin) - singleton decomposition to K
+   '\u{212B}', // Å (Angstrom) - singleton decomposition to Å then to A + ring
+   '\u{1E69}', // ṩ - multi-char decomposition
+   '\u{0132}', // IJ ligature (compatibility)
+   '\u{00BC}', // ¼ (compatibility)
+   '\u{2160}', // Ⅰ Roman numeral (compatibility)
+   '\u{FF21}', // Ａ Fullwidth A (compatibility)
 ]
 
 ///|
 /// Characters that are IGNORED in IDNA processing
 let idna_ignored_chars : Array[Char] = [
   '\u{00AD}', // Soft hyphen
-  '\u{034F}', // Combining grapheme joiner
-  '\u{180B}', // Mongolian free variation selector one
-  '\u{FE00}', // Variation selector-1
+   '\u{034F}', // Combining grapheme joiner
+   '\u{180B}', // Mongolian free variation selector one
+   '\u{FE00}', // Variation selector-1
 ]
 
 ///|
 /// Characters that are DISALLOWED in IDNA processing
 let idna_disallowed_chars : Array[Char] = [
   '\u{0000}', // NULL
-  '\u{0020}', // SPACE
-  '\u{007F}', // DELETE
-  '\u{00A0}', // NO-BREAK SPACE
-  '\u{2028}', // LINE SEPARATOR
-  '\u{2029}', // PARAGRAPH SEPARATOR
-  '\u{FFFD}', // REPLACEMENT CHARACTER
+   '\u{0020}', // SPACE
+   '\u{007F}', // DELETE
+   '\u{00A0}', // NO-BREAK SPACE
+   '\u{2028}', // LINE SEPARATOR
+   '\u{2029}', // PARAGRAPH SEPARATOR
+   '\u{FFFD}', // REPLACEMENT CHARACTER
 ]
 
 ///|
 /// Deviation characters - treated as valid in nontransitional mode
 let idna_deviation_chars : Array[Char] = [
   '\u{00DF}', // ß (German sharp s)
-  '\u{03C2}', // ς (Greek final sigma)
-  '\u{200C}', // ZWNJ
-  '\u{200D}', // ZWJ
+   '\u{03C2}', // ς (Greek final sigma)
+   '\u{200C}', // ZWNJ
+   '\u{200D}', // ZWJ
 ]
 
 ///|
 /// Characters that are mapped to other characters in IDNA
 let idna_mapped_chars : Array[Char] = [
   '\u{FF21}', // Ａ Fullwidth A -> a
-  '\u{FF22}', // Ｂ Fullwidth B -> b
-  '\u{FF23}', // Ｃ Fullwidth C -> c
-  '\u{0041}', // A -> a (case fold)
-  '\u{0042}', // B -> b (case fold)
-  '\u{0043}', // C -> c (case fold)
-  '\u{2126}', // Ω (Ohm) -> ω
-  '\u{212A}', // K (Kelvin) -> k
-  '\u{212B}', // Å (Angstrom) -> å
+   '\u{FF22}', // Ｂ Fullwidth B -> b
+   '\u{FF23}', // Ｃ Fullwidth C -> c
+   '\u{0041}', // A -> a (case fold)
+   '\u{0042}', // B -> b (case fold)
+   '\u{0043}', // C -> c (case fold)
+   '\u{2126}', // Ω (Ohm) -> ω
+   '\u{212A}', // K (Kelvin) -> k
+   '\u{212B}', // Å (Angstrom) -> å
 ]
 
 ///|
