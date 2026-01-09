@@ -1,5 +1,18 @@
 ///|
-/// Unicode General_Category values
+/// Unicode General_Category major class (single-letter categories)
+/// See UAX #44: https://www.unicode.org/reports/tr44/#General_Category_Values
+pub(all) enum GeneralCategoryGroup {
+  L // Letter
+  M // Mark
+  N // Number
+  Z // Separator
+  P // Punctuation
+  S // Symbol
+  C // Other
+} derive(Eq, Show)
+
+///|
+/// Unicode General_Category values (two-letter categories)
 /// See UAX #44: https://www.unicode.org/reports/tr44/#General_Category_Values
 pub(all) enum GeneralCategory {
   // Letter (L)
@@ -85,64 +98,15 @@ pub fn general_category(cp : Int) -> GeneralCategory {
 }
 
 ///|
-/// Check if category is a Letter (L*)
-pub fn GeneralCategory::is_letter(self : GeneralCategory) -> Bool {
+/// Get the major category group (single-letter category) for a GeneralCategory
+pub fn GeneralCategory::group(self : GeneralCategory) -> GeneralCategoryGroup {
   match self {
-    Lu | Ll | Lt | Lm | Lo => true
-    _ => false
-  }
-}
-
-///|
-/// Check if category is a Mark (M*)
-pub fn GeneralCategory::is_mark(self : GeneralCategory) -> Bool {
-  match self {
-    Mn | Mc | Me => true
-    _ => false
-  }
-}
-
-///|
-/// Check if category is a Number (N*)
-pub fn GeneralCategory::is_number(self : GeneralCategory) -> Bool {
-  match self {
-    Nd | Nl | No => true
-    _ => false
-  }
-}
-
-///|
-/// Check if category is a Separator (Z*)
-pub fn GeneralCategory::is_separator(self : GeneralCategory) -> Bool {
-  match self {
-    Zs | Zl | Zp => true
-    _ => false
-  }
-}
-
-///|
-/// Check if category is Punctuation (P*)
-pub fn GeneralCategory::is_punctuation(self : GeneralCategory) -> Bool {
-  match self {
-    Pc | Pd | Ps | Pe | Pi | Pf | Po => true
-    _ => false
-  }
-}
-
-///|
-/// Check if category is a Symbol (S*)
-pub fn GeneralCategory::is_symbol(self : GeneralCategory) -> Bool {
-  match self {
-    Sm | Sc | Sk | So => true
-    _ => false
-  }
-}
-
-///|
-/// Check if category is Other (C*)
-pub fn GeneralCategory::is_other(self : GeneralCategory) -> Bool {
-  match self {
-    Cc | Cf | Cs | Co | Cn => true
-    _ => false
+    Lu | Ll | Lt | Lm | Lo => L
+    Mn | Mc | Me => M
+    Nd | Nl | No => N
+    Zs | Zl | Zp => Z
+    Pc | Pd | Ps | Pe | Pi | Pf | Po => P
+    Sm | Sc | Sk | So => S
+    Cc | Cf | Cs | Co | Cn => C
   }
 }

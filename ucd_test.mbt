@@ -74,24 +74,23 @@ test "general_category: unassigned" {
 }
 
 ///|
-test "GeneralCategory::is_letter" {
-  assert_true(general_category(0x41).is_letter()) // 'A'
-  assert_true(general_category(0x61).is_letter()) // 'a'
-  assert_false(general_category(0x30).is_letter()) // '0'
-  assert_false(general_category(0x20).is_letter()) // space
-}
-
-///|
-test "GeneralCategory::is_mark" {
-  assert_true(general_category(0x0300).is_mark()) // COMBINING GRAVE ACCENT
-  assert_false(general_category(0x41).is_mark()) // 'A'
-}
-
-///|
-test "GeneralCategory::is_number" {
-  assert_true(general_category(0x30).is_number()) // '0'
-  assert_true(general_category(0x39).is_number()) // '9'
-  assert_false(general_category(0x41).is_number()) // 'A'
+test "GeneralCategory::group" {
+  // Letters
+  assert_eq(general_category(0x41).group(), L) // 'A'
+  assert_eq(general_category(0x61).group(), L) // 'a'
+  // Numbers
+  assert_eq(general_category(0x30).group(), N) // '0'
+  assert_eq(general_category(0x39).group(), N) // '9'
+  // Marks
+  assert_eq(general_category(0x0300).group(), M) // COMBINING GRAVE ACCENT
+  // Separators
+  assert_eq(general_category(0x20).group(), Z) // SPACE
+  // Punctuation
+  assert_eq(general_category(0x21).group(), P) // '!'
+  // Symbols
+  assert_eq(general_category(0x24).group(), S) // '$'
+  // Other
+  assert_eq(general_category(0x00).group(), C) // NUL
 }
 
 ///|
