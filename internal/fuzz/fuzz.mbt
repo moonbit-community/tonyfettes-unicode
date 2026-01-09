@@ -197,12 +197,6 @@ pub fn random_any_codepoint(rng : @random.Rand) -> Char {
 }
 
 ///|
-/// Convert a code point to string
-pub fn codepoint_to_string(cp : Char) -> String {
-  cp.to_string()
-}
-
-///|
 /// Generate a random Unicode string with mixed categories
 pub fn random_unicode_string(rng : @random.Rand, max_len? : Int = 50) -> String {
   let len = rng.int(limit=max_len) + 1

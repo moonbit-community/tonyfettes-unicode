@@ -6,8 +6,6 @@ import(
 )
 
 // Values
-pub fn codepoint_to_string(Char) -> String
-
 pub fn random_any_codepoint(@random.Rand) -> Char
 
 pub fn random_codepoint(@random.Rand, CodePointCategory) -> Char
