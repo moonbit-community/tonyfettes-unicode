@@ -3,8 +3,16 @@
 Generate MoonBit conformance tests from Unicode NormalizationTest.txt.
 
 This script downloads and parses NormalizationTest.txt and generates
-a MoonBit test file that verifies the normalization implementation
+MoonBit test files that verify the normalization implementation
 against the official Unicode test suite.
+
+Test cases are grouped by the official @Part sections in the file:
+- Part0: Specific cases
+- Part1: Character by character test
+- Part2: Canonical Order Test
+- Part3: PRI #29 Test
+- Part4: Canonical closures (excluding Hangul)
+- Part5: Chained primary composites
 """
 
 import glob
@@ -52,18 +60,37 @@ def hex_seq_to_moonbit_string(hex_seq: str) -> str:
     return result
 
 
-def parse_normalization_test(content: str) -> list[tuple[str, str, str, str, str]]:
+def parse_normalization_test(content: str) -> dict[str, dict]:
     """
-    Parse NormalizationTest.txt and return list of (c1, c2, c3, c4, c5) tuples.
+    Parse NormalizationTest.txt and return dict of sections.
 
-    Each tuple contains MoonBit string literals for the test case.
+    Each section contains:
+    - name: Section description (e.g., "Specific cases")
+    - cases: List of (c1, c2, c3, c4, c5) tuples as MoonBit string literals
     """
-    test_cases = []
+    sections = {}
+    current_section = None
 
     for line in content.strip().split("\n"):
-        # Skip comments and empty lines
         line = line.strip()
-        if not line or line.startswith("#") or line.startswith("@"):
+
+        # Detect @Part markers
+        if line.startswith("@Part"):
+            # Extract section number and description
+            # e.g., "@Part0 # Specific cases" -> ("Part0", "Specific cases")
+            parts = line.split("#", 1)
+            section_id = parts[0].strip()[1:]  # Remove @ prefix
+            section_name = parts[1].strip() if len(parts) > 1 else ""
+            sections[section_id] = {"name": section_name, "cases": []}
+            current_section = section_id
+            continue
+
+        # Skip comments and empty lines
+        if not line or line.startswith("#"):
+            continue
+
+        # Skip lines before the first @Part marker
+        if current_section is None:
             continue
 
         # Remove trailing comment
@@ -82,22 +109,31 @@ def parse_normalization_test(content: str) -> list[tuple[str, str, str, str, str
         c4 = hex_seq_to_moonbit_string(parts[3])
         c5 = hex_seq_to_moonbit_string(parts[4])
 
-        test_cases.append((c1, c2, c3, c4, c5))
+        sections[current_section]["cases"].append((c1, c2, c3, c4, c5))
 
-    return test_cases
+    return sections
 
 
-def generate_conformance_test_mbt(test_cases: list[tuple[str, str, str, str, str]], output_dir: Path):
-    """Generate conformance test files split into parts to avoid compiler issues."""
+def generate_conformance_test_mbt(sections: dict[str, dict], output_dir: Path):
+    """Generate conformance test files, one per @Part section."""
 
-    # Split test data into chunks of 2000 test cases each
-    CHUNK_SIZE = 2000
-    chunks = [test_cases[i:i + CHUNK_SIZE] for i in range(0, len(test_cases), CHUNK_SIZE)]
+    total_cases = 0
 
-    for chunk_idx, chunk in enumerate(chunks):
+    for section_id, section_data in sections.items():
+        section_name = section_data["name"]
+        cases = section_data["cases"]
+
+        if not cases:
+            continue
+
+        # Extract part number from section_id (e.g., "Part0" -> "0")
+        part_num = section_id.replace("Part", "")
+
         code = f'''///|
-/// Unicode Normalization Conformance Tests - Part {chunk_idx + 1}
-/// Generated from NormalizationTest.txt (Unicode 16.0.0)
+/// Unicode Normalization Conformance Tests - {section_id}
+/// Generated from NormalizationTest.txt (Unicode {UNICODE_VERSION})
+///
+/// {section_name}
 ///
 /// Each test case contains 5 strings (c1, c2, c3, c4, c5) and must satisfy:
 /// - NFC: c2 == NFC(c1) == NFC(c2) == NFC(c3)
@@ -106,13 +142,13 @@ def generate_conformance_test_mbt(test_cases: list[tuple[str, str, str, str, str
 /// - NFKD: c5 == NFKD(c1) == NFKD(c2) == NFKD(c3) == NFKD(c4) == NFKD(c5)
 
 ///|
-/// Test data from NormalizationTest.txt (part {chunk_idx + 1})
+/// Test data from NormalizationTest.txt ({section_id}: {section_name})
 /// Format: (c1, c2, c3, c4, c5)
-let conformance_test_data_part{chunk_idx + 1} : Array[(String, String, String, String, String)] = [
+let conformance_test_data_part{part_num} : Array[(String, String, String, String, String)] = [
 '''
 
         # Write test data
-        for i, (c1, c2, c3, c4, c5) in enumerate(chunk):
+        for i, (c1, c2, c3, c4, c5) in enumerate(cases):
             if i > 0:
                 code += ",\n"
             code += f'  ("{c1}", "{c2}", "{c3}", "{c4}", "{c5}")'
@@ -121,8 +157,8 @@ let conformance_test_data_part{chunk_idx + 1} : Array[(String, String, String, S
 ]
 
 ///|
-test "conformance: NormalizationTest.txt part {chunk_idx + 1} - NFC" {{
-  for i, t in conformance_test_data_part{chunk_idx + 1} {{
+test "conformance: NormalizationTest.txt {section_id} - NFC" {{
+  for i, t in conformance_test_data_part{part_num} {{
     let (c1, c2, c3, _, _) = t
     // NFC invariants: c2 == NFC(c1) == NFC(c2) == NFC(c3)
     let nfc_c1 = @normalization.nfc(c1)
@@ -135,8 +171,8 @@ test "conformance: NormalizationTest.txt part {chunk_idx + 1} - NFC" {{
 }}
 
 ///|
-test "conformance: NormalizationTest.txt part {chunk_idx + 1} - NFD" {{
-  for i, t in conformance_test_data_part{chunk_idx + 1} {{
+test "conformance: NormalizationTest.txt {section_id} - NFD" {{
+  for i, t in conformance_test_data_part{part_num} {{
     let (c1, c2, c3, _, _) = t
     // NFD invariants: c3 == NFD(c1) == NFD(c2) == NFD(c3)
     let nfd_c1 = @normalization.nfd(c1)
@@ -149,8 +185,8 @@ test "conformance: NormalizationTest.txt part {chunk_idx + 1} - NFD" {{
 }}
 
 ///|
-test "conformance: NormalizationTest.txt part {chunk_idx + 1} - NFKC" {{
-  for i, t in conformance_test_data_part{chunk_idx + 1} {{
+test "conformance: NormalizationTest.txt {section_id} - NFKC" {{
+  for i, t in conformance_test_data_part{part_num} {{
     let (c1, c2, c3, c4, c5) = t
     // NFKC invariants: c4 == NFKC(c1) == NFKC(c2) == NFKC(c3) == NFKC(c4) == NFKC(c5)
     let nfkc_c1 = @normalization.nfkc(c1)
@@ -167,8 +203,8 @@ test "conformance: NormalizationTest.txt part {chunk_idx + 1} - NFKC" {{
 }}
 
 ///|
-test "conformance: NormalizationTest.txt part {chunk_idx + 1} - NFKD" {{
-  for i, t in conformance_test_data_part{chunk_idx + 1} {{
+test "conformance: NormalizationTest.txt {section_id} - NFKD" {{
+  for i, t in conformance_test_data_part{part_num} {{
     let (c1, c2, c3, c4, c5) = t
     // NFKD invariants: c5 == NFKD(c1) == NFKD(c2) == NFKD(c3) == NFKD(c4) == NFKD(c5)
     let nfkd_c1 = @normalization.nfkd(c1)
@@ -186,11 +222,12 @@ test "conformance: NormalizationTest.txt part {chunk_idx + 1} - NFKD" {{
 '''
 
         # File names must end with _test.mbt to be recognized as test files
-        output_path = output_dir / f"conformance_part{chunk_idx + 1}_test.mbt"
+        output_path = output_dir / f"conformance_part{part_num}_test.mbt"
         output_path.write_text(code)
-        print(f"Generated {output_path} with {len(chunk)} test cases")
+        print(f"Generated {output_path} ({section_name}) with {len(cases)} test cases")
+        total_cases += len(cases)
 
-    print(f"Generated {len(chunks)} test files with {len(test_cases)} total test cases")
+    print(f"Generated {len(sections)} test files with {total_cases} total test cases")
 
 
 def main():
@@ -205,10 +242,11 @@ def main():
     # Download test file
     test_data = download_file(NORMALIZATION_TEST_URL, cache_dir)
 
-    # Parse test cases
+    # Parse test cases by section
     print("Parsing NormalizationTest.txt...")
-    test_cases = parse_normalization_test(test_data)
-    print(f"  Found {len(test_cases)} test cases")
+    sections = parse_normalization_test(test_data)
+    for section_id, section_data in sections.items():
+        print(f"  {section_id}: {section_data['name']} ({len(section_data['cases'])} cases)")
 
     # Remove old generated test files
     for old_pattern in ["conformance_test.mbt", "conformance_test_part*.mbt", "conformance_part*_test.mbt"]:
@@ -216,9 +254,9 @@ def main():
             Path(old_file).unlink()
             print(f"Removed old {old_file}")
 
-    # Generate MoonBit test files (split into parts)
+    # Generate MoonBit test files (one per section)
     print("\nGenerating MoonBit test files...")
-    generate_conformance_test_mbt(test_cases, normalization_dir)
+    generate_conformance_test_mbt(sections, normalization_dir)
 
     print("\nDone!")
 
