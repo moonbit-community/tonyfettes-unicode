@@ -47,7 +47,9 @@ pub fn to_ascii(
   // Split into labels
   let labels = split_labels(processed)
   let label_count = labels.length()
-  let has_trailing_dot = label_count > 0 && labels[label_count - 1] == ""
+  // A valid trailing dot requires at least 2 labels (e.g., "example.com." -> ["example", "com", ""])
+  // A single empty label (from empty domain like "") is NOT a trailing dot
+  let has_trailing_dot = label_count > 1 && labels[label_count - 1] == ""
 
   // For domain-level bidi validation, we need Unicode content of all labels
   // This requires decoding ACE labels first
@@ -61,9 +63,9 @@ pub fn to_ascii(
       continue
     }
     if label.length() == 0 {
-      unicode_labels.push("")
-      ascii_labels.push("")
-      continue
+      // Empty label that's not a trailing dot - this is invalid
+      // (could be from IDNA mapping like soft hyphen -> "", or ".." in domain)
+      raise EmptyLabel
     }
 
     // Process label to get both Unicode and ASCII forms
@@ -157,14 +159,19 @@ pub fn to_unicode(
   // Split into labels first (before mapping, to handle Punycode)
   let labels = split_labels(domain)
   let label_count = labels.length()
-  // Check for trailing dot (empty last label is valid in DNS)
-  let has_trailing_dot = label_count > 0 && labels[label_count - 1] == ""
+  // A valid trailing dot requires at least 2 labels (e.g., "example.com." -> ["example", "com", ""])
+  // A single empty label (from empty domain like "") is NOT a trailing dot
+  let has_trailing_dot = label_count > 1 && labels[label_count - 1] == ""
   let unicode_labels : Array[String] = []
   for i, label in labels {
     // Skip processing for trailing empty label (trailing dot)
     if i == label_count - 1 && has_trailing_dot {
       unicode_labels.push("")
       continue
+    }
+    if label.length() == 0 {
+      // Empty label that's not a trailing dot - this is invalid
+      raise EmptyLabel
     }
     let unicode_label = label_to_unicode(
       label,

@@ -10,11 +10,12 @@ fn validate_label(
   check_bidi~ : Bool,
   check_joiners~ : Bool,
 ) -> Unit raise IdnaError {
-  // Empty labels are allowed here - the check is done in verify_dns_length_constraints
-  // when verify_dns_length is true. This allows domains with trailing dots or
-  // consecutive dots when DNS length checking is disabled.
+  // Empty labels should raise an error - they indicate either intentional empty
+  // labels (like trailing dots) or labels that became empty after IDNA mapping
+  // (like soft hyphen U+00AD). The caller can catch EmptyLabel and decide
+  // whether to allow it based on context.
   if label.length() == 0 {
-    return
+    raise EmptyLabel
   }
   let codepoints = label_to_codepoints(label)
 
@@ -257,13 +258,8 @@ fn validate_domain_bidi(labels : Array[String]) -> Unit raise IdnaError {
     }
   }
   if not(has_rtl_label) {
-    // Pure LTR domain - validate each label as LTR
-    for label in labels {
-      if label.length() > 0 {
-        let cps = label_to_codepoints(label)
-        validate_ltr_label(cps)
-      }
-    }
+    // Not a Bidi domain name - no Bidi validation needed per UTS #46
+    // "If CheckBidi, and if the domain name is a Bidi domain name, then..."
     return
   }
 
