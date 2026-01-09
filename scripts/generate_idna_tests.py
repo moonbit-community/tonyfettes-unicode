@@ -14,6 +14,16 @@ from pathlib import Path
 UNICODE_VERSION = "16.0.0"
 TEST_URL = f"https://www.unicode.org/Public/idna/{UNICODE_VERSION}/IdnaTestV2.txt"
 
+# Map status codes to the validation flag that must be enabled to trigger them
+STATUS_CODE_TO_FLAG = {
+    'B1': 'check_bidi', 'B2': 'check_bidi', 'B3': 'check_bidi',
+    'B4': 'check_bidi', 'B5': 'check_bidi', 'B6': 'check_bidi',
+    'C1': 'check_joiners', 'C2': 'check_joiners',
+    'V2': 'check_hyphens', 'V3': 'check_hyphens',
+    'V4': 'use_std3_ascii_rules', 'U1': 'use_std3_ascii_rules',
+    'A4_1': 'verify_dns_length', 'A4_2': 'verify_dns_length',
+}
+
 
 def download_file(url: str, cache_dir: Path) -> str:
     """Download a file and cache it locally."""
@@ -138,26 +148,33 @@ def has_surrogate(s: str) -> bool:
     return False
 
 
-def filter_ignored_status_codes(codes: list[str]) -> list[str]:
-    """Remove status codes for disabled validation flags.
+def get_required_flags(codes: list[str]) -> dict[str, bool]:
+    """Determine which validation flags need to be enabled based on status codes.
 
-    Based on IdnaTestV2.txt documentation, when validation flags are disabled:
-    - check_bidi=false    → ignore B1, B2, B3, B4, B5, B6
-    - check_joiners=false → ignore C1, C2
-    - check_hyphens=false → ignore V2, V3
-    - use_std3_ascii_rules=false → ignore U1
-    - verify_dns_length=false → ignore A4_1, A4_2
-
-    Additionally, V4 (code point status check) can be triggered by DisallowedSTD3Valid
-    characters (like hyphen-minus). When use_std3_ascii_rules=false, these are treated
-    as valid, so V4 should not trigger errors for them. We ignore V4 when std3 rules
-    are disabled because all V4 errors in the test suite that remain after filtering
-    are caused by DisallowedSTD3Valid characters.
-
-    Since the conformance tests disable all these flags, we filter all of them.
+    Returns a dict of flag_name -> True for each flag that must be enabled
+    to trigger the errors indicated by the status codes.
     """
-    ignored = {'B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'C1', 'C2', 'V2', 'V3', 'V4', 'U1', 'A4_1', 'A4_2'}
-    return [c for c in codes if c not in ignored]
+    flags = {
+        'check_bidi': False,
+        'check_joiners': False,
+        'check_hyphens': False,
+        'use_std3_ascii_rules': False,
+        'verify_dns_length': False,
+    }
+    for code in codes:
+        if code in STATUS_CODE_TO_FLAG:
+            flags[STATUS_CODE_TO_FLAG[code]] = True
+    return flags
+
+
+def has_flag_independent_errors(codes: list[str]) -> bool:
+    """Check if any status codes are flag-independent (always trigger errors).
+
+    Status codes not in STATUS_CODE_TO_FLAG (like V1, V5, V6, V7, P*, X*, A3)
+    are errors that occur regardless of flag settings.
+    """
+    flag_dependent = set(STATUS_CODE_TO_FLAG.keys())
+    return any(c not in flag_dependent for c in codes)
 
 
 def escape_moonbit_string(s: str) -> str:
@@ -193,9 +210,10 @@ def escape_moonbit_string(s: str) -> str:
 def generate_tests(test_cases: list[dict], output_path: Path):
     """Generate MoonBit conformance test file."""
 
-    # Group tests by expected behavior, filtering out surrogates
-    success_tests = []
-    error_tests = []
+    # Group tests by expected behavior
+    success_tests = []          # No errors
+    flag_error_tests = []       # Errors that need specific flags enabled
+    always_error_tests = []     # Errors regardless of flags
     skipped = 0
 
     for tc in test_cases:
@@ -204,17 +222,27 @@ def generate_tests(test_cases: list[dict], output_path: Path):
             skipped += 1
             continue
 
-        # Filter out status codes for disabled validation flags
-        # Use to_ascii_n_status (not to_unicode_status) since we're testing to_ascii
-        filtered_status = filter_ignored_status_codes(tc["to_ascii_n_status"])
+        status = tc["to_ascii_n_status"]
 
-        if filtered_status:
-            # Has remaining error codes after filtering - expect failure
-            tc["filtered_status"] = filtered_status
-            error_tests.append(tc)
-        else:
-            # No error codes (or all filtered out) - expect success
+        if not status:
+            # No errors - success test
             success_tests.append(tc)
+        else:
+            required_flags = get_required_flags(status)
+            has_independent = has_flag_independent_errors(status)
+
+            if any(required_flags.values()):
+                # Has flag-dependent errors - enable those flags
+                tc["required_flags"] = required_flags
+                tc["status_codes"] = status
+                flag_error_tests.append(tc)
+            elif has_independent:
+                # Only flag-independent errors
+                tc["status_codes"] = status
+                always_error_tests.append(tc)
+            else:
+                # Shouldn't happen, but treat as success
+                success_tests.append(tc)
 
     print(f"  Skipped (surrogates): {skipped}")
 
@@ -260,16 +288,17 @@ def generate_tests(test_cases: list[dict], output_path: Path):
 
 '''
 
-    # Generate error tests
-    code += "///|\n\n// Error tests (failure expected)\n\n"
+    # Generate flag-dependent error tests (with appropriate flags enabled)
+    code += "///|\n\n// Error tests with validation flags enabled\n\n"
 
-    for i, tc in enumerate(error_tests):
+    for i, tc in enumerate(flag_error_tests):
         # Add segment marker every N tests
         if i > 0 and i % tests_per_segment == 0:
             code += "///|\n\n"
 
         source_escaped = escape_moonbit_string(tc["source"])
-        status_str = " ".join(tc["filtered_status"])
+        status_str = " ".join(tc["status_codes"])
+        flags = tc["required_flags"]
 
         # Create a short label for the test name
         label = tc["source"][:20]
@@ -278,6 +307,40 @@ def generate_tests(test_cases: list[dict], output_path: Path):
         label_escaped = escape_moonbit_string(label)
 
         code += f'''test "conformance/{tc['line_num']:04d}: {label_escaped} [{status_str}]" {{
+  let result : Result[String, Error] = try? @idna.to_ascii(
+    "{source_escaped}",
+    use_std3_ascii_rules={str(flags['use_std3_ascii_rules']).lower()},
+    check_hyphens={str(flags['check_hyphens']).lower()},
+    check_bidi={str(flags['check_bidi']).lower()},
+    check_joiners={str(flags['check_joiners']).lower()},
+    verify_dns_length={str(flags['verify_dns_length']).lower()},
+  )
+  guard result is Err(_) else {{
+    fail("Expected error for line {tc['line_num']}, got Ok")
+  }}
+}}
+
+'''
+
+    # Generate always-error tests (fail regardless of flags)
+    if always_error_tests:
+        code += "///|\n\n// Error tests (always fail regardless of flags)\n\n"
+
+        for i, tc in enumerate(always_error_tests):
+            # Add segment marker every N tests
+            if i > 0 and i % tests_per_segment == 0:
+                code += "///|\n\n"
+
+            source_escaped = escape_moonbit_string(tc["source"])
+            status_str = " ".join(tc["status_codes"])
+
+            # Create a short label for the test name
+            label = tc["source"][:20]
+            if len(tc["source"]) > 20:
+                label += "..."
+            label_escaped = escape_moonbit_string(label)
+
+            code += f'''test "conformance/{tc['line_num']:04d}: {label_escaped} [{status_str}]" {{
   let result : Result[String, Error] = try? @idna.to_ascii(
     "{source_escaped}",
     use_std3_ascii_rules=false,
@@ -296,7 +359,8 @@ def generate_tests(test_cases: list[dict], output_path: Path):
     output_path.write_text(code, encoding="utf-8")
     print(f"Generated {output_path}")
     print(f"  Success tests: {len(success_tests)}")
-    print(f"  Error tests: {len(error_tests)}")
+    print(f"  Flag-enabled error tests: {len(flag_error_tests)}")
+    print(f"  Always-error tests: {len(always_error_tests)}")
     print(f"  Total: {len(test_cases)}")
 
 
