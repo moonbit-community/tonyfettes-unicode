@@ -34,27 +34,57 @@ pub fn to_ascii(
   check_joiners? : Bool = true,
   verify_dns_length? : Bool = true,
 ) -> String raise IdnaError {
-  // Process the domain
+  // Process the domain (mapping, normalization, basic validation)
+  // Note: Bidi is handled separately to support ACE-encoded inputs
   let processed = process_domain(
     domain,
     use_std3_ascii_rules~,
     check_hyphens~,
-    check_bidi~,
+    check_bidi=false, // Domain-level bidi handled below after ACE decoding
     check_joiners~,
   )
 
-  // Convert to ASCII using Punycode where needed
+  // Split into labels
   let labels = split_labels(processed)
+  let label_count = labels.length()
+  let has_trailing_dot = label_count > 0 && labels[label_count - 1] == ""
+
+  // For domain-level bidi validation, we need Unicode content of all labels
+  // This requires decoding ACE labels first
+  let unicode_labels : Array[String] = []
   let ascii_labels : Array[String] = []
-  for label in labels {
-    let ascii_label = label_to_ascii(
+  for i, label in labels {
+    // Handle trailing empty label
+    if i == label_count - 1 && has_trailing_dot {
+      unicode_labels.push("")
+      ascii_labels.push("")
+      continue
+    }
+    if label.length() == 0 {
+      unicode_labels.push("")
+      ascii_labels.push("")
+      continue
+    }
+
+    // Process label to get both Unicode and ASCII forms
+    let (unicode_label, ascii_label) = process_label_for_ascii(
       label,
       use_std3_ascii_rules~,
       check_hyphens~,
-      check_bidi~,
       check_joiners~,
     )
+    unicode_labels.push(unicode_label)
     ascii_labels.push(ascii_label)
+  }
+
+  // Domain-level bidi validation on Unicode labels
+  if check_bidi {
+    let labels_for_bidi = if has_trailing_dot {
+      unicode_labels.iter().take(label_count - 1).collect()
+    } else {
+      unicode_labels
+    }
+    validate_domain_bidi(labels_for_bidi)
   }
   let result = ascii_labels.join(".")
 
@@ -63,6 +93,55 @@ pub fn to_ascii(
     verify_dns_length_constraints(result, ascii_labels)
   }
   result
+}
+
+///|
+/// Process a single label and return both Unicode and ASCII forms
+/// Used by to_ascii to collect Unicode labels for domain-level bidi validation
+fn process_label_for_ascii(
+  label : String,
+  use_std3_ascii_rules~ : Bool,
+  check_hyphens~ : Bool,
+  check_joiners~ : Bool,
+) -> (String, String) raise IdnaError {
+  if label.length() == 0 {
+    return ("", "")
+  }
+
+  // Check if label has ACE prefix (xn--)
+  if has_ace_prefix(label) {
+    // Decode ACE label to get Unicode content
+    let punycode_part = get_substring_after_prefix(label, 4)
+    let decoded = @punycode.decode(punycode_part) catch {
+      error => raise PunycodeError("\{error}")
+    }
+
+    // Apply mapping and normalize
+    let mapped = map_label(decoded, use_std3_ascii_rules~)
+    let normalized = @normalization.nfc(mapped)
+
+    // Validate the decoded label (without bidi - done at domain level)
+    validate_label(
+      normalized,
+      use_std3_ascii_rules~,
+      check_hyphens~,
+      check_bidi=false, // Bidi done at domain level
+      check_joiners~,
+    )
+
+    // Re-encode for roundtrip check
+    let re_encoded = encode_label_to_ascii(normalized)
+
+    // Roundtrip check (V7 error on mismatch)
+    if re_encoded != label.to_lower() {
+      raise InvalidAcePrefix
+    }
+    return (normalized, label.to_lower())
+  }
+
+  // Non-ACE label: just encode
+  let ascii_label = encode_label_to_ascii(label)
+  (label, ascii_label)
 }
 
 ///|
@@ -97,60 +176,6 @@ pub fn to_unicode(
     unicode_labels.push(unicode_label)
   }
   unicode_labels.join(".")
-}
-
-///|
-/// Convert a single label to ASCII (Punycode if needed)
-/// For ACE labels (xn-- prefix), validates by decoding, processing, and re-encoding
-fn label_to_ascii(
-  label : String,
-  use_std3_ascii_rules~ : Bool,
-  check_hyphens~ : Bool,
-  check_bidi~ : Bool,
-  check_joiners~ : Bool,
-) -> String raise IdnaError {
-  // Empty labels pass through (handled by DNS length check)
-  if label.length() == 0 {
-    return ""
-  }
-
-  // Check if label has ACE prefix (xn--)
-  if has_ace_prefix(label) {
-    // Validate ACE label: decode, process, re-encode, compare
-    let punycode_part = get_substring_after_prefix(label, 4)
-
-    // Step 1: Decode Punycode (P4 error on failure)
-    let decoded = @punycode.decode(punycode_part) catch {
-      error => raise PunycodeError("\{error}")
-    }
-
-    // Step 2: Apply mapping
-    let mapped = map_label(decoded, use_std3_ascii_rules~)
-
-    // Step 3: NFC normalize
-    let normalized = @normalization.nfc(mapped)
-
-    // Step 4: Validate the decoded label
-    validate_label(
-      normalized,
-      use_std3_ascii_rules~,
-      check_hyphens~,
-      check_bidi~,
-      check_joiners~,
-    )
-
-    // Step 5: Re-encode for roundtrip check
-    let re_encoded = encode_label_to_ascii(normalized)
-
-    // Step 6: Roundtrip check (V7 error on mismatch)
-    if re_encoded != label.to_lower() {
-      raise InvalidAcePrefix
-    }
-    return label.to_lower()
-  }
-
-  // Non-ACE label: encode if needed
-  encode_label_to_ascii(label)
 }
 
 ///|

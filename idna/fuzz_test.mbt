@@ -456,6 +456,7 @@ test "fuzz: label too long rejected" {
     let label = @idna_fuzz.random_long_label(rng)
     let result : Result[String, _] = try? @idna.to_ascii(
       label,
+      use_std3_ascii_rules=false, // Allow non-LDH ASCII for this test
       check_bidi=false,
       check_joiners=false,
       verify_dns_length=true,

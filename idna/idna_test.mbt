@@ -97,7 +97,7 @@ test "roundtrip: Russian" {
 }
 
 ///|
-test "panic invalid: disallowed character" {
+test "invalid: disallowed character" {
   // U+0000 is disallowed
   let result : Result[String, Error] = try? to_ascii("example\u{0000}.com")
   guard result is Err(_) else {
@@ -146,11 +146,19 @@ test "validation: hyphen at end" {
 }
 
 ///|
-test "std3 rules: space character" {
-  // Space U+0020 is marked as "valid" in IDNA mapping table (with NV8)
-  // UTS46 compatibility mode allows it
+test "std3 rules: space character rejected" {
+  // Space U+0020 is rejected with STD3 rules (default) - not LDH
   let result : Result[String, Error] = try? to_ascii("exam ple.com")
-  inspect(result, content="Ok(\"exam ple.com\")")
+  guard result is Err(_) else {
+    fail("Expected error for space with STD3 rules")
+  }
+}
+
+///|
+test "std3 disabled: space character allowed" {
+  // Space U+0020 is allowed without STD3 rules (marked "valid" in IDNA table)
+  let result = to_ascii("exam ple.com", use_std3_ascii_rules=false)
+  inspect(result, content="exam ple.com")
 }
 
 ///|

@@ -7888,9 +7888,9 @@ test "conformance/0196: xn--ab-uuba211bca515... [B5 C2]" {
 }
 
 ///|
-test "conformance/0204: \"\" [A4_1 A4_2]" {
+test "conformance/0204:  [A4_1 A4_2]" {
   let result : Result[String, Error] = try? @idna.to_ascii(
-    "\"\"",
+    "",
     use_std3_ascii_rules=false,
     check_hyphens=false,
     check_bidi=false,

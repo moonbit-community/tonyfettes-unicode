@@ -17,14 +17,25 @@ fn process_domain(
   // Step 2: Normalize (NFC)
   let normalized = @normalization.nfc(mapped)
 
-  // Step 3: Break into labels (done in caller)
-  // Step 4: Validate each label
-
-  // Validate the normalized domain
+  // Step 3: Break into labels
   let labels = split_labels(normalized)
   let label_count = labels.length()
   // Check for trailing dot (empty last label is valid in DNS)
   let has_trailing_dot = label_count > 0 && labels[label_count - 1] == ""
+
+  // Domain-level bidi validation (RFC 5893 requires domain-level checking)
+  // This must be done before individual label validation
+  if check_bidi {
+    // Filter out trailing empty label for bidi checking
+    let labels_for_bidi = if has_trailing_dot {
+      labels.iter().take(label_count - 1).collect()
+    } else {
+      labels
+    }
+    validate_domain_bidi(labels_for_bidi)
+  }
+
+  // Step 4: Validate each label (excluding bidi, which was done at domain level)
   for i, label in labels {
     // Skip validation for trailing empty label (trailing dot)
     if i == label_count - 1 && has_trailing_dot {
@@ -34,7 +45,7 @@ fn process_domain(
       label,
       use_std3_ascii_rules~,
       check_hyphens~,
-      check_bidi~,
+      check_bidi=false, // Bidi already checked at domain level
       check_joiners~,
     )
   }

@@ -46,7 +46,12 @@ def parse_escape_sequences(s: str) -> str:
     r"""
     Convert Unicode escape sequences to actual characters.
     Handles both \uXXXX and \x{XXXX} formats.
+    Also handles "" convention for empty strings.
     """
+    # Handle "" meaning empty string (per UTS #46 test format)
+    if s == '""':
+        return ""
+
     # Handle \x{XXXX} format (variable length hex)
     def replace_x_escape(m):
         return chr(int(m.group(1), 16))

@@ -8,6 +8,8 @@ pub fn get_compat_decomposition(Int) -> Array[Int]?
 
 pub fn is_composition_excluded(Int) -> Bool
 
+pub fn is_mark(Int) -> Bool
+
 pub fn lookup_ccc(Int) -> Int
 
 pub fn lookup_composition(Int, Int) -> Int?

@@ -95,11 +95,31 @@ fn is_combining_mark(cp : Int) -> Bool {
 }
 
 ///|
+/// Check if an ASCII code point is an LDH character (Letter, Digit, Hyphen)
+/// This implements STD3 ASCII rules from RFC 952/1123
+fn is_ldh_ascii(cp : Int) -> Bool {
+  // ASCII lowercase letters (a-z)
+  (cp >= 0x61 && cp <= 0x7A) ||
+  // ASCII uppercase letters (A-Z) - should be mapped to lowercase already
+  (cp >= 0x41 && cp <= 0x5A) ||
+  // ASCII digits (0-9)
+  (cp >= 0x30 && cp <= 0x39) ||
+  // Hyphen-minus
+  cp == 0x2D
+}
+
+///|
 /// Validate that a code point has an acceptable IDNA status
 fn validate_codepoint_status(
   cp : Int,
   use_std3_ascii_rules : Bool,
 ) -> Unit raise IdnaError {
+  // STD3 ASCII rules: only LDH characters allowed in ASCII range
+  // This check is separate from IdnaMappingTable.txt which marks
+  // these characters as "valid" but they should be rejected under STD3
+  if use_std3_ascii_rules && cp < 0x80 && not(is_ldh_ascii(cp)) {
+    raise DisallowedCodePoint(cp~)
+  }
   let (status, _) = @idna_data.lookup_idna_mapping(cp)
   match status {
     @idna_data.Valid | @idna_data.Deviation =>
@@ -204,7 +224,8 @@ fn has_right_joining_after(codepoints : Array[Int], pos : Int) -> Bool {
 }
 
 ///|
-/// Validate Bidi rules (RFC 5893)
+/// Validate Bidi rules (RFC 5893) for a single label
+/// Note: For proper RFC 5893 compliance, use validate_domain_bidi() at domain level
 fn validate_bidi(codepoints : Array[Int]) -> Unit raise IdnaError {
   if codepoints.length() == 0 {
     return
@@ -216,6 +237,94 @@ fn validate_bidi(codepoints : Array[Int]) -> Unit raise IdnaError {
     validate_rtl_label(codepoints)
   } else {
     validate_ltr_label(codepoints)
+  }
+}
+
+///|
+/// Validate Bidi rules (RFC 5893) for an entire domain
+/// RFC 5893 requires domain-level checking: when ANY label is RTL,
+/// all labels must follow stricter rules.
+fn validate_domain_bidi(labels : Array[String]) -> Unit raise IdnaError {
+  // Check if domain contains any RTL labels
+  let mut has_rtl_label = false
+  for label in labels {
+    if label.length() > 0 {
+      let cps = label_to_codepoints(label)
+      if is_rtl_label_check(cps) {
+        has_rtl_label = true
+        break
+      }
+    }
+  }
+  if not(has_rtl_label) {
+    // Pure LTR domain - validate each label as LTR
+    for label in labels {
+      if label.length() > 0 {
+        let cps = label_to_codepoints(label)
+        validate_ltr_label(cps)
+      }
+    }
+    return
+  }
+
+  // RTL domain: stricter rules apply to all labels
+  for label in labels {
+    if label.length() == 0 {
+      continue
+    }
+    let cps = label_to_codepoints(label)
+    let is_rtl = is_rtl_label_check(cps)
+    if is_rtl {
+      validate_rtl_label(cps)
+    } else {
+      // LTR label in RTL domain - must start with L (stricter rule)
+      validate_ltr_label_in_rtl_domain(cps)
+    }
+  }
+}
+
+///|
+/// Validate LTR label that appears in an RTL domain
+/// Stricter than regular LTR validation: first char must be L (not EN/ON/etc.)
+fn validate_ltr_label_in_rtl_domain(
+  codepoints : Array[Int],
+) -> Unit raise IdnaError {
+  if codepoints.length() == 0 {
+    return
+  }
+
+  // In RTL domain, LTR labels must start with L (not EN, ES, etc.)
+  // This is stricter than pure LTR domain rules
+  let first_bc = @idna_data.lookup_bidi_class(codepoints[0])
+  match first_bc {
+    @idna_data.L => ()
+    _ => raise InvalidBidi // B1 - first char must be L in RTL domain context
+  }
+
+  // Track last non-NSM for ending check
+  let mut last_non_nsm_bc = first_bc
+
+  // Same allowed classes as regular LTR, but no R/AL/AN
+  for cp in codepoints {
+    let bc = @idna_data.lookup_bidi_class(cp)
+    match bc {
+      @idna_data.L
+      | @idna_data.EN
+      | @idna_data.ES
+      | @idna_data.CS
+      | @idna_data.ET
+      | @idna_data.ON
+      | @idna_data.BN
+      | @idna_data.NSM => if not(bc is @idna_data.NSM) { last_non_nsm_bc = bc }
+      @idna_data.R | @idna_data.AL | @idna_data.AN => raise InvalidBidi
+      _ => ()
+    }
+  }
+
+  // Rule 6 (B6): Last non-NSM character must be L or EN
+  match last_non_nsm_bc {
+    @idna_data.L | @idna_data.EN => ()
+    _ => raise InvalidBidi // B6 - ending violation
   }
 }
 
@@ -235,16 +344,16 @@ fn is_rtl_label_check(codepoints : Array[Int]) -> Bool {
 ///|
 /// Validate an RTL label according to RFC 5893
 fn validate_rtl_label(codepoints : Array[Int]) -> Unit raise IdnaError {
-  // Rule 1: First character must be R or AL
+  // Rule 1 (B1): First character must be R or AL
   let first_bc = @idna_data.lookup_bidi_class(codepoints[0])
   match first_bc {
     @idna_data.R | @idna_data.AL => ()
     _ => raise InvalidBidi
   }
 
-  // Rule 2: Only certain Bidi classes allowed
-  // Rule 3: Last character must be R, AL, EN, or AN
-  let mut last_strong : @idna_data.BidiClass = first_bc
+  // Track last non-NSM character for ending check (B3)
+  // and whether EN/AN appear (B4)
+  let mut last_non_nsm_bc : @idna_data.BidiClass = first_bc
   let mut has_en = false
   let mut has_an = false
   for cp in codepoints {
@@ -260,11 +369,9 @@ fn validate_rtl_label(codepoints : Array[Int]) -> Unit raise IdnaError {
       | @idna_data.ON
       | @idna_data.BN
       | @idna_data.NSM => {
-        // Allowed in RTL label
-        match bc {
-          @idna_data.R | @idna_data.AL | @idna_data.AN | @idna_data.EN =>
-            last_strong = bc
-          _ => ()
+        // Rule 2 (B2): Allowed in RTL label
+        if not(bc is @idna_data.NSM) {
+          last_non_nsm_bc = bc
         }
         if bc is @idna_data.EN {
           has_en = true
@@ -273,18 +380,18 @@ fn validate_rtl_label(codepoints : Array[Int]) -> Unit raise IdnaError {
           has_an = true
         }
       }
-      @idna_data.L => raise InvalidBidi // L not allowed in RTL label
+      @idna_data.L => raise InvalidBidi // B2 - L not allowed in RTL label
       _ => ()
     }
   }
 
-  // Rule 3: Last strong character must be R, AL, EN, or AN
-  match last_strong {
+  // Rule 3 (B3): Last non-NSM character must be R, AL, EN, or AN
+  match last_non_nsm_bc {
     @idna_data.R | @idna_data.AL | @idna_data.EN | @idna_data.AN => ()
     _ => raise InvalidBidi
   }
 
-  // Rule 4: EN and AN cannot both appear
+  // Rule 4 (B4): EN and AN cannot both appear
   if has_en && has_an {
     raise InvalidBidi
   }
@@ -293,11 +400,16 @@ fn validate_rtl_label(codepoints : Array[Int]) -> Unit raise IdnaError {
 ///|
 /// Validate an LTR label according to RFC 5893
 fn validate_ltr_label(codepoints : Array[Int]) -> Unit raise IdnaError {
-  // Rule 5: First character must be L
+  if codepoints.length() == 0 {
+    return
+  }
+
+  // Rule 5 (B5): First character must be L
+  // (Relaxed for pure ASCII/neutral labels in pure LTR domains)
   let first_bc = @idna_data.lookup_bidi_class(codepoints[0])
   match first_bc {
     @idna_data.L => ()
-    // Allow pure ASCII/neutral labels
+    // Allow pure ASCII/neutral labels (existing behavior for pure LTR domains)
     @idna_data.EN
     | @idna_data.ES
     | @idna_data.CS
@@ -308,7 +420,10 @@ fn validate_ltr_label(codepoints : Array[Int]) -> Unit raise IdnaError {
     _ => raise InvalidBidi
   }
 
-  // Rule 6: Only certain Bidi classes allowed in LTR label
+  // Track last non-NSM character for ending check (B6)
+  let mut last_non_nsm_bc = first_bc
+
+  // Rule 5: Only certain Bidi classes allowed in LTR label
   for cp in codepoints {
     let bc = @idna_data.lookup_bidi_class(cp)
     match bc {
@@ -321,9 +436,17 @@ fn validate_ltr_label(codepoints : Array[Int]) -> Unit raise IdnaError {
       | @idna_data.BN
       | @idna_data.NSM =>
         // Allowed in LTR label
-        ()
+        if not(bc is @idna_data.NSM) {
+          last_non_nsm_bc = bc
+        }
       @idna_data.R | @idna_data.AL | @idna_data.AN => raise InvalidBidi // RTL chars not allowed
       _ => ()
     }
+  }
+
+  // Rule 6 (B6): Last non-NSM character must be L or EN
+  match last_non_nsm_bc {
+    @idna_data.L | @idna_data.EN => ()
+    _ => raise InvalidBidi // B6 - ending violation
   }
 }
