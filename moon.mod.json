@@ -3,5 +3,7 @@
   "version": "0.2.2",
   "license": "Apache-2.0",
   "repository": "https://github.com/moonbit-community/tonyfettes-unicode",
-  "readme": "README.md"
+  "readme": "README.md",
+  "description": "Unicode in MoonBit",
+  "keywords": ["unicode"]
 }
