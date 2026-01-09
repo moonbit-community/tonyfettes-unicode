@@ -52,18 +52,28 @@ def parse_escape_sequences(s: str) -> str:
     return s
 
 
-def parse_status(status_str: str) -> list[str]:
-    """Parse status codes from string like '[]' or '[B5 B6]'."""
+def parse_status(status_str: str) -> list[str] | None:
+    """Parse status codes from string like '[]' or '[B5, B6]'.
+
+    Returns:
+        - None if the string is blank (inherit from previous column)
+        - [] if the string is '[]' (explicit no errors)
+        - list of codes if the string is '[B5, B6]', etc.
+    """
     status_str = status_str.strip()
+    if not status_str:
+        return None  # Blank means inherit
     if status_str == "[]":
-        return []
+        return []  # Explicit empty
     # Extract codes from brackets
     match = re.match(r"\[([^\]]*)\]", status_str)
     if match:
         codes = match.group(1).strip()
         if codes:
-            return codes.split()
-    return []
+            # Split by comma and/or whitespace, strip each code
+            return [c.strip() for c in re.split(r'[,\s]+', codes) if c.strip()]
+        return []
+    return None
 
 
 def parse_test_line(line: str, line_num: int) -> dict | None:
@@ -88,7 +98,7 @@ def parse_test_line(line: str, line_num: int) -> dict | None:
     to_unicode = parse_escape_sequences(parts[1].strip())
     to_unicode_status = parse_status(parts[2].strip())
     to_ascii_n = parse_escape_sequences(parts[3].strip())
-    # parts[4] is reserved
+    to_ascii_n_status = parse_status(parts[4].strip()) if len(parts) > 4 else None
     to_ascii_t = parse_escape_sequences(parts[5].strip()) if len(parts) > 5 else ""
 
     # If toUnicode is empty, use source
@@ -99,12 +109,22 @@ def parse_test_line(line: str, line_num: int) -> dict | None:
     if not to_ascii_n:
         to_ascii_n = to_unicode
 
+    # If toUnicodeStatus is None (blank), it means no errors
+    if to_unicode_status is None:
+        to_unicode_status = []
+
+    # If toAsciiNStatus is None (blank), inherit from toUnicodeStatus
+    # If toAsciiNStatus is [] (explicit empty), it means no errors
+    if to_ascii_n_status is None:
+        to_ascii_n_status = to_unicode_status.copy()
+
     return {
         "line_num": line_num,
         "source": source,
         "to_unicode": to_unicode,
         "to_unicode_status": to_unicode_status,
         "to_ascii_n": to_ascii_n,
+        "to_ascii_n_status": to_ascii_n_status,
         "to_ascii_t": to_ascii_t,
     }
 
@@ -116,6 +136,22 @@ def has_surrogate(s: str) -> bool:
         if 0xD800 <= cp <= 0xDFFF:
             return True
     return False
+
+
+def filter_ignored_status_codes(codes: list[str]) -> list[str]:
+    """Remove status codes for disabled validation flags.
+
+    Based on IdnaTestV2.txt documentation, when validation flags are disabled:
+    - check_bidi=false    → ignore B1, B2, B3, B4, B5, B6
+    - check_joiners=false → ignore C1, C2
+    - check_hyphens=false → ignore V2, V3
+    - use_std3_ascii_rules=false → ignore U1
+    - verify_dns_length=false → ignore A4_1, A4_2
+
+    Since the conformance tests disable all these flags, we filter all of them.
+    """
+    ignored = {'B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'C1', 'C2', 'V2', 'V3', 'U1', 'A4_1', 'A4_2'}
+    return [c for c in codes if c not in ignored]
 
 
 def escape_moonbit_string(s: str) -> str:
@@ -162,11 +198,16 @@ def generate_tests(test_cases: list[dict], output_path: Path):
             skipped += 1
             continue
 
-        if tc["to_unicode_status"]:
-            # Has error codes - expect failure
+        # Filter out status codes for disabled validation flags
+        # Use to_ascii_n_status (not to_unicode_status) since we're testing to_ascii
+        filtered_status = filter_ignored_status_codes(tc["to_ascii_n_status"])
+
+        if filtered_status:
+            # Has remaining error codes after filtering - expect failure
+            tc["filtered_status"] = filtered_status
             error_tests.append(tc)
         else:
-            # No error codes - expect success
+            # No error codes (or all filtered out) - expect success
             success_tests.append(tc)
 
     print(f"  Skipped (surrogates): {skipped}")
@@ -222,7 +263,7 @@ def generate_tests(test_cases: list[dict], output_path: Path):
             code += "///|\n\n"
 
         source_escaped = escape_moonbit_string(tc["source"])
-        status_str = " ".join(tc["to_unicode_status"])
+        status_str = " ".join(tc["filtered_status"])
 
         # Create a short label for the test name
         label = tc["source"][:20]
