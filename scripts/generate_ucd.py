@@ -46,16 +46,18 @@ def download_file(url: str, cache_dir: Path) -> str:
     return content
 
 
-def parse_unicode_data(content: str) -> tuple[dict, dict, dict]:
+def parse_unicode_data(content: str) -> tuple[dict, dict, dict, set]:
     """
     Parse UnicodeData.txt and extract:
     - ccc_data: code_point -> canonical_combining_class
     - canonical_decomp: code_point -> [decomposed_cps]
     - compat_decomp: code_point -> [decomposed_cps]
+    - mark_cps: set of code points with General_Category = Mark (Mn, Mc, Me)
     """
     ccc_data = {}
     canonical_decomp = {}
     compat_decomp = {}
+    mark_cps = set()
 
     for line in content.strip().split("\n"):
         if not line or line.startswith("#"):
@@ -70,6 +72,11 @@ def parse_unicode_data(content: str) -> tuple[dict, dict, dict]:
         # Skip Hangul syllables - handled algorithmically
         if HANGUL_S_BASE <= cp < HANGUL_S_BASE + HANGUL_S_COUNT:
             continue
+
+        # Field 2: General Category
+        general_category = fields[2].strip()
+        if general_category.startswith("M"):  # Mn, Mc, Me
+            mark_cps.add(cp)
 
         # Field 3: Canonical Combining Class
         ccc = int(fields[3]) if fields[3] else 0
@@ -93,7 +100,7 @@ def parse_unicode_data(content: str) -> tuple[dict, dict, dict]:
                 if cps:
                     canonical_decomp[cp] = cps
 
-    return ccc_data, canonical_decomp, compat_decomp
+    return ccc_data, canonical_decomp, compat_decomp, mark_cps
 
 
 def parse_composition_exclusions(content: str) -> set[int]:
@@ -167,8 +174,34 @@ def compress_ccc_ranges(ccc_data: dict) -> list[tuple[int, int, int]]:
     return ranges
 
 
-def generate_ccc_mbt(ccc_ranges: list[tuple[int, int, int]], output_path: Path):
-    """Generate ccc.mbt with CCC lookup data."""
+def compress_mark_ranges(mark_cps: set) -> list[tuple[int, int]]:
+    """
+    Compress mark code points into ranges of (start, end) where consecutive
+    code points are all marks.
+    """
+    if not mark_cps:
+        return []
+
+    sorted_cps = sorted(mark_cps)
+    ranges = []
+
+    start = sorted_cps[0]
+    prev_cp = start
+
+    for cp in sorted_cps[1:]:
+        if cp == prev_cp + 1:
+            prev_cp = cp
+        else:
+            ranges.append((start, prev_cp))
+            start = cp
+            prev_cp = cp
+
+    ranges.append((start, prev_cp))
+    return ranges
+
+
+def generate_ccc_mbt(ccc_ranges: list[tuple[int, int, int]], mark_ranges: list[tuple[int, int]], output_path: Path):
+    """Generate ccc.mbt with CCC lookup data and mark detection."""
 
     # Store as arrays of (start, end, ccc) tuples
     # Use Int arrays for efficient lookup
@@ -180,6 +213,13 @@ def generate_ccc_mbt(ccc_ranges: list[tuple[int, int, int]], output_path: Path):
         starts.append(start)
         ends.append(end)
         values.append(ccc)
+
+    # Store mark ranges
+    mark_starts = []
+    mark_ends = []
+    for start, end in mark_ranges:
+        mark_starts.append(start)
+        mark_ends.append(end)
 
     code = '''///|
 /// Canonical Combining Class (CCC) lookup data
@@ -217,6 +257,27 @@ let ccc_values : FixedArray[Int] = [
         code += f"  {v}"
     code += "\n]\n\n"
 
+    # Add mark ranges
+    code += '''///|
+/// Mark character range start code points (General_Category = M)
+let mark_starts : FixedArray[Int] = [
+'''
+    for i, s in enumerate(mark_starts):
+        if i > 0:
+            code += ",\n"
+        code += f"  0x{s:04X}"
+    code += "\n]\n\n"
+
+    code += '''///|
+/// Mark character range end code points (inclusive)
+let mark_ends : FixedArray[Int] = [
+'''
+    for i, e in enumerate(mark_ends):
+        if i > 0:
+            code += ",\n"
+        code += f"  0x{e:04X}"
+    code += "\n]\n\n"
+
     code += '''///|
 /// Look up Canonical Combining Class for a code point
 /// Returns 0 (starter) for most characters
@@ -241,10 +302,35 @@ pub fn lookup_ccc(cp : Int) -> Int {
 
   0 // Not found, default CCC is 0 (starter)
 }
+
+///|
+/// Check if a code point is a Mark character (General_Category = Mn, Mc, or Me)
+/// This is used for the IDNA "no leading combining mark" validation (V5/V6)
+pub fn is_mark(cp : Int) -> Bool {
+  // Binary search through mark ranges
+  let mut left = 0
+  let mut right = mark_starts.length() - 1
+
+  while left <= right {
+    let mid = (left + right) / 2
+    let start = mark_starts[mid]
+    let end = mark_ends[mid]
+
+    if cp < start {
+      right = mid - 1
+    } else if cp > end {
+      left = mid + 1
+    } else {
+      return true
+    }
+  }
+
+  false
+}
 '''
 
     output_path.write_text(code)
-    print(f"Generated {output_path} with {len(ccc_ranges)} CCC ranges")
+    print(f"Generated {output_path} with {len(ccc_ranges)} CCC ranges and {len(mark_ranges)} mark ranges")
 
 
 def generate_decomposition_mbt(
@@ -576,10 +662,11 @@ def main():
 
     # Parse data
     print("Parsing UnicodeData.txt...")
-    ccc_data, canonical_decomp, compat_decomp = parse_unicode_data(unicode_data)
+    ccc_data, canonical_decomp, compat_decomp, mark_cps = parse_unicode_data(unicode_data)
     print(f"  Found {len(ccc_data)} non-zero CCC entries")
     print(f"  Found {len(canonical_decomp)} canonical decompositions")
     print(f"  Found {len(compat_decomp)} compatibility decompositions")
+    print(f"  Found {len(mark_cps)} mark characters")
 
     print("Parsing CompositionExclusions.txt...")
     exclusions = parse_composition_exclusions(exclusions_data)
@@ -592,9 +679,10 @@ def main():
     # Generate MoonBit files
     print("\nGenerating MoonBit source files...")
 
-    # CCC data
+    # CCC and mark data
     ccc_ranges = compress_ccc_ranges(ccc_data)
-    generate_ccc_mbt(ccc_ranges, ucd_dir / "ccc.mbt")
+    mark_ranges = compress_mark_ranges(mark_cps)
+    generate_ccc_mbt(ccc_ranges, mark_ranges, ucd_dir / "ccc.mbt")
 
     # Decomposition data
     generate_decomposition_mbt(canonical_decomp, compat_decomp, ucd_dir / "decomposition.mbt")

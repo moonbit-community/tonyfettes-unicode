@@ -10,9 +10,11 @@ fn validate_label(
   check_bidi~ : Bool,
   check_joiners~ : Bool,
 ) -> Unit raise IdnaError {
-  // Empty label check
+  // Empty labels are allowed here - the check is done in verify_dns_length_constraints
+  // when verify_dns_length is true. This allows domains with trailing dots or
+  // consecutive dots when DNS length checking is disabled.
   if label.length() == 0 {
-    raise EmptyLabel
+    return
   }
   let codepoints = label_to_codepoints(label)
 
@@ -86,9 +88,10 @@ fn validate_hyphens(
 }
 
 ///|
-/// Check if a code point is a combining mark (CCC > 0)
+/// Check if a code point is a combining mark (General_Category = Mn, Mc, or Me)
+/// This is used for the IDNA "no leading combining mark" validation (V5/V6)
 fn is_combining_mark(cp : Int) -> Bool {
-  @ucd.lookup_ccc(cp) > 0
+  @ucd.is_mark(cp)
 }
 
 ///|

@@ -22,7 +22,14 @@ fn process_domain(
 
   // Validate the normalized domain
   let labels = split_labels(normalized)
-  for label in labels {
+  let label_count = labels.length()
+  // Check for trailing dot (empty last label is valid in DNS)
+  let has_trailing_dot = label_count > 0 && labels[label_count - 1] == ""
+  for i, label in labels {
+    // Skip validation for trailing empty label (trailing dot)
+    if i == label_count - 1 && has_trailing_dot {
+      continue
+    }
     validate_label(
       label,
       use_std3_ascii_rules~,

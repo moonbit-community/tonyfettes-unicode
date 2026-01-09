@@ -47,7 +47,13 @@ pub fn to_ascii(
   let labels = split_labels(processed)
   let ascii_labels : Array[String] = []
   for label in labels {
-    let ascii_label = label_to_ascii(label)
+    let ascii_label = label_to_ascii(
+      label,
+      use_std3_ascii_rules~,
+      check_hyphens~,
+      check_bidi~,
+      check_joiners~,
+    )
     ascii_labels.push(ascii_label)
   }
   let result = ascii_labels.join(".")
@@ -71,8 +77,16 @@ pub fn to_unicode(
 ) -> String raise IdnaError {
   // Split into labels first (before mapping, to handle Punycode)
   let labels = split_labels(domain)
+  let label_count = labels.length()
+  // Check for trailing dot (empty last label is valid in DNS)
+  let has_trailing_dot = label_count > 0 && labels[label_count - 1] == ""
   let unicode_labels : Array[String] = []
-  for label in labels {
+  for i, label in labels {
+    // Skip processing for trailing empty label (trailing dot)
+    if i == label_count - 1 && has_trailing_dot {
+      unicode_labels.push("")
+      continue
+    }
     let unicode_label = label_to_unicode(
       label,
       use_std3_ascii_rules~,
@@ -87,7 +101,61 @@ pub fn to_unicode(
 
 ///|
 /// Convert a single label to ASCII (Punycode if needed)
-fn label_to_ascii(label : String) -> String raise IdnaError {
+/// For ACE labels (xn-- prefix), validates by decoding, processing, and re-encoding
+fn label_to_ascii(
+  label : String,
+  use_std3_ascii_rules~ : Bool,
+  check_hyphens~ : Bool,
+  check_bidi~ : Bool,
+  check_joiners~ : Bool,
+) -> String raise IdnaError {
+  // Empty labels pass through (handled by DNS length check)
+  if label.length() == 0 {
+    return ""
+  }
+
+  // Check if label has ACE prefix (xn--)
+  if has_ace_prefix(label) {
+    // Validate ACE label: decode, process, re-encode, compare
+    let punycode_part = get_substring_after_prefix(label, 4)
+
+    // Step 1: Decode Punycode (P4 error on failure)
+    let decoded = @punycode.decode(punycode_part) catch {
+      error => raise PunycodeError("\{error}")
+    }
+
+    // Step 2: Apply mapping
+    let mapped = map_label(decoded, use_std3_ascii_rules~)
+
+    // Step 3: NFC normalize
+    let normalized = @normalization.nfc(mapped)
+
+    // Step 4: Validate the decoded label
+    validate_label(
+      normalized,
+      use_std3_ascii_rules~,
+      check_hyphens~,
+      check_bidi~,
+      check_joiners~,
+    )
+
+    // Step 5: Re-encode for roundtrip check
+    let re_encoded = encode_label_to_ascii(normalized)
+
+    // Step 6: Roundtrip check (V7 error on mismatch)
+    if re_encoded != label.to_lower() {
+      raise InvalidAcePrefix
+    }
+    return label.to_lower()
+  }
+
+  // Non-ACE label: encode if needed
+  encode_label_to_ascii(label)
+}
+
+///|
+/// Encode a label to ASCII (Punycode if needed), without ACE validation
+fn encode_label_to_ascii(label : String) -> String raise IdnaError {
   // Check if label is already ASCII
   let mut all_ascii = true
   for c in label {
@@ -170,6 +238,7 @@ fn verify_dns_length_constraints(
   labels : Array[String],
 ) -> Unit raise IdnaError {
   // Each label must be 1-63 characters
+  // Empty labels are not allowed (including trailing dots in DNS)
   for label in labels {
     if label.length() == 0 {
       raise EmptyLabel

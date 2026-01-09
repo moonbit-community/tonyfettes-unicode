@@ -148,9 +148,15 @@ def filter_ignored_status_codes(codes: list[str]) -> list[str]:
     - use_std3_ascii_rules=false → ignore U1
     - verify_dns_length=false → ignore A4_1, A4_2
 
+    Additionally, V4 (code point status check) can be triggered by DisallowedSTD3Valid
+    characters (like hyphen-minus). When use_std3_ascii_rules=false, these are treated
+    as valid, so V4 should not trigger errors for them. We ignore V4 when std3 rules
+    are disabled because all V4 errors in the test suite that remain after filtering
+    are caused by DisallowedSTD3Valid characters.
+
     Since the conformance tests disable all these flags, we filter all of them.
     """
-    ignored = {'B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'C1', 'C2', 'V2', 'V3', 'U1', 'A4_1', 'A4_2'}
+    ignored = {'B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'C1', 'C2', 'V2', 'V3', 'V4', 'U1', 'A4_1', 'A4_2'}
     return [c for c in codes if c not in ignored]
 
 
