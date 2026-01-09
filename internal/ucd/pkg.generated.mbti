@@ -14,6 +14,14 @@ pub fn lookup_ccc(Int) -> Int
 
 pub fn lookup_composition(Int, Int) -> Int?
 
+pub fn lookup_general_category(Int) -> Int
+
+pub fn lookup_simple_lowercase(Int) -> Int
+
+pub fn lookup_simple_titlecase(Int) -> Int
+
+pub fn lookup_simple_uppercase(Int) -> Int
+
 // Errors
 
 // Types and methods

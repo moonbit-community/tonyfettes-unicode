@@ -1,0 +1,61 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "tonyfettes/unicode"
+
+// Values
+pub fn general_category(Int) -> GeneralCategory
+
+pub fn to_simple_lowercase(Int) -> Int
+
+pub fn to_simple_titlecase(Int) -> Int
+
+pub fn to_simple_uppercase(Int) -> Int
+
+// Errors
+
+// Types and methods
+pub(all) enum GeneralCategory {
+  Lu
+  Ll
+  Lt
+  Lm
+  Lo
+  Mn
+  Mc
+  Me
+  Nd
+  Nl
+  No
+  Zs
+  Zl
+  Zp
+  Pc
+  Pd
+  Ps
+  Pe
+  Pi
+  Pf
+  Po
+  Sm
+  Sc
+  Sk
+  So
+  Cc
+  Cf
+  Cs
+  Co
+  Cn
+}
+pub fn GeneralCategory::is_letter(Self) -> Bool
+pub fn GeneralCategory::is_mark(Self) -> Bool
+pub fn GeneralCategory::is_number(Self) -> Bool
+pub fn GeneralCategory::is_other(Self) -> Bool
+pub fn GeneralCategory::is_punctuation(Self) -> Bool
+pub fn GeneralCategory::is_separator(Self) -> Bool
+pub fn GeneralCategory::is_symbol(Self) -> Bool
+pub impl Eq for GeneralCategory
+pub impl Show for GeneralCategory
+
+// Type aliases
+
+// Traits
+

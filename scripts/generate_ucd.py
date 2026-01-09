@@ -3,20 +3,19 @@
 Generate MoonBit source files from Unicode Character Database files.
 
 This script downloads and parses:
-- UnicodeData.txt: CCC values, decomposition mappings
+- UnicodeData.txt: CCC values, decomposition mappings, general category, case mappings
 - CompositionExclusions.txt: Characters excluded from NFC composition
 
 And generates:
 - internal/ucd/ccc.mbt: Canonical Combining Class lookup
 - internal/ucd/decomposition.mbt: Decomposition mappings
 - internal/ucd/composition.mbt: Composition table and exclusions
+- internal/ucd/general_category.mbt: General_Category lookup
+- internal/ucd/case_mapping.mbt: Simple case mapping lookup
 """
 
-import os
-import sys
 import urllib.request
 from pathlib import Path
-from collections import defaultdict
 
 # Unicode data URLs
 UNICODE_VERSION = "16.0.0"
@@ -46,25 +45,33 @@ def download_file(url: str, cache_dir: Path) -> str:
     return content
 
 
-def parse_unicode_data(content: str) -> tuple[dict, dict, dict, set]:
+def parse_unicode_data(content: str) -> tuple[dict, dict, dict, set, dict, dict, dict, dict]:
     """
     Parse UnicodeData.txt and extract:
     - ccc_data: code_point -> canonical_combining_class
     - canonical_decomp: code_point -> [decomposed_cps]
     - compat_decomp: code_point -> [decomposed_cps]
     - mark_cps: set of code points with General_Category = Mark (Mn, Mc, Me)
+    - gc_data: code_point -> general_category (string like "Lu", "Ll", etc.)
+    - upper_mapping: code_point -> uppercase_code_point (only non-identity)
+    - lower_mapping: code_point -> lowercase_code_point (only non-identity)
+    - title_mapping: code_point -> titlecase_code_point (only non-identity)
     """
     ccc_data = {}
     canonical_decomp = {}
     compat_decomp = {}
     mark_cps = set()
+    gc_data = {}
+    upper_mapping = {}
+    lower_mapping = {}
+    title_mapping = {}
 
     for line in content.strip().split("\n"):
         if not line or line.startswith("#"):
             continue
 
         fields = line.split(";")
-        if len(fields) < 6:
+        if len(fields) < 15:
             continue
 
         cp = int(fields[0], 16)
@@ -75,6 +82,7 @@ def parse_unicode_data(content: str) -> tuple[dict, dict, dict, set]:
 
         # Field 2: General Category
         general_category = fields[2].strip()
+        gc_data[cp] = general_category
         if general_category.startswith("M"):  # Mn, Mc, Me
             mark_cps.add(cp)
 
@@ -100,7 +108,28 @@ def parse_unicode_data(content: str) -> tuple[dict, dict, dict, set]:
                 if cps:
                     canonical_decomp[cp] = cps
 
-    return ccc_data, canonical_decomp, compat_decomp, mark_cps
+        # Field 12: Simple_Uppercase_Mapping
+        upper = fields[12].strip()
+        if upper:
+            upper_cp = int(upper, 16)
+            if upper_cp != cp:
+                upper_mapping[cp] = upper_cp
+
+        # Field 13: Simple_Lowercase_Mapping
+        lower = fields[13].strip()
+        if lower:
+            lower_cp = int(lower, 16)
+            if lower_cp != cp:
+                lower_mapping[cp] = lower_cp
+
+        # Field 14: Simple_Titlecase_Mapping
+        title = fields[14].strip()
+        if title:
+            title_cp = int(title, 16)
+            if title_cp != cp:
+                title_mapping[cp] = title_cp
+
+    return ccc_data, canonical_decomp, compat_decomp, mark_cps, gc_data, upper_mapping, lower_mapping, title_mapping
 
 
 def parse_composition_exclusions(content: str) -> set[int]:
@@ -646,6 +675,283 @@ pub fn is_composition_excluded(cp : Int) -> Bool {
     print(f"Generated {output_path} with {len(sorted_pairs)} compositions, {len(sorted_exclusions)} exclusions")
 
 
+# General Category enum mapping (order matches MoonBit enum ordinal)
+GC_ENUM_ORDER = [
+    "Lu", "Ll", "Lt", "Lm", "Lo",  # Letter (0-4)
+    "Mn", "Mc", "Me",              # Mark (5-7)
+    "Nd", "Nl", "No",              # Number (8-10)
+    "Zs", "Zl", "Zp",              # Separator (11-13)
+    "Pc", "Pd", "Ps", "Pe", "Pi", "Pf", "Po",  # Punctuation (14-20)
+    "Sm", "Sc", "Sk", "So",        # Symbol (21-24)
+    "Cc", "Cf", "Cs", "Co", "Cn",  # Other (25-29)
+]
+GC_TO_ORDINAL = {gc: i for i, gc in enumerate(GC_ENUM_ORDER)}
+
+
+def compress_gc_ranges(gc_data: dict) -> list[tuple[int, int, int]]:
+    """
+    Compress General_Category data into ranges of (start, end, gc_ordinal)
+    where consecutive code points have the same category.
+    """
+    if not gc_data:
+        return []
+
+    # Fill in gaps with "Cn" (unassigned) up to max code point
+    sorted_cps = sorted(gc_data.keys())
+    max_cp = max(sorted_cps)
+
+    # Build ranges with category ordinals
+    ranges = []
+    prev_cp = -2
+    prev_gc_ord = -1
+    start = 0
+
+    for cp in range(max_cp + 1):
+        gc = gc_data.get(cp, "Cn")
+        gc_ord = GC_TO_ORDINAL.get(gc, GC_TO_ORDINAL["Cn"])
+
+        if cp == prev_cp + 1 and gc_ord == prev_gc_ord:
+            # Continue current range
+            prev_cp = cp
+        else:
+            # Save previous range if valid
+            if prev_gc_ord >= 0:
+                ranges.append((start, prev_cp, prev_gc_ord))
+            # Start new range
+            start = cp
+            prev_cp = cp
+            prev_gc_ord = gc_ord
+
+    # Don't forget the last range
+    if prev_gc_ord >= 0:
+        ranges.append((start, prev_cp, prev_gc_ord))
+
+    return ranges
+
+
+def generate_general_category_mbt(gc_ranges: list[tuple[int, int, int]], output_path: Path):
+    """Generate general_category.mbt with General_Category lookup data."""
+
+    starts = []
+    ends = []
+    values = []
+
+    for start, end, gc_ord in gc_ranges:
+        starts.append(start)
+        ends.append(end)
+        values.append(gc_ord)
+
+    code = '''///|
+/// General_Category lookup data
+/// Generated from UnicodeData.txt
+
+///|
+/// General_Category range start code points
+let gc_range_starts : FixedArray[Int] = [
+'''
+
+    for i, s in enumerate(starts):
+        if i > 0:
+            code += ",\n"
+        code += f"  0x{s:04X}"
+    code += "\n]\n\n"
+
+    code += '''///|
+/// General_Category range end code points (inclusive)
+let gc_range_ends : FixedArray[Int] = [
+'''
+    for i, e in enumerate(ends):
+        if i > 0:
+            code += ",\n"
+        code += f"  0x{e:04X}"
+    code += "\n]\n\n"
+
+    code += '''///|
+/// General_Category values for each range (enum ordinal)
+let gc_values : FixedArray[Int] = [
+'''
+    for i, v in enumerate(values):
+        if i > 0:
+            code += ",\n"
+        code += f"  {v}"
+    code += "\n]\n\n"
+
+    code += '''///|
+/// Look up General_Category ordinal for a code point
+/// Returns ordinal value (0-29) corresponding to GeneralCategory enum
+/// Default is 29 (Cn = Unassigned) for code points beyond data range
+pub fn lookup_general_category(cp : Int) -> Int {
+  // Handle code points beyond our data range
+  if cp < 0 || cp > gc_range_ends[gc_range_ends.length() - 1] {
+    return 29 // Cn (Unassigned)
+  }
+
+  // Binary search through ranges
+  let mut left = 0
+  let mut right = gc_range_starts.length() - 1
+
+  while left <= right {
+    let mid = (left + right) / 2
+    let start = gc_range_starts[mid]
+    let end = gc_range_ends[mid]
+
+    if cp < start {
+      right = mid - 1
+    } else if cp > end {
+      left = mid + 1
+    } else {
+      return gc_values[mid]
+    }
+  }
+
+  29 // Cn (Unassigned)
+}
+'''
+
+    output_path.write_text(code)
+    print(f"Generated {output_path} with {len(gc_ranges)} General_Category ranges")
+
+
+def generate_case_mapping_mbt(
+    upper_mapping: dict,
+    lower_mapping: dict,
+    title_mapping: dict,
+    output_path: Path
+):
+    """Generate case_mapping.mbt with simple case mapping lookup data."""
+
+    # Sort mappings by code point for binary search
+    upper_cps = sorted(upper_mapping.keys())
+    lower_cps = sorted(lower_mapping.keys())
+    title_cps = sorted(title_mapping.keys())
+
+    code = '''///|
+/// Simple case mapping lookup data
+/// Generated from UnicodeData.txt
+
+///|
+/// Code points with uppercase mappings (sorted for binary search)
+let upper_cps : FixedArray[Int] = [
+'''
+    for i, cp in enumerate(upper_cps):
+        if i > 0:
+            code += ",\n"
+        code += f"  0x{cp:04X}"
+    code += "\n]\n\n"
+
+    code += '''///|
+/// Uppercase mapping targets
+let upper_targets : FixedArray[Int] = [
+'''
+    for i, cp in enumerate(upper_cps):
+        if i > 0:
+            code += ",\n"
+        code += f"  0x{upper_mapping[cp]:04X}"
+    code += "\n]\n\n"
+
+    code += '''///|
+/// Code points with lowercase mappings (sorted for binary search)
+let lower_cps : FixedArray[Int] = [
+'''
+    for i, cp in enumerate(lower_cps):
+        if i > 0:
+            code += ",\n"
+        code += f"  0x{cp:04X}"
+    code += "\n]\n\n"
+
+    code += '''///|
+/// Lowercase mapping targets
+let lower_targets : FixedArray[Int] = [
+'''
+    for i, cp in enumerate(lower_cps):
+        if i > 0:
+            code += ",\n"
+        code += f"  0x{lower_mapping[cp]:04X}"
+    code += "\n]\n\n"
+
+    code += '''///|
+/// Code points with titlecase mappings (sorted for binary search)
+let title_cps : FixedArray[Int] = [
+'''
+    for i, cp in enumerate(title_cps):
+        if i > 0:
+            code += ",\n"
+        code += f"  0x{cp:04X}"
+    code += "\n]\n\n"
+
+    code += '''///|
+/// Titlecase mapping targets
+let title_targets : FixedArray[Int] = [
+'''
+    for i, cp in enumerate(title_cps):
+        if i > 0:
+            code += ",\n"
+        code += f"  0x{title_mapping[cp]:04X}"
+    code += "\n]\n\n"
+
+    code += '''///|
+/// Binary search helper - returns index if found, -1 otherwise
+fn binary_search_case(arr : FixedArray[Int], cp : Int) -> Int {
+  let mut left = 0
+  let mut right = arr.length() - 1
+
+  while left <= right {
+    let mid = (left + right) / 2
+    let mid_cp = arr[mid]
+
+    if cp < mid_cp {
+      right = mid - 1
+    } else if cp > mid_cp {
+      left = mid + 1
+    } else {
+      return mid
+    }
+  }
+
+  -1
+}
+
+///|
+/// Look up simple uppercase mapping for a code point
+/// Returns the code point itself if no mapping exists
+pub fn lookup_simple_uppercase(cp : Int) -> Int {
+  let idx = binary_search_case(upper_cps, cp)
+  if idx >= 0 {
+    upper_targets[idx]
+  } else {
+    cp
+  }
+}
+
+///|
+/// Look up simple lowercase mapping for a code point
+/// Returns the code point itself if no mapping exists
+pub fn lookup_simple_lowercase(cp : Int) -> Int {
+  let idx = binary_search_case(lower_cps, cp)
+  if idx >= 0 {
+    lower_targets[idx]
+  } else {
+    cp
+  }
+}
+
+///|
+/// Look up simple titlecase mapping for a code point
+/// Returns the code point itself if no mapping exists
+pub fn lookup_simple_titlecase(cp : Int) -> Int {
+  let idx = binary_search_case(title_cps, cp)
+  if idx >= 0 {
+    title_targets[idx]
+  } else {
+    cp
+  }
+}
+'''
+
+    output_path.write_text(code)
+    print(f"Generated {output_path} with {len(upper_cps)} upper, {len(lower_cps)} lower, {len(title_cps)} title mappings")
+
+
 def main():
     # Determine paths
     script_dir = Path(__file__).parent
@@ -662,11 +968,15 @@ def main():
 
     # Parse data
     print("Parsing UnicodeData.txt...")
-    ccc_data, canonical_decomp, compat_decomp, mark_cps = parse_unicode_data(unicode_data)
+    ccc_data, canonical_decomp, compat_decomp, mark_cps, gc_data, upper_mapping, lower_mapping, title_mapping = parse_unicode_data(unicode_data)
     print(f"  Found {len(ccc_data)} non-zero CCC entries")
     print(f"  Found {len(canonical_decomp)} canonical decompositions")
     print(f"  Found {len(compat_decomp)} compatibility decompositions")
     print(f"  Found {len(mark_cps)} mark characters")
+    print(f"  Found {len(gc_data)} General_Category entries")
+    print(f"  Found {len(upper_mapping)} uppercase mappings")
+    print(f"  Found {len(lower_mapping)} lowercase mappings")
+    print(f"  Found {len(title_mapping)} titlecase mappings")
 
     print("Parsing CompositionExclusions.txt...")
     exclusions = parse_composition_exclusions(exclusions_data)
@@ -689,6 +999,13 @@ def main():
 
     # Composition data
     generate_composition_mbt(composition, exclusions, ccc_data, canonical_decomp, ucd_dir / "composition.mbt")
+
+    # General_Category data
+    gc_ranges = compress_gc_ranges(gc_data)
+    generate_general_category_mbt(gc_ranges, ucd_dir / "general_category.mbt")
+
+    # Case mapping data
+    generate_case_mapping_mbt(upper_mapping, lower_mapping, title_mapping, ucd_dir / "case_mapping.mbt")
 
     # Remove the stub file if it exists
     stub_file = ucd_dir / "ucd.mbt"
