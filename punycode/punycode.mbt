@@ -10,48 +10,64 @@ pub(all) suberror PunycodeError {
   BadInput
 } derive(Show)
 
-// RFC 3492 constants
+// RFC 3492 constants (Section 4)
 
 ///|
-let base : Int = 36
+/// Base for variable-length integer encoding. Punycode uses base-36
+/// (letters a-z represent 0-25, digits 0-9 represent 26-35).
+const Base : Int = 36
 
 ///|
-let tmin : Int = 1
+/// Minimum threshold for variable-length integer encoding.
+/// Ensures at least one digit is always output.
+const Tmin : Int = 1
 
 ///|
-let tmax : Int = 26
+/// Maximum threshold for variable-length integer encoding.
+/// Equals the number of lowercase letters (a-z).
+const Tmax : Int = 26
 
 ///|
-let skew : Int = 38
+/// Skew parameter for bias adaptation function.
+/// Controls how quickly the bias adjusts to character frequencies.
+const Skew : Int = 38
 
 ///|
-let damp : Int = 700
+/// Damping factor applied only to the first delta value.
+/// Prevents the bias from changing too rapidly at the start.
+const Damp : Int = 700
 
 ///|
-let initial_bias : Int = 72
+/// Initial bias value for the adaptation algorithm.
+/// Chosen to work well for typical internationalized domain names.
+const InitialBias : Int = 72
 
 ///|
-let initial_n : Int = 0x80
+/// Initial value of n, the threshold between basic ASCII (0-127)
+/// and non-basic code points that require encoding.
+const InitialN : Int = 0x80
 
 ///|
-let delimiter : Char = '-'
+/// Delimiter character separating the basic ASCII portion
+/// from the Punycode-encoded portion in the output.
+const Delimiter : Char = '-'
 
 ///|
 /// Bias adaptation function (RFC 3492 Section 3.4)
 fn adapt(delta : Int, numpoints : Int, firsttime : Bool) -> Int {
   let mut delta = delta
   if firsttime {
-    delta = delta / damp
+    delta = delta / Damp
   } else {
     delta = delta / 2
   }
   delta = delta + delta / numpoints
   let mut k = 0
-  while delta > (base - tmin) * tmax / 2 {
-    delta = delta / (base - tmin)
-    k = k + base
+  while delta > (Base - Tmin) * Tmax / 2 {
+    delta = delta / (Base - Tmin)
+    k = k + Base
   }
-  k + (base - tmin + 1) * delta / (delta + skew)
+  k + (Base - Tmin + 1) * delta / (delta + Skew)
 }
 
 ///|
@@ -74,7 +90,7 @@ fn decode_digit(cp : Int) -> Int {
   } else if cp >= '0'.to_int() && cp <= '9'.to_int() {
     cp - '0'.to_int() + 26
   } else {
-    base // Invalid
+    Base // Invalid
   }
 }
 
@@ -107,11 +123,11 @@ pub fn encode(input : String) -> String raise PunycodeError {
   // Add delimiter if there were basic characters
   let handled = basic_count
   if basic_count > 0 {
-    output.write_char(delimiter)
+    output.write_char(Delimiter)
   }
-  let mut n = initial_n
+  let mut n = InitialN
   let mut delta = 0
-  let mut bias = initial_bias
+  let mut bias = InitialBias
   let mut handled = handled
   while handled < codepoints.length() {
     // Find the minimum code point >= n
@@ -138,21 +154,21 @@ pub fn encode(input : String) -> String raise PunycodeError {
       } else if cp == n {
         // Represent delta as a generalized variable-length integer
         let mut q = delta
-        let mut k = base
+        let mut k = Base
         while true {
           let t = if k <= bias {
-            tmin
-          } else if k >= bias + tmax {
-            tmax
+            Tmin
+          } else if k >= bias + Tmax {
+            Tmax
           } else {
             k - bias
           }
           if q < t {
             break
           }
-          output.write_char(encode_digit(t + (q - t) % (base - t)))
-          q = (q - t) / (base - t)
-          k = k + base
+          output.write_char(encode_digit(t + (q - t) % (Base - t)))
+          q = (q - t) / (Base - t)
+          k = k + Base
         }
         output.write_char(encode_digit(q))
         bias = adapt(delta, handled + 1, handled == basic_count)
@@ -175,7 +191,7 @@ pub fn decode(input : String) -> String raise PunycodeError {
   let mut basic_end = -1
   let mut i = 0
   for c in input {
-    if c == delimiter {
+    if c == Delimiter {
       basic_end = i
     }
     i = i + 1
@@ -198,9 +214,9 @@ pub fn decode(input : String) -> String raise PunycodeError {
   }
 
   // Main decoding loop
-  let mut n = initial_n
+  let mut n = InitialN
   let mut i_val = 0
-  let mut bias = initial_bias
+  let mut bias = InitialBias
   let mut in_pos = if basic_end >= 0 { basic_end + 1 } else { 0 }
 
   // Convert input to array for easier indexing
@@ -211,14 +227,14 @@ pub fn decode(input : String) -> String raise PunycodeError {
   while in_pos < input_chars.length() {
     let oldi = i_val
     let mut w = 1
-    let mut k = base
+    let mut k = Base
     while true {
       if in_pos >= input_chars.length() {
         raise BadInput
       }
       let digit = decode_digit(input_chars[in_pos].to_int())
       in_pos = in_pos + 1
-      if digit >= base {
+      if digit >= Base {
         raise BadInput
       }
       if digit > (0x7FFFFFFF - i_val) / w {
@@ -226,20 +242,20 @@ pub fn decode(input : String) -> String raise PunycodeError {
       }
       i_val = i_val + digit * w
       let t = if k <= bias {
-        tmin
-      } else if k >= bias + tmax {
-        tmax
+        Tmin
+      } else if k >= bias + Tmax {
+        Tmax
       } else {
         k - bias
       }
       if digit < t {
         break
       }
-      if w > 0x7FFFFFFF / (base - t) {
+      if w > 0x7FFFFFFF / (Base - t) {
         raise Overflow
       }
-      w = w * (base - t)
-      k = k + base
+      w = w * (Base - t)
+      k = k + Base
     }
     let out_len = output.length() + 1
     bias = adapt(i_val - oldi, out_len, oldi == 0)
