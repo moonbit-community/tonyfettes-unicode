@@ -146,12 +146,7 @@ fn label_to_unicode(
 ///|
 /// Check if a label has the ACE prefix "xn--"
 fn has_ace_prefix(label : String) -> Bool {
-  if label.length() < 4 {
-    return false
-  }
-  let lower = label.to_lower()
-  // Check first 4 characters manually to avoid slice error handling
-  lower[0] == 'x' && lower[1] == 'n' && lower[2] == '-' && lower[3] == '-'
+  label.to_lower().has_prefix("xn--")
 }
 
 ///|
