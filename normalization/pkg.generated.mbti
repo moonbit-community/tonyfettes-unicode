@@ -2,26 +2,6 @@
 package "tonyfettes/unicode/normalization"
 
 // Values
-pub fn canonical_compose(Array[Int]) -> Array[Int]
-
-pub fn canonical_order(Array[Int]) -> Unit
-
-pub fn codepoints_to_string(Array[Int]) -> String
-
-pub fn decompose_hangul(Int) -> Array[Int]
-
-pub fn decompose_string(String, compatibility~ : Bool) -> Array[Int]
-
-pub fn is_hangul_l(Int) -> Bool
-
-pub fn is_hangul_lv(Int) -> Bool
-
-pub fn is_hangul_syllable(Int) -> Bool
-
-pub fn is_hangul_t(Int) -> Bool
-
-pub fn is_hangul_v(Int) -> Bool
-
 pub fn is_normalized(String, NormalizationForm) -> Bool
 
 pub fn nfc(String) -> String
@@ -33,10 +13,6 @@ pub fn nfkc(String) -> String
 pub fn nfkd(String) -> String
 
 pub fn normalize(String, NormalizationForm) -> String
-
-pub fn string_to_codepoints(String) -> Array[Int]
-
-pub fn try_compose_hangul(Int, Int) -> Int?
 
 // Errors
 

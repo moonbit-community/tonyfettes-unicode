@@ -24,7 +24,7 @@ pub(all) enum NormalizationForm {
 pub fn nfd(s : String) -> String {
   let codepoints = decompose_string(s, compatibility=false)
   canonical_order(codepoints)
-  codepoints_to_string(codepoints)
+  @codepoint.codepoints_to_string(codepoints)
 }
 
 ///|
@@ -37,7 +37,7 @@ pub fn nfc(s : String) -> String {
   let codepoints = decompose_string(s, compatibility=false)
   canonical_order(codepoints)
   let composed = canonical_compose(codepoints)
-  codepoints_to_string(composed)
+  @codepoint.codepoints_to_string(composed)
 }
 
 ///|
@@ -49,7 +49,7 @@ pub fn nfc(s : String) -> String {
 pub fn nfkd(s : String) -> String {
   let codepoints = decompose_string(s, compatibility=true)
   canonical_order(codepoints)
-  codepoints_to_string(codepoints)
+  @codepoint.codepoints_to_string(codepoints)
 }
 
 ///|
@@ -61,7 +61,7 @@ pub fn nfkc(s : String) -> String {
   let codepoints = decompose_string(s, compatibility=true)
   canonical_order(codepoints)
   let composed = canonical_compose(codepoints)
-  codepoints_to_string(composed)
+  @codepoint.codepoints_to_string(composed)
 }
 
 ///|

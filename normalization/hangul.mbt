@@ -40,32 +40,32 @@ let hangul_s_count : Int = 11172
 
 ///|
 /// Check if a code point is a precomposed Hangul syllable
-pub fn is_hangul_syllable(cp : Int) -> Bool {
+fn is_hangul_syllable(cp : Int) -> Bool {
   cp >= hangul_s_base && cp < hangul_s_base + hangul_s_count
 }
 
 ///|
 /// Check if a code point is a leading consonant jamo (L)
-pub fn is_hangul_l(cp : Int) -> Bool {
+fn is_hangul_l(cp : Int) -> Bool {
   cp >= hangul_l_base && cp < hangul_l_base + hangul_l_count
 }
 
 ///|
 /// Check if a code point is a vowel jamo (V)
-pub fn is_hangul_v(cp : Int) -> Bool {
+fn is_hangul_v(cp : Int) -> Bool {
   cp >= hangul_v_base && cp < hangul_v_base + hangul_v_count
 }
 
 ///|
 /// Check if a code point is a trailing consonant jamo (T)
 /// Note: T_BASE (0x11A7) itself is not a valid trailing jamo
-pub fn is_hangul_t(cp : Int) -> Bool {
+fn is_hangul_t(cp : Int) -> Bool {
   cp > hangul_t_base && cp < hangul_t_base + hangul_t_count
 }
 
 ///|
 /// Check if a code point is an LV syllable (no trailing consonant)
-pub fn is_hangul_lv(cp : Int) -> Bool {
+fn is_hangul_lv(cp : Int) -> Bool {
   if not(is_hangul_syllable(cp)) {
     return false
   }
@@ -75,7 +75,7 @@ pub fn is_hangul_lv(cp : Int) -> Bool {
 ///|
 /// Algorithmically decompose a Hangul syllable into jamo
 /// Returns L + V for LV syllables, L + V + T for LVT syllables
-pub fn decompose_hangul(syllable : Int) -> Array[Int] {
+fn decompose_hangul(syllable : Int) -> Array[Int] {
   let s_index = syllable - hangul_s_base
   let l = hangul_l_base + s_index / hangul_n_count
   let v = hangul_v_base + s_index % hangul_n_count / hangul_t_count
@@ -90,7 +90,7 @@ pub fn decompose_hangul(syllable : Int) -> Array[Int] {
 ///|
 /// Try to compose two code points into a Hangul syllable
 /// Returns Some(syllable) if composition is possible, None otherwise
-pub fn try_compose_hangul(first : Int, second : Int) -> Int? {
+fn try_compose_hangul(first : Int, second : Int) -> Int? {
   // L + V -> LV syllable
   if is_hangul_l(first) && is_hangul_v(second) {
     let l_index = first - hangul_l_base

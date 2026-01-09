@@ -2,6 +2,9 @@
 package "tonyfettes/unicode/codepoint"
 
 // Values
+pub fn codepoints_to_string(Array[Int]) -> String
+
+pub fn string_to_codepoints(String) -> Array[Int]
 
 // Errors
 pub(all) suberror Invalid

@@ -6,7 +6,7 @@
 ///|
 /// Reorder code points according to Canonical Combining Class
 /// Starters (CCC=0) remain in place, combining marks are sorted by CCC
-pub fn canonical_order(codepoints : Array[Int]) -> Unit {
+fn canonical_order(codepoints : Array[Int]) -> Unit {
   let len = codepoints.length()
   if len < 2 {
     return

@@ -4,7 +4,7 @@
 ///|
 /// Check if combining marks in a string are sorted by CCC
 pub fn ccc_is_sorted(s : String) -> Bool {
-  let codepoints = @normalization.string_to_codepoints(s)
+  let codepoints = @codepoint.string_to_codepoints(s)
   for i = 0, last_ccc = 0, in_combining = false; i < codepoints.length(); {
     let cp = codepoints[i]
     let ccc = @ucd.lookup_ccc(cp)

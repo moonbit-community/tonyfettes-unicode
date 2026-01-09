@@ -19,7 +19,7 @@ fn try_compose(first : Int, second : Int) -> Int? {
 ///|
 /// Compose a sequence of canonically ordered code points
 /// This is the final step for NFC and NFKC
-pub fn canonical_compose(codepoints : Array[Int]) -> Array[Int] {
+fn canonical_compose(codepoints : Array[Int]) -> Array[Int] {
   let len = codepoints.length()
   if len == 0 {
     return []
