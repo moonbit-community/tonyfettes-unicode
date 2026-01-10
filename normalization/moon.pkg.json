@@ -1,7 +1,6 @@
 {
   "import": [
-    "tonyfettes/unicode/internal/ucd",
-    "tonyfettes/unicode/codepoint"
+    "tonyfettes/unicode/internal/ucd"
   ],
   "test-import": [
     {

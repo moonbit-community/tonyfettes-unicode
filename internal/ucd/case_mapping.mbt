@@ -948,37 +948,40 @@ fn binary_search_case(arr : FixedArray[Int], cp : Int) -> Int {
 }
 
 ///|
-/// Look up simple uppercase mapping for a code point
-/// Returns the code point itself if no mapping exists
-pub fn lookup_simple_uppercase(cp : Int) -> Int {
+/// Look up simple uppercase mapping for a character
+/// Returns the character itself if no mapping exists
+pub fn lookup_simple_uppercase(c : Char) -> Char {
+  let cp = c.to_int()
   let idx = binary_search_case(upper_cps, cp)
   if idx >= 0 {
-    upper_targets[idx]
+    upper_targets[idx].unsafe_to_char()
   } else {
-    cp
+    c
   }
 }
 
 ///|
-/// Look up simple lowercase mapping for a code point
-/// Returns the code point itself if no mapping exists
-pub fn lookup_simple_lowercase(cp : Int) -> Int {
+/// Look up simple lowercase mapping for a character
+/// Returns the character itself if no mapping exists
+pub fn lookup_simple_lowercase(c : Char) -> Char {
+  let cp = c.to_int()
   let idx = binary_search_case(lower_cps, cp)
   if idx >= 0 {
-    lower_targets[idx]
+    lower_targets[idx].unsafe_to_char()
   } else {
-    cp
+    c
   }
 }
 
 ///|
-/// Look up simple titlecase mapping for a code point
-/// Returns the code point itself if no mapping exists
-pub fn lookup_simple_titlecase(cp : Int) -> Int {
+/// Look up simple titlecase mapping for a character
+/// Returns the character itself if no mapping exists
+pub fn lookup_simple_titlecase(c : Char) -> Char {
+  let cp = c.to_int()
   let idx = binary_search_case(title_cps, cp)
   if idx >= 0 {
-    title_targets[idx]
+    title_targets[idx].unsafe_to_char()
   } else {
-    cp
+    c
   }
 }

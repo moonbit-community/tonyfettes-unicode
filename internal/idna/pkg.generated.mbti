@@ -2,15 +2,15 @@
 package "tonyfettes/unicode/internal/idna"
 
 // Values
-pub fn has_rtl(Array[Int]) -> Bool
+pub fn has_rtl(Array[Char]) -> Bool
 
-pub fn is_rtl(Int) -> Bool
+pub fn is_rtl(Char) -> Bool
 
-pub fn lookup_bidi_class(Int) -> BidiClass
+pub fn lookup_bidi_class(Char) -> BidiClass
 
-pub fn lookup_idna_mapping(Int) -> (IdnaStatus, Array[Int])
+pub fn lookup_idna_mapping(Char) -> (IdnaStatus, Array[Char])
 
-pub fn lookup_joining_type(Int) -> JoiningType
+pub fn lookup_joining_type(Char) -> JoiningType
 
 // Errors
 

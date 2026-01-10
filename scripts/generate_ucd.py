@@ -308,9 +308,10 @@ let mark_ends : FixedArray[Int] = [
     code += "\n]\n\n"
 
     code += '''///|
-/// Look up Canonical Combining Class for a code point
+/// Look up Canonical Combining Class for a character
 /// Returns 0 (starter) for most characters
-pub fn lookup_ccc(cp : Int) -> Int {
+pub fn lookup_ccc(c : Char) -> Int {
+  let cp = c.to_int()
   // Binary search through ranges
   let mut left = 0
   let mut right = ccc_starts.length() - 1
@@ -333,9 +334,10 @@ pub fn lookup_ccc(cp : Int) -> Int {
 }
 
 ///|
-/// Check if a code point is a Mark character (General_Category = Mn, Mc, or Me)
+/// Check if a character is a Mark character (General_Category = Mn, Mc, or Me)
 /// This is used for the IDNA "no leading combining mark" validation (V5/V6)
-pub fn is_mark(cp : Int) -> Bool {
+pub fn is_mark(c : Char) -> Bool {
+  let cp = c.to_int()
   // Binary search through mark ranges
   let mut left = 0
   let mut right = mark_starts.length() - 1
@@ -467,8 +469,9 @@ let decomp_data : FixedArray[Int] = [
     code += "\n]\n\n"
 
     code += '''///|
-/// Binary search for code point index, returns -1 if not found
-fn find_decomp_index(cp : Int) -> Int {
+/// Binary search for character index, returns -1 if not found
+fn find_decomp_index(c : Char) -> Int {
+  let cp = c.to_int()
   let mut left = 0
   let mut right = decomp_cps.length() - 1
 
@@ -489,10 +492,10 @@ fn find_decomp_index(cp : Int) -> Int {
 }
 
 ///|
-/// Get canonical decomposition for a code point
+/// Get canonical decomposition for a character
 /// Returns None if no decomposition exists
-pub fn get_canonical_decomposition(cp : Int) -> Array[Int]? {
-  let idx = find_decomp_index(cp)
+pub fn get_canonical_decomposition(c : Char) -> Array[Char]? {
+  let idx = find_decomp_index(c)
   if idx < 0 {
     return None
   }
@@ -503,18 +506,18 @@ pub fn get_canonical_decomposition(cp : Int) -> Array[Int]? {
   }
 
   let start = decomp_data_starts[idx]
-  let result : Array[Int] = []
+  let result : Array[Char] = []
   for i = 0; i < len; i = i + 1 {
-    result.push(decomp_data[start + i])
+    result.push(decomp_data[start + i].unsafe_to_char())
   }
   Some(result)
 }
 
 ///|
-/// Get compatibility decomposition for a code point
+/// Get compatibility decomposition for a character
 /// Returns None if no decomposition exists
-pub fn get_compat_decomposition(cp : Int) -> Array[Int]? {
-  let idx = find_decomp_index(cp)
+pub fn get_compat_decomposition(c : Char) -> Array[Char]? {
+  let idx = find_decomp_index(c)
   if idx < 0 {
     return None
   }
@@ -527,9 +530,9 @@ pub fn get_compat_decomposition(cp : Int) -> Array[Int]? {
   // Compat data comes after canonical data
   let canonical_len = decomp_canonical_lens[idx]
   let start = decomp_data_starts[idx] + canonical_len
-  let result : Array[Int] = []
+  let result : Array[Char] = []
   for i = 0; i < compat_len; i = i + 1 {
-    result.push(decomp_data[start + i])
+    result.push(decomp_data[start + i].unsafe_to_char())
   }
   Some(result)
 }
@@ -623,9 +626,11 @@ let comp_exclusions : FixedArray[Int] = [
     code += "\n]\n\n"
 
     code += '''///|
-/// Look up composition for a pair of code points
+/// Look up composition for a pair of characters
 /// Returns Some(composed) if composition exists, None otherwise
-pub fn lookup_composition(starter : Int, combining : Int) -> Int? {
+pub fn lookup_composition(starter : Char, combining : Char) -> Char? {
+  let starter_cp = starter.to_int()
+  let combining_cp = combining.to_int()
   // Binary search for the pair
   let mut left = 0
   let mut right = comp_firsts.length() - 1
@@ -635,12 +640,12 @@ pub fn lookup_composition(starter : Int, combining : Int) -> Int? {
     let mid_first = comp_firsts[mid]
     let mid_second = comp_seconds[mid]
 
-    if starter < mid_first || (starter == mid_first && combining < mid_second) {
+    if starter_cp < mid_first || (starter_cp == mid_first && combining_cp < mid_second) {
       right = mid - 1
-    } else if starter > mid_first || (starter == mid_first && combining > mid_second) {
+    } else if starter_cp > mid_first || (starter_cp == mid_first && combining_cp > mid_second) {
       left = mid + 1
     } else {
-      return Some(comp_results[mid])
+      return Some(comp_results[mid].unsafe_to_char())
     }
   }
 
@@ -648,8 +653,9 @@ pub fn lookup_composition(starter : Int, combining : Int) -> Int? {
 }
 
 ///|
-/// Check if a code point is excluded from composition
-pub fn is_composition_excluded(cp : Int) -> Bool {
+/// Check if a character is excluded from composition
+pub fn is_composition_excluded(c : Char) -> Bool {
+  let cp = c.to_int()
   // Binary search in exclusions
   let mut left = 0
   let mut right = comp_exclusions.length() - 1
@@ -777,10 +783,11 @@ let gc_values : FixedArray[Int] = [
     code += "\n]\n\n"
 
     code += '''///|
-/// Look up General_Category ordinal for a code point
+/// Look up General_Category ordinal for a character
 /// Returns ordinal value (0-29) corresponding to GeneralCategory enum
-/// Default is 29 (Cn = Unassigned) for code points beyond data range
-pub fn lookup_general_category(cp : Int) -> Int {
+/// Default is 29 (Cn = Unassigned) for characters beyond data range
+pub fn lookup_general_category(c : Char) -> Int {
+  let cp = c.to_int()
   // Handle code points beyond our data range
   if cp < 0 || cp > gc_range_ends[gc_range_ends.length() - 1] {
     return 29 // Cn (Unassigned)
@@ -912,38 +919,41 @@ fn binary_search_case(arr : FixedArray[Int], cp : Int) -> Int {
 }
 
 ///|
-/// Look up simple uppercase mapping for a code point
-/// Returns the code point itself if no mapping exists
-pub fn lookup_simple_uppercase(cp : Int) -> Int {
+/// Look up simple uppercase mapping for a character
+/// Returns the character itself if no mapping exists
+pub fn lookup_simple_uppercase(c : Char) -> Char {
+  let cp = c.to_int()
   let idx = binary_search_case(upper_cps, cp)
   if idx >= 0 {
-    upper_targets[idx]
+    upper_targets[idx].unsafe_to_char()
   } else {
-    cp
+    c
   }
 }
 
 ///|
-/// Look up simple lowercase mapping for a code point
-/// Returns the code point itself if no mapping exists
-pub fn lookup_simple_lowercase(cp : Int) -> Int {
+/// Look up simple lowercase mapping for a character
+/// Returns the character itself if no mapping exists
+pub fn lookup_simple_lowercase(c : Char) -> Char {
+  let cp = c.to_int()
   let idx = binary_search_case(lower_cps, cp)
   if idx >= 0 {
-    lower_targets[idx]
+    lower_targets[idx].unsafe_to_char()
   } else {
-    cp
+    c
   }
 }
 
 ///|
-/// Look up simple titlecase mapping for a code point
-/// Returns the code point itself if no mapping exists
-pub fn lookup_simple_titlecase(cp : Int) -> Int {
+/// Look up simple titlecase mapping for a character
+/// Returns the character itself if no mapping exists
+pub fn lookup_simple_titlecase(c : Char) -> Char {
+  let cp = c.to_int()
   let idx = binary_search_case(title_cps, cp)
   if idx >= 0 {
-    title_targets[idx]
+    title_targets[idx].unsafe_to_char()
   } else {
-    cp
+    c
   }
 }
 '''

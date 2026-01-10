@@ -1,146 +1,137 @@
 ///|
 test "general_category: ASCII letters" {
   // Uppercase letters
-  inspect(general_category(0x41), content="Lu") // 'A'
-  inspect(general_category(0x5A), content="Lu") // 'Z'
+  inspect(general_category('A'), content="Lu")
+  inspect(general_category('Z'), content="Lu")
   // Lowercase letters
-  inspect(general_category(0x61), content="Ll") // 'a'
-  inspect(general_category(0x7A), content="Ll") // 'z'
+  inspect(general_category('a'), content="Ll")
+  inspect(general_category('z'), content="Ll")
 }
 
 ///|
 test "general_category: digits" {
-  inspect(general_category(0x30), content="Nd") // '0'
-  inspect(general_category(0x39), content="Nd") // '9'
+  inspect(general_category('0'), content="Nd")
+  inspect(general_category('9'), content="Nd")
 }
 
 ///|
 test "general_category: punctuation" {
-  inspect(general_category(0x21), content="Po") // '!'
-  inspect(general_category(0x28), content="Ps") // '('
-  inspect(general_category(0x29), content="Pe") // ')'
-  inspect(general_category(0x2D), content="Pd") // '-'
+  inspect(general_category('!'), content="Po")
+  inspect(general_category('('), content="Ps")
+  inspect(general_category(')'), content="Pe")
+  inspect(general_category('-'), content="Pd")
 }
 
 ///|
 test "general_category: symbols" {
-  inspect(general_category(0x24), content="Sc") // '$'
-  inspect(general_category(0x2B), content="Sm") // '+'
-  inspect(general_category(0x3C), content="Sm") // '<'
+  inspect(general_category('$'), content="Sc")
+  inspect(general_category('+'), content="Sm")
+  inspect(general_category('<'), content="Sm")
 }
 
 ///|
 test "general_category: control characters" {
-  inspect(general_category(0x00), content="Cc") // NUL
-  inspect(general_category(0x09), content="Cc") // TAB
-  inspect(general_category(0x0A), content="Cc") // LF
-  inspect(general_category(0x0D), content="Cc") // CR
+  inspect(general_category('\u{00}'), content="Cc") // NUL
+  inspect(general_category('\t'), content="Cc") // TAB
+  inspect(general_category('\n'), content="Cc") // LF
+  inspect(general_category('\r'), content="Cc") // CR
 }
 
 ///|
 test "general_category: space" {
-  inspect(general_category(0x20), content="Zs") // SPACE
+  inspect(general_category(' '), content="Zs") // SPACE
 }
 
 ///|
 test "general_category: CJK ideographs" {
-  inspect(general_category(0x4E00), content="Lo") // First CJK Unified Ideograph
-  inspect(general_category(0x9FFF), content="Lo") // Last CJK Unified Ideograph (approx)
+  inspect(general_category('\u{4E00}'), content="Lo") // First CJK Unified Ideograph
+  inspect(general_category('\u{9FFF}'), content="Lo") // Last CJK Unified Ideograph (approx)
 }
 
 ///|
 test "general_category: marks" {
-  inspect(general_category(0x0300), content="Mn") // COMBINING GRAVE ACCENT
-  inspect(general_category(0x0301), content="Mn") // COMBINING ACUTE ACCENT
-  inspect(general_category(0x0903), content="Mc") // DEVANAGARI SIGN VISARGA
-}
-
-///|
-test "general_category: surrogates" {
-  inspect(general_category(0xD800), content="Cs") // High surrogate start
-  inspect(general_category(0xDFFF), content="Cs") // Low surrogate end
+  inspect(general_category('\u{0300}'), content="Mn") // COMBINING GRAVE ACCENT
+  inspect(general_category('\u{0301}'), content="Mn") // COMBINING ACUTE ACCENT
+  inspect(general_category('\u{0903}'), content="Mc") // DEVANAGARI SIGN VISARGA
 }
 
 ///|
 test "general_category: private use" {
-  inspect(general_category(0xE000), content="Co") // Private Use Area start
-}
-
-///|
-test "general_category: unassigned" {
-  // Code points beyond Unicode range should be Cn
-  inspect(general_category(0x110000), content="Cn")
-  inspect(general_category(-1), content="Cn")
+  inspect(general_category('\u{E000}'), content="Co") // Private Use Area start
 }
 
 ///|
 test "GeneralCategory::group" {
   // Letters
-  assert_eq(general_category(0x41).group(), L) // 'A'
-  assert_eq(general_category(0x61).group(), L) // 'a'
+  assert_eq(general_category('A').group(), L)
+  assert_eq(general_category('a').group(), L)
   // Numbers
-  assert_eq(general_category(0x30).group(), N) // '0'
-  assert_eq(general_category(0x39).group(), N) // '9'
+  assert_eq(general_category('0').group(), N)
+  assert_eq(general_category('9').group(), N)
   // Marks
-  assert_eq(general_category(0x0300).group(), M) // COMBINING GRAVE ACCENT
+  assert_eq(general_category('\u{0300}').group(), M) // COMBINING GRAVE ACCENT
   // Separators
-  assert_eq(general_category(0x20).group(), Z) // SPACE
+  assert_eq(general_category(' ').group(), Z)
   // Punctuation
-  assert_eq(general_category(0x21).group(), P) // '!'
+  assert_eq(general_category('!').group(), P)
   // Symbols
-  assert_eq(general_category(0x24).group(), S) // '$'
+  assert_eq(general_category('$').group(), S)
   // Other
-  assert_eq(general_category(0x00).group(), C) // NUL
+  assert_eq(general_category('\u{00}').group(), C) // NUL
 }
 
 ///|
 test "to_simple_uppercase: basic" {
-  inspect(to_simple_uppercase(0x61), content="65") // 'a' -> 'A'
-  inspect(to_simple_uppercase(0x7A), content="90") // 'z' -> 'Z'
-  inspect(to_simple_uppercase(0x41), content="65") // 'A' -> 'A' (unchanged)
-  inspect(to_simple_uppercase(0x30), content="48") // '0' -> '0' (unchanged)
+  inspect(to_simple_uppercase('a'), content="A")
+  inspect(to_simple_uppercase('z'), content="Z")
+  inspect(to_simple_uppercase('A'), content="A") // unchanged
+  inspect(to_simple_uppercase('0'), content="0") // unchanged
 }
 
 ///|
 test "to_simple_lowercase: basic" {
-  inspect(to_simple_lowercase(0x41), content="97") // 'A' -> 'a'
-  inspect(to_simple_lowercase(0x5A), content="122") // 'Z' -> 'z'
-  inspect(to_simple_lowercase(0x61), content="97") // 'a' -> 'a' (unchanged)
-  inspect(to_simple_lowercase(0x30), content="48") // '0' -> '0' (unchanged)
+  inspect(to_simple_lowercase('A'), content="a")
+  inspect(to_simple_lowercase('Z'), content="z")
+  inspect(to_simple_lowercase('a'), content="a") // unchanged
+  inspect(to_simple_lowercase('0'), content="0") // unchanged
 }
 
 ///|
 test "to_simple_titlecase: basic" {
   // For most characters, titlecase == uppercase
-  inspect(to_simple_titlecase(0x61), content="65") // 'a' -> 'A'
-  inspect(to_simple_titlecase(0x41), content="65") // 'A' -> 'A' (unchanged)
+  inspect(to_simple_titlecase('a'), content="A")
+  inspect(to_simple_titlecase('A'), content="A") // unchanged
 }
 
 ///|
 test "case mapping: Greek letters" {
-  inspect(to_simple_uppercase(0x03B1), content="913") // alpha -> ALPHA
-  inspect(to_simple_lowercase(0x0391), content="945") // ALPHA -> alpha
+  inspect(to_simple_uppercase('\u{03B1}'), content="Α") // alpha -> ALPHA
+  inspect(to_simple_lowercase('\u{0391}'), content="α") // ALPHA -> alpha
 }
 
 ///|
 test "case mapping: German sharp s" {
   // LATIN SMALL LETTER SHARP S has simple uppercase to itself
   // (full uppercase is "SS" but simple mapping is same)
-  inspect(to_simple_uppercase(0x00DF), content="223") // sharp s -> sharp s
+  inspect(to_simple_uppercase('\u{00DF}'), content="ß") // sharp s -> sharp s
 }
 
 ///|
 test "case mapping: roundtrip for ASCII" {
-  for cp = 0x41; cp <= 0x5A; cp = cp + 1 {
-    // Uppercase letters
-    let lower = to_simple_lowercase(cp)
+  // Test uppercase letters A-Z
+  for i = 0; i < 26; i = i + 1 {
+    let cp = 'A'.to_int() + i
+    let c = cp.unsafe_to_char()
+    let lower = to_simple_lowercase(c)
     let back_to_upper = to_simple_uppercase(lower)
-    assert_eq(back_to_upper, cp)
+    assert_eq(back_to_upper, c)
   }
-  for cp = 0x61; cp <= 0x7A; cp = cp + 1 {
-    // Lowercase letters
-    let upper = to_simple_uppercase(cp)
+  // Test lowercase letters a-z
+  for i = 0; i < 26; i = i + 1 {
+    let cp = 'a'.to_int() + i
+    let c = cp.unsafe_to_char()
+    let upper = to_simple_uppercase(c)
     let back_to_lower = to_simple_lowercase(upper)
-    assert_eq(back_to_lower, cp)
+    assert_eq(back_to_lower, c)
   }
 }

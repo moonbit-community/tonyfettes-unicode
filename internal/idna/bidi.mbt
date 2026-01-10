@@ -597,8 +597,9 @@ let bidi_range_classes : FixedArray[Int] = [
 ]
 
 ///|
-/// Binary search for code point in Bidi ranges
-fn find_bidi_range(cp : Int) -> Int {
+/// Binary search for character in Bidi ranges
+fn find_bidi_range(c : Char) -> Int {
+  let cp = c.to_int()
   let mut left = 0
   let mut right = bidi_range_starts.length() - 1
   while left <= right {
@@ -636,9 +637,9 @@ fn bidi_from_code(code : Int) -> BidiClass {
 }
 
 ///|
-/// Look up Bidi_Class for a code point
-pub fn lookup_bidi_class(cp : Int) -> BidiClass {
-  let idx = find_bidi_range(cp)
+/// Look up Bidi_Class for a character
+pub fn lookup_bidi_class(c : Char) -> BidiClass {
+  let idx = find_bidi_range(c)
   if idx < 0 {
     return Other
   }
@@ -646,9 +647,9 @@ pub fn lookup_bidi_class(cp : Int) -> BidiClass {
 }
 
 ///|
-/// Check if a code point has RTL Bidi class (R or AL)
-pub fn is_rtl(cp : Int) -> Bool {
-  match lookup_bidi_class(cp) {
+/// Check if a character has RTL Bidi class (R or AL)
+pub fn is_rtl(c : Char) -> Bool {
+  match lookup_bidi_class(c) {
     R | AL => true
     _ => false
   }
@@ -656,9 +657,9 @@ pub fn is_rtl(cp : Int) -> Bool {
 
 ///|
 /// Check if a domain contains any RTL characters
-pub fn has_rtl(codepoints : Array[Int]) -> Bool {
-  for cp in codepoints {
-    if is_rtl(cp) {
+pub fn has_rtl(chars : Array[Char]) -> Bool {
+  for c in chars {
+    if is_rtl(c) {
       return true
     }
   }

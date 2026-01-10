@@ -3,9 +3,9 @@
 /// Composes adjacent starter + non-blocked combining marks into precomposed characters
 
 ///|
-/// Try to compose two code points into one
+/// Try to compose two characters into one
 /// Handles both Hangul and general composition
-fn try_compose(first : Int, second : Int) -> Int? {
+fn try_compose(first : Char, second : Char) -> Char? {
   // Try Hangul composition first (algorithmic, no table lookup)
   match try_compose_hangul(first, second) {
     Some(h) => return Some(h)
@@ -17,29 +17,25 @@ fn try_compose(first : Int, second : Int) -> Int? {
 }
 
 ///|
-/// Compose a sequence of canonically ordered code points
+/// Compose a sequence of canonically ordered characters
 /// This is the final step for NFC and NFKC
-fn canonical_compose(codepoints : Array[Int]) -> Array[Int] {
-  let len = codepoints.length()
+fn canonical_compose(chars : Array[Char]) -> Array[Char] {
+  let len = chars.length()
   if len == 0 {
     return []
   }
-  let result : Array[Int] = []
-  result.push(codepoints[0])
+  let result : Array[Char] = []
+  result.push(chars[0])
 
   // Track the last starter position in result (-1 if no starter yet)
-  let mut last_starter_idx = if @ucd.lookup_ccc(codepoints[0]) == 0 {
-    0
-  } else {
-    -1
-  }
+  let mut last_starter_idx = if @ucd.lookup_ccc(chars[0]) == 0 { 0 } else { -1 }
 
   // Track CCC of the last character we processed
   // Used to detect "blocked" combining marks
-  let mut last_ccc = @ucd.lookup_ccc(codepoints[0])
+  let mut last_ccc = @ucd.lookup_ccc(chars[0])
   for i = 1; i < len; i = i + 1 {
-    let cp = codepoints[i]
-    let ccc = @ucd.lookup_ccc(cp)
+    let c = chars[i]
+    let ccc = @ucd.lookup_ccc(c)
 
     // A combining mark is "blocked" from composing with a starter if
     // there's an intervening combining mark with the same or higher CCC
@@ -52,7 +48,7 @@ fn canonical_compose(codepoints : Array[Int]) -> Array[Int] {
     let not_blocked = last_ccc == 0 || (ccc != 0 && last_ccc < ccc)
     if last_starter_idx >= 0 && not_blocked {
       let starter = result[last_starter_idx]
-      match try_compose(starter, cp) {
+      match try_compose(starter, c) {
         Some(composed) => {
           // Successfully composed - update the starter in result
           result[last_starter_idx] = composed
@@ -65,7 +61,7 @@ fn canonical_compose(codepoints : Array[Int]) -> Array[Int] {
     }
 
     // Could not compose, add to result
-    result.push(cp)
+    result.push(c)
     if ccc == 0 {
       // This is a new starter
       last_starter_idx = result.length() - 1

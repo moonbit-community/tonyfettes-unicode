@@ -1,6 +1,10 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "tonyfettes/unicode/idna"
 
+import(
+  "tonyfettes/unicode/punycode"
+)
+
 // Values
 pub fn to_ascii(String, use_std3_ascii_rules? : Bool, check_hyphens? : Bool, check_bidi? : Bool, check_joiners? : Bool, verify_dns_length? : Bool) -> String raise IdnaError
 
@@ -8,7 +12,7 @@ pub fn to_unicode(String, use_std3_ascii_rules? : Bool, check_hyphens? : Bool, c
 
 // Errors
 pub(all) suberror IdnaError {
-  PunycodeError(String)
+  PunycodeError(@punycode.PunycodeError)
   DisallowedCodePoint(cp~ : Int)
   InvalidLabel(String)
   InvalidHyphen

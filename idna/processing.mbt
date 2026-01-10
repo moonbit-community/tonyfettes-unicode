@@ -60,8 +60,7 @@ fn map_domain(
 ) -> String raise IdnaError {
   let result = StringBuilder::new()
   for c in domain {
-    let cp = c.to_int()
-    let (status, mapping) = @idna_data.lookup_idna_mapping(cp)
+    let (status, mapping) = @idna_data.lookup_idna_mapping(c)
     match status {
       @idna_data.Valid | @idna_data.Deviation =>
         // Keep the character (nontransitional mode keeps deviation as-is)
@@ -71,22 +70,22 @@ fn map_domain(
         ()
       @idna_data.Mapped =>
         // Replace with mapping
-        for mapped_cp in mapping {
-          write_codepoint(result, mapped_cp)
+        for mapped_c in mapping {
+          result.write_char(mapped_c)
         }
-      @idna_data.Disallowed => raise DisallowedCodePoint(cp~)
+      @idna_data.Disallowed => raise DisallowedCodePoint(cp=c.to_int())
       @idna_data.DisallowedSTD3Valid =>
         if use_std3_ascii_rules {
-          raise DisallowedCodePoint(cp~)
+          raise DisallowedCodePoint(cp=c.to_int())
         } else {
           result.write_char(c)
         }
       @idna_data.DisallowedSTD3Mapped =>
         if use_std3_ascii_rules {
-          raise DisallowedCodePoint(cp~)
+          raise DisallowedCodePoint(cp=c.to_int())
         } else {
-          for mapped_cp in mapping {
-            write_codepoint(result, mapped_cp)
+          for mapped_c in mapping {
+            result.write_char(mapped_c)
           }
         }
     }
@@ -109,8 +108,7 @@ fn split_labels(domain : String) -> Array[String] {
   let labels : Array[String] = []
   let current = StringBuilder::new()
   for c in domain {
-    let cp = c.to_int()
-    if is_label_separator(cp) {
+    if is_label_separator(c) {
       labels.push(current.to_string())
       current.reset()
     } else {
@@ -124,22 +122,7 @@ fn split_labels(domain : String) -> Array[String] {
 }
 
 ///|
-/// Check if a code point is a label separator
-fn is_label_separator(cp : Int) -> Bool {
-  cp == 0x002E || cp == 0x3002 || cp == 0xFF0E || cp == 0xFF61
-}
-
-///|
-/// Write a code point to a StringBuilder
-fn write_codepoint(sb : StringBuilder, cp : Int) -> Unit {
-  if cp <= 0xFFFF {
-    sb.write_char(cp.unsafe_to_char())
-  } else {
-    // Encode as surrogate pair
-    let adjusted = cp - 0x10000
-    let high = 0xD800 + (adjusted >> 10)
-    let low = 0xDC00 + (adjusted & 0x3FF)
-    sb.write_char(high.unsafe_to_char())
-    sb.write_char(low.unsafe_to_char())
-  }
+/// Check if a character is a label separator
+fn is_label_separator(c : Char) -> Bool {
+  c == '.' || c == '\u{3002}' || c == '\u{FF0E}' || c == '\u{FF61}'
 }

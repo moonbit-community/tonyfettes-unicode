@@ -96,8 +96,8 @@ fn decode_digit(cp : Int) -> Int {
 
 ///|
 /// Check if a character is a basic ASCII character (0-127)
-fn is_basic(cp : Int) -> Bool {
-  cp < 0x80
+fn is_basic(c : Char) -> Bool {
+  c.to_int() < 0x80
 }
 
 ///|
@@ -105,17 +105,17 @@ fn is_basic(cp : Int) -> Bool {
 pub fn encode(input : String) -> String raise PunycodeError {
   let output = StringBuilder::new()
 
-  // Convert input to array of code points
-  let codepoints : Array[Int] = []
+  // Convert input to array of characters
+  let chars : Array[Char] = []
   for c in input {
-    codepoints.push(c.to_int())
+    chars.push(c)
   }
 
   // Copy all basic code points to output
   let mut basic_count = 0
-  for cp in codepoints {
-    if is_basic(cp) {
-      output.write_char(cp.unsafe_to_char())
+  for c in chars {
+    if is_basic(c) {
+      output.write_char(c)
       basic_count = basic_count + 1
     }
   }
@@ -129,10 +129,11 @@ pub fn encode(input : String) -> String raise PunycodeError {
   let mut delta = 0
   let mut bias = InitialBias
   let mut handled = handled
-  while handled < codepoints.length() {
+  while handled < chars.length() {
     // Find the minimum code point >= n
     let mut m = 0x10FFFF + 1
-    for cp in codepoints {
+    for c in chars {
+      let cp = c.to_int()
       if cp >= n && cp < m {
         m = cp
       }
@@ -145,7 +146,8 @@ pub fn encode(input : String) -> String raise PunycodeError {
     }
     delta = delta + delta_increment
     n = m
-    for cp in codepoints {
+    for c in chars {
+      let cp = c.to_int()
       if cp < n {
         delta = delta + 1
         if delta == 0 {
@@ -185,7 +187,7 @@ pub fn encode(input : String) -> String raise PunycodeError {
 ///|
 /// Decode a Punycode string to Unicode
 pub fn decode(input : String) -> String raise PunycodeError {
-  let output : Array[Int] = []
+  let output : Array[Char] = []
 
   // Find the last delimiter
   let mut basic_end = -1
@@ -204,11 +206,10 @@ pub fn decode(input : String) -> String raise PunycodeError {
       if j >= basic_end {
         break
       }
-      let cp = c.to_int()
-      if not(is_basic(cp)) {
+      if not(is_basic(c)) {
         raise BadInput
       }
-      output.push(cp)
+      output.push(c)
       j = j + 1
     }
   }
@@ -266,29 +267,20 @@ pub fn decode(input : String) -> String raise PunycodeError {
     i_val = i_val % out_len
 
     // Insert n at position i_val
-    output.insert(i_val, n)
+    output.insert(i_val, n.unsafe_to_char())
     i_val = i_val + 1
   }
 
-  // Convert code points to string
-  codepoints_to_string(output)
+  // Convert characters to string
+  chars_to_string(output)
 }
 
 ///|
-/// Convert array of code points to string
-fn codepoints_to_string(codepoints : Array[Int]) -> String {
+/// Convert array of characters to string
+fn chars_to_string(chars : Array[Char]) -> String {
   let sb = StringBuilder::new()
-  for cp in codepoints {
-    if cp <= 0xFFFF {
-      sb.write_char(cp.unsafe_to_char())
-    } else {
-      // Encode as surrogate pair
-      let adjusted = cp - 0x10000
-      let high = 0xD800 + (adjusted >> 10)
-      let low = 0xDC00 + (adjusted & 0x3FF)
-      sb.write_char(high.unsafe_to_char())
-      sb.write_char(low.unsafe_to_char())
-    }
+  for c in chars {
+    sb.write_char(c)
   }
   sb.to_string()
 }

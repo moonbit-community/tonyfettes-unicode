@@ -17,7 +17,7 @@ fn validate_label(
   if label.length() == 0 {
     raise EmptyLabel
   }
-  let codepoints = label_to_codepoints(label)
+  let chars = label_to_chars(label)
 
   // Check 1: Must be NFC normalized
   if not(@normalization.is_normalized(label, @normalization.NFC)) {
@@ -26,41 +26,41 @@ fn validate_label(
 
   // Check 2 & 3: Hyphen restrictions (when check_hyphens)
   if check_hyphens {
-    validate_hyphens(label, codepoints)
+    validate_hyphens(label, chars)
   }
 
   // Check 4: No U+002E (full stop) within label - handled by label splitting
 
   // Check 5: No leading combining marks
-  if codepoints.length() > 0 {
-    let first_cp = codepoints[0]
-    if is_combining_mark(first_cp) {
+  if chars.length() > 0 {
+    let first_c = chars[0]
+    if is_combining_mark(first_c) {
       raise LeadingCombiningMark
     }
   }
 
-  // Check 6: All code points must have valid status
-  for cp in codepoints {
-    validate_codepoint_status(cp, use_std3_ascii_rules)
+  // Check 6: All characters must have valid status
+  for c in chars {
+    validate_char_status(c, use_std3_ascii_rules)
   }
 
   // Check 7: ContextJ rules (when check_joiners)
   if check_joiners {
-    validate_contextj(codepoints)
+    validate_contextj(chars)
   }
 
   // Check 8: Bidi rules (when check_bidi)
   if check_bidi {
-    validate_bidi(codepoints)
+    validate_bidi(chars)
   }
 }
 
 ///|
-/// Convert a label string to array of code points
-fn label_to_codepoints(label : String) -> Array[Int] {
-  let result : Array[Int] = []
+/// Convert a label string to array of characters
+fn label_to_chars(label : String) -> Array[Char] {
+  let result : Array[Char] = []
   for c in label {
-    result.push(c.to_int())
+    result.push(c)
   }
   result
 }
@@ -69,59 +69,58 @@ fn label_to_codepoints(label : String) -> Array[Int] {
 /// Validate hyphen restrictions
 fn validate_hyphens(
   _label : String,
-  codepoints : Array[Int],
+  chars : Array[Char],
 ) -> Unit raise IdnaError {
   // Cannot start or end with hyphen
-  if codepoints.length() > 0 {
-    if codepoints[0] == '-'.to_int() ||
-      codepoints[codepoints.length() - 1] == '-'.to_int() {
+  if chars.length() > 0 {
+    if chars[0] == '-' || chars[chars.length() - 1] == '-' {
       raise InvalidHyphen
     }
   }
 
   // Cannot have hyphens at positions 3 and 4 (third and fourth characters)
   // This catches things like "xn--" in non-ACE context
-  if codepoints.length() >= 4 {
-    if codepoints[2] == '-'.to_int() && codepoints[3] == '-'.to_int() {
+  if chars.length() >= 4 {
+    if chars[2] == '-' && chars[3] == '-' {
       raise InvalidHyphen
     }
   }
 }
 
 ///|
-/// Check if a code point is a combining mark (General_Category = Mn, Mc, or Me)
+/// Check if a character is a combining mark (General_Category = Mn, Mc, or Me)
 /// This is used for the IDNA "no leading combining mark" validation (V5/V6)
-fn is_combining_mark(cp : Int) -> Bool {
-  @ucd.is_mark(cp)
+fn is_combining_mark(c : Char) -> Bool {
+  @ucd.is_mark(c)
 }
 
 ///|
-/// Check if an ASCII code point is an LDH character (Letter, Digit, Hyphen)
+/// Check if an ASCII character is an LDH character (Letter, Digit, Hyphen)
 /// This implements STD3 ASCII rules from RFC 952/1123
-fn is_ldh_ascii(cp : Int) -> Bool {
+fn is_ldh_ascii(c : Char) -> Bool {
   // ASCII lowercase letters (a-z)
-  (cp >= 0x61 && cp <= 0x7A) ||
+  (c >= 'a' && c <= 'z') ||
   // ASCII uppercase letters (A-Z) - should be mapped to lowercase already
-  (cp >= 0x41 && cp <= 0x5A) ||
+  (c >= 'A' && c <= 'Z') ||
   // ASCII digits (0-9)
-  (cp >= 0x30 && cp <= 0x39) ||
+  (c >= '0' && c <= '9') ||
   // Hyphen-minus
-  cp == 0x2D
+  c == '-'
 }
 
 ///|
-/// Validate that a code point has an acceptable IDNA status
-fn validate_codepoint_status(
-  cp : Int,
+/// Validate that a character has an acceptable IDNA status
+fn validate_char_status(
+  c : Char,
   use_std3_ascii_rules : Bool,
 ) -> Unit raise IdnaError {
   // STD3 ASCII rules: only LDH characters allowed in ASCII range
   // This check is separate from IdnaMappingTable.txt which marks
   // these characters as "valid" but they should be rejected under STD3
-  if use_std3_ascii_rules && cp < 0x80 && not(is_ldh_ascii(cp)) {
-    raise DisallowedCodePoint(cp~)
+  if use_std3_ascii_rules && c.to_int() < 0x80 && not(is_ldh_ascii(c)) {
+    raise DisallowedCodePoint(cp=c.to_int())
   }
-  let (status, _) = @idna_data.lookup_idna_mapping(cp)
+  let (status, _) = @idna_data.lookup_idna_mapping(c)
   match status {
     @idna_data.Valid | @idna_data.Deviation =>
       // OK
@@ -129,16 +128,16 @@ fn validate_codepoint_status(
     @idna_data.Mapped | @idna_data.Ignored =>
       // These should have been processed in the mapping step
       // If we see them here, something went wrong
-      raise DisallowedCodePoint(cp~)
-    @idna_data.Disallowed => raise DisallowedCodePoint(cp~)
+      raise DisallowedCodePoint(cp=c.to_int())
+    @idna_data.Disallowed => raise DisallowedCodePoint(cp=c.to_int())
     @idna_data.DisallowedSTD3Valid =>
       if use_std3_ascii_rules {
-        raise DisallowedCodePoint(cp~)
+        raise DisallowedCodePoint(cp=c.to_int())
       }
     // Otherwise OK
     @idna_data.DisallowedSTD3Mapped =>
       if use_std3_ascii_rules {
-        raise DisallowedCodePoint(cp~)
+        raise DisallowedCodePoint(cp=c.to_int())
       }
     // Otherwise should have been mapped
   }
@@ -146,16 +145,16 @@ fn validate_codepoint_status(
 
 ///|
 /// Validate ContextJ rules for ZWNJ (U+200C) and ZWJ (U+200D)
-fn validate_contextj(codepoints : Array[Int]) -> Unit raise IdnaError {
-  for i, cp in codepoints {
-    if cp == 0x200C {
+fn validate_contextj(chars : Array[Char]) -> Unit raise IdnaError {
+  for i, c in chars {
+    if c == '\u{200C}' {
       // ZWNJ: Zero Width Non-Joiner
-      if not(is_valid_zwnj_context(codepoints, i)) {
+      if not(is_valid_zwnj_context(chars, i)) {
         raise InvalidJoiner
       }
-    } else if cp == 0x200D {
+    } else if c == '\u{200D}' {
       // ZWJ: Zero Width Joiner
-      if not(is_valid_zwj_context(codepoints, i)) {
+      if not(is_valid_zwj_context(chars, i)) {
         raise InvalidJoiner
       }
     }
@@ -167,16 +166,15 @@ fn validate_contextj(codepoints : Array[Int]) -> Unit raise IdnaError {
 /// Valid if:
 /// - There is a combining Virama (U+094D, etc.) before, OR
 /// - Surrounded by appropriate joining characters
-fn is_valid_zwnj_context(codepoints : Array[Int], pos : Int) -> Bool {
+fn is_valid_zwnj_context(chars : Array[Char], pos : Int) -> Bool {
   // Rule 1: After a Virama (e.g., for Indic scripts)
-  if pos > 0 && is_virama(codepoints[pos - 1]) {
+  if pos > 0 && is_virama(chars[pos - 1]) {
     return true
   }
 
   // Rule 2: Between joining characters
   // Look for L or D type before, and R or D type after
-  if has_left_joining_before(codepoints, pos) &&
-    has_right_joining_after(codepoints, pos) {
+  if has_left_joining_before(chars, pos) && has_right_joining_after(chars, pos) {
     return true
   }
   false
@@ -185,22 +183,22 @@ fn is_valid_zwnj_context(codepoints : Array[Int], pos : Int) -> Bool {
 ///|
 /// Check if ZWJ is in a valid context
 /// Valid if preceded by a Virama
-fn is_valid_zwj_context(codepoints : Array[Int], pos : Int) -> Bool {
+fn is_valid_zwj_context(chars : Array[Char], pos : Int) -> Bool {
   // ZWJ is valid if preceded by a combining Virama
-  pos > 0 && is_virama(codepoints[pos - 1])
+  pos > 0 && is_virama(chars[pos - 1])
 }
 
 ///|
-/// Check if a code point is a Virama (combining class 9)
-fn is_virama(cp : Int) -> Bool {
-  @ucd.lookup_ccc(cp) == 9
+/// Check if a character is a Virama (combining class 9)
+fn is_virama(c : Char) -> Bool {
+  @ucd.lookup_ccc(c) == 9
 }
 
 ///|
 /// Check if there's a left-joining or dual-joining character before position
-fn has_left_joining_before(codepoints : Array[Int], pos : Int) -> Bool {
+fn has_left_joining_before(chars : Array[Char], pos : Int) -> Bool {
   for i = pos - 1; i >= 0; i = i - 1 {
-    let jt = @idna_data.lookup_joining_type(codepoints[i])
+    let jt = @idna_data.lookup_joining_type(chars[i])
     match jt {
       @idna_data.LeftJoining | @idna_data.DualJoining => return true
       @idna_data.Transparent => continue
@@ -212,9 +210,9 @@ fn has_left_joining_before(codepoints : Array[Int], pos : Int) -> Bool {
 
 ///|
 /// Check if there's a right-joining or dual-joining character after position
-fn has_right_joining_after(codepoints : Array[Int], pos : Int) -> Bool {
-  for i = pos + 1; i < codepoints.length(); i = i + 1 {
-    let jt = @idna_data.lookup_joining_type(codepoints[i])
+fn has_right_joining_after(chars : Array[Char], pos : Int) -> Bool {
+  for i = pos + 1; i < chars.length(); i = i + 1 {
+    let jt = @idna_data.lookup_joining_type(chars[i])
     match jt {
       @idna_data.RightJoining | @idna_data.DualJoining => return true
       @idna_data.Transparent => continue
@@ -227,17 +225,17 @@ fn has_right_joining_after(codepoints : Array[Int], pos : Int) -> Bool {
 ///|
 /// Validate Bidi rules (RFC 5893) for a single label
 /// Note: For proper RFC 5893 compliance, use validate_domain_bidi() at domain level
-fn validate_bidi(codepoints : Array[Int]) -> Unit raise IdnaError {
-  if codepoints.length() == 0 {
+fn validate_bidi(chars : Array[Char]) -> Unit raise IdnaError {
+  if chars.length() == 0 {
     return
   }
 
   // Determine if this is an RTL label
-  let is_rtl_label = is_rtl_label_check(codepoints)
+  let is_rtl_label = is_rtl_label_check(chars)
   if is_rtl_label {
-    validate_rtl_label(codepoints)
+    validate_rtl_label(chars)
   } else {
-    validate_ltr_label(codepoints)
+    validate_ltr_label(chars)
   }
 }
 
@@ -250,8 +248,8 @@ fn validate_domain_bidi(labels : Array[String]) -> Unit raise IdnaError {
   let mut has_rtl_label = false
   for label in labels {
     if label.length() > 0 {
-      let cps = label_to_codepoints(label)
-      if is_rtl_label_check(cps) {
+      let chars = label_to_chars(label)
+      if is_rtl_label_check(chars) {
         has_rtl_label = true
         break
       }
@@ -268,13 +266,13 @@ fn validate_domain_bidi(labels : Array[String]) -> Unit raise IdnaError {
     if label.length() == 0 {
       continue
     }
-    let cps = label_to_codepoints(label)
-    let is_rtl = is_rtl_label_check(cps)
+    let chars = label_to_chars(label)
+    let is_rtl = is_rtl_label_check(chars)
     if is_rtl {
-      validate_rtl_label(cps)
+      validate_rtl_label(chars)
     } else {
       // LTR label in RTL domain - must start with L (stricter rule)
-      validate_ltr_label_in_rtl_domain(cps)
+      validate_ltr_label_in_rtl_domain(chars)
     }
   }
 }
@@ -283,15 +281,15 @@ fn validate_domain_bidi(labels : Array[String]) -> Unit raise IdnaError {
 /// Validate LTR label that appears in an RTL domain
 /// Stricter than regular LTR validation: first char must be L (not EN/ON/etc.)
 fn validate_ltr_label_in_rtl_domain(
-  codepoints : Array[Int],
+  chars : Array[Char],
 ) -> Unit raise IdnaError {
-  if codepoints.length() == 0 {
+  if chars.length() == 0 {
     return
   }
 
   // In RTL domain, LTR labels must start with L (not EN, ES, etc.)
   // This is stricter than pure LTR domain rules
-  let first_bc = @idna_data.lookup_bidi_class(codepoints[0])
+  let first_bc = @idna_data.lookup_bidi_class(chars[0])
   match first_bc {
     @idna_data.L => ()
     _ => raise InvalidBidi // B1 - first char must be L in RTL domain context
@@ -301,8 +299,8 @@ fn validate_ltr_label_in_rtl_domain(
   let mut last_non_nsm_bc = first_bc
 
   // Same allowed classes as regular LTR, but no R/AL/AN
-  for cp in codepoints {
-    let bc = @idna_data.lookup_bidi_class(cp)
+  for c in chars {
+    let bc = @idna_data.lookup_bidi_class(c)
     match bc {
       @idna_data.L
       | @idna_data.EN
@@ -326,9 +324,9 @@ fn validate_ltr_label_in_rtl_domain(
 
 ///|
 /// Check if label is RTL (contains R, AL, or AN characters)
-fn is_rtl_label_check(codepoints : Array[Int]) -> Bool {
-  for cp in codepoints {
-    let bc = @idna_data.lookup_bidi_class(cp)
+fn is_rtl_label_check(chars : Array[Char]) -> Bool {
+  for c in chars {
+    let bc = @idna_data.lookup_bidi_class(c)
     match bc {
       @idna_data.R | @idna_data.AL | @idna_data.AN => return true
       _ => continue
@@ -339,9 +337,9 @@ fn is_rtl_label_check(codepoints : Array[Int]) -> Bool {
 
 ///|
 /// Validate an RTL label according to RFC 5893
-fn validate_rtl_label(codepoints : Array[Int]) -> Unit raise IdnaError {
+fn validate_rtl_label(chars : Array[Char]) -> Unit raise IdnaError {
   // Rule 1 (B1): First character must be R or AL
-  let first_bc = @idna_data.lookup_bidi_class(codepoints[0])
+  let first_bc = @idna_data.lookup_bidi_class(chars[0])
   match first_bc {
     @idna_data.R | @idna_data.AL => ()
     _ => raise InvalidBidi
@@ -352,8 +350,8 @@ fn validate_rtl_label(codepoints : Array[Int]) -> Unit raise IdnaError {
   let mut last_non_nsm_bc : @idna_data.BidiClass = first_bc
   let mut has_en = false
   let mut has_an = false
-  for cp in codepoints {
-    let bc = @idna_data.lookup_bidi_class(cp)
+  for c in chars {
+    let bc = @idna_data.lookup_bidi_class(c)
     match bc {
       @idna_data.R
       | @idna_data.AL
@@ -395,14 +393,14 @@ fn validate_rtl_label(codepoints : Array[Int]) -> Unit raise IdnaError {
 
 ///|
 /// Validate an LTR label according to RFC 5893
-fn validate_ltr_label(codepoints : Array[Int]) -> Unit raise IdnaError {
-  if codepoints.length() == 0 {
+fn validate_ltr_label(chars : Array[Char]) -> Unit raise IdnaError {
+  if chars.length() == 0 {
     return
   }
 
   // Rule 5 (B5): First character must be L
   // (Relaxed for pure ASCII/neutral labels in pure LTR domains)
-  let first_bc = @idna_data.lookup_bidi_class(codepoints[0])
+  let first_bc = @idna_data.lookup_bidi_class(chars[0])
   match first_bc {
     @idna_data.L => ()
     // Allow pure ASCII/neutral labels (existing behavior for pure LTR domains)
@@ -420,8 +418,8 @@ fn validate_ltr_label(codepoints : Array[Int]) -> Unit raise IdnaError {
   let mut last_non_nsm_bc = first_bc
 
   // Rule 5: Only certain Bidi classes allowed in LTR label
-  for cp in codepoints {
-    let bc = @idna_data.lookup_bidi_class(cp)
+  for c in chars {
+    let bc = @idna_data.lookup_bidi_class(c)
     match bc {
       @idna_data.L
       | @idna_data.EN

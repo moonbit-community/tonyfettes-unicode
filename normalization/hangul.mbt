@@ -39,69 +39,79 @@ let hangul_n_count : Int = 588
 let hangul_s_count : Int = 11172
 
 ///|
-/// Check if a code point is a precomposed Hangul syllable
-fn is_hangul_syllable(cp : Int) -> Bool {
+/// Check if a character is a precomposed Hangul syllable
+fn is_hangul_syllable(c : Char) -> Bool {
+  let cp = c.to_int()
   cp >= hangul_s_base && cp < hangul_s_base + hangul_s_count
 }
 
 ///|
-/// Check if a code point is a leading consonant jamo (L)
-fn is_hangul_l(cp : Int) -> Bool {
+/// Check if a character is a leading consonant jamo (L)
+fn is_hangul_l(c : Char) -> Bool {
+  let cp = c.to_int()
   cp >= hangul_l_base && cp < hangul_l_base + hangul_l_count
 }
 
 ///|
-/// Check if a code point is a vowel jamo (V)
-fn is_hangul_v(cp : Int) -> Bool {
+/// Check if a character is a vowel jamo (V)
+fn is_hangul_v(c : Char) -> Bool {
+  let cp = c.to_int()
   cp >= hangul_v_base && cp < hangul_v_base + hangul_v_count
 }
 
 ///|
-/// Check if a code point is a trailing consonant jamo (T)
+/// Check if a character is a trailing consonant jamo (T)
 /// Note: T_BASE (0x11A7) itself is not a valid trailing jamo
-fn is_hangul_t(cp : Int) -> Bool {
+fn is_hangul_t(c : Char) -> Bool {
+  let cp = c.to_int()
   cp > hangul_t_base && cp < hangul_t_base + hangul_t_count
 }
 
 ///|
-/// Check if a code point is an LV syllable (no trailing consonant)
-fn is_hangul_lv(cp : Int) -> Bool {
-  if not(is_hangul_syllable(cp)) {
+/// Check if a character is an LV syllable (no trailing consonant)
+fn is_hangul_lv(c : Char) -> Bool {
+  if not(is_hangul_syllable(c)) {
     return false
   }
-  (cp - hangul_s_base) % hangul_t_count == 0
+  (c.to_int() - hangul_s_base) % hangul_t_count == 0
 }
 
 ///|
 /// Algorithmically decompose a Hangul syllable into jamo
 /// Returns L + V for LV syllables, L + V + T for LVT syllables
-fn decompose_hangul(syllable : Int) -> Array[Int] {
-  let s_index = syllable - hangul_s_base
+fn decompose_hangul(syllable : Char) -> Array[Char] {
+  let s_index = syllable.to_int() - hangul_s_base
   let l = hangul_l_base + s_index / hangul_n_count
   let v = hangul_v_base + s_index % hangul_n_count / hangul_t_count
   let t_index = s_index % hangul_t_count
   if t_index == 0 {
-    [l, v] // LV syllable
+    [l.unsafe_to_char(), v.unsafe_to_char()] // LV syllable
   } else {
-    [l, v, hangul_t_base + t_index] // LVT syllable
+    [
+      l.unsafe_to_char(),
+      v.unsafe_to_char(),
+      (hangul_t_base + t_index).unsafe_to_char(),
+    ] // LVT syllable
   }
 }
 
 ///|
-/// Try to compose two code points into a Hangul syllable
+/// Try to compose two characters into a Hangul syllable
 /// Returns Some(syllable) if composition is possible, None otherwise
-fn try_compose_hangul(first : Int, second : Int) -> Int? {
+fn try_compose_hangul(first : Char, second : Char) -> Char? {
   // L + V -> LV syllable
   if is_hangul_l(first) && is_hangul_v(second) {
-    let l_index = first - hangul_l_base
-    let v_index = second - hangul_v_base
+    let l_index = first.to_int() - hangul_l_base
+    let v_index = second.to_int() - hangul_v_base
     return Some(
-      hangul_s_base + (l_index * hangul_v_count + v_index) * hangul_t_count,
+      (hangul_s_base + (l_index * hangul_v_count + v_index) * hangul_t_count).unsafe_to_char(),
     )
   }
   // LV + T -> LVT syllable
   if is_hangul_lv(first) && is_hangul_t(second) {
-    return Some(first + (second - hangul_t_base))
+    return Some(
+      (first.to_int() + (second.to_int() - hangul_t_base)).unsafe_to_char(),
+    )
   }
   None
 }

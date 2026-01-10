@@ -433,9 +433,11 @@ let comp_exclusions : FixedArray[Int] = [
 ]
 
 ///|
-/// Look up composition for a pair of code points
+/// Look up composition for a pair of characters
 /// Returns Some(composed) if composition exists, None otherwise
-pub fn lookup_composition(starter : Int, combining : Int) -> Int? {
+pub fn lookup_composition(starter : Char, combining : Char) -> Char? {
+  let starter_cp = starter.to_int()
+  let combining_cp = combining.to_int()
   // Binary search for the pair
   let mut left = 0
   let mut right = comp_firsts.length() - 1
@@ -443,21 +445,23 @@ pub fn lookup_composition(starter : Int, combining : Int) -> Int? {
     let mid = (left + right) / 2
     let mid_first = comp_firsts[mid]
     let mid_second = comp_seconds[mid]
-    if starter < mid_first || (starter == mid_first && combining < mid_second) {
+    if starter_cp < mid_first ||
+      (starter_cp == mid_first && combining_cp < mid_second) {
       right = mid - 1
-    } else if starter > mid_first ||
-      (starter == mid_first && combining > mid_second) {
+    } else if starter_cp > mid_first ||
+      (starter_cp == mid_first && combining_cp > mid_second) {
       left = mid + 1
     } else {
-      return Some(comp_results[mid])
+      return Some(comp_results[mid].unsafe_to_char())
     }
   }
   None
 }
 
 ///|
-/// Check if a code point is excluded from composition
-pub fn is_composition_excluded(cp : Int) -> Bool {
+/// Check if a character is excluded from composition
+pub fn is_composition_excluded(c : Char) -> Bool {
+  let cp = c.to_int()
   // Binary search in exclusions
   let mut left = 0
   let mut right = comp_exclusions.length() - 1

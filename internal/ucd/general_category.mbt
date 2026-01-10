@@ -1046,10 +1046,11 @@ let gc_values : FixedArray[Int] = [
 ]
 
 ///|
-/// Look up General_Category ordinal for a code point
+/// Look up General_Category ordinal for a character
 /// Returns ordinal value (0-29) corresponding to GeneralCategory enum
-/// Default is 29 (Cn = Unassigned) for code points beyond data range
-pub fn lookup_general_category(cp : Int) -> Int {
+/// Default is 29 (Cn = Unassigned) for characters beyond data range
+pub fn lookup_general_category(c : Char) -> Int {
+  let cp = c.to_int()
   // Handle code points beyond our data range
   if cp < 0 || cp > gc_range_ends[gc_range_ends.length() - 1] {
     return 29 // Cn (Unassigned)

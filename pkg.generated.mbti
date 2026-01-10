@@ -2,13 +2,13 @@
 package "tonyfettes/unicode"
 
 // Values
-pub fn general_category(Int) -> GeneralCategory
+pub fn general_category(Char) -> GeneralCategory
 
-pub fn to_simple_lowercase(Int) -> Int
+pub fn to_simple_lowercase(Char) -> Char
 
-pub fn to_simple_titlecase(Int) -> Int
+pub fn to_simple_titlecase(Char) -> Char
 
-pub fn to_simple_uppercase(Int) -> Int
+pub fn to_simple_uppercase(Char) -> Char
 
 // Errors
 
@@ -45,15 +45,21 @@ pub(all) enum GeneralCategory {
   Co
   Cn
 }
-pub fn GeneralCategory::is_letter(Self) -> Bool
-pub fn GeneralCategory::is_mark(Self) -> Bool
-pub fn GeneralCategory::is_number(Self) -> Bool
-pub fn GeneralCategory::is_other(Self) -> Bool
-pub fn GeneralCategory::is_punctuation(Self) -> Bool
-pub fn GeneralCategory::is_separator(Self) -> Bool
-pub fn GeneralCategory::is_symbol(Self) -> Bool
+pub fn GeneralCategory::group(Self) -> GeneralCategoryGroup
 pub impl Eq for GeneralCategory
 pub impl Show for GeneralCategory
+
+pub(all) enum GeneralCategoryGroup {
+  L
+  M
+  N
+  Z
+  P
+  S
+  C
+}
+pub impl Eq for GeneralCategoryGroup
+pub impl Show for GeneralCategoryGroup
 
 // Type aliases
 

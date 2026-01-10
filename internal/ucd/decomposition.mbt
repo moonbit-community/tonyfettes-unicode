@@ -2372,8 +2372,9 @@ let decomp_data : FixedArray[Int] = [
 ]
 
 ///|
-/// Binary search for code point index, returns -1 if not found
-fn find_decomp_index(cp : Int) -> Int {
+/// Binary search for character index, returns -1 if not found
+fn find_decomp_index(c : Char) -> Int {
+  let cp = c.to_int()
   let mut left = 0
   let mut right = decomp_cps.length() - 1
   while left <= right {
@@ -2391,10 +2392,10 @@ fn find_decomp_index(cp : Int) -> Int {
 }
 
 ///|
-/// Get canonical decomposition for a code point
+/// Get canonical decomposition for a character
 /// Returns None if no decomposition exists
-pub fn get_canonical_decomposition(cp : Int) -> Array[Int]? {
-  let idx = find_decomp_index(cp)
+pub fn get_canonical_decomposition(c : Char) -> Array[Char]? {
+  let idx = find_decomp_index(c)
   if idx < 0 {
     return None
   }
@@ -2403,18 +2404,18 @@ pub fn get_canonical_decomposition(cp : Int) -> Array[Int]? {
     return None
   }
   let start = decomp_data_starts[idx]
-  let result : Array[Int] = []
+  let result : Array[Char] = []
   for i = 0; i < len; i = i + 1 {
-    result.push(decomp_data[start + i])
+    result.push(decomp_data[start + i].unsafe_to_char())
   }
   Some(result)
 }
 
 ///|
-/// Get compatibility decomposition for a code point
+/// Get compatibility decomposition for a character
 /// Returns None if no decomposition exists
-pub fn get_compat_decomposition(cp : Int) -> Array[Int]? {
-  let idx = find_decomp_index(cp)
+pub fn get_compat_decomposition(c : Char) -> Array[Char]? {
+  let idx = find_decomp_index(c)
   if idx < 0 {
     return None
   }
@@ -2426,9 +2427,9 @@ pub fn get_compat_decomposition(cp : Int) -> Array[Int]? {
   // Compat data comes after canonical data
   let canonical_len = decomp_canonical_lens[idx]
   let start = decomp_data_starts[idx] + canonical_len
-  let result : Array[Int] = []
+  let result : Array[Char] = []
   for i = 0; i < compat_len; i = i + 1 {
-    result.push(decomp_data[start + i])
+    result.push(decomp_data[start + i].unsafe_to_char())
   }
   Some(result)
 }

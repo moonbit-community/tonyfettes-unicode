@@ -4070,8 +4070,9 @@ let idna_mapping_data : FixedArray[Int] = [
 ]
 
 ///|
-/// Binary search for code point in IDNA ranges
-fn find_idna_range(cp : Int) -> Int {
+/// Binary search for character in IDNA ranges
+fn find_idna_range(c : Char) -> Int {
+  let cp = c.to_int()
   let mut left = 0
   let mut right = idna_range_starts.length() - 1
   while left <= right {
@@ -4105,10 +4106,10 @@ fn status_from_code(code : Int) -> IdnaStatus {
 }
 
 ///|
-/// Look up IDNA status and mapping for a code point
+/// Look up IDNA status and mapping for a character
 /// Returns (status, mapping) where mapping is empty array if no mapping
-pub fn lookup_idna_mapping(cp : Int) -> (IdnaStatus, Array[Int]) {
-  let idx = find_idna_range(cp)
+pub fn lookup_idna_mapping(c : Char) -> (IdnaStatus, Array[Char]) {
+  let idx = find_idna_range(c)
   if idx < 0 {
     // Not found, treat as disallowed
     return (Disallowed, [])
@@ -4116,9 +4117,9 @@ pub fn lookup_idna_mapping(cp : Int) -> (IdnaStatus, Array[Int]) {
   let status = status_from_code(idna_range_statuses[idx])
   let mapping_start = idna_mapping_starts[idx]
   let mapping_len = idna_mapping_lens[idx]
-  let mapping : Array[Int] = []
+  let mapping : Array[Char] = []
   for i = 0; i < mapping_len; i = i + 1 {
-    mapping.push(idna_mapping_data[mapping_start + i])
+    mapping.push(idna_mapping_data[mapping_start + i].unsafe_to_char())
   }
   (status, mapping)
 }

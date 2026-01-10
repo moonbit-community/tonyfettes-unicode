@@ -92,9 +92,9 @@ fn ordinal_to_gc(ordinal : Int) -> GeneralCategory {
 }
 
 ///|
-/// Get the General_Category for a code point
-pub fn general_category(cp : Int) -> GeneralCategory {
-  ordinal_to_gc(@ucd_data.lookup_general_category(cp))
+/// Get the General_Category for a character
+pub fn general_category(c : Char) -> GeneralCategory {
+  ordinal_to_gc(@ucd_data.lookup_general_category(c))
 }
 
 ///|

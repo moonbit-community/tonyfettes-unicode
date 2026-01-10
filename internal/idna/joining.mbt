@@ -161,8 +161,9 @@ let joining_range_types : FixedArray[Int] = [
 ]
 
 ///|
-/// Binary search for code point in joining ranges
-fn find_joining_range(cp : Int) -> Int {
+/// Binary search for character in joining ranges
+fn find_joining_range(c : Char) -> Int {
+  let cp = c.to_int()
   let mut left = 0
   let mut right = joining_range_starts.length() - 1
   while left <= right {
@@ -194,9 +195,9 @@ fn joining_from_code(code : Int) -> JoiningType {
 }
 
 ///|
-/// Look up Joining_Type for a code point
-pub fn lookup_joining_type(cp : Int) -> JoiningType {
-  let idx = find_joining_range(cp)
+/// Look up Joining_Type for a character
+pub fn lookup_joining_type(c : Char) -> JoiningType {
+  let idx = find_joining_range(c)
   if idx < 0 {
     return NonJoining
   }

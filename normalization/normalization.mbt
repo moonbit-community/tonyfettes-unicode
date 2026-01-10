@@ -17,14 +17,24 @@ pub(all) enum NormalizationForm {
 } derive(Eq, Show)
 
 ///|
+/// Convert array of characters to string
+fn chars_to_string(chars : Array[Char]) -> String {
+  let sb = StringBuilder::new()
+  for c in chars {
+    sb.write_char(c)
+  }
+  sb.to_string()
+}
+
+///|
 /// Normalize a string to NFD (Canonical Decomposition)
 ///
 /// Characters are decomposed to their canonical equivalents and
 /// combining marks are reordered by Canonical Combining Class.
 pub fn nfd(s : String) -> String {
-  let codepoints = decompose_string(s, compatibility=false)
-  canonical_order(codepoints)
-  @codepoint.codepoints_to_string(codepoints)
+  let chars = decompose_string(s, compatibility=false)
+  canonical_order(chars)
+  chars_to_string(chars)
 }
 
 ///|
@@ -34,10 +44,10 @@ pub fn nfd(s : String) -> String {
 /// recomposed using canonical composition rules.
 /// This is the most commonly used normalization form.
 pub fn nfc(s : String) -> String {
-  let codepoints = decompose_string(s, compatibility=false)
-  canonical_order(codepoints)
-  let composed = canonical_compose(codepoints)
-  @codepoint.codepoints_to_string(composed)
+  let chars = decompose_string(s, compatibility=false)
+  canonical_order(chars)
+  let composed = canonical_compose(chars)
+  chars_to_string(composed)
 }
 
 ///|
@@ -47,9 +57,9 @@ pub fn nfc(s : String) -> String {
 /// (including formatting variants like superscripts, fractions, etc.)
 /// and combining marks are reordered.
 pub fn nfkd(s : String) -> String {
-  let codepoints = decompose_string(s, compatibility=true)
-  canonical_order(codepoints)
-  @codepoint.codepoints_to_string(codepoints)
+  let chars = decompose_string(s, compatibility=true)
+  canonical_order(chars)
+  chars_to_string(chars)
 }
 
 ///|
@@ -58,10 +68,10 @@ pub fn nfkd(s : String) -> String {
 /// Characters are decomposed to compatibility equivalents, reordered,
 /// then recomposed. Often used for identifier comparison.
 pub fn nfkc(s : String) -> String {
-  let codepoints = decompose_string(s, compatibility=true)
-  canonical_order(codepoints)
-  let composed = canonical_compose(codepoints)
-  @codepoint.codepoints_to_string(composed)
+  let chars = decompose_string(s, compatibility=true)
+  canonical_order(chars)
+  let composed = canonical_compose(chars)
+  chars_to_string(composed)
 }
 
 ///|

@@ -255,8 +255,9 @@ let idna_mapping_data : FixedArray[Int] = [
     code += "\n]\n\n"
 
     code += '''///|
-/// Binary search for code point in IDNA ranges
-fn find_idna_range(cp : Int) -> Int {
+/// Binary search for character in IDNA ranges
+fn find_idna_range(c : Char) -> Int {
+  let cp = c.to_int()
   let mut left = 0
   let mut right = idna_range_starts.length() - 1
 
@@ -293,10 +294,10 @@ fn status_from_code(code : Int) -> IdnaStatus {
 }
 
 ///|
-/// Look up IDNA status and mapping for a code point
+/// Look up IDNA status and mapping for a character
 /// Returns (status, mapping) where mapping is empty array if no mapping
-pub fn lookup_idna_mapping(cp : Int) -> (IdnaStatus, Array[Int]) {
-  let idx = find_idna_range(cp)
+pub fn lookup_idna_mapping(c : Char) -> (IdnaStatus, Array[Char]) {
+  let idx = find_idna_range(c)
   if idx < 0 {
     // Not found, treat as disallowed
     return (Disallowed, [])
@@ -306,9 +307,9 @@ pub fn lookup_idna_mapping(cp : Int) -> (IdnaStatus, Array[Int]) {
   let mapping_start = idna_mapping_starts[idx]
   let mapping_len = idna_mapping_lens[idx]
 
-  let mapping : Array[Int] = []
+  let mapping : Array[Char] = []
   for i = 0; i < mapping_len; i = i + 1 {
-    mapping.push(idna_mapping_data[mapping_start + i])
+    mapping.push(idna_mapping_data[mapping_start + i].unsafe_to_char())
   }
 
   (status, mapping)
@@ -392,8 +393,9 @@ let bidi_range_classes : FixedArray[Int] = [
     code += "\n]\n\n"
 
     code += '''///|
-/// Binary search for code point in Bidi ranges
-fn find_bidi_range(cp : Int) -> Int {
+/// Binary search for character in Bidi ranges
+fn find_bidi_range(c : Char) -> Int {
+  let cp = c.to_int()
   let mut left = 0
   let mut right = bidi_range_starts.length() - 1
 
@@ -434,9 +436,9 @@ fn bidi_from_code(code : Int) -> BidiClass {
 }
 
 ///|
-/// Look up Bidi_Class for a code point
-pub fn lookup_bidi_class(cp : Int) -> BidiClass {
-  let idx = find_bidi_range(cp)
+/// Look up Bidi_Class for a character
+pub fn lookup_bidi_class(c : Char) -> BidiClass {
+  let idx = find_bidi_range(c)
   if idx < 0 {
     return Other
   }
@@ -444,9 +446,9 @@ pub fn lookup_bidi_class(cp : Int) -> BidiClass {
 }
 
 ///|
-/// Check if a code point has RTL Bidi class (R or AL)
-pub fn is_rtl(cp : Int) -> Bool {
-  match lookup_bidi_class(cp) {
+/// Check if a character has RTL Bidi class (R or AL)
+pub fn is_rtl(c : Char) -> Bool {
+  match lookup_bidi_class(c) {
     R | AL => true
     _ => false
   }
@@ -454,9 +456,9 @@ pub fn is_rtl(cp : Int) -> Bool {
 
 ///|
 /// Check if a domain contains any RTL characters
-pub fn has_rtl(codepoints : Array[Int]) -> Bool {
-  for cp in codepoints {
-    if is_rtl(cp) {
+pub fn has_rtl(chars : Array[Char]) -> Bool {
+  for c in chars {
+    if is_rtl(c) {
       return true
     }
   }
@@ -530,8 +532,9 @@ let joining_range_types : FixedArray[Int] = [
     code += "\n]\n\n"
 
     code += '''///|
-/// Binary search for code point in joining ranges
-fn find_joining_range(cp : Int) -> Int {
+/// Binary search for character in joining ranges
+fn find_joining_range(c : Char) -> Int {
+  let cp = c.to_int()
   let mut left = 0
   let mut right = joining_range_starts.length() - 1
 
@@ -566,9 +569,9 @@ fn joining_from_code(code : Int) -> JoiningType {
 }
 
 ///|
-/// Look up Joining_Type for a code point
-pub fn lookup_joining_type(cp : Int) -> JoiningType {
-  let idx = find_joining_range(cp)
+/// Look up Joining_Type for a character
+pub fn lookup_joining_type(c : Char) -> JoiningType {
+  let idx = find_joining_range(c)
   if idx < 0 {
     return NonJoining
   }

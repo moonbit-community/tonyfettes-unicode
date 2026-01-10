@@ -200,9 +200,10 @@ let mark_ends : FixedArray[Int] = [
 ]
 
 ///|
-/// Look up Canonical Combining Class for a code point
+/// Look up Canonical Combining Class for a character
 /// Returns 0 (starter) for most characters
-pub fn lookup_ccc(cp : Int) -> Int {
+pub fn lookup_ccc(c : Char) -> Int {
+  let cp = c.to_int()
   // Binary search through ranges
   let mut left = 0
   let mut right = ccc_starts.length() - 1
@@ -222,9 +223,10 @@ pub fn lookup_ccc(cp : Int) -> Int {
 }
 
 ///|
-/// Check if a code point is a Mark character (General_Category = Mn, Mc, or Me)
+/// Check if a character is a Mark character (General_Category = Mn, Mc, or Me)
 /// This is used for the IDNA "no leading combining mark" validation (V5/V6)
-pub fn is_mark(cp : Int) -> Bool {
+pub fn is_mark(c : Char) -> Bool {
+  let cp = c.to_int()
   // Binary search through mark ranges
   let mut left = 0
   let mut right = mark_starts.length() - 1

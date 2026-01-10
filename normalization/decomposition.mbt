@@ -3,31 +3,31 @@
 /// Implements recursive decomposition for NFD/NFKD
 
 ///|
-/// Recursively decompose a single code point
-/// Returns array of code points in fully decomposed form
-fn decompose_codepoint(cp : Int, compatibility~ : Bool) -> Array[Int] {
+/// Recursively decompose a single character
+/// Returns array of characters in fully decomposed form
+fn decompose_char(c : Char, compatibility~ : Bool) -> Array[Char] {
   // Handle Hangul syllables algorithmically
-  if is_hangul_syllable(cp) {
-    return decompose_hangul(cp)
+  if is_hangul_syllable(c) {
+    return decompose_hangul(c)
   }
 
   // Look up decomposition mapping
-  let mapping : Array[Int]? = if compatibility {
+  let mapping : Array[Char]? = if compatibility {
     // For compatibility, first try compat decomposition, then canonical
-    match @ucd.get_compat_decomposition(cp) {
+    match @ucd.get_compat_decomposition(c) {
       Some(d) => Some(d)
-      None => @ucd.get_canonical_decomposition(cp)
+      None => @ucd.get_canonical_decomposition(c)
     }
   } else {
-    @ucd.get_canonical_decomposition(cp)
+    @ucd.get_canonical_decomposition(c)
   }
   match mapping {
-    None => [cp] // No decomposition, return as-is
+    None => [c] // No decomposition, return as-is
     Some(decomposed) => {
       // Recursively decompose each component
-      let result : Array[Int] = []
+      let result : Array[Char] = []
       for d in decomposed {
-        result.append(decompose_codepoint(d, compatibility~))
+        result.append(decompose_char(d, compatibility~))
       }
       result
     }
@@ -35,13 +35,12 @@ fn decompose_codepoint(cp : Int, compatibility~ : Bool) -> Array[Int] {
 }
 
 ///|
-/// Decompose a string to array of code points
+/// Decompose a string to array of characters
 /// This is the first step for all normalization forms
-fn decompose_string(s : String, compatibility~ : Bool) -> Array[Int] {
-  let result : Array[Int] = []
+fn decompose_string(s : String, compatibility~ : Bool) -> Array[Char] {
+  let result : Array[Char] = []
   for c in s {
-    let cp = c.to_int()
-    result.append(decompose_codepoint(cp, compatibility~))
+    result.append(decompose_char(c, compatibility~))
   }
   result
 }
