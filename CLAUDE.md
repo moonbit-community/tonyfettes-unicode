@@ -4,58 +4,77 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-MoonBit Unicode library (`tonyfettes/unicode`) implementing Unicode standards:
+A MoonBit library implementing Unicode standards: text normalization (UAX #15), Punycode (RFC 3492), and IDNA (UTS #46). Targets Unicode 16.0.0.
 
-- **Normalization** (UAX #15): NFD, NFC, NFKD, NFKC forms
-- **Punycode** (RFC 3492): Encoding/decoding for internationalized domain names
-- **IDNA** (UTS #46): Internationalized Domain Names in Applications processing
-
-## Build and Test Commands
+## Build Commands
 
 ```bash
-moon check          # Type check the project
+moon check          # Type check
 moon test           # Run all tests
-moon test -p <pkg>  # Run tests for a specific package (e.g., moon test -p normalization)
+moon test -p <pkg>  # Test specific package (e.g., moon test -p punycode)
 moon fmt            # Format code
-moon doc            # Generate documentation
+moon build          # Build project
+moon info           # Regenerate pkg.generated.mbti files
 ```
 
 ## Architecture
 
 ### Public Packages
 
-- `codepoint/` - CodePoint type wrapper around Int with validation
-- `normalization/` - Unicode normalization (NFD/NFC/NFKD/NFKC)
-- `punycode/` - RFC 3492 Punycode encoding/decoding
-- `idna/` - UTS #46 domain name processing (uses punycode + normalization)
+- **punycode/**: RFC 3492 Punycode encoding/decoding
+  - `encode(String) -> String raise PunycodeError`
+  - `decode(String) -> String raise PunycodeError`
 
-### Internal Packages
+- **normalization/**: UAX #15 Unicode normalization
+  - `nfc()`, `nfd()`, `nfkc()`, `nfkd()` - normalization forms
+  - `normalize()`, `is_normalized()` - general API
 
-- `internal/ucd/` - Unicode Character Database lookup tables (CCC, decomposition, composition)
-- `internal/idna/` - IDNA-specific data (mapping, bidi class, joining type)
-- `internal/fuzz/` - Shared fuzz testing utilities
+- **idna/**: UTS #46 IDNA processing
+  - `to_ascii()` - convert domain to ASCII (Punycode)
+  - `to_unicode()` - convert domain from Punycode
 
-### Generated Data Files
+- **Root package**: Case mapping and general category
+  - `to_simple_uppercase/lowercase/titlecase(Char) -> Char`
+  - `general_category(Char) -> GeneralCategory`
 
-Unicode data tables in `internal/ucd/` and `internal/idna/` are **generated** from official Unicode data files by Python scripts:
+### Internal Data Packages (auto-generated)
+
+- **internal/ucd/**: Unicode Character Database lookup tables (CCC, decomposition, composition, case mapping, general category)
+- **internal/idna/**: IDNA-specific data (mapping, bidi, joining rules)
+
+### Dependencies
+
+```
+idna -> normalization -> internal/ucd
+idna -> punycode
+idna -> internal/idna
+```
+
+## Code Generation
+
+Unicode data tables are generated from official Unicode source files:
 
 ```bash
-python3 scripts/generate_ucd.py   # Generates internal/ucd/*.mbt (CCC, decomposition, composition)
-python3 scripts/generate_idna.py  # Generates internal/idna/*.mbt (mapping, bidi, joining)
+python3 scripts/generate_ucd.py       # Generate internal/ucd/*.mbt
+python3 scripts/generate_idna.py      # Generate internal/idna/*.mbt
+python3 scripts/generate_normalization_tests.py  # Generate conformance tests
+python3 scripts/generate_idna_tests.py           # Generate IDNA tests
 ```
 
-Downloaded Unicode data is cached in `scripts/.cache/`. Data files target Unicode 16.0.0.
+Downloaded Unicode data is cached in `scripts/.cache/`.
 
-### Key Implementation Details
+## Publishing
 
-- **Hangul syllables**: Handled algorithmically (not in lookup tables) - see `normalization/hangul.mbt`
-- **Binary search**: All lookup functions use binary search over sorted ranges. **Critical**: Generated data arrays must be sorted by start code point - the generation scripts sort entries before writing.
-- **Fuzz testing**: Property-based tests in `*_test.mbt` files verify invariants (idempotence, canonical equivalence, CCC ordering)
-- **IDNA nontransitional mode**: Deviation characters (like ZWNJ U+200C) are kept, not removed
-
-## Package Dependencies
-
+```bash
+python3 scripts/collect_publish.py    # Collect files into publish/ directory
 ```
-idna -> punycode, normalization, internal/idna, internal/ucd
-normalization -> internal/ucd
-```
+
+## Testing Notes
+
+- Unit tests: `*_test.mbt` files with `test` blocks and `inspect()` assertions
+- Conformance tests: Large generated test files (millions of lines) from Unicode test suites
+- Fuzz tests: `fuzz_test.mbt` files for property-based testing
+
+## Commit Convention
+
+Uses conventional commits: `fix:`, `feat:`, `refactor:`, `test:`, `chore:`, `release:`
