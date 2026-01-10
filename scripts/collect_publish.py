@@ -10,12 +10,12 @@ PUBLISH = ROOT / "publish"
 
 # Packages to include (with their source .mbt files)
 PACKAGES = {
-    "codepoint": ["codepoint.mbt"],
     "punycode": ["punycode.mbt"],
     "normalization": ["normalization.mbt", "decomposition.mbt", "composition.mbt",
                       "canonical_order.mbt", "hangul.mbt"],
     "idna": ["idna.mbt", "processing.mbt", "validation.mbt"],
-    "internal/ucd": ["ccc.mbt", "decomposition.mbt", "composition.mbt"],
+    "internal/ucd": ["ccc.mbt", "decomposition.mbt", "composition.mbt",
+                     "case_mapping.mbt", "general_category.mbt"],
     "internal/idna": ["mapping.mbt", "bidi.mbt", "joining.mbt"],
 }
 
