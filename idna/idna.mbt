@@ -6,7 +6,7 @@
 ///|
 /// Error types for IDNA processing
 pub(all) suberror IdnaError {
-  PunycodeError(String)
+  PunycodeError(@punycode.PunycodeError)
   DisallowedCodePoint(cp~ : Int)
   InvalidLabel(String)
   InvalidHyphen
@@ -115,7 +115,7 @@ fn process_label_for_ascii(
     // Decode ACE label to get Unicode content
     let punycode_part = get_substring_after_prefix(label, 4)
     let decoded = @punycode.decode(punycode_part) catch {
-      error => raise PunycodeError("\{error}")
+      error => raise PunycodeError(error)
     }
 
     // Apply mapping and normalize
@@ -202,7 +202,7 @@ fn encode_label_to_ascii(label : String) -> String raise IdnaError {
   } else {
     // Encode to Punycode
     let encoded = @punycode.encode(label.to_lower()) catch {
-      error => raise PunycodeError("\{error}")
+      error => raise PunycodeError(error)
     }
     ace_prefix + encoded
   }
@@ -221,7 +221,7 @@ fn label_to_unicode(
     // Decode Punycode - skip "xn--" prefix
     let punycode_part = get_substring_after_prefix(label, 4)
     let decoded = @punycode.decode(punycode_part) catch {
-      error => raise PunycodeError("\{error}")
+      error => raise PunycodeError(error)
     }
     decoded
   } else {
