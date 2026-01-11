@@ -4,25 +4,21 @@ Generate MoonBit source files for IDNA (UTS #46) from Unicode data files.
 
 This script downloads and parses:
 - IdnaMappingTable.txt: IDNA status and mappings
-- DerivedBidiClass.txt: Bidi_Class property (for Bidi validation)
 - DerivedJoiningType.txt: Joining_Type property (for ContextJ)
 
 And generates:
 - internal/idna/mapping.mbt: IDNA mapping table lookup
-- internal/idna/bidi.mbt: Bidi_Class lookup
 - internal/idna/joining.mbt: Joining_Type lookup
+
+Note: Bidi_Class lookup is now provided by the bidi package.
 """
 
-import os
-import sys
 import urllib.request
 from pathlib import Path
-from collections import defaultdict
 
 # Unicode data URLs
 UNICODE_VERSION = "16.0.0"
 IDNA_URL = f"https://www.unicode.org/Public/idna/{UNICODE_VERSION}/IdnaMappingTable.txt"
-BIDI_URL = f"https://www.unicode.org/Public/{UNICODE_VERSION}/ucd/extracted/DerivedBidiClass.txt"
 JOINING_URL = f"https://www.unicode.org/Public/{UNICODE_VERSION}/ucd/extracted/DerivedJoiningType.txt"
 
 
@@ -84,33 +80,6 @@ def parse_idna_mapping_table(content: str) -> list[tuple]:
             mapping = [int(cp, 16) for cp in parts[2].split()]
 
         entries.append((start, end, status, mapping))
-
-    return entries
-
-
-def parse_bidi_class(content: str) -> list[tuple]:
-    """
-    Parse DerivedBidiClass.txt.
-    Returns list of (start, end, bidi_class).
-    We only need: L, R, AL, AN, EN for IDNA Bidi rules.
-    """
-    entries = []
-
-    for line in content.strip().split("\n"):
-        if "#" in line:
-            line = line.split("#")[0]
-        line = line.strip()
-        if not line:
-            continue
-
-        parts = [p.strip() for p in line.split(";")]
-        if len(parts) < 2:
-            continue
-
-        start, end = parse_range(parts[0])
-        bidi_class = parts[1].strip()
-
-        entries.append((start, end, bidi_class))
 
     return entries
 
@@ -320,156 +289,6 @@ pub fn lookup_idna_mapping(c : Char) -> (IdnaStatus, Array[Char]) {
     print(f"Generated {output_path} with {len(range_starts)} ranges, {len(mapping_data)} mapping entries")
 
 
-def generate_bidi_mbt(entries: list[tuple], output_path: Path):
-    """Generate bidi.mbt with Bidi_Class lookup."""
-
-    # We only need specific Bidi classes for IDNA:
-    # R, AL, AN, EN, L for Bidi rules
-    # Also ES, CS, ET, ON, BN, NSM for more complete checking
-    relevant_classes = {"L", "R", "AL", "AN", "EN", "ES", "CS", "ET", "ON", "BN", "NSM"}
-
-    # Filter and encode
-    bidi_map = {"L": 0, "R": 1, "AL": 2, "AN": 3, "EN": 4, "ES": 5, "CS": 6, "ET": 7, "ON": 8, "BN": 9, "NSM": 10}
-
-    # Filter relevant entries and sort by start code point for binary search
-    filtered_entries = [(start, end, bidi_map[bidi_class])
-                        for start, end, bidi_class in entries
-                        if bidi_class in bidi_map]
-    filtered_entries.sort(key=lambda x: x[0])  # Sort by start code point
-
-    range_starts = [e[0] for e in filtered_entries]
-    range_ends = [e[1] for e in filtered_entries]
-    range_classes = [e[2] for e in filtered_entries]
-
-    code = '''///|
-/// Bidi_Class lookup for IDNA Bidi validation (RFC 5893)
-/// Generated from DerivedBidiClass.txt
-
-///|
-/// Bidi class values relevant for IDNA
-pub(all) enum BidiClass {
-  L    // Left-to-Right
-  R    // Right-to-Left
-  AL   // Arabic Letter
-  AN   // Arabic Number
-  EN   // European Number
-  ES   // European Separator
-  CS   // Common Separator
-  ET   // European Terminator
-  ON   // Other Neutral
-  BN   // Boundary Neutral
-  NSM  // Non-Spacing Mark
-  Other // Other (not relevant for IDNA)
-} derive(Show, Eq)
-
-///|
-/// Range start code points
-let bidi_range_starts : FixedArray[Int] = [
-'''
-    for i, s in enumerate(range_starts):
-        if i > 0:
-            code += ",\n"
-        code += f"  0x{s:04X}"
-    code += "\n]\n\n"
-
-    code += '''///|
-/// Range end code points (inclusive)
-let bidi_range_ends : FixedArray[Int] = [
-'''
-    for i, e in enumerate(range_ends):
-        if i > 0:
-            code += ",\n"
-        code += f"  0x{e:04X}"
-    code += "\n]\n\n"
-
-    code += '''///|
-/// Bidi class codes for each range
-let bidi_range_classes : FixedArray[Int] = [
-'''
-    for i, c in enumerate(range_classes):
-        if i > 0:
-            code += ",\n"
-        code += f"  {c}"
-    code += "\n]\n\n"
-
-    code += '''///|
-/// Binary search for character in Bidi ranges
-fn find_bidi_range(c : Char) -> Int {
-  let cp = c.to_int()
-  let mut left = 0
-  let mut right = bidi_range_starts.length() - 1
-
-  while left <= right {
-    let mid = (left + right) / 2
-    let start = bidi_range_starts[mid]
-    let end = bidi_range_ends[mid]
-
-    if cp < start {
-      right = mid - 1
-    } else if cp > end {
-      left = mid + 1
-    } else {
-      return mid
-    }
-  }
-
-  -1 // Not found
-}
-
-///|
-/// Convert class code to BidiClass enum
-fn bidi_from_code(code : Int) -> BidiClass {
-  match code {
-    0 => L
-    1 => R
-    2 => AL
-    3 => AN
-    4 => EN
-    5 => ES
-    6 => CS
-    7 => ET
-    8 => ON
-    9 => BN
-    10 => NSM
-    _ => Other
-  }
-}
-
-///|
-/// Look up Bidi_Class for a character
-pub fn lookup_bidi_class(c : Char) -> BidiClass {
-  let idx = find_bidi_range(c)
-  if idx < 0 {
-    return Other
-  }
-  bidi_from_code(bidi_range_classes[idx])
-}
-
-///|
-/// Check if a character has RTL Bidi class (R or AL)
-pub fn is_rtl(c : Char) -> Bool {
-  match lookup_bidi_class(c) {
-    R | AL => true
-    _ => false
-  }
-}
-
-///|
-/// Check if a domain contains any RTL characters
-pub fn has_rtl(chars : Array[Char]) -> Bool {
-  for c in chars {
-    if is_rtl(c) {
-      return true
-    }
-  }
-  false
-}
-'''
-
-    output_path.write_text(code)
-    print(f"Generated {output_path} with {len(range_starts)} Bidi ranges")
-
-
 def generate_joining_mbt(entries: list[tuple], output_path: Path):
     """Generate joining.mbt with Joining_Type lookup."""
 
@@ -595,17 +414,12 @@ def main():
 
     # Download data files
     idna_data = download_file(IDNA_URL, cache_dir)
-    bidi_data = download_file(BIDI_URL, cache_dir)
     joining_data = download_file(JOINING_URL, cache_dir)
 
     # Parse data
     print("Parsing IdnaMappingTable.txt...")
     idna_entries = parse_idna_mapping_table(idna_data)
     print(f"  Found {len(idna_entries)} IDNA mapping entries")
-
-    print("Parsing DerivedBidiClass.txt...")
-    bidi_entries = parse_bidi_class(bidi_data)
-    print(f"  Found {len(bidi_entries)} Bidi class entries")
 
     print("Parsing DerivedJoiningType.txt...")
     joining_entries = parse_joining_type(joining_data)
@@ -615,7 +429,6 @@ def main():
     print("\nGenerating MoonBit source files...")
 
     generate_mapping_mbt(idna_entries, idna_dir / "mapping.mbt")
-    generate_bidi_mbt(bidi_entries, idna_dir / "bidi.mbt")
     generate_joining_mbt(joining_entries, idna_dir / "joining.mbt")
 
     print("\nDone!")

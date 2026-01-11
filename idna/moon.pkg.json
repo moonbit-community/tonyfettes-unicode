@@ -3,6 +3,10 @@
     "tonyfettes/unicode/punycode",
     "tonyfettes/unicode/normalization",
     {
+      "path": "tonyfettes/unicode/internal/bidi",
+      "alias": "bidi"
+    },
+    {
       "path": "tonyfettes/unicode/internal/idna",
       "alias": "idna_data"
     },
