@@ -164,3 +164,34 @@ fn resolve_weak_types(
     }
   }
 }
+
+///|
+/// Re-resolve NSM after bracket pairing so combining marks follow
+/// brackets that were retyped by N0.
+fn resolve_nsm_after_brackets(
+  types : Array[@bidi_data.BidiClass],
+  original_classes : Array[@bidi_data.BidiClass],
+  seq : IsolatingRunSequence,
+) -> Unit {
+  let indices = seq.indices
+  if indices.length() == 0 {
+    return
+  }
+
+  let mut prev_type = seq.sos
+  for idx in indices {
+    if original_classes[idx] == @bidi_data.BidiClass::NSM &&
+      types[idx] == @bidi_data.BidiClass::ON {
+      if prev_type.is_isolate_initiator() ||
+        prev_type == @bidi_data.BidiClass::PDI {
+        types[idx] = @bidi_data.BidiClass::ON
+      } else {
+        types[idx] = prev_type
+      }
+    }
+
+    if types[idx] != @bidi_data.BidiClass::BN {
+      prev_type = types[idx]
+    }
+  }
+}

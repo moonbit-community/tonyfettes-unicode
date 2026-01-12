@@ -81,39 +81,39 @@ fn reset_whitespace_levels(
 ///|
 /// L2: Reorder text based on levels
 /// Returns indices in visual order
-fn apply_reordering(levels : Array[Int], paragraph_level : Int) -> Array[Int] {
-  let len = levels.length()
+fn apply_reordering(
+  indices : Array[Int],
+  levels : Array[Int],
+  paragraph_level : Int,
+) -> Array[Int] {
+  let len = indices.length()
   if len == 0 {
     return []
   }
 
-  // Initialize result with logical order
-  let result : Array[Int] = Array::make(len, 0)
-  for i = 0; i < len; i = i + 1 {
-    result[i] = i
-  }
+  // Initialize result with logical order after X9 removal.
+  let result = indices.copy()
 
-  // Find the maximum level
+  // Find the maximum level in the remaining indices.
   let mut max_level = paragraph_level
-  for level in levels {
+  for idx in result {
+    let level = levels[idx]
     if level > max_level {
       max_level = level
     }
   }
 
   // L2: From the highest level to the lowest odd level, reverse each
-  // contiguous sequence of characters at that level or higher
+  // contiguous sequence of characters at that level or higher.
   let mut level = max_level
   while level >= 1 {
     let mut i = 0
     while i < len {
       if levels[result[i]] >= level {
-        // Found start of sequence to reverse
         let start = i
         while i < len && levels[result[i]] >= level {
           i += 1
         }
-        // Reverse from start to i-1
         reverse_range(result, start, i - 1)
       } else {
         i += 1

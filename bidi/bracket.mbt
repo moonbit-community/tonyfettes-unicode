@@ -123,6 +123,7 @@ fn find_bracket_pairs(
 
   // Stack of (opening_bracket_char, char_index, sequence_position)
   let stack : Array[(Char, Int, Int)] = []
+  let mut overflow = false
   for i = 0; i < indices.length(); i = i + 1 {
     let idx = indices[i]
     let c = chars[idx]
@@ -138,6 +139,9 @@ fn find_bracket_pairs(
         // Push to stack
         if stack.length() < 63 { // BD16 limit
           stack.push((c, idx, i))
+        } else {
+          overflow = true
+          break
         }
       Close =>
         // Find matching opening bracket
@@ -146,7 +150,8 @@ fn find_bracket_pairs(
             // Search stack from top for matching open bracket
             let mut found = -1
             for j = stack.length() - 1; j >= 0; j = j - 1 {
-              if stack[j].0 == matching_open {
+              if canonical_bracket(stack[j].0) ==
+                canonical_bracket(matching_open) {
                 found = j
                 break
               }
@@ -169,7 +174,21 @@ fn find_bracket_pairs(
     }
   }
 
+  if overflow {
+    return []
+  }
+
   // Sort pairs by opening position
   pairs.sort_by(fn(a, b) { a.0 - b.0 })
   pairs
+}
+
+///|
+/// Map bracket characters to their canonical equivalents for matching.
+fn canonical_bracket(c : Char) -> Char {
+  match c {
+    '\u{2329}' => '\u{3008}'
+    '\u{232A}' => '\u{3009}'
+    _ => c
+  }
 }

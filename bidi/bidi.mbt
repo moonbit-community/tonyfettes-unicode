@@ -118,9 +118,12 @@ pub fn process_with_base_level(
   // X1-X10: Process explicit formatting characters
   let isolate_pairs = process_explicit(resolved_classes, levels, base_level)
 
+  // Align NSM levels with the previous non-X9 character.
+  adjust_nsm_levels(original_classes, levels)
+
   // Compute isolating run sequences and process each
   let sequences = compute_isolating_run_sequences(
-    resolved_classes, levels, base_level, isolate_pairs,
+    resolved_classes, levels, original_classes, base_level, isolate_pairs,
   )
   for seq in sequences {
     // W1-W7: Resolve weak types
@@ -128,6 +131,9 @@ pub fn process_with_base_level(
 
     // N0: Resolve bracket pairs
     resolve_bracket_pairs(chars, resolved_classes, levels, seq)
+
+    // Adjust NSM after bracket resolution (N0)
+    resolve_nsm_after_brackets(resolved_classes, original_classes, seq)
 
     // N1-N2: Resolve neutral types
     resolve_neutral_types(resolved_classes, levels, seq)
@@ -146,16 +152,15 @@ pub fn process_with_base_level(
 /// Returns array of character indices in visual order
 /// X9-removed characters (LRE, RLE, LRO, RLO, PDF, BN) are excluded
 pub fn reorder(para : BidiParagraph) -> Array[Int] {
-  let full_order = apply_reordering(para.levels, para.base_level)
-  // Filter out X9-removed characters
-  let result : Array[Int] = []
-  for idx in full_order {
-    let bc = para.original_classes[idx]
+  // X9: remove explicit formatting and BN before reordering.
+  let indices : Array[Int] = []
+  for i = 0; i < para.levels.length(); i = i + 1 {
+    let bc = para.original_classes[i]
     if not(bc.is_x9_removed()) {
-      result.push(idx)
+      indices.push(i)
     }
   }
-  result
+  apply_reordering(indices, para.levels, para.base_level)
 }
 
 ///|

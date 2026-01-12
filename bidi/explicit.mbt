@@ -238,13 +238,46 @@ fn process_explicit(
       _ => {
         levels[i] = stack[stack.length() - 1].level
         let ovr = stack[stack.length() - 1].override_status
-        if ovr != @bidi_data.BidiClass::ON {
+        if ovr != @bidi_data.BidiClass::ON &&
+          bc != @bidi_data.BidiClass::BN {
           types[i] = ovr
         }
       }
     }
   }
   isolate_pairs
+}
+
+///|
+/// Ensure NSM levels follow the last non-X9 character.
+fn adjust_nsm_levels(
+  original_classes : Array[@bidi_data.BidiClass],
+  levels : Array[Int],
+) -> Unit {
+  let mut last_idx = -1
+  let mut saw_initiator = false
+  for i = 0; i < original_classes.length(); i = i + 1 {
+    let bc = original_classes[i]
+    if bc == @bidi_data.BidiClass::LRE ||
+      bc == @bidi_data.BidiClass::LRO ||
+      bc == @bidi_data.BidiClass::RLE ||
+      bc == @bidi_data.BidiClass::RLO ||
+      bc.is_isolate_initiator() {
+      saw_initiator = true
+    }
+    if bc == @bidi_data.BidiClass::NSM && last_idx >= 0 {
+      let last_bc = original_classes[last_idx]
+      if not(last_bc.is_isolate_initiator()) &&
+        last_bc != @bidi_data.BidiClass::PDI &&
+        not(saw_initiator) {
+        levels[i] = levels[last_idx]
+      }
+    }
+    if not(bc.is_x9_removed()) {
+      last_idx = i
+      saw_initiator = false
+    }
+  }
 }
 
 ///|
@@ -302,6 +335,7 @@ priv struct IsolatingRunSequence {
 fn compute_isolating_run_sequences(
   types : Array[@bidi_data.BidiClass],
   levels : Array[Int],
+  original_classes : Array[@bidi_data.BidiClass],
   paragraph_level : Int,
   isolate_pairs : Array[(Int, Int)],
 ) -> Array[IsolatingRunSequence] {
@@ -362,19 +396,8 @@ fn compute_isolating_run_sequences(
         let last = indices[indices.length() - 1]
         match isolate_to_pdi.get(last) {
           Some(pdi_idx) => {
-            // Continue sequence after the PDI
-            current = pdi_idx + 1
-            // Find continuation at same level
-            while current < len &&
-                  (
-                    types[current] == @bidi_data.BidiClass::BN ||
-                    levels[current] != seq_level
-                  ) {
-              if types[current] == @bidi_data.BidiClass::BN {
-                processed[current] = true
-              }
-              current += 1
-            }
+            // Continue sequence at the matching PDI run (include the PDI).
+            current = pdi_idx
           }
           None => break
         }
@@ -401,6 +424,8 @@ fn compute_isolating_run_sequences(
       }
       if prev < 0 || types[prev] == @bidi_data.BidiClass::BN {
         paragraph_level
+      } else if original_classes[prev] == @bidi_data.BidiClass::B {
+        paragraph_level
       } else {
         levels[prev]
       }
@@ -415,6 +440,8 @@ fn compute_isolating_run_sequences(
     // eos: higher of level after sequence and sequence level
     let level_after = if last_idx >= len - 1 {
       paragraph_level
+    } else if original_classes[last_idx] == @bidi_data.BidiClass::B {
+      paragraph_level
     } else {
       // Find next character level (skip BN)
       let mut next = last_idx + 1
@@ -426,11 +453,12 @@ fn compute_isolating_run_sequences(
       if last_type.is_isolate_initiator() {
         match isolate_to_pdi.get(last_idx) {
           Some(pdi_idx) =>
-            // Level after is at the PDI position
             levels[pdi_idx]
           None => paragraph_level
         }
       } else if next >= len {
+        paragraph_level
+      } else if original_classes[next] == @bidi_data.BidiClass::B {
         paragraph_level
       } else {
         levels[next]
