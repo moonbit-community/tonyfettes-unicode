@@ -255,27 +255,28 @@ fn adjust_nsm_levels(
   levels : Array[Int],
 ) -> Unit {
   let mut last_idx = -1
-  let mut saw_initiator = false
+  let mut saw_explicit = false
   for i = 0; i < original_classes.length(); i = i + 1 {
     let bc = original_classes[i]
     if bc == @bidi_data.BidiClass::LRE ||
       bc == @bidi_data.BidiClass::LRO ||
       bc == @bidi_data.BidiClass::RLE ||
       bc == @bidi_data.BidiClass::RLO ||
+      bc == @bidi_data.BidiClass::PDF ||
       bc.is_isolate_initiator() {
-      saw_initiator = true
+      saw_explicit = true
     }
     if bc == @bidi_data.BidiClass::NSM && last_idx >= 0 {
       let last_bc = original_classes[last_idx]
       if not(last_bc.is_isolate_initiator()) &&
         last_bc != @bidi_data.BidiClass::PDI &&
-        not(saw_initiator) {
+        not(saw_explicit) {
         levels[i] = levels[last_idx]
       }
     }
     if not(bc.is_x9_removed()) {
       last_idx = i
-      saw_initiator = false
+      saw_explicit = false
     }
   }
 }
