@@ -144,8 +144,18 @@ pub fn process_with_base_level(
 ///|
 /// Reorder text for display according to resolved levels
 /// Returns array of character indices in visual order
+/// X9-removed characters (LRE, RLE, LRO, RLO, PDF, BN) are excluded
 pub fn reorder(para : BidiParagraph) -> Array[Int] {
-  apply_reordering(para.levels, para.base_level)
+  let full_order = apply_reordering(para.levels, para.base_level)
+  // Filter out X9-removed characters
+  let result : Array[Int] = []
+  for idx in full_order {
+    let bc = para.original_classes[idx]
+    if not(bc.is_x9_removed()) {
+      result.push(idx)
+    }
+  }
+  result
 }
 
 ///|

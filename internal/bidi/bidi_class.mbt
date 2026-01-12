@@ -774,6 +774,16 @@ pub fn BidiClass::is_isolate_initiator(self : BidiClass) -> Bool {
 }
 
 ///|
+/// Check if Bidi class should be removed per X9 rule
+/// X9: Remove LRE, RLE, LRO, RLO, PDF, and BN (but NOT isolate characters)
+pub fn BidiClass::is_x9_removed(self : BidiClass) -> Bool {
+  match self {
+    LRE | RLE | LRO | RLO | PDF | BN => true
+    _ => false
+  }
+}
+
+///|
 /// Check if Bidi class is a neutral or isolate type (for N rules)
 pub fn BidiClass::is_neutral_or_isolate(self : BidiClass) -> Bool {
   match self {

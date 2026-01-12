@@ -19,13 +19,15 @@ fn reset_whitespace_levels(
   // - Any whitespace or isolate formatting at the end of the line
 
   // First, handle trailing whitespace
+  // Note: X9-removed characters (LRE, RLE, LRO, RLO, PDF, BN) should be skipped
+  // when detecting trailing whitespace, as they are conceptually removed by X9
   let mut i = len - 1
   while i >= 0 {
     let bc = original_classes[i]
     match bc {
       S | B => {
         levels[i] = paragraph_level
-        // Reset preceding whitespace and isolates
+        // Reset preceding whitespace and isolates (skipping X9-removed chars)
         let mut j = i - 1
         while j >= 0 {
           let prev_bc = original_classes[j]
@@ -34,6 +36,8 @@ fn reset_whitespace_levels(
               levels[j] = paragraph_level
               j -= 1
             }
+            // Skip X9-removed characters
+            LRE | RLE | LRO | RLO | PDF | BN => j -= 1
             _ => break
           }
         }
@@ -44,15 +48,32 @@ fn reset_whitespace_levels(
         levels[i] = paragraph_level
         i -= 1
       }
+      // Skip X9-removed characters when detecting trailing whitespace
+      LRE | RLE | LRO | RLO | PDF | BN => i -= 1
       _ => break
     }
   }
 
-  // Also reset any S or B in the middle
+  // Also reset any S or B in the middle, plus preceding whitespace/isolates
   for k = 0; k < len; k = k + 1 {
     let bc = original_classes[k]
     if bc == @bidi_data.BidiClass::S || bc == @bidi_data.BidiClass::B {
       levels[k] = paragraph_level
+      // L1.3: Reset preceding whitespace and isolate formatting characters
+      // (skipping X9-removed characters)
+      let mut j = k - 1
+      while j >= 0 {
+        let prev_bc = original_classes[j]
+        match prev_bc {
+          WS | LRI | RLI | FSI | PDI => {
+            levels[j] = paragraph_level
+            j -= 1
+          }
+          // Skip X9-removed characters
+          LRE | RLE | LRO | RLO | PDF | BN => j -= 1
+          _ => break
+        }
+      }
     }
   }
 }
