@@ -1,0 +1,8 @@
+{
+  "test-import": [
+    {
+      "path": "tonyfettes/unicode/bidi",
+      "alias": "bidi"
+    }
+  ]
+}
