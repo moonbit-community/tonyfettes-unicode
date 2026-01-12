@@ -10,6 +10,7 @@ Test files:
 - BidiCharacterTest.txt: Tests using actual character code points
 """
 
+import argparse
 import glob
 import json
 import shutil
@@ -424,6 +425,15 @@ test "{i}" {{
 
 
 def main():
+    parser = argparse.ArgumentParser(description="Generate MoonBit bidi conformance tests")
+    parser.add_argument(
+        "--part-size",
+        type=int,
+        default=500,
+        help="Number of tests per partition (default: 500)"
+    )
+    args = parser.parse_args()
+
     # Determine paths
     script_dir = Path(__file__).parent
     project_root = script_dir.parent
@@ -464,9 +474,9 @@ def main():
         print(f"Removed old {new_conformance_dir}")
 
     # Generate MoonBit test files
-    print("\nGenerating MoonBit test files...")
-    generate_bidi_test_mbt(bidi_tests, bidi_dir)
-    generate_bidi_character_test_mbt(char_tests, bidi_dir)
+    print(f"\nGenerating MoonBit test files with part_size={args.part_size}...")
+    generate_bidi_test_mbt(bidi_tests, bidi_dir, part_size=args.part_size)
+    generate_bidi_character_test_mbt(char_tests, bidi_dir, part_size=args.part_size)
 
     print("\nDone!")
 
