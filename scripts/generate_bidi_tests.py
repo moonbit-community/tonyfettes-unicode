@@ -287,65 +287,42 @@ def generate_bidi_test_mbt(tests: list[tuple], output_dir: Path, part_size: int 
 /// Tests the implementation against official Unicode bidi test data.
 /// Each test verifies resolved embedding levels and visual reordering.
 
-///|
-/// Test data from BidiTest.txt (Part {part_num})
-/// Format: (input_string, paragraph_level, expected_levels, expected_reorder)
-/// paragraph_level: -1 = auto, 0 = LTR, 1 = RTL
-/// expected_levels: -1 represents 'x' (character removed in X9)
-let bidi_test_data : Array[(String, Int, Array[Int], Array[Int])] = [
 '''
 
         for i, (classes, para_level, expected_levels, expected_reorder) in enumerate(part_tests):
-            if i > 0:
-                code += ",\n"
             input_str = classes_to_moonbit_string(classes)
             levels_arr = levels_to_moonbit_array(expected_levels)
             reorder_arr = reorder_to_moonbit_array(expected_reorder)
-            code += f'  ("{input_str}", {para_level}, {levels_arr}, {reorder_arr})'
 
-        code += f'''
-]
+            code += f'''///|
+test "{i}" {{
+  let input = "{input_str}"
+  let para_level = {para_level}
+  let expected_levels = {levels_arr}
+  let expected_reorder = {reorder_arr}
 
-///|
-test "conformance: BidiTest.txt Part {part_num}" {{
-  for i, t in bidi_test_data {{
-    let (input, para_level, expected_levels, expected_reorder) = t
+  // Process with appropriate paragraph level
+  let result = if para_level < 0 {{
+    @bidi.process(input)
+  }} else {{
+    @bidi.process_with_base_level(input, para_level)
+  }}
 
-    // Process with appropriate paragraph level
-    let result = if para_level < 0 {{
-      // Auto-detect
-      @bidi.process(input)
-    }} else {{
-      @bidi.process_with_base_level(input, para_level)
-    }}
-
-    // Verify levels (skip 'x' positions marked as -1)
-    for j = 0; j < expected_levels.length(); j = j + 1 {{
-      if expected_levels[j] >= 0 {{
-        assert_eq(
-          result.levels[j],
-          expected_levels[j],
-          msg="Level mismatch at test \\{{i}}, position \\{{j}}",
-        )
-      }}
-    }}
-
-    // Verify reordering
-    let actual_reorder = @bidi.reorder(result)
-    assert_eq(
-      actual_reorder.length(),
-      expected_reorder.length(),
-      msg="Reorder length mismatch at test \\{{i}}",
-    )
-    for j = 0; j < expected_reorder.length(); j = j + 1 {{
-      assert_eq(
-        actual_reorder[j],
-        expected_reorder[j],
-        msg="Reorder mismatch at test \\{{i}}, position \\{{j}}",
-      )
+  // Verify levels (skip 'x' positions marked as -1)
+  for j = 0; j < expected_levels.length(); j = j + 1 {{
+    if expected_levels[j] >= 0 {{
+      assert_eq(result.levels[j], expected_levels[j])
     }}
   }}
+
+  // Verify reordering
+  let actual_reorder = @bidi.reorder(result)
+  assert_eq(actual_reorder.length(), expected_reorder.length())
+  for j = 0; j < expected_reorder.length(); j = j + 1 {{
+    assert_eq(actual_reorder[j], expected_reorder[j])
+  }}
 }}
+
 '''
 
         output_path = part_dir / "conformance_test.mbt"
@@ -396,71 +373,46 @@ def generate_bidi_character_test_mbt(tests: list[tuple], output_dir: Path, part_
 /// Tests the implementation with actual Unicode characters including
 /// bracket pairs and other character-specific behaviors.
 
-///|
-/// Test data from BidiCharacterTest.txt (Part {part_num})
-/// Format: (input_string, paragraph_direction, expected_base_level, expected_levels, expected_reorder)
-/// paragraph_direction: 0 = LTR, 1 = RTL, 2 = auto
-/// expected_levels: -1 represents 'x' (character removed in X9)
-let bidi_character_test_data : Array[(String, Int, Int, Array[Int], Array[Int])] = [
 '''
 
         for i, (codepoints, para_dir, base_level, levels, reorder) in enumerate(part_tests):
-            if i > 0:
-                code += ",\n"
             input_str = codepoints_to_moonbit_string(codepoints)
             levels_arr = levels_to_moonbit_array(levels)
             reorder_arr = reorder_to_moonbit_array(reorder)
-            code += f'  ("{input_str}", {para_dir}, {base_level}, {levels_arr}, {reorder_arr})'
 
-        code += f'''
-]
+            code += f'''///|
+test "{i}" {{
+  let input = "{input_str}"
+  let para_dir = {para_dir}
+  let expected_base_level = {base_level}
+  let expected_levels = {levels_arr}
+  let expected_reorder = {reorder_arr}
 
-///|
-test "conformance: BidiCharacterTest.txt Part {part_num}" {{
-  for i, t in bidi_character_test_data {{
-    let (input, para_dir, expected_base_level, expected_levels, expected_reorder) = t
+  // Process with appropriate paragraph direction
+  let result = match para_dir {{
+    0 => @bidi.process_with_base_level(input, 0)  // LTR
+    1 => @bidi.process_with_base_level(input, 1)  // RTL
+    _ => @bidi.process(input)                      // Auto
+  }}
 
-    // Process with appropriate paragraph direction
-    let result = match para_dir {{
-      0 => @bidi.process_with_base_level(input, 0)  // LTR
-      1 => @bidi.process_with_base_level(input, 1)  // RTL
-      _ => @bidi.process(input)                      // Auto
-    }}
+  // Verify base level
+  assert_eq(result.base_level, expected_base_level)
 
-    // Verify base level
-    assert_eq(
-      result.base_level,
-      expected_base_level,
-      msg="Base level mismatch at test \\{{i}}",
-    )
-
-    // Verify levels (skip 'x' positions marked as -1)
-    for j = 0; j < expected_levels.length(); j = j + 1 {{
-      if expected_levels[j] >= 0 {{
-        assert_eq(
-          result.levels[j],
-          expected_levels[j],
-          msg="Level mismatch at test \\{{i}}, position \\{{j}}",
-        )
-      }}
-    }}
-
-    // Verify reordering
-    let actual_reorder = @bidi.reorder(result)
-    assert_eq(
-      actual_reorder.length(),
-      expected_reorder.length(),
-      msg="Reorder length mismatch at test \\{{i}}",
-    )
-    for j = 0; j < expected_reorder.length(); j = j + 1 {{
-      assert_eq(
-        actual_reorder[j],
-        expected_reorder[j],
-        msg="Reorder mismatch at test \\{{i}}, position \\{{j}}",
-      )
+  // Verify levels (skip 'x' positions marked as -1)
+  for j = 0; j < expected_levels.length(); j = j + 1 {{
+    if expected_levels[j] >= 0 {{
+      assert_eq(result.levels[j], expected_levels[j])
     }}
   }}
+
+  // Verify reordering
+  let actual_reorder = @bidi.reorder(result)
+  assert_eq(actual_reorder.length(), expected_reorder.length())
+  for j = 0; j < expected_reorder.length(); j = j + 1 {{
+    assert_eq(actual_reorder[j], expected_reorder[j])
+  }}
 }}
+
 '''
 
         output_path = part_dir / "conformance_test.mbt"
