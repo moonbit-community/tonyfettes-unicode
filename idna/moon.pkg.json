@@ -20,6 +20,7 @@
     {
       "path": "tonyfettes/unicode/idna/internal/fuzz",
       "alias": "idna_fuzz"
-    }
+    },
+    "moonbitlang/core/random"
   ]
 }

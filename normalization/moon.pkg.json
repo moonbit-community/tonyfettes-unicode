@@ -10,6 +10,7 @@
     {
       "path": "tonyfettes/unicode/normalization/internal/fuzz",
       "alias": "normalization_fuzz"
-    }
+    },
+    "moonbitlang/core/random"
   ]
 }

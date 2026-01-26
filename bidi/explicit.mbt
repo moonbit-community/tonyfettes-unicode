@@ -346,7 +346,7 @@ fn compute_isolating_run_sequences(
   }
 
   // Build a map from isolate initiator to PDI
-  let isolate_to_pdi : @hashmap.HashMap[Int, Int] = @hashmap.new()
+  let isolate_to_pdi : Map[Int, Int] = Map::new()
   for pair in isolate_pairs {
     isolate_to_pdi[pair.0] = pair.1
   }
