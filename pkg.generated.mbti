@@ -4,11 +4,17 @@ package "tonyfettes/unicode"
 // Values
 pub fn general_category(Char) -> GeneralCategory
 
+pub fn to_lowercase(Char) -> String
+
 pub fn to_simple_lowercase(Char) -> Char
 
 pub fn to_simple_titlecase(Char) -> Char
 
 pub fn to_simple_uppercase(Char) -> Char
+
+pub fn to_titlecase(Char) -> String
+
+pub fn to_uppercase(Char) -> String
 
 // Errors
 

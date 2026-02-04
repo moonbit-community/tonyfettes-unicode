@@ -135,3 +135,57 @@ test "case mapping: roundtrip for ASCII" {
     assert_eq(back_to_lower, c)
   }
 }
+
+///|
+test "to_uppercase: German sharp s" {
+  // LATIN SMALL LETTER SHARP S -> "SS"
+  inspect(to_uppercase('\u{00DF}'), content="SS")
+}
+
+///|
+test "to_uppercase: ligatures" {
+  // LATIN SMALL LIGATURE FF -> "FF"
+  inspect(to_uppercase('\u{FB00}'), content="FF")
+  // LATIN SMALL LIGATURE FFI -> "FFI"
+  inspect(to_uppercase('\u{FB03}'), content="FFI")
+  // LATIN SMALL LIGATURE FFL -> "FFL"
+  inspect(to_uppercase('\u{FB04}'), content="FFL")
+}
+
+///|
+test "to_titlecase: German sharp s" {
+  // LATIN SMALL LETTER SHARP S -> "Ss"
+  inspect(to_titlecase('\u{00DF}'), content="Ss")
+}
+
+///|
+test "to_titlecase: ligatures" {
+  // LATIN SMALL LIGATURE FF -> "Ff"
+  inspect(to_titlecase('\u{FB00}'), content="Ff")
+  // LATIN SMALL LIGATURE FFI -> "Ffi"
+  inspect(to_titlecase('\u{FB03}'), content="Ffi")
+}
+
+///|
+test "to_lowercase: I with dot above" {
+  // LATIN CAPITAL LETTER I WITH DOT ABOVE -> "i" + combining dot above
+  inspect(to_lowercase('\u{0130}'), content="i\u{0307}")
+}
+
+///|
+test "full case: regular letters" {
+  // Regular letters should go through simple mappings
+  inspect(to_uppercase('a'), content="A")
+  inspect(to_uppercase('z'), content="Z")
+  inspect(to_lowercase('A'), content="a")
+  inspect(to_lowercase('Z'), content="z")
+  inspect(to_titlecase('a'), content="A")
+}
+
+///|
+test "full case: no mapping returns identity" {
+  // Characters without mappings return themselves
+  inspect(to_uppercase('0'), content="0")
+  inspect(to_lowercase('0'), content="0")
+  inspect(to_titlecase('!'), content="!")
+}

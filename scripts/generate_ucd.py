@@ -22,6 +22,7 @@ UNICODE_VERSION = "16.0.0"
 BASE_URL = f"https://www.unicode.org/Public/{UNICODE_VERSION}/ucd"
 UNICODE_DATA_URL = f"{BASE_URL}/UnicodeData.txt"
 COMPOSITION_EXCLUSIONS_URL = f"{BASE_URL}/CompositionExclusions.txt"
+SPECIAL_CASING_URL = f"{BASE_URL}/SpecialCasing.txt"
 
 # Hangul constants - handled algorithmically, not in tables
 HANGUL_S_BASE = 0xAC00
@@ -150,6 +151,49 @@ def parse_composition_exclusions(content: str) -> set[int]:
             exclusions.add(int(line, 16))
 
     return exclusions
+
+
+def parse_special_casing(content: str) -> tuple[dict, dict, dict]:
+    """
+    Parse SpecialCasing.txt and extract unconditional mappings only.
+    Returns: (lower_mapping, title_mapping, upper_mapping)
+    Each dict: code_point -> [list of target code points]
+    Skip entries with conditions in field 4 (like Final_Sigma, lt, tr, az).
+    """
+    lower_mapping = {}
+    title_mapping = {}
+    upper_mapping = {}
+
+    for line in content.strip().split("\n"):
+        # Remove comments
+        line = line.split("#")[0].strip()
+        if not line:
+            continue
+
+        fields = line.split(";")
+        if len(fields) < 4:
+            continue
+
+        # Field 4 (index 4) contains conditions - skip if present
+        # Format: <code>; <lower>; <title>; <upper>; (<condition_list>;)?
+        if len(fields) > 4 and fields[4].strip():
+            # Has condition, skip
+            continue
+
+        cp = int(fields[0].strip(), 16)
+        lower_cps = [int(x, 16) for x in fields[1].strip().split() if x]
+        title_cps = [int(x, 16) for x in fields[2].strip().split() if x]
+        upper_cps = [int(x, 16) for x in fields[3].strip().split() if x]
+
+        # Only store if different from identity (multi-char or different char)
+        if lower_cps and (len(lower_cps) > 1 or lower_cps[0] != cp):
+            lower_mapping[cp] = lower_cps
+        if title_cps and (len(title_cps) > 1 or title_cps[0] != cp):
+            title_mapping[cp] = title_cps
+        if upper_cps and (len(upper_cps) > 1 or upper_cps[0] != cp):
+            upper_mapping[cp] = upper_cps
+
+    return lower_mapping, title_mapping, upper_mapping
 
 
 def build_composition_table(canonical_decomp: dict, exclusions: set) -> dict:
@@ -820,17 +864,20 @@ pub fn lookup_general_category(c : Char) -> Int {
 
 
 def generate_case_mapping_mbt(
-    upper_mapping: dict,
-    lower_mapping: dict,
-    title_mapping: dict,
+    simple_upper: dict,
+    simple_lower: dict,
+    simple_title: dict,
+    full_upper: dict,
+    full_lower: dict,
+    full_title: dict,
     output_path: Path
 ):
-    """Generate case_mapping.mbt with simple case mapping lookup data."""
+    """Generate case_mapping.mbt with simple and full case mapping lookup data."""
 
-    # Sort mappings by code point for binary search
-    upper_cps = sorted(upper_mapping.keys())
-    lower_cps = sorted(lower_mapping.keys())
-    title_cps = sorted(title_mapping.keys())
+    # Sort simple mappings by code point for binary search
+    upper_cps = sorted(simple_upper.keys())
+    lower_cps = sorted(simple_lower.keys())
+    title_cps = sorted(simple_title.keys())
 
     code = '''///|
 /// Simple case mapping lookup data
@@ -853,7 +900,7 @@ let upper_targets : FixedArray[Int] = [
     for i, cp in enumerate(upper_cps):
         if i > 0:
             code += ",\n"
-        code += f"  0x{upper_mapping[cp]:04X}"
+        code += f"  0x{simple_upper[cp]:04X}"
     code += "\n]\n\n"
 
     code += '''///|
@@ -873,7 +920,7 @@ let lower_targets : FixedArray[Int] = [
     for i, cp in enumerate(lower_cps):
         if i > 0:
             code += ",\n"
-        code += f"  0x{lower_mapping[cp]:04X}"
+        code += f"  0x{simple_lower[cp]:04X}"
     code += "\n]\n\n"
 
     code += '''///|
@@ -893,7 +940,7 @@ let title_targets : FixedArray[Int] = [
     for i, cp in enumerate(title_cps):
         if i > 0:
             code += ",\n"
-        code += f"  0x{title_mapping[cp]:04X}"
+        code += f"  0x{simple_title[cp]:04X}"
     code += "\n]\n\n"
 
     code += '''///|
@@ -958,8 +1005,149 @@ pub fn lookup_simple_titlecase(c : Char) -> Char {
 }
 '''
 
+    # Generate full case mapping data
+    # Merge simple mappings with special multi-character mappings
+    def build_full_mapping(simple: dict, special: dict) -> dict:
+        """Build full mapping table: simple 1:1 as single-element lists, override with special."""
+        full = {}
+        for cp, target in simple.items():
+            full[cp] = [target]
+        for cp, targets in special.items():
+            full[cp] = targets
+        return full
+
+    merged_upper = build_full_mapping(simple_upper, full_upper)
+    merged_lower = build_full_mapping(simple_lower, full_lower)
+    merged_title = build_full_mapping(simple_title, full_title)
+
+    # Generate full case mapping arrays
+    def generate_full_case_arrays(mapping: dict, name: str) -> tuple[str, int, int]:
+        """Generate arrays for full case mapping using decomposition pattern."""
+        sorted_cps = sorted(mapping.keys())
+
+        cps_arr = []
+        data_starts = []
+        lens = []
+        data = []
+
+        for cp in sorted_cps:
+            targets = mapping[cp]
+            cps_arr.append(cp)
+            data_starts.append(len(data))
+            lens.append(len(targets))
+            data.extend(targets)
+
+        result = f'''
+///|
+/// Code points with full {name} mappings (sorted for binary search)
+let full_{name}_cps : FixedArray[Int] = [
+'''
+        for i, cp in enumerate(cps_arr):
+            if i > 0:
+                result += ",\n"
+            result += f"  0x{cp:04X}"
+        result += "\n]\n\n"
+
+        result += f'''///|
+/// Data start index for each full {name} mapping
+let full_{name}_data_starts : FixedArray[Int] = [
+'''
+        for i, s in enumerate(data_starts):
+            if i > 0:
+                result += ",\n"
+            result += f"  {s}"
+        result += "\n]\n\n"
+
+        result += f'''///|
+/// Length of each full {name} mapping
+let full_{name}_lens : FixedArray[Int] = [
+'''
+        for i, l in enumerate(lens):
+            if i > 0:
+                result += ",\n"
+            result += f"  {l}"
+        result += "\n]\n\n"
+
+        result += f'''///|
+/// Flattened full {name} mapping target code points
+let full_{name}_data : FixedArray[Int] = [
+'''
+        for i, d in enumerate(data):
+            if i > 0:
+                result += ",\n"
+            result += f"  0x{d:04X}"
+        result += "\n]\n"
+
+        return result, len(cps_arr), len(data)
+
+    upper_code, upper_count, upper_data_count = generate_full_case_arrays(merged_upper, "upper")
+    lower_code, lower_count, lower_data_count = generate_full_case_arrays(merged_lower, "lower")
+    title_code, title_count, title_data_count = generate_full_case_arrays(merged_title, "title")
+
+    code += upper_code
+    code += lower_code
+    code += title_code
+
+    # Add lookup functions for full case mappings
+    code += '''
+///|
+/// Look up full uppercase mapping for a character
+/// Returns Some(array of chars) if a mapping exists, None otherwise
+pub fn lookup_full_uppercase(c : Char) -> Array[Char]? {
+  let cp = c.to_int()
+  let idx = binary_search_case(full_upper_cps, cp)
+  if idx < 0 {
+    return None
+  }
+  let start = full_upper_data_starts[idx]
+  let len = full_upper_lens[idx]
+  let result : Array[Char] = []
+  for i = 0; i < len; i = i + 1 {
+    result.push(full_upper_data[start + i].unsafe_to_char())
+  }
+  Some(result)
+}
+
+///|
+/// Look up full lowercase mapping for a character
+/// Returns Some(array of chars) if a mapping exists, None otherwise
+pub fn lookup_full_lowercase(c : Char) -> Array[Char]? {
+  let cp = c.to_int()
+  let idx = binary_search_case(full_lower_cps, cp)
+  if idx < 0 {
+    return None
+  }
+  let start = full_lower_data_starts[idx]
+  let len = full_lower_lens[idx]
+  let result : Array[Char] = []
+  for i = 0; i < len; i = i + 1 {
+    result.push(full_lower_data[start + i].unsafe_to_char())
+  }
+  Some(result)
+}
+
+///|
+/// Look up full titlecase mapping for a character
+/// Returns Some(array of chars) if a mapping exists, None otherwise
+pub fn lookup_full_titlecase(c : Char) -> Array[Char]? {
+  let cp = c.to_int()
+  let idx = binary_search_case(full_title_cps, cp)
+  if idx < 0 {
+    return None
+  }
+  let start = full_title_data_starts[idx]
+  let len = full_title_lens[idx]
+  let result : Array[Char] = []
+  for i = 0; i < len; i = i + 1 {
+    result.push(full_title_data[start + i].unsafe_to_char())
+  }
+  Some(result)
+}
+'''
+
     output_path.write_text(code)
-    print(f"Generated {output_path} with {len(upper_cps)} upper, {len(lower_cps)} lower, {len(title_cps)} title mappings")
+    print(f"Generated {output_path} with {len(upper_cps)} simple upper, {len(lower_cps)} simple lower, {len(title_cps)} simple title mappings")
+    print(f"  Full case mappings: {upper_count} upper ({upper_data_count} data), {lower_count} lower ({lower_data_count} data), {title_count} title ({title_data_count} data)")
 
 
 def main():
@@ -975,22 +1163,29 @@ def main():
     # Download data files
     unicode_data = download_file(UNICODE_DATA_URL, cache_dir)
     exclusions_data = download_file(COMPOSITION_EXCLUSIONS_URL, cache_dir)
+    special_casing_data = download_file(SPECIAL_CASING_URL, cache_dir)
 
     # Parse data
     print("Parsing UnicodeData.txt...")
-    ccc_data, canonical_decomp, compat_decomp, mark_cps, gc_data, upper_mapping, lower_mapping, title_mapping = parse_unicode_data(unicode_data)
+    ccc_data, canonical_decomp, compat_decomp, mark_cps, gc_data, simple_upper, simple_lower, simple_title = parse_unicode_data(unicode_data)
     print(f"  Found {len(ccc_data)} non-zero CCC entries")
     print(f"  Found {len(canonical_decomp)} canonical decompositions")
     print(f"  Found {len(compat_decomp)} compatibility decompositions")
     print(f"  Found {len(mark_cps)} mark characters")
     print(f"  Found {len(gc_data)} General_Category entries")
-    print(f"  Found {len(upper_mapping)} uppercase mappings")
-    print(f"  Found {len(lower_mapping)} lowercase mappings")
-    print(f"  Found {len(title_mapping)} titlecase mappings")
+    print(f"  Found {len(simple_upper)} simple uppercase mappings")
+    print(f"  Found {len(simple_lower)} simple lowercase mappings")
+    print(f"  Found {len(simple_title)} simple titlecase mappings")
 
     print("Parsing CompositionExclusions.txt...")
     exclusions = parse_composition_exclusions(exclusions_data)
     print(f"  Found {len(exclusions)} explicit exclusions")
+
+    print("Parsing SpecialCasing.txt...")
+    full_lower, full_title, full_upper = parse_special_casing(special_casing_data)
+    print(f"  Found {len(full_upper)} full uppercase mappings")
+    print(f"  Found {len(full_lower)} full lowercase mappings")
+    print(f"  Found {len(full_title)} full titlecase mappings")
 
     print("Building composition table...")
     composition = build_composition_table(canonical_decomp, exclusions)
@@ -1015,7 +1210,11 @@ def main():
     generate_general_category_mbt(gc_ranges, ucd_dir / "general_category.mbt")
 
     # Case mapping data
-    generate_case_mapping_mbt(upper_mapping, lower_mapping, title_mapping, ucd_dir / "case_mapping.mbt")
+    generate_case_mapping_mbt(
+        simple_upper, simple_lower, simple_title,
+        full_upper, full_lower, full_title,
+        ucd_dir / "case_mapping.mbt"
+    )
 
     # Remove the stub file if it exists
     stub_file = ucd_dir / "ucd.mbt"
