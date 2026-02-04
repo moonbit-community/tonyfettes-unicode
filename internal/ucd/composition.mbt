@@ -441,10 +441,12 @@ pub fn lookup_composition(starter : Char, combining : Char) -> Char? {
   // Binary search for the pair
   let mut left = 0
   let mut right = comp_firsts.length() - 1
+
   while left <= right {
     let mid = (left + right) / 2
     let mid_first = comp_firsts[mid]
     let mid_second = comp_seconds[mid]
+
     if starter_cp < mid_first ||
       (starter_cp == mid_first && combining_cp < mid_second) {
       right = mid - 1
@@ -455,6 +457,7 @@ pub fn lookup_composition(starter : Char, combining : Char) -> Char? {
       return Some(comp_results[mid].unsafe_to_char())
     }
   }
+
   None
 }
 
@@ -465,9 +468,11 @@ pub fn is_composition_excluded(c : Char) -> Bool {
   // Binary search in exclusions
   let mut left = 0
   let mut right = comp_exclusions.length() - 1
+
   while left <= right {
     let mid = (left + right) / 2
     let mid_cp = comp_exclusions[mid]
+
     if cp < mid_cp {
       right = mid - 1
     } else if cp > mid_cp {
@@ -476,5 +481,6 @@ pub fn is_composition_excluded(c : Char) -> Bool {
       return true
     }
   }
+
   false
 }

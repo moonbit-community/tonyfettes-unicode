@@ -164,7 +164,6 @@ fn find_bracket_pairs(
               // Remove found entry and everything above it
               while stack.length() > found {
                 let _ = stack.pop()
-
               }
             }
           }

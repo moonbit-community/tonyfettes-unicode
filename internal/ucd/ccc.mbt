@@ -207,10 +207,12 @@ pub fn lookup_ccc(c : Char) -> Int {
   // Binary search through ranges
   let mut left = 0
   let mut right = ccc_starts.length() - 1
+
   while left <= right {
     let mid = (left + right) / 2
     let start = ccc_starts[mid]
     let end = ccc_ends[mid]
+
     if cp < start {
       right = mid - 1
     } else if cp > end {
@@ -219,6 +221,7 @@ pub fn lookup_ccc(c : Char) -> Int {
       return ccc_values[mid]
     }
   }
+
   0 // Not found, default CCC is 0 (starter)
 }
 
@@ -230,10 +233,12 @@ pub fn is_mark(c : Char) -> Bool {
   // Binary search through mark ranges
   let mut left = 0
   let mut right = mark_starts.length() - 1
+
   while left <= right {
     let mid = (left + right) / 2
     let start = mark_starts[mid]
     let end = mark_ends[mid]
+
     if cp < start {
       right = mid - 1
     } else if cp > end {
@@ -242,5 +247,6 @@ pub fn is_mark(c : Char) -> Bool {
       return true
     }
   }
+
   false
 }

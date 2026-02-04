@@ -1059,10 +1059,12 @@ pub fn lookup_general_category(c : Char) -> Int {
   // Binary search through ranges
   let mut left = 0
   let mut right = gc_range_starts.length() - 1
+
   while left <= right {
     let mid = (left + right) / 2
     let start = gc_range_starts[mid]
     let end = gc_range_ends[mid]
+
     if cp < start {
       right = mid - 1
     } else if cp > end {
@@ -1071,5 +1073,6 @@ pub fn lookup_general_category(c : Char) -> Int {
       return gc_values[mid]
     }
   }
+
   29 // Cn (Unassigned)
 }

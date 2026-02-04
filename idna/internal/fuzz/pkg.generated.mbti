@@ -1,9 +1,9 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "tonyfettes/unicode/idna/internal/fuzz"
 
-import(
-  "moonbitlang/core/random"
-)
+import {
+  "moonbitlang/core/random",
+}
 
 // Values
 pub fn is_ascii_string(String) -> Bool

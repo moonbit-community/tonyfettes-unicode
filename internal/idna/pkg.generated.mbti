@@ -2,12 +2,6 @@
 package "tonyfettes/unicode/internal/idna"
 
 // Values
-pub fn has_rtl(Array[Char]) -> Bool
-
-pub fn is_rtl(Char) -> Bool
-
-pub fn lookup_bidi_class(Char) -> BidiClass
-
 pub fn lookup_idna_mapping(Char) -> (IdnaStatus, Array[Char])
 
 pub fn lookup_joining_type(Char) -> JoiningType
@@ -15,23 +9,6 @@ pub fn lookup_joining_type(Char) -> JoiningType
 // Errors
 
 // Types and methods
-pub(all) enum BidiClass {
-  L
-  R
-  AL
-  AN
-  EN
-  ES
-  CS
-  ET
-  ON
-  BN
-  NSM
-  Other
-}
-pub impl Eq for BidiClass
-pub impl Show for BidiClass
-
 pub(all) enum IdnaStatus {
   Valid
   Ignored

@@ -71,7 +71,7 @@ test "fuzz: idna roundtrip" {
   let rng = @random.Rand::chacha8(seed=fuzz_seed)
   for _ in 0..<fuzz_iterations {
     let domain = @idna_fuzz.random_domain(rng)
-    let result : Result[(String, String), _] = try? {
+    let result : Result[(String, String), _] = try? ({
       let ascii = @idna.to_ascii(
         domain,
         check_bidi=false,
@@ -84,7 +84,7 @@ test "fuzz: idna roundtrip" {
         check_joiners=false,
       )
       (ascii, unicode)
-    }
+    })
     match result {
       Ok((ascii, unicode)) => {
         // The unicode result should be NFC normalized
@@ -114,7 +114,7 @@ test "fuzz: to_unicode idempotence" {
   let rng = @random.Rand::chacha8(seed=fuzz_seed)
   for _ in 0..<fuzz_iterations {
     let domain = @idna_fuzz.random_domain(rng)
-    let result : Result[(String, String), _] = try? {
+    let result : Result[(String, String), _] = try? ({
       let unicode1 = @idna.to_unicode(
         domain,
         check_bidi=false,
@@ -126,7 +126,7 @@ test "fuzz: to_unicode idempotence" {
         check_joiners=false,
       )
       (unicode1, unicode2)
-    }
+    })
     match result {
       Ok((u1, u2)) => assert_eq(u1, u2)
       Err(_) => ()
@@ -179,7 +179,7 @@ test "fuzz: hangul domain roundtrip" {
   for _ in 0..<300 {
     // Generate Hangul label
     let label = @fuzz.random_hangul_string(rng, max_len=10)
-    let result : Result[(String, String), _] = try? {
+    let result : Result[(String, String), _] = try? ({
       let ascii = @idna.to_ascii(
         label,
         check_bidi=false,
@@ -192,7 +192,7 @@ test "fuzz: hangul domain roundtrip" {
         check_joiners=false,
       )
       (ascii, unicode)
-    }
+    })
     match result {
       Ok((ascii, _unicode)) =>
         // Should have xn-- prefix

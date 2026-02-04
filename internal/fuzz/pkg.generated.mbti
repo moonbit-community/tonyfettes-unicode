@@ -1,9 +1,9 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "tonyfettes/unicode/internal/fuzz"
 
-import(
-  "moonbitlang/core/random"
-)
+import {
+  "moonbitlang/core/random",
+}
 
 // Values
 pub fn random_any_codepoint(@random.Rand) -> Char

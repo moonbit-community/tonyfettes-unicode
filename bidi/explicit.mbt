@@ -196,12 +196,10 @@ fn process_explicit(
           while stack.length() > 1 &&
                 not(stack[stack.length() - 1].isolate_status) {
             let _ = stack.pop()
-
           }
           // Pop the isolate entry itself
           if stack.length() > 1 {
             let _ = stack.pop()
-
           }
           valid_isolate_count.val -= 1
           // Record isolate pair
@@ -228,7 +226,6 @@ fn process_explicit(
         } else if stack.length() >= 2 &&
           not(stack[stack.length() - 1].isolate_status) {
           let _ = stack.pop()
-
         }
         levels[i] = stack[stack.length() - 1].level
         types[i] = @bidi_data.BidiClass::BN
@@ -238,8 +235,7 @@ fn process_explicit(
       _ => {
         levels[i] = stack[stack.length() - 1].level
         let ovr = stack[stack.length() - 1].override_status
-        if ovr != @bidi_data.BidiClass::ON &&
-          bc != @bidi_data.BidiClass::BN {
+        if ovr != @bidi_data.BidiClass::ON && bc != @bidi_data.BidiClass::BN {
           types[i] = ovr
         }
       }
@@ -396,10 +392,9 @@ fn compute_isolating_run_sequences(
       if indices.length() > 0 {
         let last = indices[indices.length() - 1]
         match isolate_to_pdi.get(last) {
-          Some(pdi_idx) => {
+          Some(pdi_idx) =>
             // Continue sequence at the matching PDI run (include the PDI).
             current = pdi_idx
-          }
           None => break
         }
       } else {
@@ -453,8 +448,7 @@ fn compute_isolating_run_sequences(
       let last_type = types[last_idx]
       if last_type.is_isolate_initiator() {
         match isolate_to_pdi.get(last_idx) {
-          Some(pdi_idx) =>
-            levels[pdi_idx]
+          Some(pdi_idx) => levels[pdi_idx]
           None => paragraph_level
         }
       } else if next >= len {

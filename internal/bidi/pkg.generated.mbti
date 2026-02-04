@@ -61,6 +61,7 @@ pub fn BidiClass::is_neutral_or_isolate(Self) -> Bool
 pub fn BidiClass::is_strong(Self) -> Bool
 pub fn BidiClass::is_strong_rtl(Self) -> Bool
 pub fn BidiClass::is_weak(Self) -> Bool
+pub fn BidiClass::is_x9_removed(Self) -> Bool
 pub impl Eq for BidiClass
 pub impl Show for BidiClass
 

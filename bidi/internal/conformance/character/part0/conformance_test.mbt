@@ -15,9 +15,9 @@ test "0" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -48,9 +48,9 @@ test "1" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -77,13 +77,15 @@ test "2" {
   let para_dir = 0
   let expected_base_level = 0
   let expected_levels = [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7, 8, 11, 10, 9, 12, 13, 16, 15, 14]
+  let expected_reorder = [
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 11, 10, 9, 12, 13, 16, 15, 14,
+  ]
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -110,13 +112,15 @@ test "3" {
   let para_dir = 1
   let expected_base_level = 1
   let expected_levels = [2, 2, 2, 1, 1, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [16, 15, 14, 13, 12, 11, 10, 9, 8, 5, 6, 7, 4, 3, 0, 1, 2]
+  let expected_reorder = [
+    16, 15, 14, 13, 12, 11, 10, 9, 8, 5, 6, 7, 4, 3, 0, 1, 2,
+  ]
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -143,13 +147,15 @@ test "4" {
   let para_dir = 0
   let expected_base_level = 0
   let expected_levels = [1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0]
-  let expected_reorder = [2, 1, 0, 3, 4, 5, 6, 7, 8, 11, 10, 9, 12, 13, 14, 15, 16]
+  let expected_reorder = [
+    2, 1, 0, 3, 4, 5, 6, 7, 8, 11, 10, 9, 12, 13, 14, 15, 16,
+  ]
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -176,13 +182,15 @@ test "5" {
   let para_dir = 1
   let expected_base_level = 1
   let expected_levels = [1, 1, 1, 1, 1, 2, 2, 2, 1, 1, 1, 1, 1, 1, 2, 2, 2]
-  let expected_reorder = [14, 15, 16, 13, 12, 11, 10, 9, 8, 5, 6, 7, 4, 3, 2, 1, 0]
+  let expected_reorder = [
+    14, 15, 16, 13, 12, 11, 10, 9, 8, 5, 6, 7, 4, 3, 2, 1, 0,
+  ]
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -209,13 +217,15 @@ test "6" {
   let para_dir = 0
   let expected_base_level = 0
   let expected_levels = [0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1]
-  let expected_reorder = [0, 1, 2, 3, 4, 7, 6, 5, 8, 9, 10, 11, 12, 13, 16, 15, 14]
+  let expected_reorder = [
+    0, 1, 2, 3, 4, 7, 6, 5, 8, 9, 10, 11, 12, 13, 16, 15, 14,
+  ]
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -242,13 +252,15 @@ test "7" {
   let para_dir = 1
   let expected_base_level = 1
   let expected_levels = [2, 2, 2, 1, 1, 1, 1, 1, 1, 2, 2, 2, 1, 1, 1, 1, 1]
-  let expected_reorder = [16, 15, 14, 13, 12, 9, 10, 11, 8, 7, 6, 5, 4, 3, 0, 1, 2]
+  let expected_reorder = [
+    16, 15, 14, 13, 12, 9, 10, 11, 8, 7, 6, 5, 4, 3, 0, 1, 2,
+  ]
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -275,13 +287,15 @@ test "8" {
   let para_dir = 0
   let expected_base_level = 0
   let expected_levels = [1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-  let expected_reorder = [2, 1, 0, 3, 4, 7, 6, 5, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+  let expected_reorder = [
+    2, 1, 0, 3, 4, 7, 6, 5, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+  ]
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -308,13 +322,15 @@ test "9" {
   let para_dir = 1
   let expected_base_level = 1
   let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 1, 1, 2, 2, 2]
-  let expected_reorder = [14, 15, 16, 13, 12, 9, 10, 11, 8, 7, 6, 5, 4, 3, 2, 1, 0]
+  let expected_reorder = [
+    14, 15, 16, 13, 12, 9, 10, 11, 8, 7, 6, 5, 4, 3, 2, 1, 0,
+  ]
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -345,9 +361,9 @@ test "10" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -378,9 +394,9 @@ test "11" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -411,9 +427,9 @@ test "12" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -444,9 +460,9 @@ test "13" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -477,9 +493,9 @@ test "14" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -510,9 +526,9 @@ test "15" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -543,9 +559,9 @@ test "16" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -576,9 +592,9 @@ test "17" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -609,9 +625,9 @@ test "18" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -642,9 +658,9 @@ test "19" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -675,9 +691,9 @@ test "20" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -708,9 +724,9 @@ test "21" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -741,9 +757,9 @@ test "22" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -774,9 +790,9 @@ test "23" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -807,9 +823,9 @@ test "24" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -840,9 +856,9 @@ test "25" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -873,9 +889,9 @@ test "26" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -906,9 +922,9 @@ test "27" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -939,9 +955,9 @@ test "28" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -972,9 +988,9 @@ test "29" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -1005,9 +1021,9 @@ test "30" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -1038,9 +1054,9 @@ test "31" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -1071,9 +1087,9 @@ test "32" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -1104,9 +1120,9 @@ test "33" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -1137,9 +1153,9 @@ test "34" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -1170,9 +1186,9 @@ test "35" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -1203,9 +1219,9 @@ test "36" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -1236,9 +1252,9 @@ test "37" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -1269,9 +1285,9 @@ test "38" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -1302,9 +1318,9 @@ test "39" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -1335,9 +1351,9 @@ test "40" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -1368,9 +1384,9 @@ test "41" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -1401,9 +1417,9 @@ test "42" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -1434,9 +1450,9 @@ test "43" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -1467,9 +1483,9 @@ test "44" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -1500,9 +1516,9 @@ test "45" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -1528,14 +1544,28 @@ test "46" {
   let input = "\u{0061}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0062}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}"
   let para_dir = 1
   let expected_base_level = 1
-  let expected_levels = [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125]
+  let expected_levels = [
+    2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+    2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+    2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+    2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+    2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+  ]
+  let expected_reorder = [
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
+    22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41,
+    42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61,
+    62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81,
+    82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100,
+    101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116,
+    117, 118, 119, 120, 121, 122, 123, 124, 125,
+  ]
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -1561,14 +1591,28 @@ test "47" {
   let input = "\u{0061}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0062}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}"
   let para_dir = 1
   let expected_base_level = 1
-  let expected_levels = [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127]
+  let expected_levels = [
+    2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+    2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+    2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+    2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+    2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+  ]
+  let expected_reorder = [
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
+    22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41,
+    42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61,
+    62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81,
+    82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100,
+    101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116,
+    117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127,
+  ]
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -1594,14 +1638,28 @@ test "48" {
   let input = "\u{0061}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0028}\u{0062}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}\u{0029}"
   let para_dir = 1
   let expected_base_level = 1
-  let expected_levels = [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [129, 128, 127, 126, 125, 124, 123, 122, 121, 120, 119, 118, 117, 116, 115, 114, 113, 112, 111, 110, 109, 108, 107, 106, 105, 104, 103, 102, 101, 100, 99, 98, 97, 96, 95, 94, 93, 92, 91, 90, 89, 88, 87, 86, 85, 84, 83, 82, 81, 80, 79, 78, 77, 76, 75, 74, 73, 72, 71, 70, 69, 68, 67, 66, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65]
+  let expected_levels = [
+    2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+    2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+    2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+  ]
+  let expected_reorder = [
+    129, 128, 127, 126, 125, 124, 123, 122, 121, 120, 119, 118, 117, 116, 115, 114,
+    113, 112, 111, 110, 109, 108, 107, 106, 105, 104, 103, 102, 101, 100, 99, 98,
+    97, 96, 95, 94, 93, 92, 91, 90, 89, 88, 87, 86, 85, 84, 83, 82, 81, 80, 79, 78,
+    77, 76, 75, 74, 73, 72, 71, 70, 69, 68, 67, 66, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+    10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
+    30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49,
+    50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65,
+  ]
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -1632,9 +1690,9 @@ test "49" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -1665,9 +1723,9 @@ test "50" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -1698,9 +1756,9 @@ test "51" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -1731,9 +1789,9 @@ test "52" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -1764,9 +1822,9 @@ test "53" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -1797,9 +1855,9 @@ test "54" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -1830,9 +1888,9 @@ test "55" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -1863,9 +1921,9 @@ test "56" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -1896,9 +1954,9 @@ test "57" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -1929,9 +1987,9 @@ test "58" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -1962,9 +2020,9 @@ test "59" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -1995,9 +2053,9 @@ test "60" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -2028,9 +2086,9 @@ test "61" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -2061,9 +2119,9 @@ test "62" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -2094,9 +2152,9 @@ test "63" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -2127,9 +2185,9 @@ test "64" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -2160,9 +2218,9 @@ test "65" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -2193,9 +2251,9 @@ test "66" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -2226,9 +2284,9 @@ test "67" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -2259,9 +2317,9 @@ test "68" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -2292,9 +2350,9 @@ test "69" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -2325,9 +2383,9 @@ test "70" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -2358,9 +2416,9 @@ test "71" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -2391,9 +2449,9 @@ test "72" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -2424,9 +2482,9 @@ test "73" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -2457,9 +2515,9 @@ test "74" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -2490,9 +2548,9 @@ test "75" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -2523,9 +2581,9 @@ test "76" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -2556,9 +2614,9 @@ test "77" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -2589,9 +2647,9 @@ test "78" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -2622,9 +2680,9 @@ test "79" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -2655,9 +2713,9 @@ test "80" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -2688,9 +2746,9 @@ test "81" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -2721,9 +2779,9 @@ test "82" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -2754,9 +2812,9 @@ test "83" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -2787,9 +2845,9 @@ test "84" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -2820,9 +2878,9 @@ test "85" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -2853,9 +2911,9 @@ test "86" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -2886,9 +2944,9 @@ test "87" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -2919,9 +2977,9 @@ test "88" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -2952,9 +3010,9 @@ test "89" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -2985,9 +3043,9 @@ test "90" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -3018,9 +3076,9 @@ test "91" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -3051,9 +3109,9 @@ test "92" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -3084,9 +3142,9 @@ test "93" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -3117,9 +3175,9 @@ test "94" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -3150,9 +3208,9 @@ test "95" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -3183,9 +3241,9 @@ test "96" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -3216,9 +3274,9 @@ test "97" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -3249,9 +3307,9 @@ test "98" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -3282,9 +3340,9 @@ test "99" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -3315,9 +3373,9 @@ test "100" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -3348,9 +3406,9 @@ test "101" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -3377,13 +3435,15 @@ test "102" {
   let para_dir = 0
   let expected_base_level = 0
   let expected_levels = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+  let expected_reorder = [
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+  ]
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -3410,13 +3470,15 @@ test "103" {
   let para_dir = 1
   let expected_base_level = 1
   let expected_levels = [2, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1]
-  let expected_reorder = [16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
+  let expected_reorder = [
+    16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0,
+  ]
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -3443,13 +3505,15 @@ test "104" {
   let para_dir = 0
   let expected_base_level = 0
   let expected_levels = [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+  let expected_reorder = [
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+  ]
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -3476,13 +3540,15 @@ test "105" {
   let para_dir = 1
   let expected_base_level = 1
   let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1]
-  let expected_reorder = [16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
+  let expected_reorder = [
+    16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0,
+  ]
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -3509,13 +3575,15 @@ test "106" {
   let para_dir = 0
   let expected_base_level = 0
   let expected_levels = [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+  let expected_reorder = [
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+  ]
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -3542,13 +3610,15 @@ test "107" {
   let para_dir = 1
   let expected_base_level = 1
   let expected_levels = [1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
+  let expected_reorder = [
+    16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0,
+  ]
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -3575,13 +3645,15 @@ test "108" {
   let para_dir = 0
   let expected_base_level = 0
   let expected_levels = [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+  let expected_reorder = [
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+  ]
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -3608,13 +3680,15 @@ test "109" {
   let para_dir = 1
   let expected_base_level = 1
   let expected_levels = [1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 2]
-  let expected_reorder = [16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
+  let expected_reorder = [
+    16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0,
+  ]
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -3645,9 +3719,9 @@ test "110" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -3678,9 +3752,9 @@ test "111" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -3711,9 +3785,9 @@ test "112" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -3744,9 +3818,9 @@ test "113" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -3777,9 +3851,9 @@ test "114" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -3810,9 +3884,9 @@ test "115" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -3843,9 +3917,9 @@ test "116" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -3876,9 +3950,9 @@ test "117" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -3909,9 +3983,9 @@ test "118" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -3942,9 +4016,9 @@ test "119" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -3975,9 +4049,9 @@ test "120" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -4008,9 +4082,9 @@ test "121" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -4041,9 +4115,9 @@ test "122" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -4074,9 +4148,9 @@ test "123" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -4107,9 +4181,9 @@ test "124" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -4140,9 +4214,9 @@ test "125" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -4173,9 +4247,9 @@ test "126" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -4206,9 +4280,9 @@ test "127" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -4239,9 +4313,9 @@ test "128" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -4272,9 +4346,9 @@ test "129" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -4305,9 +4379,9 @@ test "130" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -4338,9 +4412,9 @@ test "131" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -4371,9 +4445,9 @@ test "132" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -4404,9 +4478,9 @@ test "133" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -4437,9 +4511,9 @@ test "134" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -4470,9 +4544,9 @@ test "135" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -4503,9 +4577,9 @@ test "136" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -4536,9 +4610,9 @@ test "137" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -4569,9 +4643,9 @@ test "138" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -4602,9 +4676,9 @@ test "139" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -4635,9 +4709,9 @@ test "140" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -4668,9 +4742,9 @@ test "141" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -4701,9 +4775,9 @@ test "142" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -4734,9 +4808,9 @@ test "143" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -4767,9 +4841,9 @@ test "144" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -4800,9 +4874,9 @@ test "145" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -4833,9 +4907,9 @@ test "146" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -4866,9 +4940,9 @@ test "147" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -4899,9 +4973,9 @@ test "148" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -4932,9 +5006,9 @@ test "149" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -4965,9 +5039,9 @@ test "150" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -4998,9 +5072,9 @@ test "151" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -5031,9 +5105,9 @@ test "152" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -5064,9 +5138,9 @@ test "153" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -5097,9 +5171,9 @@ test "154" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -5130,9 +5204,9 @@ test "155" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -5163,9 +5237,9 @@ test "156" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -5196,9 +5270,9 @@ test "157" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -5229,9 +5303,9 @@ test "158" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -5262,9 +5336,9 @@ test "159" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -5295,9 +5369,9 @@ test "160" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -5328,9 +5402,9 @@ test "161" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -5361,9 +5435,9 @@ test "162" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -5394,9 +5468,9 @@ test "163" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -5427,9 +5501,9 @@ test "164" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -5460,9 +5534,9 @@ test "165" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -5493,9 +5567,9 @@ test "166" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -5526,9 +5600,9 @@ test "167" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -5559,9 +5633,9 @@ test "168" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -5592,9 +5666,9 @@ test "169" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -5625,9 +5699,9 @@ test "170" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -5658,9 +5732,9 @@ test "171" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -5691,9 +5765,9 @@ test "172" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -5724,9 +5798,9 @@ test "173" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -5757,9 +5831,9 @@ test "174" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -5790,9 +5864,9 @@ test "175" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -5823,9 +5897,9 @@ test "176" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -5856,9 +5930,9 @@ test "177" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -5889,9 +5963,9 @@ test "178" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -5922,9 +5996,9 @@ test "179" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -5955,9 +6029,9 @@ test "180" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -5988,9 +6062,9 @@ test "181" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -6021,9 +6095,9 @@ test "182" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -6054,9 +6128,9 @@ test "183" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -6087,9 +6161,9 @@ test "184" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -6120,9 +6194,9 @@ test "185" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -6153,9 +6227,9 @@ test "186" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -6186,9 +6260,9 @@ test "187" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -6219,9 +6293,9 @@ test "188" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -6252,9 +6326,9 @@ test "189" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -6285,9 +6359,9 @@ test "190" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -6318,9 +6392,9 @@ test "191" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -6351,9 +6425,9 @@ test "192" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -6384,9 +6458,9 @@ test "193" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -6417,9 +6491,9 @@ test "194" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -6450,9 +6524,9 @@ test "195" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -6483,9 +6557,9 @@ test "196" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -6516,9 +6590,9 @@ test "197" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -6549,9 +6623,9 @@ test "198" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -6582,9 +6656,9 @@ test "199" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -6615,9 +6689,9 @@ test "200" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -6648,9 +6722,9 @@ test "201" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -6681,9 +6755,9 @@ test "202" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -6714,9 +6788,9 @@ test "203" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -6747,9 +6821,9 @@ test "204" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -6780,9 +6854,9 @@ test "205" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -6813,9 +6887,9 @@ test "206" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -6846,9 +6920,9 @@ test "207" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -6875,13 +6949,15 @@ test "208" {
   let para_dir = 0
   let expected_base_level = 0
   let expected_levels = [0, 0, 0, 0, 1, 1, 1, 1, 2, 3, 1, 2, 1, 2, 0, 1, 0, 1]
-  let expected_reorder = [0, 1, 2, 3, 13, 12, 11, 10, 8, 9, 7, 6, 5, 4, 14, 15, 16, 17]
+  let expected_reorder = [
+    0, 1, 2, 3, 13, 12, 11, 10, 8, 9, 7, 6, 5, 4, 14, 15, 16, 17,
+  ]
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -6908,13 +6984,15 @@ test "209" {
   let para_dir = 1
   let expected_base_level = 1
   let expected_levels = [2, 1, 2, 1, 3, 3, 3, 3, 4, 5, 3, 4, 3, 4, 1, 1, 1, 1]
-  let expected_reorder = [17, 16, 15, 14, 13, 12, 11, 10, 8, 9, 7, 6, 5, 4, 3, 2, 1, 0]
+  let expected_reorder = [
+    17, 16, 15, 14, 13, 12, 11, 10, 8, 9, 7, 6, 5, 4, 3, 2, 1, 0,
+  ]
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -6940,14 +7018,20 @@ test "210" {
   let input = "\u{0061}\u{0028}\u{0062}\u{2067}\u{05D0}\u{005B}\u{05D1}\u{2066}\u{0063}\u{007B}\u{0064}\u{202B}\u{007D}\u{0020}\u{007B}\u{202C}\u{05D2}\u{007D}\u{05D3}\u{2069}\u{0065}\u{005D}\u{0066}\u{2069}\u{05D4}\u{0029}\u{05D5}"
   let para_dir = 0
   let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, -1, 3, 3, 3, -1, 3, 3, 3, 1, 2, 1, 2, 0, 1, 0, 1]
-  let expected_reorder = [0, 1, 2, 3, 22, 21, 20, 19, 8, 9, 10, 18, 17, 16, 14, 13, 12, 7, 6, 5, 4, 23, 24, 25, 26]
+  let expected_levels = [
+    0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, -1, 3, 3, 3, -1, 3, 3, 3, 1, 2, 1, 2, 0, 1,
+    0, 1,
+  ]
+  let expected_reorder = [
+    0, 1, 2, 3, 22, 21, 20, 19, 8, 9, 10, 18, 17, 16, 14, 13, 12, 7, 6, 5, 4, 23,
+    24, 25, 26,
+  ]
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -6973,14 +7057,20 @@ test "211" {
   let input = "\u{0061}\u{0028}\u{0062}\u{2067}\u{05D0}\u{005B}\u{05D1}\u{2066}\u{0063}\u{007B}\u{0064}\u{202B}\u{007D}\u{0020}\u{007B}\u{202C}\u{05D2}\u{007D}\u{05D3}\u{2069}\u{0065}\u{005D}\u{0066}\u{2069}\u{05D4}\u{0029}\u{05D5}"
   let para_dir = 1
   let expected_base_level = 1
-  let expected_levels = [2, 1, 2, 1, 3, 3, 3, 3, 4, 4, 4, -1, 5, 5, 5, -1, 5, 5, 5, 3, 4, 3, 4, 1, 1, 1, 1]
-  let expected_reorder = [26, 25, 24, 23, 22, 21, 20, 19, 8, 9, 10, 18, 17, 16, 14, 13, 12, 7, 6, 5, 4, 3, 2, 1, 0]
+  let expected_levels = [
+    2, 1, 2, 1, 3, 3, 3, 3, 4, 4, 4, -1, 5, 5, 5, -1, 5, 5, 5, 3, 4, 3, 4, 1, 1,
+    1, 1,
+  ]
+  let expected_reorder = [
+    26, 25, 24, 23, 22, 21, 20, 19, 8, 9, 10, 18, 17, 16, 14, 13, 12, 7, 6, 5, 4,
+    3, 2, 1, 0,
+  ]
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -7011,9 +7101,9 @@ test "212" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -7044,9 +7134,9 @@ test "213" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -7077,9 +7167,9 @@ test "214" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -7110,9 +7200,9 @@ test "215" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -7143,9 +7233,9 @@ test "216" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -7176,9 +7266,9 @@ test "217" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -7209,9 +7299,9 @@ test "218" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -7238,13 +7328,15 @@ test "219" {
   let para_dir = 0
   let expected_base_level = 0
   let expected_levels = [1, 0, 1, 0, 2, 2, 2, 2, 3, 4, 2, 3, 2, 3, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7, 9, 8, 10, 11, 12, 13, 14, 15, 16, 17]
+  let expected_reorder = [
+    0, 1, 2, 3, 4, 5, 6, 7, 9, 8, 10, 11, 12, 13, 14, 15, 16, 17,
+  ]
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -7271,13 +7363,15 @@ test "220" {
   let para_dir = 1
   let expected_base_level = 1
   let expected_levels = [1, 1, 1, 1, 2, 2, 2, 2, 3, 4, 2, 3, 2, 3, 1, 2, 1, 2]
-  let expected_reorder = [17, 16, 15, 14, 4, 5, 6, 7, 9, 8, 10, 11, 12, 13, 3, 2, 1, 0]
+  let expected_reorder = [
+    17, 16, 15, 14, 4, 5, 6, 7, 9, 8, 10, 11, 12, 13, 3, 2, 1, 0,
+  ]
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -7303,14 +7397,20 @@ test "221" {
   let input = "\u{05D0}\u{0028}\u{05D1}\u{2066}\u{0061}\u{005B}\u{0062}\u{2067}\u{05D2}\u{007B}\u{05D3}\u{202A}\u{007D}\u{0020}\u{007B}\u{202C}\u{0063}\u{007D}\u{0064}\u{2069}\u{05D4}\u{005D}\u{05D5}\u{2069}\u{0065}\u{0029}\u{0066}"
   let para_dir = 0
   let expected_base_level = 0
-  let expected_levels = [1, 0, 1, 0, 2, 2, 2, 2, 3, 3, 3, -1, 4, 4, 4, -1, 4, 4, 4, 2, 3, 2, 3, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7, 12, 13, 14, 16, 17, 18, 10, 9, 8, 19, 20, 21, 22, 23, 24, 25, 26]
+  let expected_levels = [
+    1, 0, 1, 0, 2, 2, 2, 2, 3, 3, 3, -1, 4, 4, 4, -1, 4, 4, 4, 2, 3, 2, 3, 0, 0,
+    0, 0,
+  ]
+  let expected_reorder = [
+    0, 1, 2, 3, 4, 5, 6, 7, 12, 13, 14, 16, 17, 18, 10, 9, 8, 19, 20, 21, 22, 23,
+    24, 25, 26,
+  ]
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -7336,14 +7436,20 @@ test "222" {
   let input = "\u{05D0}\u{0028}\u{05D1}\u{2066}\u{0061}\u{005B}\u{0062}\u{2067}\u{05D2}\u{007B}\u{05D3}\u{202A}\u{007D}\u{0020}\u{007B}\u{202C}\u{0063}\u{007D}\u{0064}\u{2069}\u{05D4}\u{005D}\u{05D5}\u{2069}\u{0065}\u{0029}\u{0066}"
   let para_dir = 1
   let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, -1, 4, 4, 4, -1, 4, 4, 4, 2, 3, 2, 3, 1, 2, 1, 2]
-  let expected_reorder = [26, 25, 24, 23, 4, 5, 6, 7, 12, 13, 14, 16, 17, 18, 10, 9, 8, 19, 20, 21, 22, 3, 2, 1, 0]
+  let expected_levels = [
+    1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, -1, 4, 4, 4, -1, 4, 4, 4, 2, 3, 2, 3, 1, 2,
+    1, 2,
+  ]
+  let expected_reorder = [
+    26, 25, 24, 23, 4, 5, 6, 7, 12, 13, 14, 16, 17, 18, 10, 9, 8, 19, 20, 21, 22,
+    3, 2, 1, 0,
+  ]
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -7374,9 +7480,9 @@ test "223" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -7407,9 +7513,9 @@ test "224" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -7440,9 +7546,9 @@ test "225" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -7473,9 +7579,9 @@ test "226" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -7506,9 +7612,9 @@ test "227" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -7539,9 +7645,9 @@ test "228" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -7572,9 +7678,9 @@ test "229" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -7605,9 +7711,9 @@ test "230" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -7638,9 +7744,9 @@ test "231" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -7671,9 +7777,9 @@ test "232" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -7704,9 +7810,9 @@ test "233" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -7737,9 +7843,9 @@ test "234" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -7770,9 +7876,9 @@ test "235" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -7803,9 +7909,9 @@ test "236" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -7836,9 +7942,9 @@ test "237" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -7869,9 +7975,9 @@ test "238" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -7902,9 +8008,9 @@ test "239" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -7935,9 +8041,9 @@ test "240" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -7968,9 +8074,9 @@ test "241" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -8001,9 +8107,9 @@ test "242" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -8034,9 +8140,9 @@ test "243" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -8067,9 +8173,9 @@ test "244" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -8100,9 +8206,9 @@ test "245" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -8133,9 +8239,9 @@ test "246" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -8166,9 +8272,9 @@ test "247" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -8199,9 +8305,9 @@ test "248" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -8232,9 +8338,9 @@ test "249" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -8265,9 +8371,9 @@ test "250" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -8298,9 +8404,9 @@ test "251" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -8331,9 +8437,9 @@ test "252" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -8364,9 +8470,9 @@ test "253" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -8397,9 +8503,9 @@ test "254" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -8430,9 +8536,9 @@ test "255" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -8463,9 +8569,9 @@ test "256" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -8496,9 +8602,9 @@ test "257" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -8529,9 +8635,9 @@ test "258" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -8562,9 +8668,9 @@ test "259" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -8595,9 +8701,9 @@ test "260" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -8628,9 +8734,9 @@ test "261" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -8661,9 +8767,9 @@ test "262" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -8694,9 +8800,9 @@ test "263" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -8727,9 +8833,9 @@ test "264" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -8760,9 +8866,9 @@ test "265" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -8793,9 +8899,9 @@ test "266" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -8826,9 +8932,9 @@ test "267" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -8859,9 +8965,9 @@ test "268" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -8892,9 +8998,9 @@ test "269" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -8925,9 +9031,9 @@ test "270" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -8958,9 +9064,9 @@ test "271" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -8991,9 +9097,9 @@ test "272" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -9024,9 +9130,9 @@ test "273" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -9057,9 +9163,9 @@ test "274" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -9090,9 +9196,9 @@ test "275" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -9123,9 +9229,9 @@ test "276" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -9156,9 +9262,9 @@ test "277" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -9189,9 +9295,9 @@ test "278" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -9222,9 +9328,9 @@ test "279" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -9255,9 +9361,9 @@ test "280" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -9288,9 +9394,9 @@ test "281" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -9321,9 +9427,9 @@ test "282" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -9354,9 +9460,9 @@ test "283" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -9387,9 +9493,9 @@ test "284" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -9420,9 +9526,9 @@ test "285" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -9453,9 +9559,9 @@ test "286" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -9486,9 +9592,9 @@ test "287" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -9519,9 +9625,9 @@ test "288" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -9552,9 +9658,9 @@ test "289" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -9585,9 +9691,9 @@ test "290" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -9618,9 +9724,9 @@ test "291" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -9651,9 +9757,9 @@ test "292" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -9684,9 +9790,9 @@ test "293" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -9717,9 +9823,9 @@ test "294" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -9750,9 +9856,9 @@ test "295" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -9783,9 +9889,9 @@ test "296" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -9816,9 +9922,9 @@ test "297" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -9849,9 +9955,9 @@ test "298" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -9882,9 +9988,9 @@ test "299" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -9915,9 +10021,9 @@ test "300" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -9948,9 +10054,9 @@ test "301" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -9981,9 +10087,9 @@ test "302" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -10014,9 +10120,9 @@ test "303" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -10047,9 +10153,9 @@ test "304" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -10080,9 +10186,9 @@ test "305" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -10113,9 +10219,9 @@ test "306" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -10146,9 +10252,9 @@ test "307" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -10179,9 +10285,9 @@ test "308" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -10212,9 +10318,9 @@ test "309" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -10245,9 +10351,9 @@ test "310" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -10278,9 +10384,9 @@ test "311" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -10311,9 +10417,9 @@ test "312" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -10344,9 +10450,9 @@ test "313" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -10377,9 +10483,9 @@ test "314" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -10410,9 +10516,9 @@ test "315" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -10443,9 +10549,9 @@ test "316" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -10476,9 +10582,9 @@ test "317" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -10509,9 +10615,9 @@ test "318" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -10542,9 +10648,9 @@ test "319" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -10575,9 +10681,9 @@ test "320" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -10608,9 +10714,9 @@ test "321" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -10641,9 +10747,9 @@ test "322" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -10674,9 +10780,9 @@ test "323" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -10707,9 +10813,9 @@ test "324" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -10740,9 +10846,9 @@ test "325" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -10773,9 +10879,9 @@ test "326" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -10806,9 +10912,9 @@ test "327" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -10839,9 +10945,9 @@ test "328" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -10872,9 +10978,9 @@ test "329" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -10905,9 +11011,9 @@ test "330" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -10938,9 +11044,9 @@ test "331" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -10971,9 +11077,9 @@ test "332" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -11004,9 +11110,9 @@ test "333" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -11037,9 +11143,9 @@ test "334" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -11070,9 +11176,9 @@ test "335" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -11103,9 +11209,9 @@ test "336" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -11136,9 +11242,9 @@ test "337" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -11169,9 +11275,9 @@ test "338" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -11202,9 +11308,9 @@ test "339" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -11235,9 +11341,9 @@ test "340" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -11268,9 +11374,9 @@ test "341" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -11301,9 +11407,9 @@ test "342" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -11334,9 +11440,9 @@ test "343" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -11367,9 +11473,9 @@ test "344" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -11400,9 +11506,9 @@ test "345" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -11433,9 +11539,9 @@ test "346" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -11466,9 +11572,9 @@ test "347" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -11499,9 +11605,9 @@ test "348" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -11532,9 +11638,9 @@ test "349" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -11565,9 +11671,9 @@ test "350" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -11598,9 +11704,9 @@ test "351" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -11631,9 +11737,9 @@ test "352" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -11664,9 +11770,9 @@ test "353" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -11697,9 +11803,9 @@ test "354" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -11730,9 +11836,9 @@ test "355" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -11763,9 +11869,9 @@ test "356" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -11796,9 +11902,9 @@ test "357" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -11829,9 +11935,9 @@ test "358" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -11862,9 +11968,9 @@ test "359" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -11895,9 +12001,9 @@ test "360" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -11928,9 +12034,9 @@ test "361" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -11961,9 +12067,9 @@ test "362" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -11994,9 +12100,9 @@ test "363" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -12027,9 +12133,9 @@ test "364" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -12060,9 +12166,9 @@ test "365" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -12093,9 +12199,9 @@ test "366" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -12126,9 +12232,9 @@ test "367" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -12159,9 +12265,9 @@ test "368" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -12192,9 +12298,9 @@ test "369" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -12225,9 +12331,9 @@ test "370" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -12258,9 +12364,9 @@ test "371" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -12291,9 +12397,9 @@ test "372" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -12324,9 +12430,9 @@ test "373" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -12357,9 +12463,9 @@ test "374" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -12390,9 +12496,9 @@ test "375" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -12423,9 +12529,9 @@ test "376" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -12456,9 +12562,9 @@ test "377" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -12489,9 +12595,9 @@ test "378" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -12522,9 +12628,9 @@ test "379" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -12555,9 +12661,9 @@ test "380" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -12588,9 +12694,9 @@ test "381" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -12621,9 +12727,9 @@ test "382" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -12654,9 +12760,9 @@ test "383" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -12687,9 +12793,9 @@ test "384" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -12720,9 +12826,9 @@ test "385" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -12753,9 +12859,9 @@ test "386" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -12786,9 +12892,9 @@ test "387" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -12819,9 +12925,9 @@ test "388" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -12852,9 +12958,9 @@ test "389" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -12885,9 +12991,9 @@ test "390" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -12918,9 +13024,9 @@ test "391" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -12951,9 +13057,9 @@ test "392" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -12984,9 +13090,9 @@ test "393" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -13017,9 +13123,9 @@ test "394" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -13050,9 +13156,9 @@ test "395" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -13083,9 +13189,9 @@ test "396" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -13116,9 +13222,9 @@ test "397" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -13149,9 +13255,9 @@ test "398" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -13182,9 +13288,9 @@ test "399" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -13215,9 +13321,9 @@ test "400" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -13248,9 +13354,9 @@ test "401" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -13281,9 +13387,9 @@ test "402" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -13314,9 +13420,9 @@ test "403" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -13347,9 +13453,9 @@ test "404" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -13380,9 +13486,9 @@ test "405" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -13413,9 +13519,9 @@ test "406" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -13446,9 +13552,9 @@ test "407" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -13479,9 +13585,9 @@ test "408" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -13512,9 +13618,9 @@ test "409" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -13545,9 +13651,9 @@ test "410" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -13578,9 +13684,9 @@ test "411" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -13611,9 +13717,9 @@ test "412" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -13644,9 +13750,9 @@ test "413" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -13677,9 +13783,9 @@ test "414" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -13710,9 +13816,9 @@ test "415" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -13743,9 +13849,9 @@ test "416" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -13776,9 +13882,9 @@ test "417" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -13809,9 +13915,9 @@ test "418" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -13842,9 +13948,9 @@ test "419" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -13875,9 +13981,9 @@ test "420" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -13908,9 +14014,9 @@ test "421" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -13941,9 +14047,9 @@ test "422" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -13974,9 +14080,9 @@ test "423" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -14007,9 +14113,9 @@ test "424" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -14040,9 +14146,9 @@ test "425" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -14073,9 +14179,9 @@ test "426" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -14106,9 +14212,9 @@ test "427" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -14139,9 +14245,9 @@ test "428" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -14172,9 +14278,9 @@ test "429" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -14205,9 +14311,9 @@ test "430" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -14238,9 +14344,9 @@ test "431" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -14271,9 +14377,9 @@ test "432" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -14304,9 +14410,9 @@ test "433" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -14337,9 +14443,9 @@ test "434" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -14370,9 +14476,9 @@ test "435" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -14403,9 +14509,9 @@ test "436" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -14436,9 +14542,9 @@ test "437" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -14469,9 +14575,9 @@ test "438" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -14502,9 +14608,9 @@ test "439" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -14535,9 +14641,9 @@ test "440" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -14568,9 +14674,9 @@ test "441" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -14601,9 +14707,9 @@ test "442" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -14634,9 +14740,9 @@ test "443" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -14667,9 +14773,9 @@ test "444" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -14700,9 +14806,9 @@ test "445" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -14733,9 +14839,9 @@ test "446" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -14766,9 +14872,9 @@ test "447" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -14799,9 +14905,9 @@ test "448" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -14832,9 +14938,9 @@ test "449" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -14865,9 +14971,9 @@ test "450" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -14898,9 +15004,9 @@ test "451" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -14931,9 +15037,9 @@ test "452" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -14964,9 +15070,9 @@ test "453" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -14997,9 +15103,9 @@ test "454" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -15030,9 +15136,9 @@ test "455" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -15063,9 +15169,9 @@ test "456" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -15096,9 +15202,9 @@ test "457" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -15129,9 +15235,9 @@ test "458" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -15162,9 +15268,9 @@ test "459" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -15195,9 +15301,9 @@ test "460" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -15228,9 +15334,9 @@ test "461" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -15261,9 +15367,9 @@ test "462" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -15294,9 +15400,9 @@ test "463" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -15327,9 +15433,9 @@ test "464" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -15360,9 +15466,9 @@ test "465" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -15393,9 +15499,9 @@ test "466" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -15426,9 +15532,9 @@ test "467" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -15459,9 +15565,9 @@ test "468" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -15492,9 +15598,9 @@ test "469" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -15525,9 +15631,9 @@ test "470" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -15558,9 +15664,9 @@ test "471" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -15591,9 +15697,9 @@ test "472" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -15624,9 +15730,9 @@ test "473" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -15657,9 +15763,9 @@ test "474" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -15690,9 +15796,9 @@ test "475" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -15723,9 +15829,9 @@ test "476" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -15756,9 +15862,9 @@ test "477" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -15789,9 +15895,9 @@ test "478" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -15822,9 +15928,9 @@ test "479" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -15855,9 +15961,9 @@ test "480" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -15888,9 +15994,9 @@ test "481" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -15921,9 +16027,9 @@ test "482" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -15954,9 +16060,9 @@ test "483" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -15987,9 +16093,9 @@ test "484" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -16020,9 +16126,9 @@ test "485" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -16053,9 +16159,9 @@ test "486" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -16086,9 +16192,9 @@ test "487" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -16119,9 +16225,9 @@ test "488" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -16152,9 +16258,9 @@ test "489" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -16185,9 +16291,9 @@ test "490" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -16218,9 +16324,9 @@ test "491" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -16251,9 +16357,9 @@ test "492" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -16284,9 +16390,9 @@ test "493" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -16317,9 +16423,9 @@ test "494" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -16350,9 +16456,9 @@ test "495" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -16383,9 +16489,9 @@ test "496" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -16416,9 +16522,9 @@ test "497" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -16449,9 +16555,9 @@ test "498" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -16482,9 +16588,9 @@ test "499" {
 
   // Process with appropriate paragraph direction
   let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)  // LTR
-    1 => @bidi.process_with_base_level(input, 1)  // RTL
-    _ => @bidi.process(input)                      // Auto
+    0 => @bidi.process_with_base_level(input, 0) // LTR
+    1 => @bidi.process_with_base_level(input, 1) // RTL
+    _ => @bidi.process(input) // Auto
   }
 
   // Verify base level
@@ -16504,4 +16610,3 @@ test "499" {
     assert_eq(actual_reorder[j], expected_reorder[j])
   }
 }
-

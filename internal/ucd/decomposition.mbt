@@ -2377,9 +2377,11 @@ fn find_decomp_index(c : Char) -> Int {
   let cp = c.to_int()
   let mut left = 0
   let mut right = decomp_cps.length() - 1
+
   while left <= right {
     let mid = (left + right) / 2
     let mid_cp = decomp_cps[mid]
+
     if cp < mid_cp {
       right = mid - 1
     } else if cp > mid_cp {
@@ -2388,6 +2390,7 @@ fn find_decomp_index(c : Char) -> Int {
       return mid
     }
   }
+
   -1
 }
 
@@ -2399,10 +2402,12 @@ pub fn get_canonical_decomposition(c : Char) -> Array[Char]? {
   if idx < 0 {
     return None
   }
+
   let len = decomp_canonical_lens[idx]
   if len == 0 {
     return None
   }
+
   let start = decomp_data_starts[idx]
   let result : Array[Char] = []
   for i = 0; i < len; i = i + 1 {
@@ -2419,6 +2424,7 @@ pub fn get_compat_decomposition(c : Char) -> Array[Char]? {
   if idx < 0 {
     return None
   }
+
   let compat_len = decomp_compat_lens[idx]
   if compat_len == 0 {
     return None

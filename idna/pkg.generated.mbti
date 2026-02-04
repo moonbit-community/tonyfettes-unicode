@@ -1,9 +1,9 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "tonyfettes/unicode/idna"
 
-import(
-  "tonyfettes/unicode/punycode"
-)
+import {
+  "tonyfettes/unicode/punycode",
+}
 
 // Values
 pub fn to_ascii(String, use_std3_ascii_rules? : Bool, check_hyphens? : Bool, check_bidi? : Bool, check_joiners? : Bool, verify_dns_length? : Bool) -> String raise IdnaError

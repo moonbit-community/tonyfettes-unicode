@@ -19,10 +19,10 @@ test "fuzz: punycode roundtrip with random unicode" {
   let rng = @random.Rand::chacha8(seed=fuzz_seed)
   for _ in 0..<fuzz_iterations {
     let s = @fuzz.random_unicode_string(rng, max_len=30)
-    let result : Result[String, _] = try? {
+    let result : Result[String, _] = try? ({
       let encoded = @punycode.encode(s)
       @punycode.decode(encoded)
-    }
+    })
     match result {
       Ok(decoded) => assert_eq(decoded, s)
       Err(_) => () // Some strings may cause overflow, which is acceptable
@@ -35,10 +35,10 @@ test "fuzz: punycode roundtrip with hangul" {
   let rng = @random.Rand::chacha8(seed=fuzz_seed)
   for _ in 0..<500 {
     let s = @fuzz.random_hangul_string(rng, max_len=20)
-    let result : Result[String, _] = try? {
+    let result : Result[String, _] = try? ({
       let encoded = @punycode.encode(s)
       @punycode.decode(encoded)
-    }
+    })
     match result {
       Ok(decoded) => assert_eq(decoded, s)
       Err(_) => () // Some strings may cause overflow
@@ -58,10 +58,10 @@ test "fuzz: punycode roundtrip with latin extended" {
       sb.write_char(cp)
     }
     let s = sb.to_string()
-    let result : Result[String, _] = try? {
+    let result : Result[String, _] = try? ({
       let encoded = @punycode.encode(s)
       @punycode.decode(encoded)
-    }
+    })
     match result {
       Ok(decoded) => assert_eq(decoded, s)
       Err(_) => ()
@@ -131,14 +131,14 @@ test "fuzz: valid punycode decode is stable" {
   let rng = @random.Rand::chacha8(seed=fuzz_seed)
   for _ in 0..<fuzz_iterations {
     let s = @fuzz.random_unicode_string(rng, max_len=20)
-    let result : Result[(String, String), _] = try? {
+    let result : Result[(String, String), _] = try? ({
       let encoded = @punycode.encode(s)
       // Decode twice should give same result
       let decoded1 = @punycode.decode(encoded)
       let encoded2 = @punycode.encode(decoded1)
       let decoded2 = @punycode.decode(encoded2)
       (decoded1, decoded2)
-    }
+    })
     match result {
       Ok((d1, d2)) => assert_eq(d1, d2)
       Err(_) => ()
@@ -167,10 +167,10 @@ test "fuzz: mixed ascii and unicode roundtrip" {
       sb.write_char(cp)
     }
     let s = sb.to_string()
-    let result : Result[String, _] = try? {
+    let result : Result[String, _] = try? ({
       let encoded = @punycode.encode(s)
       @punycode.decode(encoded)
-    }
+    })
     match result {
       Ok(decoded) => assert_eq(decoded, s)
       Err(_) => ()
@@ -195,10 +195,10 @@ test "fuzz: single character roundtrip" {
   for _ in 0..<500 {
     let cp = @fuzz.random_codepoint(rng, LatinExtended)
     let s = cp.to_string()
-    let result : Result[String, _] = try? {
+    let result : Result[String, _] = try? ({
       let encoded = @punycode.encode(s)
       @punycode.decode(encoded)
-    }
+    })
     match result {
       Ok(decoded) => assert_eq(decoded, s)
       Err(_) => ()
