@@ -1,0 +1,3 @@
+import {
+  "tonyfettes/unicode/internal/ucd",
+}

@@ -1,9 +1,0 @@
-{
-  "import": [
-    {
-      "path": "tonyfettes/unicode/internal/bidi",
-      "alias": "bidi_data"
-    },
-    "moonbitlang/core/cmp"
-  ]
-}

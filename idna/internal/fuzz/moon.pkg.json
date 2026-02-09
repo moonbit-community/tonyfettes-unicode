@@ -1,9 +1,0 @@
-{
-  "import": [
-    {
-      "path": "tonyfettes/unicode/internal/fuzz",
-      "alias": "base_fuzz"
-    },
-    "moonbitlang/core/random"
-  ]
-}

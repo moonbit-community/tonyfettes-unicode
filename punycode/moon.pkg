@@ -1,0 +1,4 @@
+import {
+  "tonyfettes/unicode/internal/fuzz",
+  "moonbitlang/core/random",
+} for "test"

@@ -1,0 +1,4 @@
+import {
+  "tonyfettes/unicode/internal/ucd" @ucd/data,
+  "tonyfettes/unicode/internal/ucd" @ucd_data,
+}
