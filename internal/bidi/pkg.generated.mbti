@@ -53,7 +53,7 @@ pub(all) enum BidiClass {
   RLI
   FSI
   PDI
-}
+} derive(Eq, Show)
 pub fn BidiClass::is_explicit(Self) -> Bool
 pub fn BidiClass::is_isolate_initiator(Self) -> Bool
 pub fn BidiClass::is_neutral(Self) -> Bool
@@ -62,16 +62,12 @@ pub fn BidiClass::is_strong(Self) -> Bool
 pub fn BidiClass::is_strong_rtl(Self) -> Bool
 pub fn BidiClass::is_weak(Self) -> Bool
 pub fn BidiClass::is_x9_removed(Self) -> Bool
-pub impl Eq for BidiClass
-pub impl Show for BidiClass
 
 pub(all) enum BracketType {
   Open
   Close
   None
-}
-pub impl Eq for BracketType
-pub impl Show for BracketType
+} derive(Eq, Show)
 
 // Type aliases
 

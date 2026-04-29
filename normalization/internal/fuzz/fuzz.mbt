@@ -28,7 +28,7 @@ pub fn ccc_is_sorted(s : String) -> Bool {
       }
       continue i + 1, ccc, true
     }
-  } else {
+  } nobreak {
     true
   }
 }

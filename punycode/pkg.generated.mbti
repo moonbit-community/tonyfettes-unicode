@@ -11,8 +11,7 @@ pub(all) suberror PunycodeError {
   Overflow
   InvalidInput
   BadInput
-}
-pub impl Show for PunycodeError
+} derive(Show)
 
 // Types and methods
 

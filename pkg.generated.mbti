@@ -50,10 +50,8 @@ pub(all) enum GeneralCategory {
   Cs
   Co
   Cn
-}
+} derive(Eq, Show)
 pub fn GeneralCategory::group(Self) -> GeneralCategoryGroup
-pub impl Eq for GeneralCategory
-pub impl Show for GeneralCategory
 
 pub(all) enum GeneralCategoryGroup {
   L
@@ -63,9 +61,7 @@ pub(all) enum GeneralCategoryGroup {
   P
   S
   C
-}
-pub impl Eq for GeneralCategoryGroup
-pub impl Show for GeneralCategoryGroup
+} derive(Eq, Show)
 
 // Type aliases
 

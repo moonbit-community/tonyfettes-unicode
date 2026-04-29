@@ -23,8 +23,7 @@ pub(all) suberror IdnaError {
   InvalidJoiner
   InvalidAcePrefix
   LeadingCombiningMark
-}
-pub impl Show for IdnaError
+} derive(Show)
 
 // Types and methods
 

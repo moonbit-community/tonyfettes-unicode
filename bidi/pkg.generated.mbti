@@ -40,10 +40,8 @@ pub(all) struct BidiParagraph {
 pub(all) enum Direction {
   LTR
   RTL
-}
+} derive(Eq, Show)
 pub fn Direction::level(Self) -> Int
-pub impl Eq for Direction
-pub impl Show for Direction
 
 // Type aliases
 pub using @tonyfettes/unicode/internal/bidi {type BidiClass}
