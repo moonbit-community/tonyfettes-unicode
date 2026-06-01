@@ -11,7 +11,19 @@ pub(all) enum JoiningType {
   JoinCausing // C
   Transparent // T
   NonJoining // U
-} derive(Show, Eq)
+} derive(Eq)
+
+///|
+pub impl Show for JoiningType with fn output(self, logger) {
+  match self {
+    LeftJoining => logger.write_string("LeftJoining")
+    RightJoining => logger.write_string("RightJoining")
+    DualJoining => logger.write_string("DualJoining")
+    JoinCausing => logger.write_string("JoinCausing")
+    Transparent => logger.write_string("Transparent")
+    NonJoining => logger.write_string("NonJoining")
+  }
+}
 
 ///|
 /// Range start code points

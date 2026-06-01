@@ -1,8 +1,0 @@
-{
-  "import": [
-    {
-      "path": "tonyfettes/unicode/internal/ucd",
-      "alias": "ucd_data"
-    }
-  ]
-}

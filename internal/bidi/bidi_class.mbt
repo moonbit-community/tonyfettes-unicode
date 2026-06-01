@@ -35,7 +35,36 @@ pub(all) enum BidiClass {
   RLI // Right-to-Left Isolate
   FSI // First Strong Isolate
   PDI // Pop Directional Isolate
-} derive(Show, Eq)
+} derive(Eq)
+
+///|
+pub impl Show for BidiClass with fn output(self, logger) {
+  match self {
+    L => logger.write_string("L")
+    R => logger.write_string("R")
+    AL => logger.write_string("AL")
+    EN => logger.write_string("EN")
+    ES => logger.write_string("ES")
+    ET => logger.write_string("ET")
+    AN => logger.write_string("AN")
+    CS => logger.write_string("CS")
+    NSM => logger.write_string("NSM")
+    BN => logger.write_string("BN")
+    B => logger.write_string("B")
+    S => logger.write_string("S")
+    WS => logger.write_string("WS")
+    ON => logger.write_string("ON")
+    LRE => logger.write_string("LRE")
+    LRO => logger.write_string("LRO")
+    RLE => logger.write_string("RLE")
+    RLO => logger.write_string("RLO")
+    PDF => logger.write_string("PDF")
+    LRI => logger.write_string("LRI")
+    RLI => logger.write_string("RLI")
+    FSI => logger.write_string("FSI")
+    PDI => logger.write_string("PDI")
+  }
+}
 
 ///|
 /// Range start code points

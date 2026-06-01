@@ -12,7 +12,20 @@ pub(all) enum IdnaStatus {
   Disallowed // 4: Character is not allowed
   DisallowedSTD3Valid // 5: Valid only without UseSTD3ASCIIRules
   DisallowedSTD3Mapped // 6: Mapped only without UseSTD3ASCIIRules
-} derive(Show, Eq)
+} derive(Eq)
+
+///|
+pub impl Show for IdnaStatus with fn output(self, logger) {
+  match self {
+    Valid => logger.write_string("Valid")
+    Ignored => logger.write_string("Ignored")
+    Mapped => logger.write_string("Mapped")
+    Deviation => logger.write_string("Deviation")
+    Disallowed => logger.write_string("Disallowed")
+    DisallowedSTD3Valid => logger.write_string("DisallowedSTD3Valid")
+    DisallowedSTD3Mapped => logger.write_string("DisallowedSTD3Mapped")
+  }
+}
 
 ///|
 /// Range start code points

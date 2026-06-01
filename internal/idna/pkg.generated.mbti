@@ -17,7 +17,8 @@ pub(all) enum IdnaStatus {
   Disallowed
   DisallowedSTD3Valid
   DisallowedSTD3Mapped
-} derive(Eq, Show)
+} derive(Eq)
+pub impl Show for IdnaStatus
 
 pub(all) enum JoiningType {
   LeftJoining
@@ -26,7 +27,8 @@ pub(all) enum JoiningType {
   JoinCausing
   Transparent
   NonJoining
-} derive(Eq, Show)
+} derive(Eq)
+pub impl Show for JoiningType
 
 // Type aliases
 

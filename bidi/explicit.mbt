@@ -193,8 +193,7 @@ fn process_explicit(
         } else if valid_isolate_count.val > 0 {
           overflow_embedding_count.val = 0
           // Pop until isolate
-          while stack.length() > 1 &&
-                not(stack[stack.length() - 1].isolate_status) {
+          while stack.length() > 1 && !stack[stack.length() - 1].isolate_status {
             let _ = stack.pop()
           }
           // Pop the isolate entry itself
@@ -224,7 +223,7 @@ fn process_explicit(
         } else if overflow_embedding_count.val > 0 {
           overflow_embedding_count.val -= 1
         } else if stack.length() >= 2 &&
-          not(stack[stack.length() - 1].isolate_status) {
+          !stack[stack.length() - 1].isolate_status {
           let _ = stack.pop()
         }
         levels[i] = stack[stack.length() - 1].level
@@ -264,13 +263,13 @@ fn adjust_nsm_levels(
     }
     if bc == @bidi_data.BidiClass::NSM && last_idx >= 0 {
       let last_bc = original_classes[last_idx]
-      if not(last_bc.is_isolate_initiator()) &&
+      if !last_bc.is_isolate_initiator() &&
         last_bc != @bidi_data.BidiClass::PDI &&
-        not(saw_explicit) {
+        !saw_explicit {
         levels[i] = levels[last_idx]
       }
     }
-    if not(bc.is_x9_removed()) {
+    if !bc.is_x9_removed() {
       last_idx = i
       saw_explicit = false
     }
@@ -342,7 +341,7 @@ fn compute_isolating_run_sequences(
   }
 
   // Build a map from isolate initiator to PDI
-  let isolate_to_pdi : Map[Int, Int] = Map::new()
+  let isolate_to_pdi : Map[Int, Int] = Map([])
   for pair in isolate_pairs {
     isolate_to_pdi[pair.0] = pair.1
   }

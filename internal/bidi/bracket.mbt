@@ -8,7 +8,16 @@ pub(all) enum BracketType {
   Open // Opening bracket
   Close // Closing bracket
   None // Not a bracket
-} derive(Show, Eq)
+} derive(Eq)
+
+///|
+pub impl Show for BracketType with fn output(self, logger) {
+  match self {
+    Open => logger.write_string("Open")
+    Close => logger.write_string("Close")
+    None => logger.write_string("None")
+  }
+}
 
 ///|
 /// Code points of paired brackets

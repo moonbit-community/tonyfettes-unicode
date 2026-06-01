@@ -17,7 +17,15 @@ pub(all) suberror BidiError {
 pub(all) enum Direction {
   LTR // Left-to-Right (base level 0)
   RTL // Right-to-Left (base level 1)
-} derive(Show, Eq)
+} derive(Eq)
+
+///|
+pub impl Show for Direction with fn output(self, logger) {
+  match self {
+    LTR => logger.write_string("LTR")
+    RTL => logger.write_string("RTL")
+  }
+}
 
 ///|
 /// Result of bidi processing - a paragraph with resolved levels
@@ -156,7 +164,7 @@ pub fn reorder(para : BidiParagraph) -> Array[Int] {
   let indices : Array[Int] = []
   for i = 0; i < para.levels.length(); i = i + 1 {
     let bc = para.original_classes[i]
-    if not(bc.is_x9_removed()) {
+    if !bc.is_x9_removed() {
       indices.push(i)
     }
   }

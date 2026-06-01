@@ -20,7 +20,7 @@ fn validate_label(
   let chars = label_to_chars(label)
 
   // Check 1: Must be NFC normalized
-  if not(@normalization.is_normalized(label, @normalization.NFC)) {
+  if !@normalization.is_normalized(label, @normalization.NFC) {
     raise InvalidLabel(label)
   }
 
@@ -117,7 +117,7 @@ fn validate_char_status(
   // STD3 ASCII rules: only LDH characters allowed in ASCII range
   // This check is separate from IdnaMappingTable.txt which marks
   // these characters as "valid" but they should be rejected under STD3
-  if use_std3_ascii_rules && c.to_int() < 0x80 && not(is_ldh_ascii(c)) {
+  if use_std3_ascii_rules && c.to_int() < 0x80 && !is_ldh_ascii(c) {
     raise DisallowedCodePoint(cp=c.to_int())
   }
   let (status, _) = @idna_data.lookup_idna_mapping(c)
@@ -149,12 +149,12 @@ fn validate_contextj(chars : Array[Char]) -> Unit raise IdnaError {
   for i, c in chars {
     if c == '\u{200C}' {
       // ZWNJ: Zero Width Non-Joiner
-      if not(is_valid_zwnj_context(chars, i)) {
+      if !is_valid_zwnj_context(chars, i) {
         raise InvalidJoiner
       }
     } else if c == '\u{200D}' {
       // ZWJ: Zero Width Joiner
-      if not(is_valid_zwj_context(chars, i)) {
+      if !is_valid_zwj_context(chars, i) {
         raise InvalidJoiner
       }
     }
@@ -255,7 +255,7 @@ fn validate_domain_bidi(labels : Array[String]) -> Unit raise IdnaError {
       }
     }
   }
-  if not(has_rtl_label) {
+  if !has_rtl_label {
     // Not a Bidi domain name - no Bidi validation needed per UTS #46
     // "If CheckBidi, and if the domain name is a Bidi domain name, then..."
     return
@@ -309,7 +309,7 @@ fn validate_ltr_label_in_rtl_domain(
       | @bidi.ET
       | @bidi.ON
       | @bidi.BN
-      | @bidi.NSM => if not(bc is @bidi.NSM) { last_non_nsm_bc = bc }
+      | @bidi.NSM => if !(bc is @bidi.NSM) { last_non_nsm_bc = bc }
       @bidi.R | @bidi.AL | @bidi.AN => raise InvalidBidi
       _ => ()
     }
@@ -364,7 +364,7 @@ fn validate_rtl_label(chars : Array[Char]) -> Unit raise IdnaError {
       | @bidi.BN
       | @bidi.NSM => {
         // Rule 2 (B2): Allowed in RTL label
-        if not(bc is @bidi.NSM) {
+        if !(bc is @bidi.NSM) {
           last_non_nsm_bc = bc
         }
         if bc is @bidi.EN {
@@ -430,7 +430,7 @@ fn validate_ltr_label(chars : Array[Char]) -> Unit raise IdnaError {
       | @bidi.BN
       | @bidi.NSM =>
         // Allowed in LTR label
-        if not(bc is @bidi.NSM) {
+        if !(bc is @bidi.NSM) {
           last_non_nsm_bc = bc
         }
       @bidi.R | @bidi.AL | @bidi.AN => raise InvalidBidi // RTL chars not allowed

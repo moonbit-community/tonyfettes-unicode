@@ -2,3 +2,7 @@ import {
   "tonyfettes/unicode/internal/bidi" @bidi_data,
   "moonbitlang/core/cmp",
 }
+
+import {
+  "moonbitlang/core/debug",
+} for "test"

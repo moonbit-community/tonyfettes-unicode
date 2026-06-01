@@ -109,7 +109,7 @@ test "invalid: disallowed character" {
 test "to_ascii: double dots handled" {
   // Double dots create an empty label which triggers EmptyLabel error
   let result : Result[String, Error] = try? to_ascii("example..com")
-  inspect(result, content="Err(EmptyLabel)")
+  guard result is Err(@idna.EmptyLabel) else { fail("Expected EmptyLabel") }
 }
 
 ///|
@@ -227,7 +227,7 @@ test "bidi: RTL label cannot start with L character" {
     "aבדיקה.com",
     check_bidi=true,
   )
-  inspect(result, content="Err(InvalidBidi)")
+  guard result is Err(@idna.InvalidBidi) else { fail("Expected InvalidBidi") }
 }
 
 ///|
@@ -237,7 +237,7 @@ test "bidi: RTL label cannot contain L character" {
     "בדaיקה.com",
     check_bidi=true,
   )
-  inspect(result, content="Err(InvalidBidi)")
+  guard result is Err(@idna.InvalidBidi) else { fail("Expected InvalidBidi") }
 }
 
 ///|
@@ -249,7 +249,7 @@ test "bidi: RTL label cannot have both EN and AN" {
     "مثال1\u{0660}.com",
     check_bidi=true,
   )
-  inspect(result, content="Err(InvalidBidi)")
+  guard result is Err(@idna.InvalidBidi) else { fail("Expected InvalidBidi") }
 }
 
 ///|
@@ -259,7 +259,7 @@ test "bidi: LTR label cannot contain RTL characters" {
     "exampleم.com",
     check_bidi=true,
   )
-  inspect(result, content="Err(InvalidBidi)")
+  guard result is Err(@idna.InvalidBidi) else { fail("Expected InvalidBidi") }
 }
 
 ///|
@@ -299,7 +299,7 @@ test "contextj: ZWNJ without valid context fails" {
     "\u{200C}example.com",
     check_joiners=true,
   )
-  inspect(result, content="Err(InvalidJoiner)")
+  guard result is Err(@idna.InvalidJoiner) else { fail("Expected InvalidJoiner") }
 }
 
 ///|
@@ -309,7 +309,7 @@ test "contextj: ZWNJ between non-joining chars fails" {
     "ex\u{200C}ample.com",
     check_joiners=true,
   )
-  inspect(result, content="Err(InvalidJoiner)")
+  guard result is Err(@idna.InvalidJoiner) else { fail("Expected InvalidJoiner") }
 }
 
 ///|
@@ -330,7 +330,7 @@ test "contextj: ZWJ without Virama fails" {
     "ex\u{200D}ample.com",
     check_joiners=true,
   )
-  inspect(result, content="Err(InvalidJoiner)")
+  guard result is Err(@idna.InvalidJoiner) else { fail("Expected InvalidJoiner") }
 }
 
 ///|
@@ -340,7 +340,7 @@ test "contextj: ZWJ at start of label fails" {
     "\u{200D}example.com",
     check_joiners=true,
   )
-  inspect(result, content="Err(InvalidJoiner)")
+  guard result is Err(@idna.InvalidJoiner) else { fail("Expected InvalidJoiner") }
 }
 
 ///|
@@ -390,7 +390,9 @@ test "ace: mixed case xN-- prefix works" {
 test "combining mark: at start of label fails" {
   // U+0301 (Combining Acute Accent) at start - invalid
   let result : Result[String, Error] = try? to_ascii("\u{0301}example.com")
-  inspect(result, content="Err(LeadingCombiningMark)")
+  guard result is Err(@idna.LeadingCombiningMark) else {
+    fail("Expected LeadingCombiningMark")
+  }
 }
 
 ///|
@@ -415,7 +417,9 @@ test "combining mark: multiple marks after base is valid" {
 test "combining mark: U+0300 grave at start fails" {
   // U+0300 (Combining Grave Accent) at start
   let result : Result[String, Error] = try? to_ascii("\u{0300}test.com")
-  inspect(result, content="Err(LeadingCombiningMark)")
+  guard result is Err(@idna.LeadingCombiningMark) else {
+    fail("Expected LeadingCombiningMark")
+  }
 }
 
 // =============================================================================
@@ -437,26 +441,26 @@ test "error: domain too long" {
     long_label +
     ".com"
   let result : Result[String, Error] = try? to_ascii(domain)
-  inspect(result, content="Err(DomainTooLong)")
+  guard result is Err(@idna.DomainTooLong) else { fail("Expected DomainTooLong") }
 }
 
 ///|
 test "error: empty domain" {
   let result : Result[String, Error] = try? to_ascii("")
-  inspect(result, content="Err(EmptyLabel)")
+  guard result is Err(@idna.EmptyLabel) else { fail("Expected EmptyLabel") }
 }
 
 ///|
 test "error: only separator" {
   // Just a dot creates empty labels
   let result : Result[String, Error] = try? to_ascii(".")
-  inspect(result, content="Err(EmptyLabel)")
+  guard result is Err(@idna.EmptyLabel) else { fail("Expected EmptyLabel") }
 }
 
 ///|
 test "error: trailing dot creates empty label" {
   let result : Result[String, Error] = try? to_ascii("example.com.")
-  inspect(result, content="Err(EmptyLabel)")
+  guard result is Err(@idna.EmptyLabel) else { fail("Expected EmptyLabel") }
 }
 
 ///|
@@ -466,7 +470,7 @@ test "error: hyphens at positions 3 and 4" {
     "ab--cd.com",
     check_hyphens=true,
   )
-  inspect(result, content="Err(InvalidHyphen)")
+  guard result is Err(@idna.InvalidHyphen) else { fail("Expected InvalidHyphen") }
 }
 
 ///|

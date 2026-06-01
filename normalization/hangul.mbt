@@ -70,7 +70,7 @@ fn is_hangul_t(c : Char) -> Bool {
 ///|
 /// Check if a character is an LV syllable (no trailing consonant)
 fn is_hangul_lv(c : Char) -> Bool {
-  if not(is_hangul_syllable(c)) {
+  if !is_hangul_syllable(c) {
     return false
   }
   (c.to_int() - hangul_s_base) % hangul_t_count == 0

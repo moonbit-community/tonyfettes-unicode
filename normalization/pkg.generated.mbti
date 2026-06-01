@@ -22,7 +22,8 @@ pub(all) enum NormalizationForm {
   NFC
   NFKD
   NFKC
-} derive(Eq, Show)
+} derive(Eq)
+pub impl Show for NormalizationForm
 
 // Type aliases
 

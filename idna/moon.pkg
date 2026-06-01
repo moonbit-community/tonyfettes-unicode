@@ -1,9 +1,9 @@
 import {
   "tonyfettes/unicode/punycode",
   "tonyfettes/unicode/normalization",
-  "tonyfettes/unicode/internal/bidi" @bidi,
+  "tonyfettes/unicode/internal/bidi",
   "tonyfettes/unicode/internal/idna" @idna_data,
-  "tonyfettes/unicode/internal/ucd" @ucd,
+  "tonyfettes/unicode/internal/ucd",
 }
 
 import {

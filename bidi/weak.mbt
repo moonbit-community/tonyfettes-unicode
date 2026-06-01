@@ -158,7 +158,7 @@ fn resolve_weak_types(
         }
       }
       // Check sos
-      if not(found_strong) && seq.sos == @bidi_data.BidiClass::L {
+      if !found_strong && seq.sos == @bidi_data.BidiClass::L {
         types[idx] = @bidi_data.BidiClass::L
       }
     }

@@ -14,7 +14,17 @@ pub(all) enum NormalizationForm {
   NFC // Canonical Decomposition + Composition
   NFKD // Compatibility Decomposition
   NFKC // Compatibility Decomposition + Composition
-} derive(Eq, Show)
+} derive(Eq)
+
+///|
+pub impl Show for NormalizationForm with fn output(self, logger) {
+  match self {
+    NFD => logger.write_string("NFD")
+    NFC => logger.write_string("NFC")
+    NFKD => logger.write_string("NFKD")
+    NFKC => logger.write_string("NFKC")
+  }
+}
 
 ///|
 /// Convert array of characters to string

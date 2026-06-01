@@ -9,7 +9,20 @@ pub(all) enum GeneralCategoryGroup {
   P // Punctuation
   S // Symbol
   C // Other
-} derive(Eq, Show)
+} derive(Eq)
+
+///|
+pub impl Show for GeneralCategoryGroup with fn output(self, logger) {
+  match self {
+    L => logger.write_string("L")
+    M => logger.write_string("M")
+    N => logger.write_string("N")
+    Z => logger.write_string("Z")
+    P => logger.write_string("P")
+    S => logger.write_string("S")
+    C => logger.write_string("C")
+  }
+}
 
 ///|
 /// Unicode General_Category values (two-letter categories)
@@ -52,7 +65,43 @@ pub(all) enum GeneralCategory {
   Cs // Surrogate
   Co // Private_Use
   Cn // Unassigned
-} derive(Eq, Show)
+} derive(Eq)
+
+///|
+pub impl Show for GeneralCategory with fn output(self, logger) {
+  match self {
+    Lu => logger.write_string("Lu")
+    Ll => logger.write_string("Ll")
+    Lt => logger.write_string("Lt")
+    Lm => logger.write_string("Lm")
+    Lo => logger.write_string("Lo")
+    Mn => logger.write_string("Mn")
+    Mc => logger.write_string("Mc")
+    Me => logger.write_string("Me")
+    Nd => logger.write_string("Nd")
+    Nl => logger.write_string("Nl")
+    No => logger.write_string("No")
+    Zs => logger.write_string("Zs")
+    Zl => logger.write_string("Zl")
+    Zp => logger.write_string("Zp")
+    Pc => logger.write_string("Pc")
+    Pd => logger.write_string("Pd")
+    Ps => logger.write_string("Ps")
+    Pe => logger.write_string("Pe")
+    Pi => logger.write_string("Pi")
+    Pf => logger.write_string("Pf")
+    Po => logger.write_string("Po")
+    Sm => logger.write_string("Sm")
+    Sc => logger.write_string("Sc")
+    Sk => logger.write_string("Sk")
+    So => logger.write_string("So")
+    Cc => logger.write_string("Cc")
+    Cf => logger.write_string("Cf")
+    Cs => logger.write_string("Cs")
+    Co => logger.write_string("Co")
+    Cn => logger.write_string("Cn")
+  }
+}
 
 ///|
 /// Convert GeneralCategory ordinal to enum value

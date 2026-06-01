@@ -42,48 +42,48 @@ test "hangul LV syllable detection" {
 test "hangul decomposition LV" {
   // 가 (U+AC00) = ᄀ (U+1100) + ᅡ (U+1161)
   let result = decompose_hangul('\u{AC00}')
-  inspect(result, content="['ᄀ', 'ᅡ']")
+  @debug.debug_inspect(result, content="['ᄀ', 'ᅡ']")
 }
 
 ///|
 test "hangul decomposition LVT" {
   // 각 (U+AC01) = ᄀ (U+1100) + ᅡ (U+1161) + ᆨ (U+11A8)
   let result = decompose_hangul('\u{AC01}')
-  inspect(result, content="['ᄀ', 'ᅡ', 'ᆨ']")
+  @debug.debug_inspect(result, content="['ᄀ', 'ᅡ', 'ᆨ']")
 }
 
 ///|
 test "hangul decomposition various" {
   // 한 (U+D55C) = ᄒ (U+1112) + ᅡ (U+1161) + ᆫ (U+11AB)
   let result = decompose_hangul('\u{D55C}')
-  inspect(result, content="['ᄒ', 'ᅡ', 'ᆫ']")
+  @debug.debug_inspect(result, content="['ᄒ', 'ᅡ', 'ᆫ']")
 }
 
 ///|
 test "hangul composition L+V" {
   // ᄀ + ᅡ -> 가
   let result = try_compose_hangul('\u{1100}', '\u{1161}')
-  inspect(result, content="Some('가')")
+  @debug.debug_inspect(result, content="Some('가')")
 }
 
 ///|
 test "hangul composition LV+T" {
   // 가 + ᆨ -> 각
   let result = try_compose_hangul('\u{AC00}', '\u{11A8}')
-  inspect(result, content="Some('각')")
+  @debug.debug_inspect(result, content="Some('각')")
 }
 
 ///|
 test "hangul composition invalid" {
   // L + T should not compose
   let result = try_compose_hangul('\u{1100}', '\u{11A8}')
-  inspect(result, content="None")
+  @debug.debug_inspect(result, content="None")
   // V + V should not compose
   let result2 = try_compose_hangul('\u{1161}', '\u{1162}')
-  inspect(result2, content="None")
+  @debug.debug_inspect(result2, content="None")
   // ASCII should not compose
   let result3 = try_compose_hangul('A', 'B')
-  inspect(result3, content="None")
+  @debug.debug_inspect(result3, content="None")
 }
 
 ///|
@@ -96,5 +96,5 @@ test "hangul roundtrip" {
   guard lv is Some(lv_val) else { fail("L+V should compose") }
   // Then compose LV + T
   let lvt = try_compose_hangul(lv_val, decomposed[2])
-  inspect(lvt, content="Some('각')")
+  @debug.debug_inspect(lvt, content="Some('각')")
 }

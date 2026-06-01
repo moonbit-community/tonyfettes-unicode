@@ -8,7 +8,16 @@ pub(all) suberror PunycodeError {
   Overflow
   InvalidInput
   BadInput
-} derive(Show)
+}
+
+///|
+pub impl Show for PunycodeError with fn output(self, logger) {
+  match self {
+    Overflow => logger.write_string("Overflow")
+    InvalidInput => logger.write_string("InvalidInput")
+    BadInput => logger.write_string("BadInput")
+  }
+}
 
 // RFC 3492 constants (Section 4)
 
@@ -206,7 +215,7 @@ pub fn decode(input : String) -> String raise PunycodeError {
       if j >= basic_end {
         break
       }
-      if not(is_basic(c)) {
+      if !is_basic(c) {
         raise BadInput
       }
       output.push(c)

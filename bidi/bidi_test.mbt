@@ -73,7 +73,7 @@ test "requires_bidi: contains Arabic" {
 test "process: pure LTR text" {
   let result = @bidi.process("abc")
   inspect(result.base_level, content="0")
-  inspect(result.levels, content="[0, 0, 0]")
+  @debug.debug_inspect(result.levels, content="[0, 0, 0]")
 }
 
 ///|
@@ -82,7 +82,7 @@ test "process: pure RTL text (Hebrew)" {
   let result = @bidi.process("\u{05D0}\u{05D1}\u{05D2}")
   inspect(result.base_level, content="1")
   // All RTL characters should be at level 1
-  inspect(result.levels, content="[1, 1, 1]")
+  @debug.debug_inspect(result.levels, content="[1, 1, 1]")
 }
 
 ///|
@@ -91,7 +91,7 @@ test "process: mixed LTR and RTL" {
   let result = @bidi.process("ABC\u{05D0}\u{05D1}\u{05D2}")
   inspect(result.base_level, content="0")
   // LTR at level 0, RTL at level 1
-  inspect(result.levels, content="[0, 0, 0, 1, 1, 1]")
+  @debug.debug_inspect(result.levels, content="[0, 0, 0, 1, 1, 1]")
 }
 
 ///|
@@ -99,7 +99,7 @@ test "reorder: pure LTR" {
   let result = @bidi.process("abc")
   let order = @bidi.reorder(result)
   // LTR text should remain in logical order
-  inspect(order, content="[0, 1, 2]")
+  @debug.debug_inspect(order, content="[0, 1, 2]")
 }
 
 ///|
@@ -108,7 +108,7 @@ test "reorder: pure RTL" {
   let result = @bidi.process("\u{05D0}\u{05D1}\u{05D2}")
   let order = @bidi.reorder(result)
   // RTL text should be reversed
-  inspect(order, content="[2, 1, 0]")
+  @debug.debug_inspect(order, content="[2, 1, 0]")
 }
 
 ///|
@@ -117,7 +117,7 @@ test "reorder: mixed text" {
   let result = @bidi.process("ab\u{05D0}\u{05D1}")
   let order = @bidi.reorder(result)
   // LTR stays, RTL reversed
-  inspect(order, content="[0, 1, 3, 2]")
+  @debug.debug_inspect(order, content="[0, 1, 3, 2]")
 }
 
 ///|
@@ -216,7 +216,7 @@ test "direction_from_level: odd levels" {
 test "process: numbers in LTR context" {
   let result = @bidi.process("abc123def")
   // All should be at level 0 (EN promoted to L at LTR level)
-  inspect(result.levels, content="[0, 0, 0, 0, 0, 0, 0, 0, 0]")
+  @debug.debug_inspect(result.levels, content="[0, 0, 0, 0, 0, 0, 0, 0, 0]")
 }
 
 ///|
@@ -225,7 +225,7 @@ test "process: numbers in RTL context" {
   let result = @bidi.process("\u{05D0}123\u{05D1}")
   inspect(result.base_level, content="1")
   // Hebrew at level 1, numbers at level 2 (EN in RTL context)
-  inspect(result.levels, content="[1, 2, 2, 2, 1]")
+  @debug.debug_inspect(result.levels, content="[1, 2, 2, 2, 1]")
 }
 
 ///|

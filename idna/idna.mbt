@@ -17,7 +17,36 @@ pub(all) suberror IdnaError {
   InvalidJoiner
   InvalidAcePrefix
   LeadingCombiningMark
-} derive(Show)
+}
+
+///|
+pub impl Show for IdnaError with fn output(self, logger) {
+  match self {
+    PunycodeError(error) => {
+      logger.write_string("PunycodeError(")
+      error.output(logger)
+      logger.write_string(")")
+    }
+    DisallowedCodePoint(cp~) => {
+      logger.write_string("DisallowedCodePoint(cp=")
+      cp.output(logger)
+      logger.write_string(")")
+    }
+    InvalidLabel(label) => {
+      logger.write_string("InvalidLabel(")
+      label.output(logger)
+      logger.write_string(")")
+    }
+    InvalidHyphen => logger.write_string("InvalidHyphen")
+    LabelTooLong => logger.write_string("LabelTooLong")
+    DomainTooLong => logger.write_string("DomainTooLong")
+    EmptyLabel => logger.write_string("EmptyLabel")
+    InvalidBidi => logger.write_string("InvalidBidi")
+    InvalidJoiner => logger.write_string("InvalidJoiner")
+    InvalidAcePrefix => logger.write_string("InvalidAcePrefix")
+    LeadingCombiningMark => logger.write_string("LeadingCombiningMark")
+  }
+}
 
 ///|
 /// ACE prefix for Punycode labels
