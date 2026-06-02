@@ -2,6 +2,7 @@ target
 target/
 _build
 _build/
+.mooncakes/
 .vscode/
 .DS_Store
 publish/

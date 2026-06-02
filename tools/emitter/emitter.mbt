@@ -85,16 +85,14 @@ pub fn Emitter::write_int_array(
   self.write("///|\n")
   self.write("/// " + doc + "\n")
   self.write("let " + name + " : FixedArray[Int] = [\n")
-  for i in 0..<values.length() {
-    if i > 0 {
-      self.write(",\n")
-    }
+  for value in values {
     self.write("  ")
     if hex {
-      self.write(hex_code(values[i]))
+      self.write(hex_code(value))
     } else {
-      self.write(values[i].to_string())
+      self.write(value.to_string())
     }
+    self.write(",\n")
   }
-  self.write("\n]\n\n")
+  self.write("]\n\n")
 }

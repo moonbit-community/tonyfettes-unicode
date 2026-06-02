@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "tonyfettes/unicode-scripts/ucd"
+package "tonyfettes/unicode-tools/ucd"
 
 // Values
 pub fn build_composition_table(UnicodeData, Array[Int]) -> Array[CompositionEntry]

@@ -183,22 +183,22 @@ fn write_simple_case_arrays(
   name : String,
   mappings : Array[SimpleMappingEntry],
 ) -> Unit {
-  let label = match name {
-    "upper" => "Uppercase"
-    "lower" => "Lowercase"
-    "title" => "Titlecase"
-    _ => name
+  let (mapping_label, target_label) = match name {
+    "upper" => ("uppercase", "Uppercase")
+    "lower" => ("lowercase", "Lowercase")
+    "title" => ("titlecase", "Titlecase")
+    _ => (name, name)
   }
   let sorted = mappings.copy()
   sorted.sort_by((left, right) => left.code_point - right.code_point)
   out.write_int_array(
-    "Code points with " + name + " mappings (sorted for binary search)",
+    "Code points with " + mapping_label + " mappings (sorted for binary search)",
     name + "_cps",
     sorted.map(entry => entry.code_point),
     hex=true,
   )
   out.write_int_array(
-    label + " mapping targets",
+    target_label + " mapping targets",
     name + "_targets",
     sorted.map(entry => entry.target),
     hex=true,
@@ -322,6 +322,7 @@ pub fn emit_case_mapping(
       #|
     ),
   )
+  out.write("\n")
   write_full_case_arrays(
     out,
     "upper",
@@ -599,9 +600,11 @@ pub fn emit_composition(
       #|    let mid_first = comp_firsts[mid]
       #|    let mid_second = comp_seconds[mid]
       #|
-      #|    if starter_cp < mid_first || (starter_cp == mid_first && combining_cp < mid_second) {
+      #|    if starter_cp < mid_first ||
+      #|      (starter_cp == mid_first && combining_cp < mid_second) {
       #|      right = mid - 1
-      #|    } else if starter_cp > mid_first || (starter_cp == mid_first && combining_cp > mid_second) {
+      #|    } else if starter_cp > mid_first ||
+      #|      (starter_cp == mid_first && combining_cp > mid_second) {
       #|      left = mid + 1
       #|    } else {
       #|      return Some(comp_results[mid].unsafe_to_char())

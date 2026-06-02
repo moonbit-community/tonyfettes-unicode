@@ -102,17 +102,6 @@ pub fn compress_mark_ranges(data : UnicodeData) -> Array[CodePointRange] {
 }
 
 ///|
-fn general_category_at(
-  entries : Array[GeneralCategoryEntry],
-  cp : Int,
-) -> String {
-  match entries.search_by(entry => entry.code_point == cp) {
-    Some(index) => entries[index].category
-    None => "Cn"
-  }
-}
-
-///|
 pub fn compress_general_category_ranges(
   data : UnicodeData,
 ) -> Array[GeneralCategoryRange] {
@@ -123,11 +112,19 @@ pub fn compress_general_category_ranges(
     return ranges
   }
   let max_cp = entries[entries.length() - 1].code_point
+  let mut entry_index = 0
   let mut start = 0
   let mut prev_cp = -1
   let mut prev_value = -1
   for cp in 0..<=max_cp {
-    let value = gc_ordinal(general_category_at(entries, cp))
+    let value = if entry_index < entries.length() &&
+      entries[entry_index].code_point == cp {
+      let current = gc_ordinal(entries[entry_index].category)
+      entry_index += 1
+      current
+    } else {
+      29
+    }
     if cp == prev_cp + 1 && value == prev_value {
       prev_cp = cp
     } else {
