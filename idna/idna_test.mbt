@@ -99,7 +99,7 @@ test "roundtrip: Russian" {
 ///|
 test "invalid: disallowed character" {
   // U+0000 is disallowed
-  let result : Result[String, Error] = try? to_ascii("example\u{0000}.com")
+  let result = to_ascii_result("example\u{0000}.com")
   guard result is Err(_) else {
     fail("Expected error for disallowed character")
   }
@@ -108,7 +108,7 @@ test "invalid: disallowed character" {
 ///|
 test "to_ascii: double dots handled" {
   // Double dots create an empty label which triggers EmptyLabel error
-  let result : Result[String, Error] = try? to_ascii("example..com")
+  let result = to_ascii_result("example..com")
   guard result is Err(@idna.EmptyLabel) else { fail("Expected EmptyLabel") }
 }
 
@@ -117,7 +117,7 @@ test "to_ascii: label too long" {
   // Create a label that will be > 63 characters after Punycode encoding
   // This is hard to test directly, so we test with already long ASCII
   let long_label = "a".repeat(64)
-  let result : Result[String, Error] = try? to_ascii(long_label + ".com")
+  let result = to_ascii_result(long_label + ".com")
   guard result is Err(_) else { fail("Expected error for label too long") }
 }
 
@@ -135,20 +135,20 @@ test "mapping: mapped characters" {
 
 ///|
 test "validation: hyphen at start" {
-  let result : Result[String, Error] = try? to_ascii("-example.com")
+  let result = to_ascii_result("-example.com")
   guard result is Err(_) else { fail("Expected error for hyphen at start") }
 }
 
 ///|
 test "validation: hyphen at end" {
-  let result : Result[String, Error] = try? to_ascii("example-.com")
+  let result = to_ascii_result("example-.com")
   guard result is Err(_) else { fail("Expected error for hyphen at end") }
 }
 
 ///|
 test "std3 rules: space character rejected" {
   // Space U+0020 is rejected with STD3 rules (default) - not LDH
-  let result : Result[String, Error] = try? to_ascii("exam ple.com")
+  let result = to_ascii_result("exam ple.com")
   guard result is Err(_) else {
     fail("Expected error for space with STD3 rules")
   }
@@ -223,20 +223,14 @@ test "bidi: valid RTL label with Hebrew" {
 test "bidi: RTL label cannot start with L character" {
   // Mix Hebrew (R) with leading Latin (L) - invalid
   // This label has RTL chars but doesn't start with R/AL
-  let result : Result[String, Error] = try? to_ascii(
-    "aבדיקה.com",
-    check_bidi=true,
-  )
+  let result = to_ascii_result("aבדיקה.com", check_bidi=true)
   guard result is Err(@idna.InvalidBidi) else { fail("Expected InvalidBidi") }
 }
 
 ///|
 test "bidi: RTL label cannot contain L character" {
   // Hebrew label with Latin in the middle - L not allowed in RTL
-  let result : Result[String, Error] = try? to_ascii(
-    "בדaיקה.com",
-    check_bidi=true,
-  )
+  let result = to_ascii_result("בדaיקה.com", check_bidi=true)
   guard result is Err(@idna.InvalidBidi) else { fail("Expected InvalidBidi") }
 }
 
@@ -245,20 +239,14 @@ test "bidi: RTL label cannot have both EN and AN" {
   // Arabic with both European Number and Arabic Number - invalid
   // U+0660-U+0669 are Arabic-Indic digits (AN)
   // 0-9 are European Numbers (EN)
-  let result : Result[String, Error] = try? to_ascii(
-    "مثال1\u{0660}.com",
-    check_bidi=true,
-  )
+  let result = to_ascii_result("مثال1\u{0660}.com", check_bidi=true)
   guard result is Err(@idna.InvalidBidi) else { fail("Expected InvalidBidi") }
 }
 
 ///|
 test "bidi: LTR label cannot contain RTL characters" {
   // Latin label with Arabic character - invalid for LTR
-  let result : Result[String, Error] = try? to_ascii(
-    "exampleم.com",
-    check_bidi=true,
-  )
+  let result = to_ascii_result("exampleم.com", check_bidi=true)
   guard result is Err(@idna.InvalidBidi) else { fail("Expected InvalidBidi") }
 }
 
@@ -284,7 +272,7 @@ test "bidi: disabled check allows mixed bidi" {
 test "contextj: ZWNJ after Virama is valid" {
   // Devanagari Virama (U+094D) followed by ZWNJ (U+200C)
   // क् + ZWNJ - valid context
-  let result : Result[String, Error] = try? to_ascii(
+  let result = to_ascii_result(
     "क\u{094D}\u{200C}ष.com",
     check_joiners=true,
     check_bidi=false,
@@ -295,27 +283,25 @@ test "contextj: ZWNJ after Virama is valid" {
 ///|
 test "contextj: ZWNJ without valid context fails" {
   // ZWNJ at start of label - no valid context
-  let result : Result[String, Error] = try? to_ascii(
-    "\u{200C}example.com",
-    check_joiners=true,
-  )
-  guard result is Err(@idna.InvalidJoiner) else { fail("Expected InvalidJoiner") }
+  let result = to_ascii_result("\u{200C}example.com", check_joiners=true)
+  guard result is Err(@idna.InvalidJoiner) else {
+    fail("Expected InvalidJoiner")
+  }
 }
 
 ///|
 test "contextj: ZWNJ between non-joining chars fails" {
   // ZWNJ between Latin characters - invalid
-  let result : Result[String, Error] = try? to_ascii(
-    "ex\u{200C}ample.com",
-    check_joiners=true,
-  )
-  guard result is Err(@idna.InvalidJoiner) else { fail("Expected InvalidJoiner") }
+  let result = to_ascii_result("ex\u{200C}ample.com", check_joiners=true)
+  guard result is Err(@idna.InvalidJoiner) else {
+    fail("Expected InvalidJoiner")
+  }
 }
 
 ///|
 test "contextj: ZWJ after Virama is valid" {
   // Devanagari Virama (U+094D) followed by ZWJ (U+200D)
-  let result : Result[String, Error] = try? to_ascii(
+  let result = to_ascii_result(
     "क\u{094D}\u{200D}ष.com",
     check_joiners=true,
     check_bidi=false,
@@ -326,21 +312,19 @@ test "contextj: ZWJ after Virama is valid" {
 ///|
 test "contextj: ZWJ without Virama fails" {
   // ZWJ without preceding Virama - invalid
-  let result : Result[String, Error] = try? to_ascii(
-    "ex\u{200D}ample.com",
-    check_joiners=true,
-  )
-  guard result is Err(@idna.InvalidJoiner) else { fail("Expected InvalidJoiner") }
+  let result = to_ascii_result("ex\u{200D}ample.com", check_joiners=true)
+  guard result is Err(@idna.InvalidJoiner) else {
+    fail("Expected InvalidJoiner")
+  }
 }
 
 ///|
 test "contextj: ZWJ at start of label fails" {
   // ZWJ at start - no preceding character
-  let result : Result[String, Error] = try? to_ascii(
-    "\u{200D}example.com",
-    check_joiners=true,
-  )
-  guard result is Err(@idna.InvalidJoiner) else { fail("Expected InvalidJoiner") }
+  let result = to_ascii_result("\u{200D}example.com", check_joiners=true)
+  guard result is Err(@idna.InvalidJoiner) else {
+    fail("Expected InvalidJoiner")
+  }
 }
 
 ///|
@@ -365,7 +349,7 @@ test "ace: valid Punycode decodes correctly" {
 ///|
 test "ace: invalid Punycode after xn-- fails" {
   // Invalid Punycode sequence after xn--
-  let result : Result[String, Error] = try? to_unicode("xn--###invalid.com")
+  let result = to_unicode_result("xn--###invalid.com")
   assert_true(result is Err(_))
 }
 
@@ -389,7 +373,7 @@ test "ace: mixed case xN-- prefix works" {
 ///|
 test "combining mark: at start of label fails" {
   // U+0301 (Combining Acute Accent) at start - invalid
-  let result : Result[String, Error] = try? to_ascii("\u{0301}example.com")
+  let result = to_ascii_result("\u{0301}example.com")
   guard result is Err(@idna.LeadingCombiningMark) else {
     fail("Expected LeadingCombiningMark")
   }
@@ -406,17 +390,14 @@ test "combining mark: after base character is valid" {
 ///|
 test "combining mark: multiple marks after base is valid" {
   // Base + multiple combining marks
-  let result : Result[String, Error] = try? to_ascii(
-    "a\u{0301}\u{0327}.com",
-    check_bidi=false,
-  )
+  let result = to_ascii_result("a\u{0301}\u{0327}.com", check_bidi=false)
   assert_true(result is Ok(_))
 }
 
 ///|
 test "combining mark: U+0300 grave at start fails" {
   // U+0300 (Combining Grave Accent) at start
-  let result : Result[String, Error] = try? to_ascii("\u{0300}test.com")
+  let result = to_ascii_result("\u{0300}test.com")
   guard result is Err(@idna.LeadingCombiningMark) else {
     fail("Expected LeadingCombiningMark")
   }
@@ -440,50 +421,51 @@ test "error: domain too long" {
     "." +
     long_label +
     ".com"
-  let result : Result[String, Error] = try? to_ascii(domain)
-  guard result is Err(@idna.DomainTooLong) else { fail("Expected DomainTooLong") }
+  let result = to_ascii_result(domain)
+  guard result is Err(@idna.DomainTooLong) else {
+    fail("Expected DomainTooLong")
+  }
 }
 
 ///|
 test "error: empty domain" {
-  let result : Result[String, Error] = try? to_ascii("")
+  let result = to_ascii_result("")
   guard result is Err(@idna.EmptyLabel) else { fail("Expected EmptyLabel") }
 }
 
 ///|
 test "error: only separator" {
   // Just a dot creates empty labels
-  let result : Result[String, Error] = try? to_ascii(".")
+  let result = to_ascii_result(".")
   guard result is Err(@idna.EmptyLabel) else { fail("Expected EmptyLabel") }
 }
 
 ///|
 test "error: trailing dot creates empty label" {
-  let result : Result[String, Error] = try? to_ascii("example.com.")
+  let result = to_ascii_result("example.com.")
   guard result is Err(@idna.EmptyLabel) else { fail("Expected EmptyLabel") }
 }
 
 ///|
 test "error: hyphens at positions 3 and 4" {
   // "ab--cd" has hyphens at positions 3 and 4 (like ACE prefix pattern)
-  let result : Result[String, Error] = try? to_ascii(
-    "ab--cd.com",
-    check_hyphens=true,
-  )
-  guard result is Err(@idna.InvalidHyphen) else { fail("Expected InvalidHyphen") }
+  let result = to_ascii_result("ab--cd.com", check_hyphens=true)
+  guard result is Err(@idna.InvalidHyphen) else {
+    fail("Expected InvalidHyphen")
+  }
 }
 
 ///|
 test "error: disallowed replacement character" {
   // U+FFFD (Replacement Character) is disallowed in IDNA
-  let result : Result[String, Error] = try? to_ascii("exam\u{FFFD}ple.com")
+  let result = to_ascii_result("exam\u{FFFD}ple.com")
   assert_true(result is Err(_))
 }
 
 ///|
 test "error: disallowed private use character" {
   // U+E000 is private use area - disallowed
-  let result : Result[String, Error] = try? to_ascii("exam\u{E000}ple.com")
+  let result = to_ascii_result("exam\u{E000}ple.com")
   assert_true(result is Err(_))
 }
 

@@ -19,7 +19,7 @@ test "fuzz: to_ascii produces ASCII" {
   let rng = @random.Rand::chacha8(seed=fuzz_seed)
   for _ in 0..<fuzz_iterations {
     let domain = @idna_fuzz.random_domain(rng)
-    let result : Result[String, _] = try? @idna.to_ascii(
+    let result : Result[String, _] = to_ascii_result(
       domain,
       check_bidi=false,
       check_joiners=false,
@@ -46,7 +46,7 @@ test "fuzz: pure ASCII domain passthrough" {
       labels.push(@idna_fuzz.random_ascii_label(rng))
     }
     let domain = labels.join(".")
-    let result : Result[String, _] = try? @idna.to_ascii(
+    let result : Result[String, _] = to_ascii_result(
       domain,
       use_std3_ascii_rules=false,
       check_hyphens=false,
@@ -71,7 +71,7 @@ test "fuzz: idna roundtrip" {
   let rng = @random.Rand::chacha8(seed=fuzz_seed)
   for _ in 0..<fuzz_iterations {
     let domain = @idna_fuzz.random_domain(rng)
-    let result : Result[(String, String), _] = try? ({
+    let result : Result[(String, String), _] = result_of(() => {
       let ascii = @idna.to_ascii(
         domain,
         check_bidi=false,
@@ -89,7 +89,7 @@ test "fuzz: idna roundtrip" {
       Ok((ascii, unicode)) => {
         // The unicode result should be NFC normalized
         // Re-encoding should give the same ASCII
-        let result2 : Result[String, _] = try? @idna.to_ascii(
+        let result2 : Result[String, _] = to_ascii_result(
           unicode,
           check_bidi=false,
           check_joiners=false,
@@ -114,7 +114,7 @@ test "fuzz: to_unicode idempotence" {
   let rng = @random.Rand::chacha8(seed=fuzz_seed)
   for _ in 0..<fuzz_iterations {
     let domain = @idna_fuzz.random_domain(rng)
-    let result : Result[(String, String), _] = try? ({
+    let result : Result[(String, String), _] = result_of(() => {
       let unicode1 = @idna.to_unicode(
         domain,
         check_bidi=false,
@@ -150,7 +150,7 @@ test "fuzz: to_ascii produces pure ASCII for any Unicode input" {
       sb.write_char(cp)
     }
     let label = sb.to_string()
-    let result : Result[String, _] = try? @idna.to_ascii(
+    let result : Result[String, _] = to_ascii_result(
       label,
       check_bidi=false,
       check_joiners=false,
@@ -179,7 +179,7 @@ test "fuzz: hangul domain roundtrip" {
   for _ in 0..<300 {
     // Generate Hangul label
     let label = @fuzz.random_hangul_string(rng, max_len=10)
-    let result : Result[(String, String), _] = try? ({
+    let result : Result[(String, String), _] = result_of(() => {
       let ascii = @idna.to_ascii(
         label,
         check_bidi=false,
@@ -209,7 +209,7 @@ test "fuzz: hangul domain roundtrip" {
 ///|
 test "fuzz: empty label handling" {
   // Empty domain should fail
-  let result : Result[String, _] = try? @idna.to_ascii("")
+  let result : Result[String, _] = to_ascii_result("")
   assert_true(result is Err(_))
 }
 
@@ -219,7 +219,7 @@ test "fuzz: single character domains" {
   for _ in 0..<200 {
     let cp = @fuzz.random_codepoint(rng, Ascii)
     let s = cp.to_string()
-    let result : Result[String, _] = try? @idna.to_ascii(
+    let result : Result[String, _] = to_ascii_result(
       s,
       use_std3_ascii_rules=false,
       check_hyphens=false,
@@ -241,7 +241,7 @@ test "fuzz: multiple dot handling" {
     let label1 = @idna_fuzz.random_ascii_label(rng)
     let label2 = @idna_fuzz.random_ascii_label(rng)
     let domain = label1 + "." + label2
-    let result : Result[String, _] = try? @idna.to_ascii(
+    let result : Result[String, _] = to_ascii_result(
       domain,
       use_std3_ascii_rules=false,
       check_hyphens=false,
@@ -266,7 +266,7 @@ test "fuzz: arabic rtl domains with bidi check" {
   let rng = @random.Rand::chacha8(seed=fuzz_seed)
   for _ in 0..<fuzz_iterations {
     let label = @idna_fuzz.random_arabic_label(rng)
-    let result : Result[String, _] = try? @idna.to_ascii(
+    let result : Result[String, _] = to_ascii_result(
       label,
       check_bidi=true,
       check_joiners=false,
@@ -286,7 +286,7 @@ test "fuzz: hebrew rtl domains with bidi check" {
   let rng = @random.Rand::chacha8(seed=fuzz_seed)
   for _ in 0..<fuzz_iterations {
     let label = @idna_fuzz.random_hebrew_label(rng)
-    let result : Result[String, _] = try? @idna.to_ascii(
+    let result : Result[String, _] = to_ascii_result(
       label,
       check_bidi=true,
       check_joiners=false,
@@ -305,7 +305,7 @@ test "fuzz: mixed bidi labels may be rejected" {
   let mut error_count = 0
   for _ in 0..<fuzz_iterations {
     let label = @idna_fuzz.random_mixed_bidi_label(rng)
-    let result : Result[String, _] = try? @idna.to_ascii(
+    let result : Result[String, _] = to_ascii_result(
       label,
       check_bidi=true,
       check_joiners=false,
@@ -332,7 +332,7 @@ test "fuzz: joiners at boundary rejected" {
   let mut error_count = 0
   for _ in 0..<fuzz_iterations {
     let label = @idna_fuzz.random_label_with_joiners(rng, at_boundary=true)
-    let result : Result[String, _] = try? @idna.to_ascii(
+    let result : Result[String, _] = to_ascii_result(
       label,
       check_bidi=false,
       check_joiners=true,
@@ -353,7 +353,7 @@ test "fuzz: joiners in middle may pass" {
   let rng = @random.Rand::chacha8(seed=fuzz_seed)
   for _ in 0..<fuzz_iterations {
     let label = @idna_fuzz.random_label_with_joiners(rng, at_boundary=false)
-    let result : Result[String, _] = try? @idna.to_ascii(
+    let result : Result[String, _] = to_ascii_result(
       label,
       check_bidi=false,
       check_joiners=true,
@@ -376,7 +376,7 @@ test "fuzz: ignored characters removed" {
   let rng = @random.Rand::chacha8(seed=fuzz_seed)
   for _ in 0..<fuzz_iterations {
     let label = @idna_fuzz.random_label_with_ignored(rng)
-    let result : Result[String, _] = try? @idna.to_ascii(
+    let result : Result[String, _] = to_ascii_result(
       label,
       check_bidi=false,
       check_joiners=false,
@@ -401,7 +401,7 @@ test "fuzz: mapped characters transformed" {
   let rng = @random.Rand::chacha8(seed=fuzz_seed)
   for _ in 0..<fuzz_iterations {
     let label = @idna_fuzz.random_label_with_mapped(rng)
-    let result : Result[String, _] = try? @idna.to_ascii(
+    let result : Result[String, _] = to_ascii_result(
       label,
       check_bidi=false,
       check_joiners=false,
@@ -433,7 +433,7 @@ test "fuzz: disallowed characters rejected" {
   let mut error_count = 0
   for _ in 0..<fuzz_iterations {
     let label = @idna_fuzz.random_label_with_disallowed(rng)
-    let result : Result[String, _] = try? @idna.to_ascii(
+    let result : Result[String, _] = to_ascii_result(
       label,
       check_bidi=false,
       check_joiners=false,
@@ -454,7 +454,7 @@ test "fuzz: label too long rejected" {
   let mut error_count = 0
   for _ in 0..<100 {
     let label = @idna_fuzz.random_long_label(rng)
-    let result : Result[String, _] = try? @idna.to_ascii(
+    let result : Result[String, _] = to_ascii_result(
       label,
       use_std3_ascii_rules=false, // Allow non-LDH ASCII for this test
       check_bidi=false,
@@ -477,7 +477,7 @@ test "fuzz: leading combining mark rejected" {
   let mut error_count = 0
   for _ in 0..<fuzz_iterations {
     let label = @idna_fuzz.random_label_leading_combining(rng)
-    let result : Result[String, _] = try? @idna.to_ascii(
+    let result : Result[String, _] = to_ascii_result(
       label,
       check_bidi=false,
       check_joiners=false,
@@ -502,7 +502,7 @@ test "fuzz: std3 hyphen at start rejected" {
   let mut error_count = 0
   for _ in 0..<200 {
     let label = @idna_fuzz.random_label_boundary_hyphen(rng, at_start=true)
-    let result : Result[String, _] = try? @idna.to_ascii(
+    let result : Result[String, _] = to_ascii_result(
       label,
       use_std3_ascii_rules=true,
       check_hyphens=true,
@@ -525,7 +525,7 @@ test "fuzz: std3 hyphen at end rejected" {
   let mut error_count = 0
   for _ in 0..<200 {
     let label = @idna_fuzz.random_label_boundary_hyphen(rng, at_start=false)
-    let result : Result[String, _] = try? @idna.to_ascii(
+    let result : Result[String, _] = to_ascii_result(
       label,
       use_std3_ascii_rules=true,
       check_hyphens=true,
@@ -551,7 +551,7 @@ test "fuzz: idna output is nfc normalized" {
   let rng = @random.Rand::chacha8(seed=fuzz_seed)
   for _ in 0..<fuzz_iterations {
     let domain = @idna_fuzz.random_domain(rng)
-    let result : Result[String, _] = try? @idna.to_unicode(
+    let result : Result[String, _] = to_unicode_result(
       domain,
       check_bidi=false,
       check_joiners=false,

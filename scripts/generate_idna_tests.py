@@ -312,7 +312,7 @@ def generate_tests(test_cases: list[dict], output_path: Path):
         label_escaped = escape_moonbit_string(label)
 
         code += f'''test "conformance/{tc['line_num']:04d}: {label_escaped} [{status_str}]" {{
-  let result : Result[String, Error] = try? @idna.to_ascii(
+  let result = to_ascii_result(
     "{source_escaped}",
     use_std3_ascii_rules={str(flags['use_std3_ascii_rules']).lower()},
     check_hyphens={str(flags['check_hyphens']).lower()},
@@ -346,7 +346,7 @@ def generate_tests(test_cases: list[dict], output_path: Path):
             label_escaped = escape_moonbit_string(label)
 
             code += f'''test "conformance/{tc['line_num']:04d}: {label_escaped} [{status_str}]" {{
-  let result : Result[String, Error] = try? @idna.to_ascii(
+  let result = to_ascii_result(
     "{source_escaped}",
     use_std3_ascii_rules=false,
     check_hyphens=false,
