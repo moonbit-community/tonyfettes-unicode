@@ -1,134 +1,250 @@
 # unicode
 
-A MoonBit library implementing Unicode standards for text normalization and internationalized domain names.
+Unicode support for MoonBit.
+
+This library implements selected Unicode standards for normalization, case and
+category lookup, Punycode, IDNA domain processing, and bidirectional text. The
+generated tables target Unicode 16.0.0.
 
 ## Features
 
-- **Unicode Normalization (UAX #15)**: NFD, NFC, NFKD, NFKC normalization forms
-- **Punycode (RFC 3492)**: Encoding/decoding for internationalized domain names
-- **IDNA (UTS #46)**: Internationalized Domain Names in Applications processing
-
-Targets Unicode 16.0.0.
+- Unicode Normalization Forms from UAX #15: NFD, NFC, NFKD, and NFKC
+- Punycode encoding and decoding from RFC 3492
+- IDNA processing from UTS #46, including mapping, validation, Bidi checks,
+  joiner checks, and DNS length checks
+- Unicode Bidirectional Algorithm support from UAX #9
+- General_Category lookup and simple/full case mapping from the Unicode
+  Character Database
 
 ## Installation
+
+Add the package to your MoonBit module:
 
 ```bash
 moon add tonyfettes/unicode
 ```
 
-## Usage
-
-### Unicode Normalization
+Import the packages you need in `moon.pkg`:
 
 ```moonbit
-// Normalize to NFC (Canonical Composition) - most common form
-let nfc_text = @normalization.nfc("café")
+import {
+  "tonyfettes/unicode"
+  "tonyfettes/unicode/normalization"
+  "tonyfettes/unicode/punycode"
+  "tonyfettes/unicode/idna"
+  "tonyfettes/unicode/bidi"
+}
+```
 
-// Normalize to NFD (Canonical Decomposition)
-let nfd_text = @normalization.nfd("Å")  // A + combining ring above
+MoonBit uses the last package path segment as the default alias, so these
+imports are used as `@unicode`, `@normalization`, `@punycode`, `@idna`, and
+`@bidi`.
 
-// Normalize to NFKC (Compatibility Composition)
-let nfkc_text = @normalization.nfkc("ﬁ")  // "fi"
+## Usage
 
-// Normalize to NFKD (Compatibility Decomposition)
-let nfkd_text = @normalization.nfkd("²")  // "2"
+### Normalization
 
-// Check if string is in a specific form
-let is_nfc = @normalization.is_normalized("hello", @normalization.NFC)
+```moonbit
+let composed = @normalization.nfc("e\u{0301}") // "é"
+let decomposed = @normalization.nfd("é") // "e" + combining acute
+let compatible = @normalization.nfkc("ﬁ") // "fi"
 
-// Generic normalize function
-let text = @normalization.normalize("text", @normalization.NFKC)
+let already_nfc = @normalization.is_normalized(
+  composed,
+  @normalization.NFC,
+)
+
+let normalized = @normalization.normalize(
+  "text",
+  @normalization.NFKC,
+)
 ```
 
 ### Punycode
 
-```moonbit
-// Encode Unicode to Punycode
-let encoded = @punycode.encode("münchen")!  // "mnchen-3ya"
-let encoded = @punycode.encode("中文")!      // "fiq228c"
+`encode` and `decode` use checked errors. Use `try!` for examples or handle the
+error explicitly in application code.
 
-// Decode Punycode to Unicode
-let decoded = @punycode.decode("mnchen-3ya")!  // "münchen"
-let decoded = @punycode.decode("fiq228c")!     // "中文"
+```moonbit
+let encoded = try! @punycode.encode("münchen") // "mnchen-3ya"
+let decoded = try! @punycode.decode("mnchen-3ya") // "münchen"
+
+let chinese = try! @punycode.encode("中文") // "fiq228c"
 ```
 
-### IDNA (Internationalized Domain Names)
+### IDNA
 
 ```moonbit
-// Convert domain to ASCII for DNS lookup
-let ascii = @idna.to_ascii("münchen.de")!      // "xn--mnchen-3ya.de"
-let ascii = @idna.to_ascii("中文.com")!         // "xn--fiq228c.com"
-let ascii = @idna.to_ascii("ドメイン.jp")!       // "xn--eckwd4c7c.jp"
+let ascii = try! @idna.to_ascii("münchen.de")
+// "xn--mnchen-3ya.de"
 
-// Convert ASCII/Punycode domain to Unicode for display
-let unicode = @idna.to_unicode("xn--mnchen-3ya.de")!  // "münchen.de"
-let unicode = @idna.to_unicode("xn--fiq228c.com")!    // "中文.com"
+let unicode = try! @idna.to_unicode("xn--mnchen-3ya.de")
+// "münchen.de"
 
-// With validation options
-let ascii = @idna.to_ascii(
+let checked = try! @idna.to_ascii(
   "example.com",
   use_std3_ascii_rules=true,
   check_hyphens=true,
   check_bidi=true,
   check_joiners=true,
   verify_dns_length=true,
-)!
+)
 ```
 
-## API Reference
+To handle validation failures:
 
-### @normalization
+```moonbit
+try @idna.to_ascii("example..com") catch {
+  err => println("invalid domain: \{err}")
+} noraise {
+  ascii => println(ascii)
+}
+```
 
-| Function | Description |
-|----------|-------------|
-| `nfc(s: String) -> String` | Normalize to NFC (Canonical Decomposition + Composition) |
-| `nfd(s: String) -> String` | Normalize to NFD (Canonical Decomposition) |
-| `nfkc(s: String) -> String` | Normalize to NFKC (Compatibility Decomposition + Composition) |
-| `nfkd(s: String) -> String` | Normalize to NFKD (Compatibility Decomposition) |
-| `normalize(s: String, form: NormalizationForm) -> String` | Normalize to specified form |
-| `is_normalized(s: String, form: NormalizationForm) -> Bool` | Check if string is in specified form |
+### Bidi
 
-### @punycode
+```moonbit
+let direction = @bidi.detect_direction("Hello World") // LTR
+let needs_bidi = @bidi.requires_bidi("Hello \u{05E9}\u{05DC}\u{05D5}\u{05DD}")
 
-| Function | Description |
-|----------|-------------|
-| `encode(input: String) -> String raise PunycodeError` | Encode Unicode string to Punycode |
-| `decode(input: String) -> String raise PunycodeError` | Decode Punycode string to Unicode |
+let paragraph = @bidi.process("abc\u{05D0}\u{05D1}")
+let visual = @bidi.reorder_string(paragraph)
+let order = @bidi.reorder(paragraph)
 
-### @idna
+let forced = @bidi.process_with_direction(
+  "\u{05D0}\u{05D1}\u{05D2}",
+  @bidi.Direction::LTR,
+)
+```
 
-| Function | Description |
-|----------|-------------|
-| `to_ascii(domain: String, ...) -> String raise IdnaError` | Convert domain to ASCII (Punycode) |
-| `to_unicode(domain: String, ...) -> String raise IdnaError` | Convert domain to Unicode |
+### Case And Category Data
 
-**to_ascii / to_unicode options:**
+```moonbit
+let category = @unicode.general_category('A') // Lu
+let group = category.group() // L
 
-- `use_std3_ascii_rules`: Apply STD3 ASCII rules (default: true)
-- `check_hyphens`: Validate hyphen placement (default: true)
-- `check_bidi`: Validate bidirectional text (default: true)
-- `check_joiners`: Validate ZWNJ/ZWJ context (default: true)
-- `verify_dns_length`: Check DNS length limits (default: true, to_ascii only)
+let simple = @unicode.to_simple_uppercase('a') // 'A'
+let full = @unicode.to_uppercase('\u{00DF}') // "SS"
+let lower = @unicode.to_lowercase('\u{0130}') // "i" + combining dot above
+```
 
-## Building and Testing
+## Public Packages
+
+### `tonyfettes/unicode`
+
+Root package for Unicode Character Database helpers.
+
+| API | Description |
+| --- | --- |
+| `general_category(Char) -> GeneralCategory` | Return the two-letter Unicode General_Category value. |
+| `GeneralCategory::group() -> GeneralCategoryGroup` | Return the one-letter category group. |
+| `to_simple_uppercase(Char) -> Char` | Simple uppercase mapping. |
+| `to_simple_lowercase(Char) -> Char` | Simple lowercase mapping. |
+| `to_simple_titlecase(Char) -> Char` | Simple titlecase mapping. |
+| `to_uppercase(Char) -> String` | Full uppercase mapping. |
+| `to_lowercase(Char) -> String` | Full lowercase mapping. |
+| `to_titlecase(Char) -> String` | Full titlecase mapping. |
+
+### `tonyfettes/unicode/normalization`
+
+| API | Description |
+| --- | --- |
+| `nfd(String) -> String` | Canonical decomposition. |
+| `nfc(String) -> String` | Canonical decomposition followed by canonical composition. |
+| `nfkd(String) -> String` | Compatibility decomposition. |
+| `nfkc(String) -> String` | Compatibility decomposition followed by canonical composition. |
+| `normalize(String, NormalizationForm) -> String` | Normalize with a selected form. |
+| `is_normalized(String, NormalizationForm) -> Bool` | Check whether text is already in a selected form. |
+
+The available forms are `NFD`, `NFC`, `NFKD`, and `NFKC`.
+
+### `tonyfettes/unicode/punycode`
+
+| API | Description |
+| --- | --- |
+| `encode(String) -> String raise PunycodeError` | Encode Unicode text as Punycode. |
+| `decode(String) -> String raise PunycodeError` | Decode Punycode text back to Unicode. |
+
+`PunycodeError` variants are `Overflow`, `InvalidInput`, and `BadInput`.
+
+### `tonyfettes/unicode/idna`
+
+| API | Description |
+| --- | --- |
+| `to_ascii(String, ...) -> String raise IdnaError` | Convert a domain name to ASCII form for DNS use. |
+| `to_unicode(String, ...) -> String raise IdnaError` | Convert an ASCII or ACE domain name to Unicode form for display. |
+
+`to_ascii` accepts these optional checks, all defaulting to `true`:
+
+- `use_std3_ascii_rules? : Bool`
+- `check_hyphens? : Bool`
+- `check_bidi? : Bool`
+- `check_joiners? : Bool`
+- `verify_dns_length? : Bool`
+
+`to_unicode` accepts the same options except `verify_dns_length`; they also
+default to `true`.
+
+### `tonyfettes/unicode/bidi`
+
+| API | Description |
+| --- | --- |
+| `detect_direction(String) -> Direction` | Detect the base direction from the first strong character. |
+| `requires_bidi(String) -> Bool` | Check whether text contains right-to-left characters. |
+| `process(String) -> BidiParagraph` | Resolve classes and levels with an inferred base direction. |
+| `process_with_direction(String, Direction) -> BidiParagraph` | Resolve with an explicit base direction. |
+| `process_with_base_level(String, Int) -> BidiParagraph` | Resolve with an explicit base embedding level. |
+| `reorder(BidiParagraph) -> Array[Int]` | Return visual-order indexes. |
+| `reorder_string(BidiParagraph) -> String` | Return visually reordered text. |
+| `bidi_class(Char) -> BidiClass` | Return the Unicode Bidi_Class value. |
+| `get_mirrored(Char, Int) -> Char` | Return the mirrored character at an RTL level when one exists. |
+| `direction_from_level(Int) -> Direction` | Convert an embedding level to `LTR` or `RTL`. |
+
+## Development
+
+Common commands:
 
 ```bash
-moon check          # Type check the project
-moon test           # Run all tests
-moon test -p <pkg>  # Run tests for a specific package
-moon fmt            # Format code
-moon doc            # Generate documentation
+moon check
+moon test
+moon test normalization
+moon fmt
+moon info
+moon build
 ```
 
-## Standards Compliance
+Run `moon info` after public API changes to refresh `pkg.generated.mbti` files.
 
+Unicode data and conformance tests are generated from official Unicode files:
+
+```bash
+python3 scripts/generate_ucd.py
+python3 scripts/generate_bidi.py
+python3 scripts/generate_idna.py
+python3 scripts/generate_normalization_tests.py
+python3 scripts/generate_bidi_tests.py
+python3 scripts/generate_idna_tests.py
+```
+
+Downloaded Unicode source files are cached in `scripts/.cache/`.
+
+To collect files for publishing:
+
+```bash
+python3 scripts/collect_publish.py
+```
+
+## Standards
+
+- [UAX #9: Unicode Bidirectional Algorithm](https://unicode.org/reports/tr9/)
 - [UAX #15: Unicode Normalization Forms](https://unicode.org/reports/tr15/)
+- [UAX #44: Unicode Character Database](https://unicode.org/reports/tr44/)
 - [RFC 3492: Punycode](https://datatracker.ietf.org/doc/html/rfc3492)
 - [UTS #46: Unicode IDNA Compatibility Processing](https://unicode.org/reports/tr46/)
-- [RFC 5891: IDNA Protocol](https://datatracker.ietf.org/doc/html/rfc5891)
+- [RFC 5891: Internationalized Domain Names in Applications](https://datatracker.ietf.org/doc/html/rfc5891)
 - [RFC 5892: The Unicode Code Points and IDNA](https://datatracker.ietf.org/doc/html/rfc5892)
 - [RFC 5893: Right-to-Left Scripts for IDNA](https://datatracker.ietf.org/doc/html/rfc5893)
 
 ## License
 
-Apache-2.0
+Apache-2.0. See [LICENSE](LICENSE).
