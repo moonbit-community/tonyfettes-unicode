@@ -235,18 +235,18 @@ test "process: numbers in RTL context" {
 }
 
 ///|
-test "process_with_direction: force LTR" {
+test "process: force LTR" {
   // Hebrew text forced to LTR direction
-  let result = @bidi.process_with_direction(
+  let result = @bidi.process(
     "\u{05D0}\u{05D1}\u{05D2}",
-    @bidi.Direction::LTR,
+    direction=@bidi.Direction::LTR,
   )
   inspect(result.base_level, content="0")
 }
 
 ///|
-test "process_with_direction: force RTL" {
+test "process: force RTL" {
   // English text forced to RTL direction
-  let result = @bidi.process_with_direction("ABC", @bidi.Direction::RTL)
+  let result = @bidi.process("ABC", direction=@bidi.Direction::RTL)
   inspect(result.base_level, content="1")
 }

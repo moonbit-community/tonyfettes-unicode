@@ -5,6 +5,7 @@ import {
 import {
   "tonyfettes/unicode/internal/fuzz",
   "tonyfettes/unicode/normalization/internal/fuzz" @normalization_fuzz,
+  "moonbitlang/core/debug",
   "moonbitlang/core/random",
 } for "test"
 

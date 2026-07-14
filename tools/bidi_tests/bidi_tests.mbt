@@ -214,41 +214,17 @@ fn write_bidi_case(
   case : BidiCase,
   para_level : Int,
 ) -> Unit raise {
-  out.write("///|\ntest \"")
+  out.write("  {\n    number: ")
   out.write_int(test_number)
-  out.write("\" {\n  let input = \"")
+  out.write(",\n    input: \"")
   out.write(classes_to_moonbit_string(case.classes))
-  out.write("\"\n  let para_level = ")
-  out.write_int(para_level)
-  out.write("\n  let expected_levels = ")
+  out.write("\",\n    direction: ")
+  write_direction_option(out, para_level)
+  out.write(",\n    expected_levels: ")
   out.write(@support.optional_int_array_literal(case.levels))
-  out.write("\n  let expected_reorder = ")
+  out.write(",\n    expected_reorder: ")
   out.write(@support.int_array_literal(case.reorder))
-  out.write(
-    (
-      #|
-      #|
-      #|  let result = if para_level < 0 {
-      #|    @bidi.process(input)
-      #|  } else {
-      #|    @bidi.process_with_base_level(input, para_level)
-      #|  }
-      #|
-      #|  for index, expected_level in expected_levels {
-      #|    if expected_level >= 0 {
-      #|      assert_eq(result.levels[index], expected_level)
-      #|    }
-      #|  }
-      #|
-      #|  let actual_reorder = @bidi.reorder(result)
-      #|  assert_eq(actual_reorder.length(), expected_reorder.length())
-      #|  for index, expected_index in expected_reorder {
-      #|    assert_eq(actual_reorder[index], expected_index)
-      #|  }
-      #|}
-      #|
-    ),
-  )
+  out.write(",\n  },\n")
 }
 
 ///|
@@ -257,39 +233,137 @@ fn write_character_case(
   test_number : Int,
   case : CharacterCase,
 ) -> Unit {
-  out.write("///|\ntest \"")
+  out.write("  {\n    number: ")
   out.write_int(test_number)
-  out.write("\" {\n  let input = \"")
+  out.write(",\n    input: \"")
   out.write(@support.code_points_to_moonbit_string(case.code_points))
-  out.write("\"\n  let para_dir = ")
-  out.write_int(case.paragraph_direction)
-  out.write("\n  let expected_base_level = ")
+  out.write("\",\n    direction: ")
+  write_direction_option(out, case.paragraph_direction)
+  out.write(",\n    expected_base_level: ")
   out.write_int(case.base_level)
-  out.write("\n  let expected_levels = ")
+  out.write(",\n    expected_levels: ")
   out.write(@support.optional_int_array_literal(case.levels))
-  out.write("\n  let expected_reorder = ")
+  out.write(",\n    expected_reorder: ")
   out.write(@support.int_array_literal(case.reorder))
+  out.write(",\n  },\n")
+}
+
+///|
+fn write_direction_option(
+  out : @emitter.Emitter,
+  paragraph_direction : Int,
+) -> Unit {
+  match paragraph_direction {
+    0 => out.write("Some(@bidi.Direction::LTR)")
+    1 => out.write("Some(@bidi.Direction::RTL)")
+    _ => out.write("None")
+  }
+}
+
+///|
+fn write_bidi_test_header(out : @emitter.Emitter) -> Unit {
   out.write(
     (
+      #|///|
+      #|struct TestCase {
+      #|  number : Int
+      #|  input : String
+      #|  direction : @bidi.Direction?
+      #|  expected_levels : Array[Int]
+      #|  expected_reorder : Array[Int]
+      #|}
       #|
+      #|///|
+      #|let test_cases : Array[TestCase] = [
       #|
-      #|  let result = match para_dir {
-      #|    0 => @bidi.process_with_base_level(input, 0)
-      #|    1 => @bidi.process_with_base_level(input, 1)
-      #|    _ => @bidi.process(input)
-      #|  }
+    ),
+  )
+}
+
+///|
+fn write_character_test_header(out : @emitter.Emitter) -> Unit {
+  out.write(
+    (
+      #|///|
+      #|struct TestCase {
+      #|  number : Int
+      #|  input : String
+      #|  direction : @bidi.Direction?
+      #|  expected_base_level : Int
+      #|  expected_levels : Array[Int]
+      #|  expected_reorder : Array[Int]
+      #|}
       #|
-      #|  assert_eq(result.base_level, expected_base_level)
-      #|  for index, expected_level in expected_levels {
-      #|    if expected_level >= 0 {
-      #|      assert_eq(result.levels[index], expected_level)
+      #|///|
+      #|let test_cases : Array[TestCase] = [
+      #|
+    ),
+  )
+}
+
+///|
+fn write_bidi_test_runner(out : @emitter.Emitter, part_number : Int) -> Unit {
+  out.write("]\n\n///|\ntest \"BidiTest.txt part ")
+  out.write_int(part_number)
+  out.write(
+    (
+      #|" {
+      #|  for case in test_cases {
+      #|    let direction = case.direction
+      #|    let result = @bidi.process(case.input, direction?)
+      #|    for index, expected_level in case.expected_levels {
+      #|      if expected_level >= 0 {
+      #|        @debug.assert_eq(
+      #|          result.levels[index],
+      #|          expected_level,
+      #|          msg="case \{case.number}: resolved level at index \{index}",
+      #|        )
+      #|      }
       #|    }
+      #|    @debug.assert_eq(
+      #|      @bidi.reorder(result),
+      #|      case.expected_reorder,
+      #|      msg="case \{case.number}: visual reorder",
+      #|    )
       #|  }
+      #|}
       #|
-      #|  let actual_reorder = @bidi.reorder(result)
-      #|  assert_eq(actual_reorder.length(), expected_reorder.length())
-      #|  for index, expected_index in expected_reorder {
-      #|    assert_eq(actual_reorder[index], expected_index)
+    ),
+  )
+}
+
+///|
+fn write_character_test_runner(
+  out : @emitter.Emitter,
+  part_number : Int,
+) -> Unit {
+  out.write("]\n\n///|\ntest \"BidiCharacterTest.txt part ")
+  out.write_int(part_number)
+  out.write(
+    (
+      #|" {
+      #|  for case in test_cases {
+      #|    let direction = case.direction
+      #|    let result = @bidi.process(case.input, direction?)
+      #|    @debug.assert_eq(
+      #|      result.base_level,
+      #|      case.expected_base_level,
+      #|      msg="case \{case.number}: paragraph base level",
+      #|    )
+      #|    for index, expected_level in case.expected_levels {
+      #|      if expected_level >= 0 {
+      #|        @debug.assert_eq(
+      #|          result.levels[index],
+      #|          expected_level,
+      #|          msg="case \{case.number}: resolved level at index \{index}",
+      #|        )
+      #|      }
+      #|    }
+      #|    @debug.assert_eq(
+      #|      @bidi.reorder(result),
+      #|      case.expected_reorder,
+      #|      msg="case \{case.number}: visual reorder",
+      #|    )
       #|  }
       #|}
       #|
@@ -316,16 +390,23 @@ fn GeneratedParts::next_bidi_part(
       #|
     ),
   )
+  write_bidi_test_header(out)
   let mut count = 0
   while count < self.part_size {
     guard self.next_bidi_case() is Some((case, para_level)) else { break }
-    write_bidi_case(out, count, case, para_level)
+    write_bidi_case(
+      out,
+      self.part_number * self.part_size + count,
+      case,
+      para_level,
+    )
     count += 1
   }
   if count == 0 {
     return None
   }
   let part_number = self.part_number
+  write_bidi_test_runner(out, part_number)
   self.part_number += 1
   Some({
     relative_directory: "bidi/internal/conformance/bidi/part\{part_number}",
@@ -353,14 +434,20 @@ fn GeneratedParts::next_character_part(self : GeneratedParts) -> GeneratedPart? 
       #|
     ),
   )
+  write_character_test_header(out)
   let mut count = 0
   while count < self.part_size &&
         self.character_index < self.character_cases.length() {
-    write_character_case(out, count, self.character_cases[self.character_index])
+    write_character_case(
+      out,
+      self.part_number * self.part_size + count,
+      self.character_cases[self.character_index],
+    )
     self.character_index += 1
     count += 1
   }
   let part_number = self.part_number
+  write_character_test_runner(out, part_number)
   self.part_number += 1
   Some({
     relative_directory: "bidi/internal/conformance/character/part\{part_number}",
@@ -418,6 +505,7 @@ pub fn package_source() -> String {
   (
     #|import {
     #|  "tonyfettes/unicode/bidi" @bidi,
+    #|  "moonbitlang/core/debug",
     #|} for "test"
     #|
   )

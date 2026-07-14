@@ -10,10 +10,12 @@ pub fn direction_from_level(Int) -> Direction
 
 pub fn get_mirrored(Char, Int) -> Char
 
-pub fn process(String) -> BidiParagraph
+pub fn process(String, direction? : Direction) -> BidiParagraph
 
+#deprecated
 pub fn process_with_base_level(String, Int) -> BidiParagraph
 
+#deprecated
 pub fn process_with_direction(String, Direction) -> BidiParagraph
 
 pub fn reorder(BidiParagraph) -> Array[Int]

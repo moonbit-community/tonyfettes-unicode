@@ -5,13502 +5,13698 @@
 /// Tests the implementation with actual Unicode characters including
 /// bracket pairs and other character-specific behaviors.
 ///|
-test "0" {
-  let input = "\u{0028}\u{2680}\u{0061}\u{05D0}\u{2681}\u{0028}\u{0029}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 2, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "1" {
-  let input = "\u{0028}\u{2680}\u{0061}\u{05D0}\u{0028}\u{2681}\u{0029}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "2" {
-  let input = "\u{0028}\u{2680}\u{0061}\u{05D0}\u{0028}\u{2681}\u{0029}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 2, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "3" {
-  let input = "\u{0028}\u{2680}\u{0061}\u{05D0}\u{0028}\u{0029}\u{2681}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "4" {
-  let input = "\u{0028}\u{2680}\u{0061}\u{05D0}\u{0028}\u{0029}\u{2681}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 2, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "5" {
-  let input = "\u{0028}\u{2680}\u{0061}\u{05D0}\u{0028}\u{0029}\u{0029}\u{2681}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "6" {
-  let input = "\u{0028}\u{2680}\u{0061}\u{05D0}\u{0028}\u{0029}\u{0029}\u{2681}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 2, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "7" {
-  let input = "\u{0028}\u{2680}\u{0061}\u{0028}\u{05D0}\u{2681}\u{0029}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "8" {
-  let input = "\u{0028}\u{2680}\u{0061}\u{0028}\u{05D0}\u{2681}\u{0029}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 2, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "9" {
-  let input = "\u{0028}\u{2680}\u{0061}\u{0028}\u{05D0}\u{0029}\u{2681}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "10" {
-  let input = "\u{0028}\u{2680}\u{0061}\u{0028}\u{05D0}\u{0029}\u{2681}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 2, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "11" {
-  let input = "\u{0028}\u{2680}\u{0061}\u{0028}\u{05D0}\u{0029}\u{0029}\u{2681}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "12" {
-  let input = "\u{0028}\u{2680}\u{0061}\u{0028}\u{05D0}\u{0029}\u{0029}\u{2681}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 2, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "13" {
-  let input = "\u{0028}\u{2680}\u{0061}\u{0028}\u{0029}\u{05D0}\u{2681}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 0, 1, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "14" {
-  let input = "\u{0028}\u{2680}\u{0061}\u{0028}\u{0029}\u{05D0}\u{2681}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 2, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "15" {
-  let input = "\u{0028}\u{2680}\u{0061}\u{0028}\u{0029}\u{05D0}\u{0029}\u{2681}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 0, 1, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "16" {
-  let input = "\u{0028}\u{2680}\u{0061}\u{0028}\u{0029}\u{05D0}\u{0029}\u{2681}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 2, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "17" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{0061}\u{05D0}\u{2681}\u{0029}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "18" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{0061}\u{05D0}\u{2681}\u{0029}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 2, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "19" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{0061}\u{05D0}\u{0029}\u{2681}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "20" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{0061}\u{05D0}\u{0029}\u{2681}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 2, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "21" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{0061}\u{05D0}\u{0029}\u{0029}\u{2681}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "22" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{0061}\u{05D0}\u{0029}\u{0029}\u{2681}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 2, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "23" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{0061}\u{0029}\u{05D0}\u{2681}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 0, 1, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "24" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{0061}\u{0029}\u{05D0}\u{2681}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 2, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "25" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{0061}\u{0029}\u{05D0}\u{0029}\u{2681}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 0, 1, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "26" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{0061}\u{0029}\u{05D0}\u{0029}\u{2681}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 2, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "27" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{0029}\u{0061}\u{05D0}\u{2681}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 0, 1, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "28" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{0029}\u{0061}\u{05D0}\u{2681}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 2, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "29" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{0029}\u{0061}\u{05D0}\u{0029}\u{2681}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 0, 1, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "30" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{0029}\u{0061}\u{05D0}\u{0029}\u{2681}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 2, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "31" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{0061}\u{05D0}\u{2681}\u{0029}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "32" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{0061}\u{05D0}\u{2681}\u{0029}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 2, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "33" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{0061}\u{05D0}\u{0029}\u{2681}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "34" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{0061}\u{05D0}\u{0029}\u{2681}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 2, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "35" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{0061}\u{05D0}\u{0029}\u{0029}\u{2681}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "36" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{0061}\u{05D0}\u{0029}\u{0029}\u{2681}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 2, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "37" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{0061}\u{0029}\u{05D0}\u{2681}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 0, 1, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "38" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{0061}\u{0029}\u{05D0}\u{2681}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 2, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "39" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{0061}\u{0029}\u{05D0}\u{0029}\u{2681}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 0, 1, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "40" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{0061}\u{0029}\u{05D0}\u{0029}\u{2681}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 2, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "41" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{0029}\u{0061}\u{05D0}\u{2681}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 0, 1, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "42" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{0029}\u{0061}\u{05D0}\u{2681}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 2, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "43" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{0029}\u{0061}\u{05D0}\u{0029}\u{2681}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 0, 1, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "44" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{0029}\u{0061}\u{05D0}\u{0029}\u{2681}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 2, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "45" {
-  let input = "\u{0028}\u{0028}\u{0029}\u{2680}\u{0061}\u{05D0}\u{2681}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 0, 1, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "46" {
-  let input = "\u{0028}\u{0028}\u{0029}\u{2680}\u{0061}\u{05D0}\u{2681}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 2, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "47" {
-  let input = "\u{0028}\u{0028}\u{0029}\u{2680}\u{0061}\u{05D0}\u{0029}\u{2681}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 0, 1, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "48" {
-  let input = "\u{0028}\u{0028}\u{0029}\u{2680}\u{0061}\u{05D0}\u{0029}\u{2681}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 2, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "49" {
-  let input = "\u{2680}\u{0028}\u{0061}\u{05D0}\u{0062}\u{0028}\u{0029}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "50" {
-  let input = "\u{2680}\u{0028}\u{0061}\u{05D0}\u{0062}\u{0028}\u{0029}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 2, 1, 2, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "51" {
-  let input = "\u{2680}\u{0028}\u{0061}\u{05D0}\u{0028}\u{0062}\u{0029}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "52" {
-  let input = "\u{2680}\u{0028}\u{0061}\u{05D0}\u{0028}\u{0062}\u{0029}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 2, 1, 1, 2, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "53" {
-  let input = "\u{2680}\u{0028}\u{0061}\u{05D0}\u{0028}\u{0029}\u{0062}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "54" {
-  let input = "\u{2680}\u{0028}\u{0061}\u{05D0}\u{0028}\u{0029}\u{0062}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 2, 1, 1, 1, 2, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "55" {
-  let input = "\u{2680}\u{0028}\u{0061}\u{05D0}\u{0028}\u{0029}\u{0029}\u{0062}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "56" {
-  let input = "\u{2680}\u{0028}\u{0061}\u{05D0}\u{0028}\u{0029}\u{0029}\u{0062}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 2, 1, 1, 1, 1, 2]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "57" {
-  let input = "\u{2680}\u{0028}\u{0061}\u{0028}\u{05D0}\u{0062}\u{0029}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "58" {
-  let input = "\u{2680}\u{0028}\u{0061}\u{0028}\u{05D0}\u{0062}\u{0029}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 2, 1, 1, 2, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "59" {
-  let input = "\u{2680}\u{0028}\u{0061}\u{0028}\u{05D0}\u{0029}\u{0062}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "60" {
-  let input = "\u{2680}\u{0028}\u{0061}\u{0028}\u{05D0}\u{0029}\u{0062}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 2, 1, 1, 1, 2, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "61" {
-  let input = "\u{2680}\u{0028}\u{0061}\u{0028}\u{05D0}\u{0029}\u{0029}\u{0062}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "62" {
-  let input = "\u{2680}\u{0028}\u{0061}\u{0028}\u{05D0}\u{0029}\u{0029}\u{0062}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 2, 1, 1, 1, 1, 2]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "63" {
-  let input = "\u{2680}\u{0028}\u{0061}\u{0028}\u{0029}\u{05D0}\u{0062}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 0, 1, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "64" {
-  let input = "\u{2680}\u{0028}\u{0061}\u{0028}\u{0029}\u{05D0}\u{0062}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 2, 1, 1, 1, 2, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "65" {
-  let input = "\u{2680}\u{0028}\u{0061}\u{0028}\u{0029}\u{05D0}\u{0029}\u{0062}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 0, 1, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "66" {
-  let input = "\u{2680}\u{0028}\u{0061}\u{0028}\u{0029}\u{05D0}\u{0029}\u{0062}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 2, 1, 1, 1, 1, 2]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "67" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{0061}\u{05D0}\u{0062}\u{0029}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "68" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{0061}\u{05D0}\u{0062}\u{0029}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 2, 1, 2, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "69" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{0061}\u{05D0}\u{0029}\u{0062}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "70" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{0061}\u{05D0}\u{0029}\u{0062}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 2, 1, 1, 2, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "71" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{0061}\u{05D0}\u{0029}\u{0029}\u{0062}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "72" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{0061}\u{05D0}\u{0029}\u{0029}\u{0062}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 2, 1, 1, 1, 2]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "73" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{0061}\u{0029}\u{05D0}\u{0062}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 0, 1, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "74" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{0061}\u{0029}\u{05D0}\u{0062}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 2, 1, 1, 2, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "75" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{0061}\u{0029}\u{05D0}\u{0029}\u{0062}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 0, 1, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "76" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{0061}\u{0029}\u{05D0}\u{0029}\u{0062}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 2, 1, 1, 1, 2]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "77" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{0029}\u{0061}\u{05D0}\u{0062}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 0, 1, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "78" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{0029}\u{0061}\u{05D0}\u{0062}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 2, 1, 2, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "79" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{0029}\u{0061}\u{05D0}\u{0029}\u{0062}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 0, 1, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "80" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{0029}\u{0061}\u{05D0}\u{0029}\u{0062}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 2, 1, 1, 2]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "81" {
-  let input = "\u{0028}\u{2680}\u{0061}\u{05D0}\u{0062}\u{0028}\u{0029}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "82" {
-  let input = "\u{0028}\u{2680}\u{0061}\u{05D0}\u{0062}\u{0028}\u{0029}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 2, 1, 2, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "83" {
-  let input = "\u{0028}\u{2680}\u{0061}\u{05D0}\u{0028}\u{0062}\u{0029}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "84" {
-  let input = "\u{0028}\u{2680}\u{0061}\u{05D0}\u{0028}\u{0062}\u{0029}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 2, 1, 1, 2, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "85" {
-  let input = "\u{0028}\u{2680}\u{0061}\u{05D0}\u{0028}\u{0029}\u{0062}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "86" {
-  let input = "\u{0028}\u{2680}\u{0061}\u{05D0}\u{0028}\u{0029}\u{0062}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 2, 1, 1, 1, 2, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "87" {
-  let input = "\u{0028}\u{2680}\u{0061}\u{05D0}\u{0028}\u{0029}\u{0029}\u{0062}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "88" {
-  let input = "\u{0028}\u{2680}\u{0061}\u{05D0}\u{0028}\u{0029}\u{0029}\u{0062}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 2, 1, 1, 1, 1, 2]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "89" {
-  let input = "\u{0028}\u{2680}\u{0061}\u{0028}\u{05D0}\u{0062}\u{0029}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "90" {
-  let input = "\u{0028}\u{2680}\u{0061}\u{0028}\u{05D0}\u{0062}\u{0029}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 2, 1, 1, 2, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "91" {
-  let input = "\u{0028}\u{2680}\u{0061}\u{0028}\u{05D0}\u{0029}\u{0062}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "92" {
-  let input = "\u{0028}\u{2680}\u{0061}\u{0028}\u{05D0}\u{0029}\u{0062}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 2, 1, 1, 1, 2, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "93" {
-  let input = "\u{0028}\u{2680}\u{0061}\u{0028}\u{05D0}\u{0029}\u{0029}\u{0062}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "94" {
-  let input = "\u{0028}\u{2680}\u{0061}\u{0028}\u{05D0}\u{0029}\u{0029}\u{0062}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 2, 1, 1, 1, 1, 2]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "95" {
-  let input = "\u{0028}\u{2680}\u{0061}\u{0028}\u{0029}\u{05D0}\u{0062}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 0, 1, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "96" {
-  let input = "\u{0028}\u{2680}\u{0061}\u{0028}\u{0029}\u{05D0}\u{0062}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 2, 1, 1, 1, 2, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "97" {
-  let input = "\u{0028}\u{2680}\u{0061}\u{0028}\u{0029}\u{05D0}\u{0029}\u{0062}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 0, 1, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "98" {
-  let input = "\u{0028}\u{2680}\u{0061}\u{0028}\u{0029}\u{05D0}\u{0029}\u{0062}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 2, 1, 1, 1, 1, 2]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "99" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{0061}\u{05D0}\u{0062}\u{0029}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "100" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{0061}\u{05D0}\u{0062}\u{0029}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 2, 1, 2, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "101" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{0061}\u{05D0}\u{0029}\u{0062}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "102" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{0061}\u{05D0}\u{0029}\u{0062}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 2, 1, 1, 2, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "103" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{0061}\u{05D0}\u{0029}\u{0029}\u{0062}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "104" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{0061}\u{05D0}\u{0029}\u{0029}\u{0062}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 2, 1, 1, 1, 2]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "105" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{0061}\u{0029}\u{05D0}\u{0062}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 0, 1, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "106" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{0061}\u{0029}\u{05D0}\u{0062}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 2, 1, 1, 2, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "107" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{0061}\u{0029}\u{05D0}\u{0029}\u{0062}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 0, 1, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "108" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{0061}\u{0029}\u{05D0}\u{0029}\u{0062}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 2, 1, 1, 1, 2]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "109" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{0029}\u{0061}\u{05D0}\u{0062}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 0, 1, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "110" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{0029}\u{0061}\u{05D0}\u{0062}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 2, 1, 2, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "111" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{0029}\u{0061}\u{05D0}\u{0029}\u{0062}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 0, 1, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "112" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{0029}\u{0061}\u{05D0}\u{0029}\u{0062}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 2, 1, 1, 2]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "113" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{0061}\u{05D0}\u{0062}\u{0029}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "114" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{0061}\u{05D0}\u{0062}\u{0029}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 2, 1, 2, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "115" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{0061}\u{05D0}\u{0029}\u{0062}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "116" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{0061}\u{05D0}\u{0029}\u{0062}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 2, 1, 1, 2, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "117" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{0061}\u{05D0}\u{0029}\u{0029}\u{0062}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "118" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{0061}\u{05D0}\u{0029}\u{0029}\u{0062}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 2, 1, 1, 1, 2]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "119" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{0061}\u{0029}\u{05D0}\u{0062}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 0, 1, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "120" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{0061}\u{0029}\u{05D0}\u{0062}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 2, 1, 1, 2, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "121" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{0061}\u{0029}\u{05D0}\u{0029}\u{0062}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 0, 1, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "122" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{0061}\u{0029}\u{05D0}\u{0029}\u{0062}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 2, 1, 1, 1, 2]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "123" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{0029}\u{0061}\u{05D0}\u{0062}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 0, 1, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "124" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{0029}\u{0061}\u{05D0}\u{0062}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 2, 1, 2, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "125" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{0029}\u{0061}\u{05D0}\u{0029}\u{0062}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 0, 1, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "126" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{0029}\u{0061}\u{05D0}\u{0029}\u{0062}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 2, 1, 1, 2]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "127" {
-  let input = "\u{0028}\u{0028}\u{0029}\u{2680}\u{0061}\u{05D0}\u{0062}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 0, 1, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "128" {
-  let input = "\u{0028}\u{0028}\u{0029}\u{2680}\u{0061}\u{05D0}\u{0062}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 2, 1, 2, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "129" {
-  let input = "\u{0028}\u{0028}\u{0029}\u{2680}\u{0061}\u{05D0}\u{0029}\u{0062}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 0, 1, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "130" {
-  let input = "\u{0028}\u{0028}\u{0029}\u{2680}\u{0061}\u{05D0}\u{0029}\u{0062}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 2, 1, 1, 2]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "131" {
-  let input = "\u{2680}\u{0028}\u{0061}\u{05D0}\u{0028}\u{05D1}\u{0029}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 1, 1, 1, 0]
-  let expected_reorder = [0, 1, 2, 6, 5, 4, 3, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "132" {
-  let input = "\u{2680}\u{0028}\u{0061}\u{05D0}\u{0028}\u{05D1}\u{0029}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 2, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "133" {
-  let input = "\u{2680}\u{0028}\u{0061}\u{05D0}\u{0028}\u{0029}\u{05D1}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 1, 1, 1, 0]
-  let expected_reorder = [0, 1, 2, 6, 5, 4, 3, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "134" {
-  let input = "\u{2680}\u{0028}\u{0061}\u{05D0}\u{0028}\u{0029}\u{05D1}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 2, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "135" {
-  let input = "\u{2680}\u{0028}\u{0061}\u{05D0}\u{0028}\u{0029}\u{0029}\u{05D1}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 0, 1]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "136" {
-  let input = "\u{2680}\u{0028}\u{0061}\u{05D0}\u{0028}\u{0029}\u{0029}\u{05D1}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 2, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "137" {
-  let input = "\u{2680}\u{0028}\u{0061}\u{0028}\u{05D0}\u{0029}\u{05D1}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 0, 1, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "138" {
-  let input = "\u{2680}\u{0028}\u{0061}\u{0028}\u{05D0}\u{0029}\u{05D1}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 2, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "139" {
-  let input = "\u{2680}\u{0028}\u{0061}\u{0028}\u{05D0}\u{0029}\u{0029}\u{05D1}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 0, 0, 1]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "140" {
-  let input = "\u{2680}\u{0028}\u{0061}\u{0028}\u{05D0}\u{0029}\u{0029}\u{05D1}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 2, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "141" {
-  let input = "\u{2680}\u{0028}\u{0061}\u{0028}\u{0029}\u{05D0}\u{0029}\u{05D1}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 0, 1, 0, 1]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "142" {
-  let input = "\u{2680}\u{0028}\u{0061}\u{0028}\u{0029}\u{05D0}\u{0029}\u{05D1}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 2, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "143" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{0061}\u{05D0}\u{0029}\u{05D1}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 0, 1, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "144" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{0061}\u{05D0}\u{0029}\u{05D1}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 2, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "145" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{0061}\u{05D0}\u{0029}\u{0029}\u{05D1}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 0, 0, 1]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "146" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{0061}\u{05D0}\u{0029}\u{0029}\u{05D1}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 2, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "147" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{0061}\u{0029}\u{05D0}\u{0029}\u{05D1}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 0, 1, 0, 1]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "148" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{0061}\u{0029}\u{05D0}\u{0029}\u{05D1}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 2, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "149" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{0029}\u{0061}\u{05D0}\u{0029}\u{05D1}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 0, 1, 0, 1]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "150" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{0029}\u{0061}\u{05D0}\u{0029}\u{05D1}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 2, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "151" {
-  let input = "\u{0028}\u{2680}\u{0061}\u{05D0}\u{0028}\u{05D1}\u{0029}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 1, 1, 1, 0]
-  let expected_reorder = [0, 1, 2, 6, 5, 4, 3, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "152" {
-  let input = "\u{0028}\u{2680}\u{0061}\u{05D0}\u{0028}\u{05D1}\u{0029}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 2, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "153" {
-  let input = "\u{0028}\u{2680}\u{0061}\u{05D0}\u{0028}\u{0029}\u{05D1}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 1, 1, 1, 0]
-  let expected_reorder = [0, 1, 2, 6, 5, 4, 3, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "154" {
-  let input = "\u{0028}\u{2680}\u{0061}\u{05D0}\u{0028}\u{0029}\u{05D1}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 2, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "155" {
-  let input = "\u{0028}\u{2680}\u{0061}\u{05D0}\u{0028}\u{0029}\u{0029}\u{05D1}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 0, 1]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "156" {
-  let input = "\u{0028}\u{2680}\u{0061}\u{05D0}\u{0028}\u{0029}\u{0029}\u{05D1}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 2, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "157" {
-  let input = "\u{0028}\u{2680}\u{0061}\u{0028}\u{05D0}\u{0029}\u{05D1}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 0, 1, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "158" {
-  let input = "\u{0028}\u{2680}\u{0061}\u{0028}\u{05D0}\u{0029}\u{05D1}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 2, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "159" {
-  let input = "\u{0028}\u{2680}\u{0061}\u{0028}\u{05D0}\u{0029}\u{0029}\u{05D1}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 0, 0, 1]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "160" {
-  let input = "\u{0028}\u{2680}\u{0061}\u{0028}\u{05D0}\u{0029}\u{0029}\u{05D1}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 2, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "161" {
-  let input = "\u{0028}\u{2680}\u{0061}\u{0028}\u{0029}\u{05D0}\u{0029}\u{05D1}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 0, 1, 0, 1]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "162" {
-  let input = "\u{0028}\u{2680}\u{0061}\u{0028}\u{0029}\u{05D0}\u{0029}\u{05D1}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 2, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "163" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{0061}\u{05D0}\u{0029}\u{05D1}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 0, 1, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "164" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{0061}\u{05D0}\u{0029}\u{05D1}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 2, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "165" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{0061}\u{05D0}\u{0029}\u{0029}\u{05D1}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 0, 0, 1]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "166" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{0061}\u{05D0}\u{0029}\u{0029}\u{05D1}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 2, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "167" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{0061}\u{0029}\u{05D0}\u{0029}\u{05D1}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 0, 1, 0, 1]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "168" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{0061}\u{0029}\u{05D0}\u{0029}\u{05D1}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 2, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "169" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{0029}\u{0061}\u{05D0}\u{0029}\u{05D1}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 0, 1, 0, 1]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "170" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{0029}\u{0061}\u{05D0}\u{0029}\u{05D1}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 2, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "171" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{0061}\u{05D0}\u{0029}\u{05D1}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 0, 1, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "172" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{0061}\u{05D0}\u{0029}\u{05D1}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 2, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "173" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{0061}\u{05D0}\u{0029}\u{0029}\u{05D1}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 0, 0, 1]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "174" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{0061}\u{05D0}\u{0029}\u{0029}\u{05D1}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 2, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "175" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{0061}\u{0029}\u{05D0}\u{0029}\u{05D1}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 0, 1, 0, 1]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "176" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{0061}\u{0029}\u{05D0}\u{0029}\u{05D1}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 2, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "177" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{0029}\u{0061}\u{05D0}\u{0029}\u{05D1}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 0, 1, 0, 1]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "178" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{0029}\u{0061}\u{05D0}\u{0029}\u{05D1}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 2, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "179" {
-  let input = "\u{0028}\u{0028}\u{0029}\u{2680}\u{0061}\u{05D0}\u{0029}\u{05D1}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 0, 1, 0, 1]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "180" {
-  let input = "\u{0028}\u{0028}\u{0029}\u{2680}\u{0061}\u{05D0}\u{0029}\u{05D1}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 2, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "181" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{2681}\u{0028}\u{2682}\u{0029}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 0, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "182" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{2681}\u{0028}\u{2682}\u{0029}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "183" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{2681}\u{0028}\u{0029}\u{2682}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 0, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "184" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{2681}\u{0028}\u{0029}\u{2682}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "185" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{2681}\u{0028}\u{0029}\u{0029}\u{2682}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 0, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "186" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{2681}\u{0028}\u{0029}\u{0029}\u{2682}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "187" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{0028}\u{2681}\u{0029}\u{2682}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 0, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "188" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{0028}\u{2681}\u{0029}\u{2682}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "189" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{0028}\u{2681}\u{0029}\u{0029}\u{2682}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 0, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "190" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{0028}\u{2681}\u{0029}\u{0029}\u{2682}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "191" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{0028}\u{0029}\u{2681}\u{0029}\u{2682}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 0, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "192" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{0028}\u{0029}\u{2681}\u{0029}\u{2682}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "193" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{05D0}\u{2681}\u{0029}\u{2682}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "194" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{05D0}\u{2681}\u{0029}\u{2682}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "195" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{05D0}\u{2681}\u{0029}\u{0029}\u{2682}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "196" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{05D0}\u{2681}\u{0029}\u{0029}\u{2682}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "197" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{05D0}\u{0029}\u{2681}\u{0029}\u{2682}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "198" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{05D0}\u{0029}\u{2681}\u{0029}\u{2682}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "199" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{0029}\u{05D0}\u{2681}\u{0029}\u{2682}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "200" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{0029}\u{05D0}\u{2681}\u{0029}\u{2682}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "201" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{2681}\u{0028}\u{2682}\u{0029}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 0, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "202" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{2681}\u{0028}\u{2682}\u{0029}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "203" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{2681}\u{0028}\u{0029}\u{2682}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 0, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "204" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{2681}\u{0028}\u{0029}\u{2682}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "205" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{2681}\u{0028}\u{0029}\u{0029}\u{2682}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 0, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "206" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{2681}\u{0028}\u{0029}\u{0029}\u{2682}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "207" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{0028}\u{2681}\u{0029}\u{2682}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 0, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "208" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{0028}\u{2681}\u{0029}\u{2682}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "209" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{0028}\u{2681}\u{0029}\u{0029}\u{2682}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 0, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "210" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{0028}\u{2681}\u{0029}\u{0029}\u{2682}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "211" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{0028}\u{0029}\u{2681}\u{0029}\u{2682}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 0, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "212" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{0028}\u{0029}\u{2681}\u{0029}\u{2682}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "213" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{05D0}\u{2681}\u{0029}\u{2682}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "214" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{05D0}\u{2681}\u{0029}\u{2682}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "215" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{05D0}\u{2681}\u{0029}\u{0029}\u{2682}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "216" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{05D0}\u{2681}\u{0029}\u{0029}\u{2682}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "217" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{05D0}\u{0029}\u{2681}\u{0029}\u{2682}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "218" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{05D0}\u{0029}\u{2681}\u{0029}\u{2682}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "219" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{0029}\u{05D0}\u{2681}\u{0029}\u{2682}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "220" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{0029}\u{05D0}\u{2681}\u{0029}\u{2682}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "221" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{05D0}\u{2681}\u{0029}\u{2682}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "222" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{05D0}\u{2681}\u{0029}\u{2682}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "223" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{05D0}\u{2681}\u{0029}\u{0029}\u{2682}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "224" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{05D0}\u{2681}\u{0029}\u{0029}\u{2682}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "225" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{05D0}\u{0029}\u{2681}\u{0029}\u{2682}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "226" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{05D0}\u{0029}\u{2681}\u{0029}\u{2682}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "227" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{0029}\u{05D0}\u{2681}\u{0029}\u{2682}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "228" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{0029}\u{05D0}\u{2681}\u{0029}\u{2682}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "229" {
-  let input = "\u{0028}\u{0028}\u{0029}\u{2680}\u{05D0}\u{2681}\u{0029}\u{2682}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "230" {
-  let input = "\u{0028}\u{0028}\u{0029}\u{2680}\u{05D0}\u{2681}\u{0029}\u{2682}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "231" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{2681}\u{0061}\u{0028}\u{0029}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 0, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "232" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{2681}\u{0061}\u{0028}\u{0029}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 2, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "233" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{2681}\u{0028}\u{0061}\u{0029}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 0, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "234" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{2681}\u{0028}\u{0061}\u{0029}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 2, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "235" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{2681}\u{0028}\u{0029}\u{0061}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 0, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "236" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{2681}\u{0028}\u{0029}\u{0061}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 2, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "237" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{2681}\u{0028}\u{0029}\u{0029}\u{0061}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 0, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "238" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{2681}\u{0028}\u{0029}\u{0029}\u{0061}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 2]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "239" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{0028}\u{2681}\u{0061}\u{0029}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 0, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "240" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{0028}\u{2681}\u{0061}\u{0029}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 2, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "241" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{0028}\u{2681}\u{0029}\u{0061}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 0, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "242" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{0028}\u{2681}\u{0029}\u{0061}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 2, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "243" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{0028}\u{2681}\u{0029}\u{0029}\u{0061}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 0, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "244" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{0028}\u{2681}\u{0029}\u{0029}\u{0061}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 2]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "245" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{0028}\u{0029}\u{2681}\u{0061}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 0, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "246" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{0028}\u{0029}\u{2681}\u{0061}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 2, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "247" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{0028}\u{0029}\u{2681}\u{0029}\u{0061}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 0, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "248" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{0028}\u{0029}\u{2681}\u{0029}\u{0061}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 2]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "249" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{0028}\u{0029}\u{0029}\u{2681}\u{0061}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 0, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "250" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{0028}\u{0029}\u{0029}\u{2681}\u{0061}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 2]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "251" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{05D0}\u{2681}\u{0061}\u{0029}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "252" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{05D0}\u{2681}\u{0061}\u{0029}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 2, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "253" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{05D0}\u{2681}\u{0029}\u{0061}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "254" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{05D0}\u{2681}\u{0029}\u{0061}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 2, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "255" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{05D0}\u{2681}\u{0029}\u{0029}\u{0061}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "256" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{05D0}\u{2681}\u{0029}\u{0029}\u{0061}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 2]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "257" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{05D0}\u{0029}\u{2681}\u{0061}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "258" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{05D0}\u{0029}\u{2681}\u{0061}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 2, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "259" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{05D0}\u{0029}\u{2681}\u{0029}\u{0061}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "260" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{05D0}\u{0029}\u{2681}\u{0029}\u{0061}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 2]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "261" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{05D0}\u{0029}\u{0029}\u{2681}\u{0061}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "262" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{05D0}\u{0029}\u{0029}\u{2681}\u{0061}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 2]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "263" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{0029}\u{05D0}\u{2681}\u{0061}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "264" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{0029}\u{05D0}\u{2681}\u{0061}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 2, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "265" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{0029}\u{05D0}\u{2681}\u{0029}\u{0061}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "266" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{0029}\u{05D0}\u{2681}\u{0029}\u{0061}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 2]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "267" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{0029}\u{05D0}\u{0029}\u{2681}\u{0061}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "268" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{0029}\u{05D0}\u{0029}\u{2681}\u{0061}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 2]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "269" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{2681}\u{0061}\u{0028}\u{0029}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 0, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "270" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{2681}\u{0061}\u{0028}\u{0029}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 2, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "271" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{2681}\u{0028}\u{0061}\u{0029}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 0, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "272" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{2681}\u{0028}\u{0061}\u{0029}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 2, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "273" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{2681}\u{0028}\u{0029}\u{0061}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 0, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "274" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{2681}\u{0028}\u{0029}\u{0061}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 2, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "275" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{2681}\u{0028}\u{0029}\u{0029}\u{0061}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 0, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "276" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{2681}\u{0028}\u{0029}\u{0029}\u{0061}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 2]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "277" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{0028}\u{2681}\u{0061}\u{0029}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 0, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "278" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{0028}\u{2681}\u{0061}\u{0029}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 2, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "279" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{0028}\u{2681}\u{0029}\u{0061}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 0, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "280" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{0028}\u{2681}\u{0029}\u{0061}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 2, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "281" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{0028}\u{2681}\u{0029}\u{0029}\u{0061}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 0, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "282" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{0028}\u{2681}\u{0029}\u{0029}\u{0061}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 2]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "283" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{0028}\u{0029}\u{2681}\u{0061}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 0, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "284" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{0028}\u{0029}\u{2681}\u{0061}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 2, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "285" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{0028}\u{0029}\u{2681}\u{0029}\u{0061}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 0, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "286" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{0028}\u{0029}\u{2681}\u{0029}\u{0061}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 2]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "287" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{0028}\u{0029}\u{0029}\u{2681}\u{0061}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 0, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "288" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{0028}\u{0029}\u{0029}\u{2681}\u{0061}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 2]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "289" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{05D0}\u{2681}\u{0061}\u{0029}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "290" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{05D0}\u{2681}\u{0061}\u{0029}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 2, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "291" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{05D0}\u{2681}\u{0029}\u{0061}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "292" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{05D0}\u{2681}\u{0029}\u{0061}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 2, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "293" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{05D0}\u{2681}\u{0029}\u{0029}\u{0061}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "294" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{05D0}\u{2681}\u{0029}\u{0029}\u{0061}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 2]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "295" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{05D0}\u{0029}\u{2681}\u{0061}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "296" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{05D0}\u{0029}\u{2681}\u{0061}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 2, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "297" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{05D0}\u{0029}\u{2681}\u{0029}\u{0061}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "298" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{05D0}\u{0029}\u{2681}\u{0029}\u{0061}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 2]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "299" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{05D0}\u{0029}\u{0029}\u{2681}\u{0061}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "300" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{05D0}\u{0029}\u{0029}\u{2681}\u{0061}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 2]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "301" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{0029}\u{05D0}\u{2681}\u{0061}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "302" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{0029}\u{05D0}\u{2681}\u{0061}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 2, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "303" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{0029}\u{05D0}\u{2681}\u{0029}\u{0061}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "304" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{0029}\u{05D0}\u{2681}\u{0029}\u{0061}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 2]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "305" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{0029}\u{05D0}\u{0029}\u{2681}\u{0061}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "306" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{0029}\u{05D0}\u{0029}\u{2681}\u{0061}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 2]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "307" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{05D0}\u{2681}\u{0061}\u{0029}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "308" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{05D0}\u{2681}\u{0061}\u{0029}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 2, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "309" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{05D0}\u{2681}\u{0029}\u{0061}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "310" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{05D0}\u{2681}\u{0029}\u{0061}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 2, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "311" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{05D0}\u{2681}\u{0029}\u{0029}\u{0061}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "312" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{05D0}\u{2681}\u{0029}\u{0029}\u{0061}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 2]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "313" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{05D0}\u{0029}\u{2681}\u{0061}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "314" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{05D0}\u{0029}\u{2681}\u{0061}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 2, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "315" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{05D0}\u{0029}\u{2681}\u{0029}\u{0061}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "316" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{05D0}\u{0029}\u{2681}\u{0029}\u{0061}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 2]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "317" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{05D0}\u{0029}\u{0029}\u{2681}\u{0061}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "318" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{05D0}\u{0029}\u{0029}\u{2681}\u{0061}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 2]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "319" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{0029}\u{05D0}\u{2681}\u{0061}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "320" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{0029}\u{05D0}\u{2681}\u{0061}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 2, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "321" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{0029}\u{05D0}\u{2681}\u{0029}\u{0061}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "322" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{0029}\u{05D0}\u{2681}\u{0029}\u{0061}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 2]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "323" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{0029}\u{05D0}\u{0029}\u{2681}\u{0061}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "324" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{0029}\u{05D0}\u{0029}\u{2681}\u{0061}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 2]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "325" {
-  let input = "\u{0028}\u{0028}\u{0029}\u{2680}\u{05D0}\u{2681}\u{0061}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "326" {
-  let input = "\u{0028}\u{0028}\u{0029}\u{2680}\u{05D0}\u{2681}\u{0061}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 2, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "327" {
-  let input = "\u{0028}\u{0028}\u{0029}\u{2680}\u{05D0}\u{2681}\u{0029}\u{0061}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "328" {
-  let input = "\u{0028}\u{0028}\u{0029}\u{2680}\u{05D0}\u{2681}\u{0029}\u{0061}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 2]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "329" {
-  let input = "\u{0028}\u{0028}\u{0029}\u{2680}\u{05D0}\u{0029}\u{2681}\u{0061}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "330" {
-  let input = "\u{0028}\u{0028}\u{0029}\u{2680}\u{05D0}\u{0029}\u{2681}\u{0061}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 2]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "331" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{2681}\u{05D1}\u{0028}\u{0029}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 1, 1, 0, 0, 0]
-  let expected_reorder = [0, 1, 4, 3, 2, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "332" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{2681}\u{05D1}\u{0028}\u{0029}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "333" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{2681}\u{0028}\u{05D1}\u{0029}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 1, 1, 1, 1, 0]
-  let expected_reorder = [0, 1, 6, 5, 4, 3, 2, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "334" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{2681}\u{0028}\u{05D1}\u{0029}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "335" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{2681}\u{0028}\u{0029}\u{05D1}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 1, 1, 1, 1, 0]
-  let expected_reorder = [0, 1, 6, 5, 4, 3, 2, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "336" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{2681}\u{0028}\u{0029}\u{05D1}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "337" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{2681}\u{0028}\u{0029}\u{0029}\u{05D1}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 0, 0, 0, 0, 1]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "338" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{2681}\u{0028}\u{0029}\u{0029}\u{05D1}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "339" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{0028}\u{2681}\u{05D1}\u{0029}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 1, 1, 1, 1, 0]
-  let expected_reorder = [0, 1, 6, 5, 4, 3, 2, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "340" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{0028}\u{2681}\u{05D1}\u{0029}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "341" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{0028}\u{2681}\u{0029}\u{05D1}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 1, 1, 1, 1, 0]
-  let expected_reorder = [0, 1, 6, 5, 4, 3, 2, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "342" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{0028}\u{2681}\u{0029}\u{05D1}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "343" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{0028}\u{2681}\u{0029}\u{0029}\u{05D1}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 0, 0, 0, 0, 1]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "344" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{0028}\u{2681}\u{0029}\u{0029}\u{05D1}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "345" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{0028}\u{0029}\u{2681}\u{05D1}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 1, 1, 1, 1, 0]
-  let expected_reorder = [0, 1, 6, 5, 4, 3, 2, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "346" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{0028}\u{0029}\u{2681}\u{05D1}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "347" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{0028}\u{0029}\u{2681}\u{0029}\u{05D1}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 0, 0, 0, 0, 1]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "348" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{0028}\u{0029}\u{2681}\u{0029}\u{05D1}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "349" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{0028}\u{0029}\u{0029}\u{2681}\u{05D1}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 0, 0, 0, 0, 1]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "350" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{0028}\u{0029}\u{0029}\u{2681}\u{05D1}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "351" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{05D0}\u{2681}\u{05D1}\u{0029}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 1, 1, 0, 0]
-  let expected_reorder = [0, 1, 2, 5, 4, 3, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "352" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{05D0}\u{2681}\u{05D1}\u{0029}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "353" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{05D0}\u{2681}\u{0029}\u{05D1}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 1, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "354" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{05D0}\u{2681}\u{0029}\u{05D1}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "355" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{05D0}\u{2681}\u{0029}\u{0029}\u{05D1}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 0, 1]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "356" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{05D0}\u{2681}\u{0029}\u{0029}\u{05D1}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "357" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{05D0}\u{0029}\u{2681}\u{05D1}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 1, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "358" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{05D0}\u{0029}\u{2681}\u{05D1}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "359" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{05D0}\u{0029}\u{2681}\u{0029}\u{05D1}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 0, 1]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "360" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{05D0}\u{0029}\u{2681}\u{0029}\u{05D1}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "361" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{05D0}\u{0029}\u{0029}\u{2681}\u{05D1}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 0, 1]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "362" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{05D0}\u{0029}\u{0029}\u{2681}\u{05D1}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "363" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{0029}\u{05D0}\u{2681}\u{05D1}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 1, 1, 0]
-  let expected_reorder = [0, 1, 2, 3, 6, 5, 4, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "364" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{0029}\u{05D0}\u{2681}\u{05D1}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "365" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{0029}\u{05D0}\u{2681}\u{0029}\u{05D1}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 0, 0, 1]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "366" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{0029}\u{05D0}\u{2681}\u{0029}\u{05D1}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "367" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{0029}\u{05D0}\u{0029}\u{2681}\u{05D1}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 0, 0, 1]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "368" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{0029}\u{05D0}\u{0029}\u{2681}\u{05D1}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "369" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{2681}\u{05D1}\u{0028}\u{0029}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 1, 1, 0, 0, 0]
-  let expected_reorder = [0, 1, 4, 3, 2, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "370" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{2681}\u{05D1}\u{0028}\u{0029}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "371" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{2681}\u{0028}\u{05D1}\u{0029}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 1, 1, 1, 1, 0]
-  let expected_reorder = [0, 1, 6, 5, 4, 3, 2, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "372" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{2681}\u{0028}\u{05D1}\u{0029}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "373" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{2681}\u{0028}\u{0029}\u{05D1}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 1, 1, 1, 1, 0]
-  let expected_reorder = [0, 1, 6, 5, 4, 3, 2, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "374" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{2681}\u{0028}\u{0029}\u{05D1}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "375" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{2681}\u{0028}\u{0029}\u{0029}\u{05D1}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 0, 0, 0, 0, 1]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "376" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{2681}\u{0028}\u{0029}\u{0029}\u{05D1}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "377" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{0028}\u{2681}\u{05D1}\u{0029}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 1, 1, 1, 1, 0]
-  let expected_reorder = [0, 1, 6, 5, 4, 3, 2, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "378" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{0028}\u{2681}\u{05D1}\u{0029}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "379" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{0028}\u{2681}\u{0029}\u{05D1}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 1, 1, 1, 1, 0]
-  let expected_reorder = [0, 1, 6, 5, 4, 3, 2, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "380" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{0028}\u{2681}\u{0029}\u{05D1}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "381" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{0028}\u{2681}\u{0029}\u{0029}\u{05D1}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 0, 0, 0, 0, 1]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "382" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{0028}\u{2681}\u{0029}\u{0029}\u{05D1}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "383" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{0028}\u{0029}\u{2681}\u{05D1}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 1, 1, 1, 1, 0]
-  let expected_reorder = [0, 1, 6, 5, 4, 3, 2, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "384" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{0028}\u{0029}\u{2681}\u{05D1}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "385" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{0028}\u{0029}\u{2681}\u{0029}\u{05D1}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 0, 0, 0, 0, 1]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "386" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{0028}\u{0029}\u{2681}\u{0029}\u{05D1}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "387" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{0028}\u{0029}\u{0029}\u{2681}\u{05D1}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 0, 0, 0, 0, 1]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "388" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{0028}\u{0029}\u{0029}\u{2681}\u{05D1}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "389" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{05D0}\u{2681}\u{05D1}\u{0029}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 1, 1, 0, 0]
-  let expected_reorder = [0, 1, 2, 5, 4, 3, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "390" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{05D0}\u{2681}\u{05D1}\u{0029}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "391" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{05D0}\u{2681}\u{0029}\u{05D1}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 1, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "392" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{05D0}\u{2681}\u{0029}\u{05D1}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "393" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{05D0}\u{2681}\u{0029}\u{0029}\u{05D1}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 0, 1]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "394" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{05D0}\u{2681}\u{0029}\u{0029}\u{05D1}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "395" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{05D0}\u{0029}\u{2681}\u{05D1}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 1, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "396" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{05D0}\u{0029}\u{2681}\u{05D1}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "397" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{05D0}\u{0029}\u{2681}\u{0029}\u{05D1}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 0, 1]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "398" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{05D0}\u{0029}\u{2681}\u{0029}\u{05D1}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "399" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{05D0}\u{0029}\u{0029}\u{2681}\u{05D1}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 0, 1]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "400" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{05D0}\u{0029}\u{0029}\u{2681}\u{05D1}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "401" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{0029}\u{05D0}\u{2681}\u{05D1}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 1, 1, 0]
-  let expected_reorder = [0, 1, 2, 3, 6, 5, 4, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "402" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{0029}\u{05D0}\u{2681}\u{05D1}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "403" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{0029}\u{05D0}\u{2681}\u{0029}\u{05D1}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 0, 0, 1]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "404" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{0029}\u{05D0}\u{2681}\u{0029}\u{05D1}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "405" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{0029}\u{05D0}\u{0029}\u{2681}\u{05D1}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 0, 0, 1]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "406" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{0029}\u{05D0}\u{0029}\u{2681}\u{05D1}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "407" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{05D0}\u{2681}\u{05D1}\u{0029}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 1, 1, 0, 0]
-  let expected_reorder = [0, 1, 2, 5, 4, 3, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "408" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{05D0}\u{2681}\u{05D1}\u{0029}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "409" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{05D0}\u{2681}\u{0029}\u{05D1}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 1, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "410" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{05D0}\u{2681}\u{0029}\u{05D1}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "411" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{05D0}\u{2681}\u{0029}\u{0029}\u{05D1}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 0, 1]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "412" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{05D0}\u{2681}\u{0029}\u{0029}\u{05D1}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "413" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{05D0}\u{0029}\u{2681}\u{05D1}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 1, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "414" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{05D0}\u{0029}\u{2681}\u{05D1}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "415" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{05D0}\u{0029}\u{2681}\u{0029}\u{05D1}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 0, 1]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "416" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{05D0}\u{0029}\u{2681}\u{0029}\u{05D1}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "417" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{05D0}\u{0029}\u{0029}\u{2681}\u{05D1}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 0, 1]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "418" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{05D0}\u{0029}\u{0029}\u{2681}\u{05D1}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "419" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{0029}\u{05D0}\u{2681}\u{05D1}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 1, 1, 0]
-  let expected_reorder = [0, 1, 2, 3, 6, 5, 4, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "420" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{0029}\u{05D0}\u{2681}\u{05D1}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "421" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{0029}\u{05D0}\u{2681}\u{0029}\u{05D1}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 0, 0, 1]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "422" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{0029}\u{05D0}\u{2681}\u{0029}\u{05D1}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "423" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{0029}\u{05D0}\u{0029}\u{2681}\u{05D1}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 0, 0, 1]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "424" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{0029}\u{05D0}\u{0029}\u{2681}\u{05D1}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "425" {
-  let input = "\u{0028}\u{0028}\u{0029}\u{2680}\u{05D0}\u{2681}\u{05D1}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 1, 1, 0]
-  let expected_reorder = [0, 1, 2, 3, 6, 5, 4, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "426" {
-  let input = "\u{0028}\u{0028}\u{0029}\u{2680}\u{05D0}\u{2681}\u{05D1}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "427" {
-  let input = "\u{0028}\u{0028}\u{0029}\u{2680}\u{05D0}\u{2681}\u{0029}\u{05D1}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 0, 0, 1]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "428" {
-  let input = "\u{0028}\u{0028}\u{0029}\u{2680}\u{05D0}\u{2681}\u{0029}\u{05D1}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "429" {
-  let input = "\u{0028}\u{0028}\u{0029}\u{2680}\u{05D0}\u{0029}\u{2681}\u{05D1}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 0, 0, 1]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "430" {
-  let input = "\u{0028}\u{0028}\u{0029}\u{2680}\u{05D0}\u{0029}\u{2681}\u{05D1}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "431" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{0061}\u{2681}\u{0028}\u{0029}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 0, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "432" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{0061}\u{2681}\u{0028}\u{0029}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 2, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "433" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{0061}\u{0028}\u{2681}\u{0029}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 0, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "434" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{0061}\u{0028}\u{2681}\u{0029}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 2, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "435" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{0061}\u{0028}\u{0029}\u{2681}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 0, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "436" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{0061}\u{0028}\u{0029}\u{2681}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 2, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "437" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{0061}\u{0028}\u{0029}\u{0029}\u{2681}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 0, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "438" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{0061}\u{0028}\u{0029}\u{0029}\u{2681}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 2, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "439" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{0028}\u{0061}\u{2681}\u{0029}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 0, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "440" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{0028}\u{0061}\u{2681}\u{0029}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 2, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "441" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{0028}\u{0061}\u{0029}\u{2681}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 0, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "442" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{0028}\u{0061}\u{0029}\u{2681}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 2, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "443" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{0028}\u{0061}\u{0029}\u{0029}\u{2681}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 0, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "444" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{0028}\u{0061}\u{0029}\u{0029}\u{2681}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 2, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "445" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{0028}\u{0029}\u{0061}\u{2681}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 0, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "446" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{0028}\u{0029}\u{0061}\u{2681}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 2, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "447" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{0028}\u{0029}\u{0061}\u{0029}\u{2681}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 0, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "448" {
-  let input = "\u{2680}\u{0028}\u{05D0}\u{0028}\u{0029}\u{0061}\u{0029}\u{2681}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 2, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "449" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{05D0}\u{0061}\u{2681}\u{0029}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "450" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{05D0}\u{0061}\u{2681}\u{0029}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 2, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "451" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{05D0}\u{0061}\u{0029}\u{2681}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "452" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{05D0}\u{0061}\u{0029}\u{2681}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 2, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "453" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{05D0}\u{0061}\u{0029}\u{0029}\u{2681}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "454" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{05D0}\u{0061}\u{0029}\u{0029}\u{2681}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 2, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "455" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{05D0}\u{0029}\u{0061}\u{2681}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "456" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{05D0}\u{0029}\u{0061}\u{2681}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 2, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "457" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{05D0}\u{0029}\u{0061}\u{0029}\u{2681}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "458" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{05D0}\u{0029}\u{0061}\u{0029}\u{2681}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 2, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "459" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{0029}\u{05D0}\u{0061}\u{2681}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "460" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{0029}\u{05D0}\u{0061}\u{2681}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 2, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "461" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{0029}\u{05D0}\u{0061}\u{0029}\u{2681}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "462" {
-  let input = "\u{2680}\u{0028}\u{0028}\u{0029}\u{05D0}\u{0061}\u{0029}\u{2681}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 2, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "463" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{0061}\u{2681}\u{0028}\u{0029}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 0, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "464" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{0061}\u{2681}\u{0028}\u{0029}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 2, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "465" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{0061}\u{0028}\u{2681}\u{0029}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 0, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "466" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{0061}\u{0028}\u{2681}\u{0029}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 2, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "467" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{0061}\u{0028}\u{0029}\u{2681}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 0, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "468" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{0061}\u{0028}\u{0029}\u{2681}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 2, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "469" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{0061}\u{0028}\u{0029}\u{0029}\u{2681}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 0, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "470" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{0061}\u{0028}\u{0029}\u{0029}\u{2681}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 2, 1, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "471" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{0028}\u{0061}\u{2681}\u{0029}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 0, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "472" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{0028}\u{0061}\u{2681}\u{0029}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 2, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "473" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{0028}\u{0061}\u{0029}\u{2681}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 0, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "474" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{0028}\u{0061}\u{0029}\u{2681}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 2, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "475" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{0028}\u{0061}\u{0029}\u{0029}\u{2681}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 0, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "476" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{0028}\u{0061}\u{0029}\u{0029}\u{2681}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 2, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "477" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{0028}\u{0029}\u{0061}\u{2681}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 0, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "478" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{0028}\u{0029}\u{0061}\u{2681}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 2, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "479" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{0028}\u{0029}\u{0061}\u{0029}\u{2681}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 1, 0, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "480" {
-  let input = "\u{0028}\u{2680}\u{05D0}\u{0028}\u{0029}\u{0061}\u{0029}\u{2681}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 2, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "481" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{05D0}\u{0061}\u{2681}\u{0029}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "482" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{05D0}\u{0061}\u{2681}\u{0029}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 2, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "483" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{05D0}\u{0061}\u{0029}\u{2681}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "484" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{05D0}\u{0061}\u{0029}\u{2681}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 2, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "485" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{05D0}\u{0061}\u{0029}\u{0029}\u{2681}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "486" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{05D0}\u{0061}\u{0029}\u{0029}\u{2681}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 2, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "487" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{05D0}\u{0029}\u{0061}\u{2681}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "488" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{05D0}\u{0029}\u{0061}\u{2681}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 2, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "489" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{05D0}\u{0029}\u{0061}\u{0029}\u{2681}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "490" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{05D0}\u{0029}\u{0061}\u{0029}\u{2681}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 2, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "491" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{0029}\u{05D0}\u{0061}\u{2681}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "492" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{0029}\u{05D0}\u{0061}\u{2681}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 2, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "493" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{0029}\u{05D0}\u{0061}\u{0029}\u{2681}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 0, 1, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "494" {
-  let input = "\u{0028}\u{2680}\u{0028}\u{0029}\u{05D0}\u{0061}\u{0029}\u{2681}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 1, 2, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "495" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{05D0}\u{0061}\u{2681}\u{0029}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "496" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{05D0}\u{0061}\u{2681}\u{0029}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 2, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "497" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{05D0}\u{0061}\u{0029}\u{2681}\u{0029}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "498" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{05D0}\u{0061}\u{0029}\u{2681}\u{0029}"
-  let para_dir = 1
-  let expected_base_level = 1
-  let expected_levels = [1, 1, 1, 1, 2, 1, 1, 1]
-  let expected_reorder = [7, 6, 5, 4, 3, 2, 1, 0]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
-  }
-}
-///|
-test "499" {
-  let input = "\u{0028}\u{0028}\u{2680}\u{05D0}\u{0061}\u{0029}\u{0029}\u{2681}"
-  let para_dir = 0
-  let expected_base_level = 0
-  let expected_levels = [0, 0, 0, 1, 0, 0, 0, 0]
-  let expected_reorder = [0, 1, 2, 3, 4, 5, 6, 7]
-
-  let result = match para_dir {
-    0 => @bidi.process_with_base_level(input, 0)
-    1 => @bidi.process_with_base_level(input, 1)
-    _ => @bidi.process(input)
-  }
-
-  assert_eq(result.base_level, expected_base_level)
-  for index, expected_level in expected_levels {
-    if expected_level >= 0 {
-      assert_eq(result.levels[index], expected_level)
-    }
-  }
-
-  let actual_reorder = @bidi.reorder(result)
-  assert_eq(actual_reorder.length(), expected_reorder.length())
-  for index, expected_index in expected_reorder {
-    assert_eq(actual_reorder[index], expected_index)
+struct TestCase {
+  number : Int
+  input : String
+  direction : @bidi.Direction?
+  expected_base_level : Int
+  expected_levels : Array[Int]
+  expected_reorder : Array[Int]
+}
+
+///|
+let test_cases : Array[TestCase] = [
+  {
+    number: 90000,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{2680}\u{005B}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90001,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{2680}\u{005B}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90002,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{2680}\u{005B}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90003,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{2680}\u{0062}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90004,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{2680}\u{0062}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 2, 2, 2, 1, 1],
+    expected_reorder: [8, 7, 3, 4, 5, 6, 2, 1, 0],
+  },
+  {
+    number: 90005,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{2680}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90006,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{2680}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90007,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{2680}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90008,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{2680}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90009,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{0029}\u{2680}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90010,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{0029}\u{2680}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90011,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{0029}\u{2680}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90012,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{0029}\u{2680}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90013,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{0029}\u{005D}\u{2680}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90014,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{0029}\u{005D}\u{2680}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90015,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0061}\u{2680}\u{0062}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90016,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0061}\u{2680}\u{0062}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 2, 2, 1, 1],
+    expected_reorder: [8, 7, 4, 5, 6, 3, 2, 1, 0],
+  },
+  {
+    number: 90017,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0061}\u{2680}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90018,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0061}\u{2680}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90019,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0061}\u{2680}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90020,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0061}\u{2680}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90021,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0061}\u{0029}\u{2680}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90022,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0061}\u{0029}\u{2680}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90023,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0061}\u{0029}\u{2680}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90024,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0061}\u{0029}\u{2680}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90025,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0061}\u{0029}\u{005D}\u{2680}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90026,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0061}\u{0029}\u{005D}\u{2680}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90027,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0029}\u{0061}\u{2680}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90028,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0029}\u{0061}\u{2680}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 2, 2, 1],
+    expected_reorder: [8, 5, 6, 7, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90029,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0029}\u{0061}\u{2680}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90030,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0029}\u{0061}\u{2680}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 2, 2, 2],
+    expected_reorder: [5, 6, 7, 8, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90031,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0029}\u{0061}\u{005D}\u{2680}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90032,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0029}\u{0061}\u{005D}\u{2680}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 2, 2, 2],
+    expected_reorder: [5, 6, 7, 8, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90033,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{2680}\u{0062}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90034,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{2680}\u{0062}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 2, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 3, 4, 5, 2, 1, 0],
+  },
+  {
+    number: 90035,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{2680}\u{005B}\u{0062}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90036,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{2680}\u{005B}\u{0062}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 2, 2, 2, 1, 1],
+    expected_reorder: [8, 7, 3, 4, 5, 6, 2, 1, 0],
+  },
+  {
+    number: 90037,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{2680}\u{005B}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90038,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{2680}\u{005B}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90039,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{2680}\u{005B}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90040,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{2680}\u{005B}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90041,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{2680}\u{0062}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90042,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{2680}\u{0062}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 2, 2, 2, 1, 1],
+    expected_reorder: [8, 7, 3, 4, 5, 6, 2, 1, 0],
+  },
+  {
+    number: 90043,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{2680}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90044,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{2680}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90045,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{2680}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90046,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{2680}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90047,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{0029}\u{2680}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90048,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{0029}\u{2680}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90049,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{0029}\u{2680}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90050,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{0029}\u{2680}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90051,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{0029}\u{005D}\u{2680}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90052,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{0029}\u{005D}\u{2680}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90053,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0061}\u{2680}\u{0062}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90054,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0061}\u{2680}\u{0062}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 2, 2, 1, 1],
+    expected_reorder: [8, 7, 4, 5, 6, 3, 2, 1, 0],
+  },
+  {
+    number: 90055,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0061}\u{2680}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90056,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0061}\u{2680}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90057,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0061}\u{2680}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90058,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0061}\u{2680}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90059,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0061}\u{0029}\u{2680}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90060,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0061}\u{0029}\u{2680}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90061,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0061}\u{0029}\u{2680}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90062,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0061}\u{0029}\u{2680}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90063,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0061}\u{0029}\u{005D}\u{2680}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90064,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0061}\u{0029}\u{005D}\u{2680}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90065,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0029}\u{0061}\u{2680}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90066,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0029}\u{0061}\u{2680}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 2, 2, 1],
+    expected_reorder: [8, 5, 6, 7, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90067,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0029}\u{0061}\u{2680}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90068,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0029}\u{0061}\u{2680}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 2, 2, 2],
+    expected_reorder: [5, 6, 7, 8, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90069,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0029}\u{0061}\u{005D}\u{2680}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90070,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0029}\u{0061}\u{005D}\u{2680}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 2, 2, 2],
+    expected_reorder: [5, 6, 7, 8, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90071,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0061}\u{2680}\u{0062}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 1, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90072,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0061}\u{2680}\u{0062}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 2, 2, 1, 1],
+    expected_reorder: [8, 7, 4, 5, 6, 3, 2, 1, 0],
+  },
+  {
+    number: 90073,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0061}\u{2680}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 1, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90074,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0061}\u{2680}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90075,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0061}\u{2680}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 1, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90076,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0061}\u{2680}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90077,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0061}\u{0029}\u{2680}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 1, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90078,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0061}\u{0029}\u{2680}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90079,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0061}\u{0029}\u{2680}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 1, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90080,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0061}\u{0029}\u{2680}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90081,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0061}\u{0029}\u{005D}\u{2680}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 1, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90082,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0061}\u{0029}\u{005D}\u{2680}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90083,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0029}\u{0061}\u{2680}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 1, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90084,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0029}\u{0061}\u{2680}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 2, 2, 1],
+    expected_reorder: [8, 5, 6, 7, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90085,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0029}\u{0061}\u{2680}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 1, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90086,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0029}\u{0061}\u{2680}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 2, 2, 2],
+    expected_reorder: [5, 6, 7, 8, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90087,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0029}\u{0061}\u{005D}\u{2680}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 1, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90088,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0029}\u{0061}\u{005D}\u{2680}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 2, 2, 2],
+    expected_reorder: [5, 6, 7, 8, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90089,
+    input: "\u{0028}\u{0028}\u{005B}\u{0029}\u{05D0}\u{0061}\u{2680}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 0, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90090,
+    input: "\u{0028}\u{0028}\u{005B}\u{0029}\u{05D0}\u{0061}\u{2680}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 2, 2, 1],
+    expected_reorder: [8, 5, 6, 7, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90091,
+    input: "\u{0028}\u{0028}\u{005B}\u{0029}\u{05D0}\u{0061}\u{2680}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 0, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90092,
+    input: "\u{0028}\u{0028}\u{005B}\u{0029}\u{05D0}\u{0061}\u{2680}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 2, 2, 2],
+    expected_reorder: [5, 6, 7, 8, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90093,
+    input: "\u{0028}\u{0028}\u{005B}\u{0029}\u{05D0}\u{0061}\u{005D}\u{2680}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 0, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90094,
+    input: "\u{0028}\u{0028}\u{005B}\u{0029}\u{05D0}\u{0061}\u{005D}\u{2680}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 2, 2, 2],
+    expected_reorder: [5, 6, 7, 8, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90095,
+    input: "\u{05D0}\u{0028}\u{0061}\u{2680}\u{05D1}\u{0028}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90096,
+    input: "\u{05D0}\u{0028}\u{0061}\u{2680}\u{05D1}\u{0028}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90097,
+    input: "\u{05D0}\u{0028}\u{0061}\u{2680}\u{0028}\u{05D1}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90098,
+    input: "\u{05D0}\u{0028}\u{0061}\u{2680}\u{0028}\u{05D1}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90099,
+    input: "\u{05D0}\u{0028}\u{0061}\u{2680}\u{0028}\u{005B}\u{05D1}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90100,
+    input: "\u{05D0}\u{0028}\u{0061}\u{2680}\u{0028}\u{005B}\u{05D1}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90101,
+    input: "\u{05D0}\u{0028}\u{0061}\u{2680}\u{0028}\u{005B}\u{0029}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90102,
+    input: "\u{05D0}\u{0028}\u{0061}\u{2680}\u{0028}\u{005B}\u{0029}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90103,
+    input: "\u{05D0}\u{0028}\u{0061}\u{2680}\u{0028}\u{005B}\u{0029}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90104,
+    input: "\u{05D0}\u{0028}\u{0061}\u{2680}\u{0028}\u{005B}\u{0029}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90105,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{2680}\u{05D1}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90106,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{2680}\u{05D1}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90107,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{2680}\u{005B}\u{05D1}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90108,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{2680}\u{005B}\u{05D1}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90109,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{2680}\u{005B}\u{0029}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90110,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{2680}\u{005B}\u{0029}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90111,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{2680}\u{005B}\u{0029}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90112,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{2680}\u{005B}\u{0029}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90113,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{2680}\u{05D1}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90114,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{2680}\u{05D1}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90115,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{2680}\u{0029}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90116,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{2680}\u{0029}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90117,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{2680}\u{0029}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90118,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{2680}\u{0029}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90119,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{0029}\u{2680}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90120,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{0029}\u{2680}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90121,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{0029}\u{2680}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90122,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{0029}\u{2680}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90123,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{0029}\u{005D}\u{2680}\u{05D1}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90124,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{0029}\u{005D}\u{2680}\u{05D1}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90125,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{2680}\u{05D1}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90126,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{2680}\u{05D1}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90127,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{2680}\u{005B}\u{05D1}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90128,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{2680}\u{005B}\u{05D1}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90129,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{2680}\u{005B}\u{0029}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90130,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{2680}\u{005B}\u{0029}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90131,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{2680}\u{005B}\u{0029}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90132,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{2680}\u{005B}\u{0029}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90133,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{2680}\u{05D1}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90134,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{2680}\u{05D1}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90135,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{2680}\u{0029}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90136,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{2680}\u{0029}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90137,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{2680}\u{0029}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90138,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{2680}\u{0029}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90139,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{0029}\u{2680}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90140,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{0029}\u{2680}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90141,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{0029}\u{2680}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90142,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{0029}\u{2680}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90143,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{0029}\u{005D}\u{2680}\u{05D1}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90144,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{0029}\u{005D}\u{2680}\u{05D1}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90145,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0061}\u{2680}\u{05D1}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90146,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0061}\u{2680}\u{05D1}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90147,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0061}\u{2680}\u{0029}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90148,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0061}\u{2680}\u{0029}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90149,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0061}\u{2680}\u{0029}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90150,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0061}\u{2680}\u{0029}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90151,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0061}\u{0029}\u{2680}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90152,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0061}\u{0029}\u{2680}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90153,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0061}\u{0029}\u{2680}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90154,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0061}\u{0029}\u{2680}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90155,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0061}\u{0029}\u{005D}\u{2680}\u{05D1}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90156,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0061}\u{0029}\u{005D}\u{2680}\u{05D1}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90157,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0029}\u{0061}\u{2680}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90158,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0029}\u{0061}\u{2680}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90159,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0029}\u{0061}\u{2680}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90160,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0029}\u{0061}\u{2680}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90161,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0029}\u{0061}\u{005D}\u{2680}\u{05D1}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90162,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0029}\u{0061}\u{005D}\u{2680}\u{05D1}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90163,
+    input: "\u{0028}\u{05D0}\u{0061}\u{2680}\u{05D1}\u{0028}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90164,
+    input: "\u{0028}\u{05D0}\u{0061}\u{2680}\u{05D1}\u{0028}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90165,
+    input: "\u{0028}\u{05D0}\u{0061}\u{2680}\u{0028}\u{05D1}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90166,
+    input: "\u{0028}\u{05D0}\u{0061}\u{2680}\u{0028}\u{05D1}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90167,
+    input: "\u{0028}\u{05D0}\u{0061}\u{2680}\u{0028}\u{005B}\u{05D1}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90168,
+    input: "\u{0028}\u{05D0}\u{0061}\u{2680}\u{0028}\u{005B}\u{05D1}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90169,
+    input: "\u{0028}\u{05D0}\u{0061}\u{2680}\u{0028}\u{005B}\u{0029}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90170,
+    input: "\u{0028}\u{05D0}\u{0061}\u{2680}\u{0028}\u{005B}\u{0029}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90171,
+    input: "\u{0028}\u{05D0}\u{0061}\u{2680}\u{0028}\u{005B}\u{0029}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90172,
+    input: "\u{0028}\u{05D0}\u{0061}\u{2680}\u{0028}\u{005B}\u{0029}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90173,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{2680}\u{05D1}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90174,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{2680}\u{05D1}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90175,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{2680}\u{005B}\u{05D1}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90176,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{2680}\u{005B}\u{05D1}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90177,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{2680}\u{005B}\u{0029}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90178,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{2680}\u{005B}\u{0029}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90179,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{2680}\u{005B}\u{0029}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90180,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{2680}\u{005B}\u{0029}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90181,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{2680}\u{05D1}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90182,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{2680}\u{05D1}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90183,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{2680}\u{0029}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90184,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{2680}\u{0029}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90185,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{2680}\u{0029}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90186,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{2680}\u{0029}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90187,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{0029}\u{2680}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90188,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{0029}\u{2680}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90189,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{0029}\u{2680}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90190,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{0029}\u{2680}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90191,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{0029}\u{005D}\u{2680}\u{05D1}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90192,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{0029}\u{005D}\u{2680}\u{05D1}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90193,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{2680}\u{05D1}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90194,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{2680}\u{05D1}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90195,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{2680}\u{005B}\u{05D1}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90196,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{2680}\u{005B}\u{05D1}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90197,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{2680}\u{005B}\u{0029}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90198,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{2680}\u{005B}\u{0029}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90199,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{2680}\u{005B}\u{0029}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90200,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{2680}\u{005B}\u{0029}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90201,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{2680}\u{05D1}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90202,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{2680}\u{05D1}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90203,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{2680}\u{0029}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90204,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{2680}\u{0029}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90205,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{2680}\u{0029}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90206,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{2680}\u{0029}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90207,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{0029}\u{2680}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90208,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{0029}\u{2680}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90209,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{0029}\u{2680}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90210,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{0029}\u{2680}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90211,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{0029}\u{005D}\u{2680}\u{05D1}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90212,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{0029}\u{005D}\u{2680}\u{05D1}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90213,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0061}\u{2680}\u{05D1}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90214,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0061}\u{2680}\u{05D1}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90215,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0061}\u{2680}\u{0029}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90216,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0061}\u{2680}\u{0029}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90217,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0061}\u{2680}\u{0029}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90218,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0061}\u{2680}\u{0029}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90219,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0061}\u{0029}\u{2680}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90220,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0061}\u{0029}\u{2680}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90221,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0061}\u{0029}\u{2680}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90222,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0061}\u{0029}\u{2680}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90223,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0061}\u{0029}\u{005D}\u{2680}\u{05D1}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90224,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0061}\u{0029}\u{005D}\u{2680}\u{05D1}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90225,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0029}\u{0061}\u{2680}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90226,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0029}\u{0061}\u{2680}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90227,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0029}\u{0061}\u{2680}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90228,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0029}\u{0061}\u{2680}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90229,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0029}\u{0061}\u{005D}\u{2680}\u{05D1}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90230,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0029}\u{0061}\u{005D}\u{2680}\u{05D1}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90231,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{2680}\u{05D1}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90232,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{2680}\u{05D1}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90233,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{2680}\u{005B}\u{05D1}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90234,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{2680}\u{005B}\u{05D1}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90235,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{2680}\u{005B}\u{0029}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90236,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{2680}\u{005B}\u{0029}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90237,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{2680}\u{005B}\u{0029}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90238,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{2680}\u{005B}\u{0029}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90239,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{2680}\u{05D1}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90240,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{2680}\u{05D1}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90241,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{2680}\u{0029}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90242,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{2680}\u{0029}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90243,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{2680}\u{0029}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90244,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{2680}\u{0029}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90245,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{0029}\u{2680}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90246,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{0029}\u{2680}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90247,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{0029}\u{2680}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90248,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{0029}\u{2680}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90249,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{0029}\u{005D}\u{2680}\u{05D1}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90250,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{0029}\u{005D}\u{2680}\u{05D1}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90251,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0061}\u{2680}\u{05D1}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90252,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0061}\u{2680}\u{05D1}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90253,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0061}\u{2680}\u{0029}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90254,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0061}\u{2680}\u{0029}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90255,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0061}\u{2680}\u{0029}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90256,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0061}\u{2680}\u{0029}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90257,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0061}\u{0029}\u{2680}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90258,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0061}\u{0029}\u{2680}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90259,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0061}\u{0029}\u{2680}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90260,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0061}\u{0029}\u{2680}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90261,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0061}\u{0029}\u{005D}\u{2680}\u{05D1}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90262,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0061}\u{0029}\u{005D}\u{2680}\u{05D1}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90263,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0029}\u{0061}\u{2680}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90264,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0029}\u{0061}\u{2680}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90265,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0029}\u{0061}\u{2680}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90266,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0029}\u{0061}\u{2680}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90267,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0029}\u{0061}\u{005D}\u{2680}\u{05D1}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90268,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0029}\u{0061}\u{005D}\u{2680}\u{05D1}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90269,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0061}\u{2680}\u{05D1}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 1, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90270,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0061}\u{2680}\u{05D1}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90271,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0061}\u{2680}\u{0029}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 1, 0, 0, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90272,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0061}\u{2680}\u{0029}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90273,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0061}\u{2680}\u{0029}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 1, 0, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90274,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0061}\u{2680}\u{0029}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90275,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0061}\u{0029}\u{2680}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 1, 0, 0, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90276,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0061}\u{0029}\u{2680}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90277,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0061}\u{0029}\u{2680}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 1, 0, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90278,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0061}\u{0029}\u{2680}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90279,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0061}\u{0029}\u{005D}\u{2680}\u{05D1}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 1, 0, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90280,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0061}\u{0029}\u{005D}\u{2680}\u{05D1}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90281,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0029}\u{0061}\u{2680}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 1, 0, 0, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90282,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0029}\u{0061}\u{2680}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90283,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0029}\u{0061}\u{2680}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 1, 0, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90284,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0029}\u{0061}\u{2680}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90285,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0029}\u{0061}\u{005D}\u{2680}\u{05D1}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 1, 0, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90286,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0029}\u{0061}\u{005D}\u{2680}\u{05D1}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90287,
+    input: "\u{0028}\u{0028}\u{005B}\u{0029}\u{05D0}\u{0061}\u{2680}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 0, 1, 0, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90288,
+    input: "\u{0028}\u{0028}\u{005B}\u{0029}\u{05D0}\u{0061}\u{2680}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90289,
+    input: "\u{0028}\u{0028}\u{005B}\u{0029}\u{05D0}\u{0061}\u{2680}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 0, 1, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90290,
+    input: "\u{0028}\u{0028}\u{005B}\u{0029}\u{05D0}\u{0061}\u{2680}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90291,
+    input: "\u{0028}\u{0028}\u{005B}\u{0029}\u{05D0}\u{0061}\u{005D}\u{2680}\u{05D1}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 0, 1, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90292,
+    input: "\u{0028}\u{0028}\u{005B}\u{0029}\u{05D0}\u{0061}\u{005D}\u{2680}\u{05D1}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90293,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{0062}\u{2680}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90294,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{0062}\u{2680}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 2, 2, 2, 2, 2, 1],
+    expected_reorder: [8, 2, 3, 4, 5, 6, 7, 1, 0],
+  },
+  {
+    number: 90295,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{0062}\u{005B}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90296,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{0062}\u{005B}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 2, 2, 2, 2, 2, 1],
+    expected_reorder: [8, 2, 3, 4, 5, 6, 7, 1, 0],
+  },
+  {
+    number: 90297,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{0062}\u{005B}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90298,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{0062}\u{005B}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 2, 2, 2, 2, 1, 1],
+    expected_reorder: [8, 7, 2, 3, 4, 5, 6, 1, 0],
+  },
+  {
+    number: 90299,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{0062}\u{005B}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90300,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{0062}\u{005B}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 2, 2, 2, 2, 1, 1],
+    expected_reorder: [8, 7, 2, 3, 4, 5, 6, 1, 0],
+  },
+  {
+    number: 90301,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{0062}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90302,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{0062}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 2, 2, 2, 2, 2, 1],
+    expected_reorder: [8, 2, 3, 4, 5, 6, 7, 1, 0],
+  },
+  {
+    number: 90303,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{0062}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90304,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{0062}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 2, 2, 2, 2, 1, 1],
+    expected_reorder: [8, 7, 2, 3, 4, 5, 6, 1, 0],
+  },
+  {
+    number: 90305,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{0062}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90306,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{0062}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 2, 2, 2, 2, 1, 1],
+    expected_reorder: [8, 7, 2, 3, 4, 5, 6, 1, 0],
+  },
+  {
+    number: 90307,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{0029}\u{0062}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90308,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{0029}\u{0062}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 2, 2, 2, 2, 1, 1],
+    expected_reorder: [8, 7, 2, 3, 4, 5, 6, 1, 0],
+  },
+  {
+    number: 90309,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{0029}\u{0062}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90310,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{0029}\u{0062}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 2, 2, 2, 2, 1, 1],
+    expected_reorder: [8, 7, 2, 3, 4, 5, 6, 1, 0],
+  },
+  {
+    number: 90311,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{0062}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90312,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{0062}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 2, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 3, 4, 5, 2, 1, 0],
+  },
+  {
+    number: 90313,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{0062}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90314,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{0062}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 2, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 3, 4, 5, 2, 1, 0],
+  },
+  {
+    number: 90315,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{0062}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90316,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{0062}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 2, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 3, 4, 5, 2, 1, 0],
+  },
+  {
+    number: 90317,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{0029}\u{0062}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90318,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{0029}\u{0062}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90319,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{0029}\u{0062}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90320,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{0029}\u{0062}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90321,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0061}\u{0029}\u{0062}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90322,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0061}\u{0029}\u{0062}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90323,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0061}\u{0029}\u{0062}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90324,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0061}\u{0029}\u{0062}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90325,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{0062}\u{2680}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90326,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{0062}\u{2680}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 2, 2, 2, 2, 2, 1],
+    expected_reorder: [8, 2, 3, 4, 5, 6, 7, 1, 0],
+  },
+  {
+    number: 90327,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{0062}\u{005B}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90328,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{0062}\u{005B}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 2, 2, 2, 2, 2, 1],
+    expected_reorder: [8, 2, 3, 4, 5, 6, 7, 1, 0],
+  },
+  {
+    number: 90329,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{0062}\u{005B}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90330,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{0062}\u{005B}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 2, 2, 2, 2, 1, 1],
+    expected_reorder: [8, 7, 2, 3, 4, 5, 6, 1, 0],
+  },
+  {
+    number: 90331,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{0062}\u{005B}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90332,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{0062}\u{005B}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 2, 2, 2, 2, 1, 1],
+    expected_reorder: [8, 7, 2, 3, 4, 5, 6, 1, 0],
+  },
+  {
+    number: 90333,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{0062}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90334,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{0062}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 2, 2, 2, 2, 2, 1],
+    expected_reorder: [8, 2, 3, 4, 5, 6, 7, 1, 0],
+  },
+  {
+    number: 90335,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{0062}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90336,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{0062}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 2, 2, 2, 2, 1, 1],
+    expected_reorder: [8, 7, 2, 3, 4, 5, 6, 1, 0],
+  },
+  {
+    number: 90337,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{0062}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90338,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{0062}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 2, 2, 2, 2, 1, 1],
+    expected_reorder: [8, 7, 2, 3, 4, 5, 6, 1, 0],
+  },
+  {
+    number: 90339,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{0029}\u{0062}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90340,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{0029}\u{0062}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 2, 2, 2, 2, 1, 1],
+    expected_reorder: [8, 7, 2, 3, 4, 5, 6, 1, 0],
+  },
+  {
+    number: 90341,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{0029}\u{0062}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90342,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{0029}\u{0062}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 2, 2, 2, 2, 1, 1],
+    expected_reorder: [8, 7, 2, 3, 4, 5, 6, 1, 0],
+  },
+  {
+    number: 90343,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{0062}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90344,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{0062}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 2, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 3, 4, 5, 2, 1, 0],
+  },
+  {
+    number: 90345,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{0062}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90346,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{0062}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 2, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 3, 4, 5, 2, 1, 0],
+  },
+  {
+    number: 90347,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{0062}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90348,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{0062}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 2, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 3, 4, 5, 2, 1, 0],
+  },
+  {
+    number: 90349,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{0029}\u{0062}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90350,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{0029}\u{0062}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90351,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{0029}\u{0062}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90352,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{0029}\u{0062}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90353,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0061}\u{0029}\u{0062}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90354,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0061}\u{0029}\u{0062}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90355,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0061}\u{0029}\u{0062}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90356,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0061}\u{0029}\u{0062}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90357,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{0062}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90358,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{0062}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 2, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 3, 4, 5, 2, 1, 0],
+  },
+  {
+    number: 90359,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{0062}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90360,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{0062}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 2, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 3, 4, 5, 2, 1, 0],
+  },
+  {
+    number: 90361,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{0062}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90362,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{0062}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 2, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 3, 4, 5, 2, 1, 0],
+  },
+  {
+    number: 90363,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{0029}\u{0062}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90364,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{0029}\u{0062}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90365,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{0029}\u{0062}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90366,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{0029}\u{0062}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90367,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0061}\u{0029}\u{0062}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90368,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0061}\u{0029}\u{0062}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90369,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0061}\u{0029}\u{0062}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90370,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0061}\u{0029}\u{0062}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90371,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0061}\u{0029}\u{0062}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 1, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90372,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0061}\u{0029}\u{0062}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90373,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0061}\u{0029}\u{0062}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 1, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90374,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0061}\u{0029}\u{0062}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90375,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{0062}\u{005B}\u{0063}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90376,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{0062}\u{005B}\u{0063}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 2, 2, 2, 2, 2, 1],
+    expected_reorder: [8, 2, 3, 4, 5, 6, 7, 1, 0],
+  },
+  {
+    number: 90377,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{0062}\u{005B}\u{0029}\u{0063}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90378,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{0062}\u{005B}\u{0029}\u{0063}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 2, 2, 2, 2, 2, 1],
+    expected_reorder: [8, 2, 3, 4, 5, 6, 7, 1, 0],
+  },
+  {
+    number: 90379,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{0062}\u{005B}\u{0029}\u{005D}\u{0063}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90380,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{0062}\u{005B}\u{0029}\u{005D}\u{0063}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 2, 2, 2, 2, 2, 2],
+    expected_reorder: [2, 3, 4, 5, 6, 7, 8, 1, 0],
+  },
+  {
+    number: 90381,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{0062}\u{0029}\u{0063}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90382,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{0062}\u{0029}\u{0063}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 2, 2, 2, 2, 2, 1],
+    expected_reorder: [8, 2, 3, 4, 5, 6, 7, 1, 0],
+  },
+  {
+    number: 90383,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{0062}\u{0029}\u{005D}\u{0063}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90384,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{0062}\u{0029}\u{005D}\u{0063}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 2, 2, 2, 2, 2, 2],
+    expected_reorder: [2, 3, 4, 5, 6, 7, 8, 1, 0],
+  },
+  {
+    number: 90385,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{0029}\u{0062}\u{005D}\u{0063}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90386,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{0029}\u{0062}\u{005D}\u{0063}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 2, 2, 2, 2, 2, 2],
+    expected_reorder: [2, 3, 4, 5, 6, 7, 8, 1, 0],
+  },
+  {
+    number: 90387,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{0062}\u{0029}\u{0063}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90388,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{0062}\u{0029}\u{0063}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 2, 2, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 3, 4, 5, 2, 1, 0],
+  },
+  {
+    number: 90389,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{0062}\u{0029}\u{005D}\u{0063}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90390,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{0062}\u{0029}\u{005D}\u{0063}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 2, 2, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 3, 4, 5, 2, 1, 0],
+  },
+  {
+    number: 90391,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{0029}\u{0062}\u{005D}\u{0063}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90392,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{0029}\u{0062}\u{005D}\u{0063}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 2, 2, 2],
+    expected_reorder: [6, 7, 8, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90393,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0061}\u{0029}\u{0062}\u{005D}\u{0063}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90394,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0061}\u{0029}\u{0062}\u{005D}\u{0063}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 2, 2, 2],
+    expected_reorder: [6, 7, 8, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90395,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{0062}\u{005B}\u{0063}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90396,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{0062}\u{005B}\u{0063}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 2, 2, 2, 2, 2, 1],
+    expected_reorder: [8, 2, 3, 4, 5, 6, 7, 1, 0],
+  },
+  {
+    number: 90397,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{0062}\u{005B}\u{0029}\u{0063}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90398,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{0062}\u{005B}\u{0029}\u{0063}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 2, 2, 2, 2, 2, 1],
+    expected_reorder: [8, 2, 3, 4, 5, 6, 7, 1, 0],
+  },
+  {
+    number: 90399,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{0062}\u{005B}\u{0029}\u{005D}\u{0063}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90400,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{0062}\u{005B}\u{0029}\u{005D}\u{0063}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 2, 2, 2, 2, 2, 2],
+    expected_reorder: [2, 3, 4, 5, 6, 7, 8, 1, 0],
+  },
+  {
+    number: 90401,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{0062}\u{0029}\u{0063}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90402,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{0062}\u{0029}\u{0063}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 2, 2, 2, 2, 2, 1],
+    expected_reorder: [8, 2, 3, 4, 5, 6, 7, 1, 0],
+  },
+  {
+    number: 90403,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{0062}\u{0029}\u{005D}\u{0063}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90404,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{0062}\u{0029}\u{005D}\u{0063}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 2, 2, 2, 2, 2, 2],
+    expected_reorder: [2, 3, 4, 5, 6, 7, 8, 1, 0],
+  },
+  {
+    number: 90405,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{0029}\u{0062}\u{005D}\u{0063}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90406,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{0029}\u{0062}\u{005D}\u{0063}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 2, 2, 2, 2, 2, 2],
+    expected_reorder: [2, 3, 4, 5, 6, 7, 8, 1, 0],
+  },
+  {
+    number: 90407,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{0062}\u{0029}\u{0063}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90408,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{0062}\u{0029}\u{0063}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 2, 2, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 3, 4, 5, 2, 1, 0],
+  },
+  {
+    number: 90409,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{0062}\u{0029}\u{005D}\u{0063}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90410,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{0062}\u{0029}\u{005D}\u{0063}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 2, 2, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 3, 4, 5, 2, 1, 0],
+  },
+  {
+    number: 90411,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{0029}\u{0062}\u{005D}\u{0063}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90412,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{0029}\u{0062}\u{005D}\u{0063}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 2, 2, 2],
+    expected_reorder: [6, 7, 8, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90413,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0061}\u{0029}\u{0062}\u{005D}\u{0063}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90414,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0061}\u{0029}\u{0062}\u{005D}\u{0063}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 2, 2, 2],
+    expected_reorder: [6, 7, 8, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90415,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{0062}\u{0029}\u{0063}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90416,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{0062}\u{0029}\u{0063}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 2, 2, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 3, 4, 5, 2, 1, 0],
+  },
+  {
+    number: 90417,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{0062}\u{0029}\u{005D}\u{0063}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90418,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{0062}\u{0029}\u{005D}\u{0063}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 2, 2, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 3, 4, 5, 2, 1, 0],
+  },
+  {
+    number: 90419,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{0029}\u{0062}\u{005D}\u{0063}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90420,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{0029}\u{0062}\u{005D}\u{0063}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 2, 2, 2],
+    expected_reorder: [6, 7, 8, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90421,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0061}\u{0029}\u{0062}\u{005D}\u{0063}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90422,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0061}\u{0029}\u{0062}\u{005D}\u{0063}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 2, 2, 2],
+    expected_reorder: [6, 7, 8, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90423,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0061}\u{0029}\u{0062}\u{005D}\u{0063}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 1, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90424,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0061}\u{0029}\u{0062}\u{005D}\u{0063}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 2, 2, 2],
+    expected_reorder: [6, 7, 8, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90425,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{0062}\u{05D1}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90426,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{0062}\u{05D1}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90427,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{0062}\u{005B}\u{05D1}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90428,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{0062}\u{005B}\u{05D1}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90429,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{0062}\u{005B}\u{0029}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90430,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{0062}\u{005B}\u{0029}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 2, 2, 2, 2, 1, 1],
+    expected_reorder: [8, 7, 2, 3, 4, 5, 6, 1, 0],
+  },
+  {
+    number: 90431,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{0062}\u{005B}\u{0029}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90432,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{0062}\u{005B}\u{0029}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 2, 2, 2, 2, 1, 1],
+    expected_reorder: [8, 7, 2, 3, 4, 5, 6, 1, 0],
+  },
+  {
+    number: 90433,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{0062}\u{05D1}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90434,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{0062}\u{05D1}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90435,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{0062}\u{0029}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90436,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{0062}\u{0029}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 2, 2, 2, 2, 1, 1],
+    expected_reorder: [8, 7, 2, 3, 4, 5, 6, 1, 0],
+  },
+  {
+    number: 90437,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{0062}\u{0029}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90438,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{0062}\u{0029}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 2, 2, 2, 2, 1, 1],
+    expected_reorder: [8, 7, 2, 3, 4, 5, 6, 1, 0],
+  },
+  {
+    number: 90439,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{0029}\u{0062}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90440,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{0029}\u{0062}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 2, 2, 2, 2, 1, 1],
+    expected_reorder: [8, 7, 2, 3, 4, 5, 6, 1, 0],
+  },
+  {
+    number: 90441,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{0029}\u{0062}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90442,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{0029}\u{0062}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 2, 2, 2, 2, 1, 1],
+    expected_reorder: [8, 7, 2, 3, 4, 5, 6, 1, 0],
+  },
+  {
+    number: 90443,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{0062}\u{05D1}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90444,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{0062}\u{05D1}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 2, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 3, 4, 5, 2, 1, 0],
+  },
+  {
+    number: 90445,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{0062}\u{0029}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90446,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{0062}\u{0029}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 2, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 3, 4, 5, 2, 1, 0],
+  },
+  {
+    number: 90447,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{0062}\u{0029}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90448,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{0062}\u{0029}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 2, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 3, 4, 5, 2, 1, 0],
+  },
+  {
+    number: 90449,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{0029}\u{0062}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90450,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{0029}\u{0062}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90451,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{0029}\u{0062}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90452,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{0029}\u{0062}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90453,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0061}\u{0029}\u{0062}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90454,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0061}\u{0029}\u{0062}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90455,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0061}\u{0029}\u{0062}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90456,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0061}\u{0029}\u{0062}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90457,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{0062}\u{05D1}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90458,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{0062}\u{05D1}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90459,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{0062}\u{005B}\u{05D1}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90460,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{0062}\u{005B}\u{05D1}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90461,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{0062}\u{005B}\u{0029}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90462,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{0062}\u{005B}\u{0029}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 2, 2, 2, 2, 1, 1],
+    expected_reorder: [8, 7, 2, 3, 4, 5, 6, 1, 0],
+  },
+  {
+    number: 90463,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{0062}\u{005B}\u{0029}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90464,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{0062}\u{005B}\u{0029}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 2, 2, 2, 2, 1, 1],
+    expected_reorder: [8, 7, 2, 3, 4, 5, 6, 1, 0],
+  },
+  {
+    number: 90465,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{0062}\u{05D1}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90466,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{0062}\u{05D1}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90467,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{0062}\u{0029}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90468,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{0062}\u{0029}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 2, 2, 2, 2, 1, 1],
+    expected_reorder: [8, 7, 2, 3, 4, 5, 6, 1, 0],
+  },
+  {
+    number: 90469,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{0062}\u{0029}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90470,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{0062}\u{0029}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 2, 2, 2, 2, 1, 1],
+    expected_reorder: [8, 7, 2, 3, 4, 5, 6, 1, 0],
+  },
+  {
+    number: 90471,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{0029}\u{0062}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90472,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{0029}\u{0062}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 2, 2, 2, 2, 1, 1],
+    expected_reorder: [8, 7, 2, 3, 4, 5, 6, 1, 0],
+  },
+  {
+    number: 90473,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{0029}\u{0062}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90474,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{0029}\u{0062}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 2, 2, 2, 2, 1, 1],
+    expected_reorder: [8, 7, 2, 3, 4, 5, 6, 1, 0],
+  },
+  {
+    number: 90475,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{0062}\u{05D1}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90476,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{0062}\u{05D1}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 2, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 3, 4, 5, 2, 1, 0],
+  },
+  {
+    number: 90477,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{0062}\u{0029}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90478,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{0062}\u{0029}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 2, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 3, 4, 5, 2, 1, 0],
+  },
+  {
+    number: 90479,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{0062}\u{0029}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90480,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{0062}\u{0029}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 2, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 3, 4, 5, 2, 1, 0],
+  },
+  {
+    number: 90481,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{0029}\u{0062}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90482,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{0029}\u{0062}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90483,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{0029}\u{0062}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90484,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{0029}\u{0062}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90485,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0061}\u{0029}\u{0062}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90486,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0061}\u{0029}\u{0062}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90487,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0061}\u{0029}\u{0062}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90488,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0061}\u{0029}\u{0062}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90489,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{0062}\u{05D1}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90490,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{0062}\u{05D1}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 2, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 3, 4, 5, 2, 1, 0],
+  },
+  {
+    number: 90491,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{0062}\u{0029}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90492,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{0062}\u{0029}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 2, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 3, 4, 5, 2, 1, 0],
+  },
+  {
+    number: 90493,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{0062}\u{0029}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90494,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{0062}\u{0029}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 2, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 3, 4, 5, 2, 1, 0],
+  },
+  {
+    number: 90495,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{0029}\u{0062}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90496,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{0029}\u{0062}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90497,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{0029}\u{0062}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90498,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{0029}\u{0062}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90499,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0061}\u{0029}\u{0062}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90500,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0061}\u{0029}\u{0062}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90501,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0061}\u{0029}\u{0062}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90502,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0061}\u{0029}\u{0062}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90503,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0061}\u{0029}\u{0062}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 1, 0, 0, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90504,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0061}\u{0029}\u{0062}\u{05D1}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90505,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0061}\u{0029}\u{0062}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 1, 0, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90506,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0061}\u{0029}\u{0062}\u{005D}\u{05D1}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90507,
+    input: "\u{05D0}\u{0028}\u{0061}\u{05D1}\u{2680}\u{0028}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 1, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90508,
+    input: "\u{05D0}\u{0028}\u{0061}\u{05D1}\u{2680}\u{0028}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90509,
+    input: "\u{05D0}\u{0028}\u{0061}\u{05D1}\u{0028}\u{2680}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 1, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90510,
+    input: "\u{05D0}\u{0028}\u{0061}\u{05D1}\u{0028}\u{2680}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90511,
+    input: "\u{05D0}\u{0028}\u{0061}\u{05D1}\u{0028}\u{005B}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 1, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90512,
+    input: "\u{05D0}\u{0028}\u{0061}\u{05D1}\u{0028}\u{005B}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90513,
+    input: "\u{05D0}\u{0028}\u{0061}\u{05D1}\u{0028}\u{005B}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 1, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90514,
+    input: "\u{05D0}\u{0028}\u{0061}\u{05D1}\u{0028}\u{005B}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90515,
+    input: "\u{05D0}\u{0028}\u{0061}\u{05D1}\u{0028}\u{005B}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 1, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90516,
+    input: "\u{05D0}\u{0028}\u{0061}\u{05D1}\u{0028}\u{005B}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90517,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{05D1}\u{2680}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90518,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{05D1}\u{2680}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90519,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{05D1}\u{005B}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90520,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{05D1}\u{005B}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90521,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{05D1}\u{005B}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90522,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{05D1}\u{005B}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90523,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{05D1}\u{005B}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90524,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{05D1}\u{005B}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90525,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{05D1}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90526,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{05D1}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90527,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{05D1}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90528,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{05D1}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90529,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{05D1}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90530,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{05D1}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90531,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{0029}\u{05D1}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90532,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{0029}\u{05D1}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90533,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{0029}\u{05D1}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90534,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{0029}\u{05D1}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90535,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{05D1}\u{2680}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90536,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{05D1}\u{2680}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90537,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{05D1}\u{005B}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90538,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{05D1}\u{005B}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90539,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{05D1}\u{005B}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90540,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{05D1}\u{005B}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90541,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{05D1}\u{005B}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90542,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{05D1}\u{005B}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90543,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{05D1}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90544,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{05D1}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90545,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{05D1}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90546,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{05D1}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90547,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{05D1}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90548,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{05D1}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90549,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{0029}\u{05D1}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90550,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{0029}\u{05D1}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90551,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{0029}\u{05D1}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90552,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{0029}\u{05D1}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90553,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0061}\u{05D1}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90554,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0061}\u{05D1}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90555,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0061}\u{05D1}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90556,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0061}\u{05D1}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90557,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0061}\u{05D1}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90558,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0061}\u{05D1}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90559,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0061}\u{0029}\u{05D1}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90560,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0061}\u{0029}\u{05D1}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90561,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0061}\u{0029}\u{05D1}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90562,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0061}\u{0029}\u{05D1}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90563,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0029}\u{0061}\u{05D1}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90564,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0029}\u{0061}\u{05D1}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90565,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0029}\u{0061}\u{05D1}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90566,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0029}\u{0061}\u{05D1}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90567,
+    input: "\u{0028}\u{05D0}\u{0061}\u{05D1}\u{2680}\u{0028}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 1, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90568,
+    input: "\u{0028}\u{05D0}\u{0061}\u{05D1}\u{2680}\u{0028}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90569,
+    input: "\u{0028}\u{05D0}\u{0061}\u{05D1}\u{0028}\u{2680}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 1, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90570,
+    input: "\u{0028}\u{05D0}\u{0061}\u{05D1}\u{0028}\u{2680}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90571,
+    input: "\u{0028}\u{05D0}\u{0061}\u{05D1}\u{0028}\u{005B}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 1, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90572,
+    input: "\u{0028}\u{05D0}\u{0061}\u{05D1}\u{0028}\u{005B}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90573,
+    input: "\u{0028}\u{05D0}\u{0061}\u{05D1}\u{0028}\u{005B}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 1, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90574,
+    input: "\u{0028}\u{05D0}\u{0061}\u{05D1}\u{0028}\u{005B}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90575,
+    input: "\u{0028}\u{05D0}\u{0061}\u{05D1}\u{0028}\u{005B}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 1, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90576,
+    input: "\u{0028}\u{05D0}\u{0061}\u{05D1}\u{0028}\u{005B}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90577,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{05D1}\u{2680}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90578,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{05D1}\u{2680}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90579,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{05D1}\u{005B}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90580,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{05D1}\u{005B}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90581,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{05D1}\u{005B}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90582,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{05D1}\u{005B}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90583,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{05D1}\u{005B}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90584,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{05D1}\u{005B}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90585,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{05D1}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90586,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{05D1}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90587,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{05D1}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90588,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{05D1}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90589,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{05D1}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90590,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{05D1}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90591,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{0029}\u{05D1}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90592,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{0029}\u{05D1}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90593,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{0029}\u{05D1}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90594,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{0029}\u{05D1}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90595,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{05D1}\u{2680}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90596,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{05D1}\u{2680}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90597,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{05D1}\u{005B}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90598,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{05D1}\u{005B}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90599,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{05D1}\u{005B}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90600,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{05D1}\u{005B}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90601,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{05D1}\u{005B}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90602,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{05D1}\u{005B}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90603,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{05D1}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90604,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{05D1}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90605,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{05D1}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90606,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{05D1}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90607,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{05D1}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90608,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{05D1}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90609,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{0029}\u{05D1}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90610,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{0029}\u{05D1}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90611,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{0029}\u{05D1}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90612,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{0029}\u{05D1}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90613,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0061}\u{05D1}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90614,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0061}\u{05D1}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90615,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0061}\u{05D1}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90616,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0061}\u{05D1}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90617,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0061}\u{05D1}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90618,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0061}\u{05D1}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90619,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0061}\u{0029}\u{05D1}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90620,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0061}\u{0029}\u{05D1}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90621,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0061}\u{0029}\u{05D1}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90622,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0061}\u{0029}\u{05D1}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90623,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0029}\u{0061}\u{05D1}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90624,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0029}\u{0061}\u{05D1}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90625,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0029}\u{0061}\u{05D1}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90626,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0029}\u{0061}\u{05D1}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90627,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{05D1}\u{2680}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90628,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{05D1}\u{2680}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90629,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{05D1}\u{005B}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90630,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{05D1}\u{005B}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90631,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{05D1}\u{005B}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90632,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{05D1}\u{005B}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90633,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{05D1}\u{005B}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90634,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{05D1}\u{005B}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90635,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{05D1}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90636,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{05D1}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90637,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{05D1}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90638,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{05D1}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90639,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{05D1}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90640,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{05D1}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90641,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{0029}\u{05D1}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90642,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{0029}\u{05D1}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90643,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{0029}\u{05D1}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90644,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{0029}\u{05D1}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90645,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0061}\u{05D1}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90646,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0061}\u{05D1}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90647,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0061}\u{05D1}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90648,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0061}\u{05D1}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90649,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0061}\u{05D1}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90650,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0061}\u{05D1}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90651,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0061}\u{0029}\u{05D1}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90652,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0061}\u{0029}\u{05D1}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90653,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0061}\u{0029}\u{05D1}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90654,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0061}\u{0029}\u{05D1}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90655,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0029}\u{0061}\u{05D1}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90656,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0029}\u{0061}\u{05D1}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90657,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0029}\u{0061}\u{05D1}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90658,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0029}\u{0061}\u{05D1}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90659,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0061}\u{05D1}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 1, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90660,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0061}\u{05D1}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90661,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0061}\u{05D1}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 1, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90662,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0061}\u{05D1}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90663,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0061}\u{05D1}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 1, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90664,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0061}\u{05D1}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90665,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0061}\u{0029}\u{05D1}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 1, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90666,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0061}\u{0029}\u{05D1}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90667,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0061}\u{0029}\u{05D1}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 1, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90668,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0061}\u{0029}\u{05D1}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90669,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0029}\u{0061}\u{05D1}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 1, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90670,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0029}\u{0061}\u{05D1}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90671,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0029}\u{0061}\u{05D1}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 1, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90672,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0029}\u{0061}\u{05D1}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90673,
+    input: "\u{0028}\u{0028}\u{005B}\u{0029}\u{05D0}\u{0061}\u{05D1}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 0, 1, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90674,
+    input: "\u{0028}\u{0028}\u{005B}\u{0029}\u{05D0}\u{0061}\u{05D1}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90675,
+    input: "\u{0028}\u{0028}\u{005B}\u{0029}\u{05D0}\u{0061}\u{05D1}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 0, 1, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90676,
+    input: "\u{0028}\u{0028}\u{005B}\u{0029}\u{05D0}\u{0061}\u{05D1}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90677,
+    input: "\u{05D0}\u{0028}\u{0061}\u{05D1}\u{0062}\u{0028}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 1, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90678,
+    input: "\u{05D0}\u{0028}\u{0061}\u{05D1}\u{0062}\u{0028}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90679,
+    input: "\u{05D0}\u{0028}\u{0061}\u{05D1}\u{0028}\u{0062}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 1, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90680,
+    input: "\u{05D0}\u{0028}\u{0061}\u{05D1}\u{0028}\u{0062}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90681,
+    input: "\u{05D0}\u{0028}\u{0061}\u{05D1}\u{0028}\u{005B}\u{0062}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 1, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90682,
+    input: "\u{05D0}\u{0028}\u{0061}\u{05D1}\u{0028}\u{005B}\u{0062}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90683,
+    input: "\u{05D0}\u{0028}\u{0061}\u{05D1}\u{0028}\u{005B}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 1, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90684,
+    input: "\u{05D0}\u{0028}\u{0061}\u{05D1}\u{0028}\u{005B}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90685,
+    input: "\u{05D0}\u{0028}\u{0061}\u{05D1}\u{0028}\u{005B}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 1, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90686,
+    input: "\u{05D0}\u{0028}\u{0061}\u{05D1}\u{0028}\u{005B}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90687,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{05D1}\u{0062}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90688,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{05D1}\u{0062}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90689,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{05D1}\u{005B}\u{0062}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90690,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{05D1}\u{005B}\u{0062}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90691,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{05D1}\u{005B}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90692,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{05D1}\u{005B}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90693,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{05D1}\u{005B}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90694,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{05D1}\u{005B}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90695,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{05D1}\u{0062}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90696,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{05D1}\u{0062}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90697,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{05D1}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90698,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{05D1}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90699,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{05D1}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90700,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{05D1}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90701,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{0029}\u{05D1}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90702,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{0029}\u{05D1}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90703,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{0029}\u{05D1}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90704,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{0029}\u{05D1}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90705,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{05D1}\u{0062}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90706,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{05D1}\u{0062}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90707,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{05D1}\u{005B}\u{0062}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90708,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{05D1}\u{005B}\u{0062}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90709,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{05D1}\u{005B}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90710,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{05D1}\u{005B}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90711,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{05D1}\u{005B}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90712,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{05D1}\u{005B}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90713,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{05D1}\u{0062}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90714,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{05D1}\u{0062}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90715,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{05D1}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90716,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{05D1}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90717,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{05D1}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90718,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{05D1}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90719,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{0029}\u{05D1}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90720,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{0029}\u{05D1}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90721,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{0029}\u{05D1}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90722,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{0029}\u{05D1}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90723,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0061}\u{05D1}\u{0062}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90724,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0061}\u{05D1}\u{0062}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90725,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0061}\u{05D1}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90726,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0061}\u{05D1}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90727,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0061}\u{05D1}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90728,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0061}\u{05D1}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90729,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0061}\u{0029}\u{05D1}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90730,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0061}\u{0029}\u{05D1}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90731,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0061}\u{0029}\u{05D1}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90732,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0061}\u{0029}\u{05D1}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90733,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0029}\u{0061}\u{05D1}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90734,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0029}\u{0061}\u{05D1}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90735,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0029}\u{0061}\u{05D1}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90736,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0029}\u{0061}\u{05D1}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90737,
+    input: "\u{0028}\u{05D0}\u{0061}\u{05D1}\u{0062}\u{0028}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 1, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90738,
+    input: "\u{0028}\u{05D0}\u{0061}\u{05D1}\u{0062}\u{0028}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90739,
+    input: "\u{0028}\u{05D0}\u{0061}\u{05D1}\u{0028}\u{0062}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 1, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90740,
+    input: "\u{0028}\u{05D0}\u{0061}\u{05D1}\u{0028}\u{0062}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90741,
+    input: "\u{0028}\u{05D0}\u{0061}\u{05D1}\u{0028}\u{005B}\u{0062}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 1, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90742,
+    input: "\u{0028}\u{05D0}\u{0061}\u{05D1}\u{0028}\u{005B}\u{0062}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90743,
+    input: "\u{0028}\u{05D0}\u{0061}\u{05D1}\u{0028}\u{005B}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 1, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90744,
+    input: "\u{0028}\u{05D0}\u{0061}\u{05D1}\u{0028}\u{005B}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90745,
+    input: "\u{0028}\u{05D0}\u{0061}\u{05D1}\u{0028}\u{005B}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 1, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90746,
+    input: "\u{0028}\u{05D0}\u{0061}\u{05D1}\u{0028}\u{005B}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90747,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{05D1}\u{0062}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90748,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{05D1}\u{0062}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90749,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{05D1}\u{005B}\u{0062}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90750,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{05D1}\u{005B}\u{0062}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90751,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{05D1}\u{005B}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90752,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{05D1}\u{005B}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90753,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{05D1}\u{005B}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90754,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{05D1}\u{005B}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90755,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{05D1}\u{0062}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90756,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{05D1}\u{0062}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90757,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{05D1}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90758,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{05D1}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90759,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{05D1}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90760,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{05D1}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90761,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{0029}\u{05D1}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90762,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{0029}\u{05D1}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90763,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{0029}\u{05D1}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90764,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{0029}\u{05D1}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90765,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{05D1}\u{0062}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90766,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{05D1}\u{0062}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90767,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{05D1}\u{005B}\u{0062}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90768,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{05D1}\u{005B}\u{0062}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90769,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{05D1}\u{005B}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90770,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{05D1}\u{005B}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90771,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{05D1}\u{005B}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90772,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{05D1}\u{005B}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90773,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{05D1}\u{0062}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90774,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{05D1}\u{0062}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90775,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{05D1}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90776,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{05D1}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90777,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{05D1}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90778,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{05D1}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90779,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{0029}\u{05D1}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90780,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{0029}\u{05D1}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90781,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{0029}\u{05D1}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90782,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{0029}\u{05D1}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90783,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0061}\u{05D1}\u{0062}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90784,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0061}\u{05D1}\u{0062}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90785,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0061}\u{05D1}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90786,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0061}\u{05D1}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90787,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0061}\u{05D1}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90788,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0061}\u{05D1}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90789,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0061}\u{0029}\u{05D1}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90790,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0061}\u{0029}\u{05D1}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90791,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0061}\u{0029}\u{05D1}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90792,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0061}\u{0029}\u{05D1}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90793,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0029}\u{0061}\u{05D1}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90794,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0029}\u{0061}\u{05D1}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90795,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0029}\u{0061}\u{05D1}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90796,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0029}\u{0061}\u{05D1}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90797,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{05D1}\u{0062}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90798,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{05D1}\u{0062}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90799,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{05D1}\u{005B}\u{0062}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90800,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{05D1}\u{005B}\u{0062}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90801,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{05D1}\u{005B}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90802,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{05D1}\u{005B}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90803,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{05D1}\u{005B}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90804,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{05D1}\u{005B}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90805,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{05D1}\u{0062}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90806,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{05D1}\u{0062}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90807,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{05D1}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90808,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{05D1}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90809,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{05D1}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90810,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{05D1}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90811,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{0029}\u{05D1}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90812,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{0029}\u{05D1}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90813,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{0029}\u{05D1}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90814,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{0029}\u{05D1}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90815,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0061}\u{05D1}\u{0062}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90816,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0061}\u{05D1}\u{0062}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90817,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0061}\u{05D1}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90818,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0061}\u{05D1}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90819,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0061}\u{05D1}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90820,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0061}\u{05D1}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90821,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0061}\u{0029}\u{05D1}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90822,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0061}\u{0029}\u{05D1}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90823,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0061}\u{0029}\u{05D1}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90824,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0061}\u{0029}\u{05D1}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90825,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0029}\u{0061}\u{05D1}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90826,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0029}\u{0061}\u{05D1}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90827,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0029}\u{0061}\u{05D1}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90828,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0029}\u{0061}\u{05D1}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90829,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0061}\u{05D1}\u{0062}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 1, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90830,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0061}\u{05D1}\u{0062}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90831,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0061}\u{05D1}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 1, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90832,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0061}\u{05D1}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90833,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0061}\u{05D1}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 1, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90834,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0061}\u{05D1}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90835,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0061}\u{0029}\u{05D1}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 1, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90836,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0061}\u{0029}\u{05D1}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90837,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0061}\u{0029}\u{05D1}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 1, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90838,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0061}\u{0029}\u{05D1}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90839,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0029}\u{0061}\u{05D1}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 1, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90840,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0029}\u{0061}\u{05D1}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90841,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0029}\u{0061}\u{05D1}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 1, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90842,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0029}\u{0061}\u{05D1}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90843,
+    input: "\u{0028}\u{0028}\u{005B}\u{0029}\u{05D0}\u{0061}\u{05D1}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 0, 1, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90844,
+    input: "\u{0028}\u{0028}\u{005B}\u{0029}\u{05D0}\u{0061}\u{05D1}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90845,
+    input: "\u{0028}\u{0028}\u{005B}\u{0029}\u{05D0}\u{0061}\u{05D1}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 0, 1, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90846,
+    input: "\u{0028}\u{0028}\u{005B}\u{0029}\u{05D0}\u{0061}\u{05D1}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90847,
+    input: "\u{05D0}\u{0028}\u{0061}\u{05D1}\u{0028}\u{05D2}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 1, 1, 1, 1, 1, 0],
+    expected_reorder: [0, 1, 2, 7, 6, 5, 4, 3, 8],
+  },
+  {
+    number: 90848,
+    input: "\u{05D0}\u{0028}\u{0061}\u{05D1}\u{0028}\u{05D2}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90849,
+    input: "\u{05D0}\u{0028}\u{0061}\u{05D1}\u{0028}\u{005B}\u{05D2}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 1, 1, 1, 1, 1, 0],
+    expected_reorder: [0, 1, 2, 7, 6, 5, 4, 3, 8],
+  },
+  {
+    number: 90850,
+    input: "\u{05D0}\u{0028}\u{0061}\u{05D1}\u{0028}\u{005B}\u{05D2}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90851,
+    input: "\u{05D0}\u{0028}\u{0061}\u{05D1}\u{0028}\u{005B}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 1, 1, 1, 1, 1, 0],
+    expected_reorder: [0, 1, 2, 7, 6, 5, 4, 3, 8],
+  },
+  {
+    number: 90852,
+    input: "\u{05D0}\u{0028}\u{0061}\u{05D1}\u{0028}\u{005B}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90853,
+    input: "\u{05D0}\u{0028}\u{0061}\u{05D1}\u{0028}\u{005B}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [0, 1, 2, 8, 7, 6, 5, 4, 3],
+  },
+  {
+    number: 90854,
+    input: "\u{05D0}\u{0028}\u{0061}\u{05D1}\u{0028}\u{005B}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90855,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{05D1}\u{005B}\u{05D2}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 1, 1, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 6, 5, 4, 7, 8],
+  },
+  {
+    number: 90856,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{05D1}\u{005B}\u{05D2}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90857,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{05D1}\u{005B}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 1, 0, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90858,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{05D1}\u{005B}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90859,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{05D1}\u{005B}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 1, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90860,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{05D1}\u{005B}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90861,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{05D1}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 1, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90862,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{05D1}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90863,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{05D1}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 1, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90864,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{05D1}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90865,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{0029}\u{05D1}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 1, 1, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 8, 7, 6],
+  },
+  {
+    number: 90866,
+    input: "\u{05D0}\u{0028}\u{0061}\u{0028}\u{005B}\u{0029}\u{05D1}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90867,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{05D1}\u{005B}\u{05D2}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 1, 1, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 6, 5, 4, 7, 8],
+  },
+  {
+    number: 90868,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{05D1}\u{005B}\u{05D2}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90869,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{05D1}\u{005B}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 1, 0, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90870,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{05D1}\u{005B}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90871,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{05D1}\u{005B}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 1, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90872,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{05D1}\u{005B}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90873,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{05D1}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 1, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90874,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{05D1}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90875,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{05D1}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 1, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90876,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{05D1}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90877,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{0029}\u{05D1}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 1, 1, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 8, 7, 6],
+  },
+  {
+    number: 90878,
+    input: "\u{05D0}\u{0028}\u{0028}\u{0061}\u{005B}\u{0029}\u{05D1}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90879,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0061}\u{05D1}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 1, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90880,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0061}\u{05D1}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90881,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0061}\u{05D1}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 1, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90882,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0061}\u{05D1}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90883,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0061}\u{0029}\u{05D1}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 1, 1, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 8, 7, 6],
+  },
+  {
+    number: 90884,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0061}\u{0029}\u{05D1}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90885,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0029}\u{0061}\u{05D1}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 0, 0, 1, 1, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 8, 7, 6],
+  },
+  {
+    number: 90886,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0029}\u{0061}\u{05D1}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90887,
+    input: "\u{0028}\u{05D0}\u{0061}\u{05D1}\u{0028}\u{05D2}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 1, 1, 1, 1, 1, 0],
+    expected_reorder: [0, 1, 2, 7, 6, 5, 4, 3, 8],
+  },
+  {
+    number: 90888,
+    input: "\u{0028}\u{05D0}\u{0061}\u{05D1}\u{0028}\u{05D2}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90889,
+    input: "\u{0028}\u{05D0}\u{0061}\u{05D1}\u{0028}\u{005B}\u{05D2}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 1, 1, 1, 1, 1, 0],
+    expected_reorder: [0, 1, 2, 7, 6, 5, 4, 3, 8],
+  },
+  {
+    number: 90890,
+    input: "\u{0028}\u{05D0}\u{0061}\u{05D1}\u{0028}\u{005B}\u{05D2}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90891,
+    input: "\u{0028}\u{05D0}\u{0061}\u{05D1}\u{0028}\u{005B}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 1, 1, 1, 1, 1, 0],
+    expected_reorder: [0, 1, 2, 7, 6, 5, 4, 3, 8],
+  },
+  {
+    number: 90892,
+    input: "\u{0028}\u{05D0}\u{0061}\u{05D1}\u{0028}\u{005B}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90893,
+    input: "\u{0028}\u{05D0}\u{0061}\u{05D1}\u{0028}\u{005B}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [0, 1, 2, 8, 7, 6, 5, 4, 3],
+  },
+  {
+    number: 90894,
+    input: "\u{0028}\u{05D0}\u{0061}\u{05D1}\u{0028}\u{005B}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90895,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{05D1}\u{005B}\u{05D2}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 1, 1, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 6, 5, 4, 7, 8],
+  },
+  {
+    number: 90896,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{05D1}\u{005B}\u{05D2}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90897,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{05D1}\u{005B}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 1, 0, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90898,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{05D1}\u{005B}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90899,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{05D1}\u{005B}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 1, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90900,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{05D1}\u{005B}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90901,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{05D1}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 1, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90902,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{05D1}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90903,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{05D1}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 1, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90904,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{05D1}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90905,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{0029}\u{05D1}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 1, 1, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 8, 7, 6],
+  },
+  {
+    number: 90906,
+    input: "\u{0028}\u{05D0}\u{0061}\u{0028}\u{005B}\u{0029}\u{05D1}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 2, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90907,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{05D1}\u{005B}\u{05D2}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 1, 1, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 6, 5, 4, 7, 8],
+  },
+  {
+    number: 90908,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{05D1}\u{005B}\u{05D2}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90909,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{05D1}\u{005B}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 1, 0, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90910,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{05D1}\u{005B}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90911,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{05D1}\u{005B}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 1, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90912,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{05D1}\u{005B}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90913,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{05D1}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 1, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90914,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{05D1}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90915,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{05D1}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 1, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90916,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{05D1}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90917,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{0029}\u{05D1}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 1, 1, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 8, 7, 6],
+  },
+  {
+    number: 90918,
+    input: "\u{0028}\u{05D0}\u{0028}\u{0061}\u{005B}\u{0029}\u{05D1}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90919,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0061}\u{05D1}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 1, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90920,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0061}\u{05D1}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90921,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0061}\u{05D1}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 1, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90922,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0061}\u{05D1}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90923,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0061}\u{0029}\u{05D1}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 1, 1, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 8, 7, 6],
+  },
+  {
+    number: 90924,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0061}\u{0029}\u{05D1}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90925,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0029}\u{0061}\u{05D1}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 0, 0, 1, 1, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 8, 7, 6],
+  },
+  {
+    number: 90926,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0029}\u{0061}\u{05D1}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90927,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{05D1}\u{005B}\u{05D2}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 1, 1, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 6, 5, 4, 7, 8],
+  },
+  {
+    number: 90928,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{05D1}\u{005B}\u{05D2}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90929,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{05D1}\u{005B}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 1, 0, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90930,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{05D1}\u{005B}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90931,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{05D1}\u{005B}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 1, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90932,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{05D1}\u{005B}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90933,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{05D1}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 1, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90934,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{05D1}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90935,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{05D1}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 1, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90936,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{05D1}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90937,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{0029}\u{05D1}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 1, 1, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 8, 7, 6],
+  },
+  {
+    number: 90938,
+    input: "\u{0028}\u{0028}\u{05D0}\u{0061}\u{005B}\u{0029}\u{05D1}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90939,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0061}\u{05D1}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 1, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90940,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0061}\u{05D1}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90941,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0061}\u{05D1}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 1, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90942,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0061}\u{05D1}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90943,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0061}\u{0029}\u{05D1}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 1, 1, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 8, 7, 6],
+  },
+  {
+    number: 90944,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0061}\u{0029}\u{05D1}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90945,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0029}\u{0061}\u{05D1}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 0, 1, 1, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 8, 7, 6],
+  },
+  {
+    number: 90946,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0029}\u{0061}\u{05D1}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90947,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0061}\u{05D1}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 1, 0, 1, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90948,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0061}\u{05D1}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90949,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0061}\u{05D1}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 1, 0, 1, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90950,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0061}\u{05D1}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90951,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0061}\u{0029}\u{05D1}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 1, 0, 0, 1, 1, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 8, 7, 6],
+  },
+  {
+    number: 90952,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0061}\u{0029}\u{05D1}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90953,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0029}\u{0061}\u{05D1}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 1, 0, 0, 1, 1, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 8, 7, 6],
+  },
+  {
+    number: 90954,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0029}\u{0061}\u{05D1}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90955,
+    input: "\u{0028}\u{0028}\u{005B}\u{0029}\u{05D0}\u{0061}\u{05D1}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 0, 1, 0, 1, 1, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 8, 7, 6],
+  },
+  {
+    number: 90956,
+    input: "\u{0028}\u{0028}\u{005B}\u{0029}\u{05D0}\u{0061}\u{05D1}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90957,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{2680}\u{0028}\u{2681}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90958,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{2680}\u{0028}\u{2681}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90959,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{2680}\u{0028}\u{005B}\u{2681}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90960,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{2680}\u{0028}\u{005B}\u{2681}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90961,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{2680}\u{0028}\u{005B}\u{0029}\u{2681}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90962,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{2680}\u{0028}\u{005B}\u{0029}\u{2681}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90963,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{2680}\u{0028}\u{005B}\u{0029}\u{005D}\u{2681}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90964,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{2680}\u{0028}\u{005B}\u{0029}\u{005D}\u{2681}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90965,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{2680}\u{005B}\u{2681}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90966,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{2680}\u{005B}\u{2681}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90967,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{2680}\u{005B}\u{0029}\u{2681}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90968,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{2680}\u{005B}\u{0029}\u{2681}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90969,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{2680}\u{005B}\u{0029}\u{005D}\u{2681}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90970,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{2680}\u{005B}\u{0029}\u{005D}\u{2681}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90971,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{2680}\u{0029}\u{2681}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90972,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{2680}\u{0029}\u{2681}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90973,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{2680}\u{0029}\u{005D}\u{2681}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90974,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{2680}\u{0029}\u{005D}\u{2681}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90975,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{0029}\u{2680}\u{005D}\u{2681}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 90976,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{0029}\u{2680}\u{005D}\u{2681}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90977,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{2680}\u{005B}\u{2681}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 0],
+    expected_reorder: [7, 6, 5, 4, 3, 2, 1, 0, 8],
+  },
+  {
+    number: 90978,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{2680}\u{005B}\u{2681}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90979,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{2680}\u{005B}\u{0029}\u{2681}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 0, 0],
+    expected_reorder: [6, 5, 4, 3, 2, 1, 0, 7, 8],
+  },
+  {
+    number: 90980,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{2680}\u{005B}\u{0029}\u{2681}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90981,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{2680}\u{005B}\u{0029}\u{005D}\u{2681}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 0, 0],
+    expected_reorder: [6, 5, 4, 3, 2, 1, 0, 7, 8],
+  },
+  {
+    number: 90982,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{2680}\u{005B}\u{0029}\u{005D}\u{2681}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90983,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{2680}\u{0029}\u{2681}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 0, 0],
+    expected_reorder: [6, 5, 4, 3, 2, 1, 0, 7, 8],
+  },
+  {
+    number: 90984,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{2680}\u{0029}\u{2681}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90985,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{2680}\u{0029}\u{005D}\u{2681}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 0, 0],
+    expected_reorder: [6, 5, 4, 3, 2, 1, 0, 7, 8],
+  },
+  {
+    number: 90986,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{2680}\u{0029}\u{005D}\u{2681}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90987,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{0029}\u{2680}\u{005D}\u{2681}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 0, 0, 0],
+    expected_reorder: [5, 4, 3, 2, 1, 0, 6, 7, 8],
+  },
+  {
+    number: 90988,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{0029}\u{2680}\u{005D}\u{2681}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90989,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{2680}\u{0029}\u{2681}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 0, 0],
+    expected_reorder: [6, 5, 4, 3, 2, 1, 0, 7, 8],
+  },
+  {
+    number: 90990,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{2680}\u{0029}\u{2681}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90991,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{2680}\u{0029}\u{005D}\u{2681}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 0, 0],
+    expected_reorder: [6, 5, 4, 3, 2, 1, 0, 7, 8],
+  },
+  {
+    number: 90992,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{2680}\u{0029}\u{005D}\u{2681}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90993,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{0029}\u{2680}\u{005D}\u{2681}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 0, 0, 0],
+    expected_reorder: [5, 4, 3, 2, 1, 0, 6, 7, 8],
+  },
+  {
+    number: 90994,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{0029}\u{2680}\u{005D}\u{2681}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90995,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0029}\u{05D1}\u{2680}\u{005D}\u{2681}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 0, 0, 0],
+    expected_reorder: [5, 4, 3, 2, 1, 0, 6, 7, 8],
+  },
+  {
+    number: 90996,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0029}\u{05D1}\u{2680}\u{005D}\u{2681}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90997,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{2680}\u{005B}\u{2681}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 1, 1, 0],
+    expected_reorder: [0, 7, 6, 5, 4, 3, 2, 1, 8],
+  },
+  {
+    number: 90998,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{2680}\u{005B}\u{2681}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 90999,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{2680}\u{005B}\u{0029}\u{2681}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 1, 0, 0],
+    expected_reorder: [0, 6, 5, 4, 3, 2, 1, 7, 8],
+  },
+  {
+    number: 91000,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{2680}\u{005B}\u{0029}\u{2681}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91001,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{2680}\u{005B}\u{0029}\u{005D}\u{2681}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 1, 0, 0],
+    expected_reorder: [0, 6, 5, 4, 3, 2, 1, 7, 8],
+  },
+  {
+    number: 91002,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{2680}\u{005B}\u{0029}\u{005D}\u{2681}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91003,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{2680}\u{0029}\u{2681}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 1, 0, 0],
+    expected_reorder: [0, 6, 5, 4, 3, 2, 1, 7, 8],
+  },
+  {
+    number: 91004,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{2680}\u{0029}\u{2681}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91005,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{2680}\u{0029}\u{005D}\u{2681}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 1, 0, 0],
+    expected_reorder: [0, 6, 5, 4, 3, 2, 1, 7, 8],
+  },
+  {
+    number: 91006,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{2680}\u{0029}\u{005D}\u{2681}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91007,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{0029}\u{2680}\u{005D}\u{2681}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 0, 0, 0],
+    expected_reorder: [0, 5, 4, 3, 2, 1, 6, 7, 8],
+  },
+  {
+    number: 91008,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{0029}\u{2680}\u{005D}\u{2681}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91009,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{2680}\u{0029}\u{2681}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 1, 0, 0],
+    expected_reorder: [0, 6, 5, 4, 3, 2, 1, 7, 8],
+  },
+  {
+    number: 91010,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{2680}\u{0029}\u{2681}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91011,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{2680}\u{0029}\u{005D}\u{2681}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 1, 0, 0],
+    expected_reorder: [0, 6, 5, 4, 3, 2, 1, 7, 8],
+  },
+  {
+    number: 91012,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{2680}\u{0029}\u{005D}\u{2681}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91013,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{0029}\u{2680}\u{005D}\u{2681}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 0, 0, 0],
+    expected_reorder: [0, 5, 4, 3, 2, 1, 6, 7, 8],
+  },
+  {
+    number: 91014,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{0029}\u{2680}\u{005D}\u{2681}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91015,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0029}\u{05D1}\u{2680}\u{005D}\u{2681}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 0, 0, 0],
+    expected_reorder: [0, 5, 4, 3, 2, 1, 6, 7, 8],
+  },
+  {
+    number: 91016,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0029}\u{05D1}\u{2680}\u{005D}\u{2681}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91017,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{2680}\u{0029}\u{2681}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 1, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 4, 3, 2, 5, 6, 7, 8],
+  },
+  {
+    number: 91018,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{2680}\u{0029}\u{2681}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91019,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{2680}\u{0029}\u{005D}\u{2681}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 1, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 4, 3, 2, 5, 6, 7, 8],
+  },
+  {
+    number: 91020,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{2680}\u{0029}\u{005D}\u{2681}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91021,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{0029}\u{2680}\u{005D}\u{2681}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 1, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 4, 3, 2, 5, 6, 7, 8],
+  },
+  {
+    number: 91022,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{0029}\u{2680}\u{005D}\u{2681}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91023,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0029}\u{05D1}\u{2680}\u{005D}\u{2681}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91024,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0029}\u{05D1}\u{2680}\u{005D}\u{2681}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91025,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0029}\u{05D1}\u{2680}\u{005D}\u{2681}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 1, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91026,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0029}\u{05D1}\u{2680}\u{005D}\u{2681}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91027,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{2680}\u{0061}\u{0028}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91028,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{2680}\u{0061}\u{0028}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91029,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{2680}\u{0028}\u{0061}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91030,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{2680}\u{0028}\u{0061}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91031,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{2680}\u{0028}\u{005B}\u{0061}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91032,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{2680}\u{0028}\u{005B}\u{0061}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91033,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{2680}\u{0028}\u{005B}\u{0029}\u{0061}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91034,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{2680}\u{0028}\u{005B}\u{0029}\u{0061}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91035,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{2680}\u{0028}\u{005B}\u{0029}\u{005D}\u{0061}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91036,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{2680}\u{0028}\u{005B}\u{0029}\u{005D}\u{0061}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91037,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{2680}\u{0061}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91038,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{2680}\u{0061}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91039,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{2680}\u{005B}\u{0061}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91040,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{2680}\u{005B}\u{0061}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91041,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{2680}\u{005B}\u{0029}\u{0061}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91042,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{2680}\u{005B}\u{0029}\u{0061}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91043,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{2680}\u{005B}\u{0029}\u{005D}\u{0061}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91044,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{2680}\u{005B}\u{0029}\u{005D}\u{0061}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91045,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{2680}\u{0061}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91046,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{2680}\u{0061}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91047,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{2680}\u{0029}\u{0061}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91048,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{2680}\u{0029}\u{0061}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91049,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{2680}\u{0029}\u{005D}\u{0061}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91050,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{2680}\u{0029}\u{005D}\u{0061}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91051,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{0029}\u{2680}\u{0061}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91052,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{0029}\u{2680}\u{0061}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91053,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{0029}\u{2680}\u{005D}\u{0061}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91054,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{0029}\u{2680}\u{005D}\u{0061}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91055,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{0029}\u{005D}\u{2680}\u{0061}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91056,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{0029}\u{005D}\u{2680}\u{0061}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91057,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{2680}\u{0061}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 1, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91058,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{2680}\u{0061}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91059,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{2680}\u{005B}\u{0061}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 1, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91060,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{2680}\u{005B}\u{0061}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91061,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{2680}\u{005B}\u{0029}\u{0061}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 0, 0],
+    expected_reorder: [6, 5, 4, 3, 2, 1, 0, 7, 8],
+  },
+  {
+    number: 91062,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{2680}\u{005B}\u{0029}\u{0061}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91063,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{2680}\u{005B}\u{0029}\u{005D}\u{0061}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 0, 0],
+    expected_reorder: [6, 5, 4, 3, 2, 1, 0, 7, 8],
+  },
+  {
+    number: 91064,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{2680}\u{005B}\u{0029}\u{005D}\u{0061}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91065,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{2680}\u{0061}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 1, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91066,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{2680}\u{0061}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91067,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{2680}\u{0029}\u{0061}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 0, 0],
+    expected_reorder: [6, 5, 4, 3, 2, 1, 0, 7, 8],
+  },
+  {
+    number: 91068,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{2680}\u{0029}\u{0061}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91069,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{2680}\u{0029}\u{005D}\u{0061}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 0, 0],
+    expected_reorder: [6, 5, 4, 3, 2, 1, 0, 7, 8],
+  },
+  {
+    number: 91070,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{2680}\u{0029}\u{005D}\u{0061}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91071,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{0029}\u{2680}\u{0061}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 0, 0, 0],
+    expected_reorder: [5, 4, 3, 2, 1, 0, 6, 7, 8],
+  },
+  {
+    number: 91072,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{0029}\u{2680}\u{0061}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91073,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{0029}\u{2680}\u{005D}\u{0061}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 0, 0, 0],
+    expected_reorder: [5, 4, 3, 2, 1, 0, 6, 7, 8],
+  },
+  {
+    number: 91074,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{0029}\u{2680}\u{005D}\u{0061}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91075,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{0029}\u{005D}\u{2680}\u{0061}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 0, 0, 0],
+    expected_reorder: [5, 4, 3, 2, 1, 0, 6, 7, 8],
+  },
+  {
+    number: 91076,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{0029}\u{005D}\u{2680}\u{0061}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91077,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{2680}\u{0061}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91078,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{2680}\u{0061}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91079,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{2680}\u{0029}\u{0061}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 0, 0],
+    expected_reorder: [6, 5, 4, 3, 2, 1, 0, 7, 8],
+  },
+  {
+    number: 91080,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{2680}\u{0029}\u{0061}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91081,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{2680}\u{0029}\u{005D}\u{0061}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 0, 0],
+    expected_reorder: [6, 5, 4, 3, 2, 1, 0, 7, 8],
+  },
+  {
+    number: 91082,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{2680}\u{0029}\u{005D}\u{0061}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91083,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{0029}\u{2680}\u{0061}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 0, 0, 0],
+    expected_reorder: [5, 4, 3, 2, 1, 0, 6, 7, 8],
+  },
+  {
+    number: 91084,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{0029}\u{2680}\u{0061}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91085,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{0029}\u{2680}\u{005D}\u{0061}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 0, 0, 0],
+    expected_reorder: [5, 4, 3, 2, 1, 0, 6, 7, 8],
+  },
+  {
+    number: 91086,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{0029}\u{2680}\u{005D}\u{0061}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91087,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{0029}\u{005D}\u{2680}\u{0061}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 0, 0, 0],
+    expected_reorder: [5, 4, 3, 2, 1, 0, 6, 7, 8],
+  },
+  {
+    number: 91088,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{0029}\u{005D}\u{2680}\u{0061}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91089,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0029}\u{05D1}\u{2680}\u{0061}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 0, 0, 0],
+    expected_reorder: [5, 4, 3, 2, 1, 0, 6, 7, 8],
+  },
+  {
+    number: 91090,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0029}\u{05D1}\u{2680}\u{0061}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91091,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0029}\u{05D1}\u{2680}\u{005D}\u{0061}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 0, 0, 0],
+    expected_reorder: [5, 4, 3, 2, 1, 0, 6, 7, 8],
+  },
+  {
+    number: 91092,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0029}\u{05D1}\u{2680}\u{005D}\u{0061}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91093,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0029}\u{05D1}\u{005D}\u{2680}\u{0061}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 0, 0, 0],
+    expected_reorder: [5, 4, 3, 2, 1, 0, 6, 7, 8],
+  },
+  {
+    number: 91094,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0029}\u{05D1}\u{005D}\u{2680}\u{0061}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91095,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{2680}\u{0061}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 1, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91096,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{2680}\u{0061}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91097,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{2680}\u{005B}\u{0061}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 1, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91098,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{2680}\u{005B}\u{0061}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91099,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{2680}\u{005B}\u{0029}\u{0061}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 1, 0, 0],
+    expected_reorder: [0, 6, 5, 4, 3, 2, 1, 7, 8],
+  },
+  {
+    number: 91100,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{2680}\u{005B}\u{0029}\u{0061}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91101,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{2680}\u{005B}\u{0029}\u{005D}\u{0061}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 1, 0, 0],
+    expected_reorder: [0, 6, 5, 4, 3, 2, 1, 7, 8],
+  },
+  {
+    number: 91102,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{2680}\u{005B}\u{0029}\u{005D}\u{0061}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91103,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{2680}\u{0061}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 1, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91104,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{2680}\u{0061}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91105,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{2680}\u{0029}\u{0061}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 1, 0, 0],
+    expected_reorder: [0, 6, 5, 4, 3, 2, 1, 7, 8],
+  },
+  {
+    number: 91106,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{2680}\u{0029}\u{0061}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91107,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{2680}\u{0029}\u{005D}\u{0061}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 1, 0, 0],
+    expected_reorder: [0, 6, 5, 4, 3, 2, 1, 7, 8],
+  },
+  {
+    number: 91108,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{2680}\u{0029}\u{005D}\u{0061}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91109,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{0029}\u{2680}\u{0061}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 0, 0, 0],
+    expected_reorder: [0, 5, 4, 3, 2, 1, 6, 7, 8],
+  },
+  {
+    number: 91110,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{0029}\u{2680}\u{0061}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91111,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{0029}\u{2680}\u{005D}\u{0061}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 0, 0, 0],
+    expected_reorder: [0, 5, 4, 3, 2, 1, 6, 7, 8],
+  },
+  {
+    number: 91112,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{0029}\u{2680}\u{005D}\u{0061}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91113,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{0029}\u{005D}\u{2680}\u{0061}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 0, 0, 0],
+    expected_reorder: [0, 5, 4, 3, 2, 1, 6, 7, 8],
+  },
+  {
+    number: 91114,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{0029}\u{005D}\u{2680}\u{0061}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91115,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{2680}\u{0061}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91116,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{2680}\u{0061}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91117,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{2680}\u{0029}\u{0061}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 1, 0, 0],
+    expected_reorder: [0, 6, 5, 4, 3, 2, 1, 7, 8],
+  },
+  {
+    number: 91118,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{2680}\u{0029}\u{0061}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91119,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{2680}\u{0029}\u{005D}\u{0061}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 1, 0, 0],
+    expected_reorder: [0, 6, 5, 4, 3, 2, 1, 7, 8],
+  },
+  {
+    number: 91120,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{2680}\u{0029}\u{005D}\u{0061}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91121,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{0029}\u{2680}\u{0061}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 0, 0, 0],
+    expected_reorder: [0, 5, 4, 3, 2, 1, 6, 7, 8],
+  },
+  {
+    number: 91122,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{0029}\u{2680}\u{0061}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91123,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{0029}\u{2680}\u{005D}\u{0061}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 0, 0, 0],
+    expected_reorder: [0, 5, 4, 3, 2, 1, 6, 7, 8],
+  },
+  {
+    number: 91124,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{0029}\u{2680}\u{005D}\u{0061}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91125,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{0029}\u{005D}\u{2680}\u{0061}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 0, 0, 0],
+    expected_reorder: [0, 5, 4, 3, 2, 1, 6, 7, 8],
+  },
+  {
+    number: 91126,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{0029}\u{005D}\u{2680}\u{0061}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91127,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0029}\u{05D1}\u{2680}\u{0061}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 0, 0, 0],
+    expected_reorder: [0, 5, 4, 3, 2, 1, 6, 7, 8],
+  },
+  {
+    number: 91128,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0029}\u{05D1}\u{2680}\u{0061}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91129,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0029}\u{05D1}\u{2680}\u{005D}\u{0061}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 0, 0, 0],
+    expected_reorder: [0, 5, 4, 3, 2, 1, 6, 7, 8],
+  },
+  {
+    number: 91130,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0029}\u{05D1}\u{2680}\u{005D}\u{0061}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91131,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0029}\u{05D1}\u{005D}\u{2680}\u{0061}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 0, 0, 0],
+    expected_reorder: [0, 5, 4, 3, 2, 1, 6, 7, 8],
+  },
+  {
+    number: 91132,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0029}\u{05D1}\u{005D}\u{2680}\u{0061}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91133,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{2680}\u{0061}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 1, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 4, 3, 2, 5, 6, 7, 8],
+  },
+  {
+    number: 91134,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{2680}\u{0061}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91135,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{2680}\u{0029}\u{0061}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 1, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 4, 3, 2, 5, 6, 7, 8],
+  },
+  {
+    number: 91136,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{2680}\u{0029}\u{0061}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91137,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{2680}\u{0029}\u{005D}\u{0061}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 1, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 4, 3, 2, 5, 6, 7, 8],
+  },
+  {
+    number: 91138,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{2680}\u{0029}\u{005D}\u{0061}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91139,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{0029}\u{2680}\u{0061}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 1, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 4, 3, 2, 5, 6, 7, 8],
+  },
+  {
+    number: 91140,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{0029}\u{2680}\u{0061}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91141,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{0029}\u{2680}\u{005D}\u{0061}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 1, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 4, 3, 2, 5, 6, 7, 8],
+  },
+  {
+    number: 91142,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{0029}\u{2680}\u{005D}\u{0061}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91143,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{0029}\u{005D}\u{2680}\u{0061}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 1, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 4, 3, 2, 5, 6, 7, 8],
+  },
+  {
+    number: 91144,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{0029}\u{005D}\u{2680}\u{0061}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91145,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0029}\u{05D1}\u{2680}\u{0061}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91146,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0029}\u{05D1}\u{2680}\u{0061}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91147,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0029}\u{05D1}\u{2680}\u{005D}\u{0061}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91148,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0029}\u{05D1}\u{2680}\u{005D}\u{0061}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91149,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0029}\u{05D1}\u{005D}\u{2680}\u{0061}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91150,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0029}\u{05D1}\u{005D}\u{2680}\u{0061}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91151,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0029}\u{05D1}\u{2680}\u{0061}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 1, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91152,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0029}\u{05D1}\u{2680}\u{0061}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91153,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0029}\u{05D1}\u{2680}\u{005D}\u{0061}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 1, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91154,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0029}\u{05D1}\u{2680}\u{005D}\u{0061}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91155,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0029}\u{05D1}\u{005D}\u{2680}\u{0061}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 1, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91156,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0029}\u{05D1}\u{005D}\u{2680}\u{0061}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91157,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{2680}\u{05D2}\u{0028}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 0, 0, 0, 0],
+    expected_reorder: [4, 3, 2, 1, 0, 5, 6, 7, 8],
+  },
+  {
+    number: 91158,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{2680}\u{05D2}\u{0028}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91159,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{2680}\u{0028}\u{05D2}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 0],
+    expected_reorder: [7, 6, 5, 4, 3, 2, 1, 0, 8],
+  },
+  {
+    number: 91160,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{2680}\u{0028}\u{05D2}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91161,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{2680}\u{0028}\u{005B}\u{05D2}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 0],
+    expected_reorder: [7, 6, 5, 4, 3, 2, 1, 0, 8],
+  },
+  {
+    number: 91162,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{2680}\u{0028}\u{005B}\u{05D2}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91163,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{2680}\u{0028}\u{005B}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 0],
+    expected_reorder: [7, 6, 5, 4, 3, 2, 1, 0, 8],
+  },
+  {
+    number: 91164,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{2680}\u{0028}\u{005B}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91165,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{2680}\u{0028}\u{005B}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91166,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{2680}\u{0028}\u{005B}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91167,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{2680}\u{05D2}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 0],
+    expected_reorder: [7, 6, 5, 4, 3, 2, 1, 0, 8],
+  },
+  {
+    number: 91168,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{2680}\u{05D2}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91169,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{2680}\u{005B}\u{05D2}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 0],
+    expected_reorder: [7, 6, 5, 4, 3, 2, 1, 0, 8],
+  },
+  {
+    number: 91170,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{2680}\u{005B}\u{05D2}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91171,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{2680}\u{005B}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 0],
+    expected_reorder: [7, 6, 5, 4, 3, 2, 1, 0, 8],
+  },
+  {
+    number: 91172,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{2680}\u{005B}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91173,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{2680}\u{005B}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91174,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{2680}\u{005B}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91175,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{2680}\u{05D2}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 0],
+    expected_reorder: [7, 6, 5, 4, 3, 2, 1, 0, 8],
+  },
+  {
+    number: 91176,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{2680}\u{05D2}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91177,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{2680}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 0],
+    expected_reorder: [7, 6, 5, 4, 3, 2, 1, 0, 8],
+  },
+  {
+    number: 91178,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{2680}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91179,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{2680}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91180,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{2680}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91181,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{0029}\u{2680}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 0],
+    expected_reorder: [7, 6, 5, 4, 3, 2, 1, 0, 8],
+  },
+  {
+    number: 91182,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{0029}\u{2680}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91183,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{0029}\u{2680}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91184,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{0029}\u{2680}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91185,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{0029}\u{005D}\u{2680}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91186,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{0029}\u{005D}\u{2680}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91187,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{2680}\u{05D2}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 0],
+    expected_reorder: [7, 6, 5, 4, 3, 2, 1, 0, 8],
+  },
+  {
+    number: 91188,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{2680}\u{05D2}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91189,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{2680}\u{005B}\u{05D2}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 0],
+    expected_reorder: [7, 6, 5, 4, 3, 2, 1, 0, 8],
+  },
+  {
+    number: 91190,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{2680}\u{005B}\u{05D2}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91191,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{2680}\u{005B}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 0],
+    expected_reorder: [7, 6, 5, 4, 3, 2, 1, 0, 8],
+  },
+  {
+    number: 91192,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{2680}\u{005B}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91193,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{2680}\u{005B}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91194,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{2680}\u{005B}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91195,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{2680}\u{05D2}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 0],
+    expected_reorder: [7, 6, 5, 4, 3, 2, 1, 0, 8],
+  },
+  {
+    number: 91196,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{2680}\u{05D2}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91197,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{2680}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 0],
+    expected_reorder: [7, 6, 5, 4, 3, 2, 1, 0, 8],
+  },
+  {
+    number: 91198,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{2680}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91199,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{2680}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91200,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{2680}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91201,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{0029}\u{2680}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 0],
+    expected_reorder: [7, 6, 5, 4, 3, 2, 1, 0, 8],
+  },
+  {
+    number: 91202,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{0029}\u{2680}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91203,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{0029}\u{2680}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91204,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{0029}\u{2680}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91205,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{0029}\u{005D}\u{2680}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91206,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{0029}\u{005D}\u{2680}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91207,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{2680}\u{05D2}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 0],
+    expected_reorder: [7, 6, 5, 4, 3, 2, 1, 0, 8],
+  },
+  {
+    number: 91208,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{2680}\u{05D2}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91209,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{2680}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 0],
+    expected_reorder: [7, 6, 5, 4, 3, 2, 1, 0, 8],
+  },
+  {
+    number: 91210,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{2680}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91211,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{2680}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91212,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{2680}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91213,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{0029}\u{2680}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 0],
+    expected_reorder: [7, 6, 5, 4, 3, 2, 1, 0, 8],
+  },
+  {
+    number: 91214,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{0029}\u{2680}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91215,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{0029}\u{2680}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91216,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{0029}\u{2680}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91217,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{0029}\u{005D}\u{2680}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91218,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{0029}\u{005D}\u{2680}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91219,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0029}\u{05D1}\u{2680}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 0],
+    expected_reorder: [7, 6, 5, 4, 3, 2, 1, 0, 8],
+  },
+  {
+    number: 91220,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0029}\u{05D1}\u{2680}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91221,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0029}\u{05D1}\u{2680}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91222,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0029}\u{05D1}\u{2680}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91223,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0029}\u{05D1}\u{005D}\u{2680}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91224,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0029}\u{05D1}\u{005D}\u{2680}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91225,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{2680}\u{05D2}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 1, 1, 0],
+    expected_reorder: [0, 7, 6, 5, 4, 3, 2, 1, 8],
+  },
+  {
+    number: 91226,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{2680}\u{05D2}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91227,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{2680}\u{005B}\u{05D2}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 1, 1, 0],
+    expected_reorder: [0, 7, 6, 5, 4, 3, 2, 1, 8],
+  },
+  {
+    number: 91228,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{2680}\u{005B}\u{05D2}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91229,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{2680}\u{005B}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 1, 1, 0],
+    expected_reorder: [0, 7, 6, 5, 4, 3, 2, 1, 8],
+  },
+  {
+    number: 91230,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{2680}\u{005B}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91231,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{2680}\u{005B}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [0, 8, 7, 6, 5, 4, 3, 2, 1],
+  },
+  {
+    number: 91232,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{2680}\u{005B}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91233,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{2680}\u{05D2}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 1, 1, 0],
+    expected_reorder: [0, 7, 6, 5, 4, 3, 2, 1, 8],
+  },
+  {
+    number: 91234,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{2680}\u{05D2}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91235,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{2680}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 1, 1, 0],
+    expected_reorder: [0, 7, 6, 5, 4, 3, 2, 1, 8],
+  },
+  {
+    number: 91236,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{2680}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91237,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{2680}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [0, 8, 7, 6, 5, 4, 3, 2, 1],
+  },
+  {
+    number: 91238,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{2680}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91239,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{0029}\u{2680}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 1, 1, 0],
+    expected_reorder: [0, 7, 6, 5, 4, 3, 2, 1, 8],
+  },
+  {
+    number: 91240,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{0029}\u{2680}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91241,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{0029}\u{2680}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [0, 8, 7, 6, 5, 4, 3, 2, 1],
+  },
+  {
+    number: 91242,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{0029}\u{2680}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91243,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{0029}\u{005D}\u{2680}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [0, 8, 7, 6, 5, 4, 3, 2, 1],
+  },
+  {
+    number: 91244,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{0029}\u{005D}\u{2680}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91245,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{2680}\u{05D2}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 1, 1, 0],
+    expected_reorder: [0, 7, 6, 5, 4, 3, 2, 1, 8],
+  },
+  {
+    number: 91246,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{2680}\u{05D2}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91247,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{2680}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 1, 1, 0],
+    expected_reorder: [0, 7, 6, 5, 4, 3, 2, 1, 8],
+  },
+  {
+    number: 91248,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{2680}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91249,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{2680}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [0, 8, 7, 6, 5, 4, 3, 2, 1],
+  },
+  {
+    number: 91250,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{2680}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91251,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{0029}\u{2680}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 1, 1, 0],
+    expected_reorder: [0, 7, 6, 5, 4, 3, 2, 1, 8],
+  },
+  {
+    number: 91252,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{0029}\u{2680}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91253,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{0029}\u{2680}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [0, 8, 7, 6, 5, 4, 3, 2, 1],
+  },
+  {
+    number: 91254,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{0029}\u{2680}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91255,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{0029}\u{005D}\u{2680}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [0, 8, 7, 6, 5, 4, 3, 2, 1],
+  },
+  {
+    number: 91256,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{0029}\u{005D}\u{2680}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91257,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0029}\u{05D1}\u{2680}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 1, 1, 0],
+    expected_reorder: [0, 7, 6, 5, 4, 3, 2, 1, 8],
+  },
+  {
+    number: 91258,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0029}\u{05D1}\u{2680}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91259,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0029}\u{05D1}\u{2680}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [0, 8, 7, 6, 5, 4, 3, 2, 1],
+  },
+  {
+    number: 91260,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0029}\u{05D1}\u{2680}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91261,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0029}\u{05D1}\u{005D}\u{2680}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [0, 8, 7, 6, 5, 4, 3, 2, 1],
+  },
+  {
+    number: 91262,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0029}\u{05D1}\u{005D}\u{2680}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91263,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{2680}\u{05D2}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 1, 1, 1, 1, 0, 0],
+    expected_reorder: [0, 1, 6, 5, 4, 3, 2, 7, 8],
+  },
+  {
+    number: 91264,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{2680}\u{05D2}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91265,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{2680}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 1, 1, 0, 0, 1, 0],
+    expected_reorder: [0, 1, 4, 3, 2, 5, 6, 7, 8],
+  },
+  {
+    number: 91266,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{2680}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91267,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{2680}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 1, 1, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 4, 3, 2, 5, 6, 7, 8],
+  },
+  {
+    number: 91268,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{2680}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91269,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{0029}\u{2680}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 1, 1, 0, 0, 1, 0],
+    expected_reorder: [0, 1, 4, 3, 2, 5, 6, 7, 8],
+  },
+  {
+    number: 91270,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{0029}\u{2680}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91271,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{0029}\u{2680}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 1, 1, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 4, 3, 2, 5, 6, 7, 8],
+  },
+  {
+    number: 91272,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{0029}\u{2680}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91273,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{0029}\u{005D}\u{2680}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 1, 1, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 4, 3, 2, 5, 6, 7, 8],
+  },
+  {
+    number: 91274,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{0029}\u{005D}\u{2680}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91275,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0029}\u{05D1}\u{2680}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 1, 1, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 7, 6, 5, 8],
+  },
+  {
+    number: 91276,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0029}\u{05D1}\u{2680}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91277,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0029}\u{05D1}\u{2680}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 1, 1, 1, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 8, 7, 6, 5],
+  },
+  {
+    number: 91278,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0029}\u{05D1}\u{2680}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91279,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0029}\u{05D1}\u{005D}\u{2680}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 1, 1, 1, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 8, 7, 6, 5],
+  },
+  {
+    number: 91280,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0029}\u{05D1}\u{005D}\u{2680}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91281,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0029}\u{05D1}\u{2680}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 1, 0, 1, 1, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 7, 6, 5, 8],
+  },
+  {
+    number: 91282,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0029}\u{05D1}\u{2680}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91283,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0029}\u{05D1}\u{2680}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 1, 0, 1, 1, 1, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 8, 7, 6, 5],
+  },
+  {
+    number: 91284,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0029}\u{05D1}\u{2680}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91285,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0029}\u{05D1}\u{005D}\u{2680}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 1, 0, 1, 1, 1, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 8, 7, 6, 5],
+  },
+  {
+    number: 91286,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0029}\u{05D1}\u{005D}\u{2680}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91287,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0061}\u{2680}\u{0028}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91288,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0061}\u{2680}\u{0028}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91289,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0061}\u{0028}\u{2680}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91290,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0061}\u{0028}\u{2680}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91291,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0061}\u{0028}\u{005B}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91292,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0061}\u{0028}\u{005B}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91293,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0061}\u{0028}\u{005B}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91294,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0061}\u{0028}\u{005B}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91295,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0061}\u{0028}\u{005B}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91296,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0061}\u{0028}\u{005B}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91297,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{0061}\u{2680}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91298,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{0061}\u{2680}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91299,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{0061}\u{005B}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91300,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{0061}\u{005B}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91301,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{0061}\u{005B}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91302,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{0061}\u{005B}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91303,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{0061}\u{005B}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91304,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{0061}\u{005B}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91305,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{0061}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91306,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{0061}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91307,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{0061}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91308,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{0061}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91309,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{0061}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91310,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{0061}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91311,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{0029}\u{0061}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91312,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{0029}\u{0061}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91313,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{0029}\u{0061}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91314,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{0029}\u{0061}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91315,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{0061}\u{2680}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 1, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91316,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{0061}\u{2680}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91317,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{0061}\u{005B}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 1, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91318,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{0061}\u{005B}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91319,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{0061}\u{005B}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 1, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91320,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{0061}\u{005B}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91321,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{0061}\u{005B}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 1, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91322,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{0061}\u{005B}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91323,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{0061}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 1, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91324,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{0061}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91325,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{0061}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 1, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91326,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{0061}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91327,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{0061}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 1, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91328,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{0061}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91329,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{0029}\u{0061}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 0, 0, 0],
+    expected_reorder: [5, 4, 3, 2, 1, 0, 6, 7, 8],
+  },
+  {
+    number: 91330,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{0029}\u{0061}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91331,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{0029}\u{0061}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 0, 0, 0],
+    expected_reorder: [5, 4, 3, 2, 1, 0, 6, 7, 8],
+  },
+  {
+    number: 91332,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{0029}\u{0061}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91333,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{0061}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91334,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{0061}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91335,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{0061}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91336,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{0061}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91337,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{0061}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91338,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{0061}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91339,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{0029}\u{0061}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 0, 0, 0],
+    expected_reorder: [5, 4, 3, 2, 1, 0, 6, 7, 8],
+  },
+  {
+    number: 91340,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{0029}\u{0061}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91341,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{0029}\u{0061}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 0, 0, 0],
+    expected_reorder: [5, 4, 3, 2, 1, 0, 6, 7, 8],
+  },
+  {
+    number: 91342,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{0029}\u{0061}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91343,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0029}\u{05D1}\u{0061}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 0, 0, 0],
+    expected_reorder: [5, 4, 3, 2, 1, 0, 6, 7, 8],
+  },
+  {
+    number: 91344,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0029}\u{05D1}\u{0061}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91345,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0029}\u{05D1}\u{0061}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 0, 0, 0],
+    expected_reorder: [5, 4, 3, 2, 1, 0, 6, 7, 8],
+  },
+  {
+    number: 91346,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0029}\u{05D1}\u{0061}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91347,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{0061}\u{2680}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 1, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91348,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{0061}\u{2680}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91349,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{0061}\u{005B}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 1, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91350,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{0061}\u{005B}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91351,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{0061}\u{005B}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 1, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91352,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{0061}\u{005B}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91353,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{0061}\u{005B}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 1, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91354,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{0061}\u{005B}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91355,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{0061}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 1, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91356,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{0061}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91357,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{0061}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 1, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91358,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{0061}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91359,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{0061}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 1, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91360,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{0061}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91361,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{0029}\u{0061}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 0, 0, 0],
+    expected_reorder: [0, 5, 4, 3, 2, 1, 6, 7, 8],
+  },
+  {
+    number: 91362,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{0029}\u{0061}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91363,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{0029}\u{0061}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 0, 0, 0],
+    expected_reorder: [0, 5, 4, 3, 2, 1, 6, 7, 8],
+  },
+  {
+    number: 91364,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{0029}\u{0061}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91365,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{0061}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91366,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{0061}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91367,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{0061}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91368,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{0061}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91369,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{0061}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91370,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{0061}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91371,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{0029}\u{0061}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 0, 0, 0],
+    expected_reorder: [0, 5, 4, 3, 2, 1, 6, 7, 8],
+  },
+  {
+    number: 91372,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{0029}\u{0061}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91373,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{0029}\u{0061}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 0, 0, 0],
+    expected_reorder: [0, 5, 4, 3, 2, 1, 6, 7, 8],
+  },
+  {
+    number: 91374,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{0029}\u{0061}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91375,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0029}\u{05D1}\u{0061}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 0, 0, 0],
+    expected_reorder: [0, 5, 4, 3, 2, 1, 6, 7, 8],
+  },
+  {
+    number: 91376,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0029}\u{05D1}\u{0061}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91377,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0029}\u{05D1}\u{0061}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 0, 0, 0],
+    expected_reorder: [0, 5, 4, 3, 2, 1, 6, 7, 8],
+  },
+  {
+    number: 91378,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0029}\u{05D1}\u{0061}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91379,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{0061}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 1, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 4, 3, 2, 5, 6, 7, 8],
+  },
+  {
+    number: 91380,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{0061}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91381,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{0061}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 1, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 4, 3, 2, 5, 6, 7, 8],
+  },
+  {
+    number: 91382,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{0061}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91383,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{0061}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 1, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 4, 3, 2, 5, 6, 7, 8],
+  },
+  {
+    number: 91384,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{0061}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91385,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{0029}\u{0061}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 1, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 4, 3, 2, 5, 6, 7, 8],
+  },
+  {
+    number: 91386,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{0029}\u{0061}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91387,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{0029}\u{0061}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 1, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 4, 3, 2, 5, 6, 7, 8],
+  },
+  {
+    number: 91388,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{0029}\u{0061}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91389,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0029}\u{05D1}\u{0061}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91390,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0029}\u{05D1}\u{0061}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91391,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0029}\u{05D1}\u{0061}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91392,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0029}\u{05D1}\u{0061}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91393,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0029}\u{05D1}\u{0061}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 1, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91394,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0029}\u{05D1}\u{0061}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91395,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0029}\u{05D1}\u{0061}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 1, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91396,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0029}\u{05D1}\u{0061}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91397,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0061}\u{0028}\u{0062}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91398,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0061}\u{0028}\u{0062}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 2, 2, 2, 2, 1],
+    expected_reorder: [8, 3, 4, 5, 6, 7, 2, 1, 0],
+  },
+  {
+    number: 91399,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0061}\u{0028}\u{005B}\u{0062}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91400,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0061}\u{0028}\u{005B}\u{0062}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 2, 2, 2, 2, 1],
+    expected_reorder: [8, 3, 4, 5, 6, 7, 2, 1, 0],
+  },
+  {
+    number: 91401,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0061}\u{0028}\u{005B}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91402,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0061}\u{0028}\u{005B}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 2, 2, 2, 2, 1],
+    expected_reorder: [8, 3, 4, 5, 6, 7, 2, 1, 0],
+  },
+  {
+    number: 91403,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0061}\u{0028}\u{005B}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91404,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0061}\u{0028}\u{005B}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 2, 2, 2, 2, 2],
+    expected_reorder: [3, 4, 5, 6, 7, 8, 2, 1, 0],
+  },
+  {
+    number: 91405,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{0061}\u{005B}\u{0062}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91406,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{0061}\u{005B}\u{0062}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 2, 2, 1, 1],
+    expected_reorder: [8, 7, 4, 5, 6, 3, 2, 1, 0],
+  },
+  {
+    number: 91407,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{0061}\u{005B}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91408,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{0061}\u{005B}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91409,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{0061}\u{005B}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91410,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{0061}\u{005B}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91411,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{0061}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91412,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{0061}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91413,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{0061}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91414,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{0061}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91415,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{0029}\u{0061}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 0, 0, 0, 0],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91416,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{0029}\u{0061}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 2, 2],
+    expected_reorder: [6, 7, 8, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91417,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{0061}\u{005B}\u{0062}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 1, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91418,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{0061}\u{005B}\u{0062}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 2, 2, 1, 1],
+    expected_reorder: [8, 7, 4, 5, 6, 3, 2, 1, 0],
+  },
+  {
+    number: 91419,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{0061}\u{005B}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 1, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91420,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{0061}\u{005B}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91421,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{0061}\u{005B}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 1, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91422,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{0061}\u{005B}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91423,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{0061}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 1, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91424,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{0061}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91425,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{0061}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 1, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91426,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{0061}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91427,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{0029}\u{0061}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 0, 0, 0],
+    expected_reorder: [5, 4, 3, 2, 1, 0, 6, 7, 8],
+  },
+  {
+    number: 91428,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{0029}\u{0061}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 2, 2],
+    expected_reorder: [6, 7, 8, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91429,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{0061}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91430,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{0061}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91431,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{0061}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91432,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{0061}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91433,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{0029}\u{0061}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 0, 0, 0],
+    expected_reorder: [5, 4, 3, 2, 1, 0, 6, 7, 8],
+  },
+  {
+    number: 91434,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{0029}\u{0061}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 2, 2],
+    expected_reorder: [6, 7, 8, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91435,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0029}\u{05D1}\u{0061}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 0, 0, 0],
+    expected_reorder: [5, 4, 3, 2, 1, 0, 6, 7, 8],
+  },
+  {
+    number: 91436,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0029}\u{05D1}\u{0061}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 2, 2],
+    expected_reorder: [6, 7, 8, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91437,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{0061}\u{005B}\u{0062}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 1, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91438,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{0061}\u{005B}\u{0062}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 2, 2, 1, 1],
+    expected_reorder: [8, 7, 4, 5, 6, 3, 2, 1, 0],
+  },
+  {
+    number: 91439,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{0061}\u{005B}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 1, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91440,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{0061}\u{005B}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91441,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{0061}\u{005B}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 1, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91442,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{0061}\u{005B}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91443,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{0061}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 1, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91444,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{0061}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91445,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{0061}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 1, 0, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91446,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{0061}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91447,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{0029}\u{0061}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 0, 0, 0],
+    expected_reorder: [0, 5, 4, 3, 2, 1, 6, 7, 8],
+  },
+  {
+    number: 91448,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{0029}\u{0061}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 2, 2],
+    expected_reorder: [6, 7, 8, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91449,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{0061}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91450,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{0061}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91451,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{0061}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91452,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{0061}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91453,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{0029}\u{0061}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 0, 0, 0],
+    expected_reorder: [0, 5, 4, 3, 2, 1, 6, 7, 8],
+  },
+  {
+    number: 91454,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{0029}\u{0061}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 2, 2],
+    expected_reorder: [6, 7, 8, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91455,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0029}\u{05D1}\u{0061}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 0, 0, 0],
+    expected_reorder: [0, 5, 4, 3, 2, 1, 6, 7, 8],
+  },
+  {
+    number: 91456,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0029}\u{05D1}\u{0061}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 2, 2],
+    expected_reorder: [6, 7, 8, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91457,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{0061}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 1, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 4, 3, 2, 5, 6, 7, 8],
+  },
+  {
+    number: 91458,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{0061}\u{0029}\u{0062}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91459,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{0061}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 1, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 4, 3, 2, 5, 6, 7, 8],
+  },
+  {
+    number: 91460,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{0061}\u{0029}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91461,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{0029}\u{0061}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 1, 1, 0, 0, 0, 0],
+    expected_reorder: [0, 1, 4, 3, 2, 5, 6, 7, 8],
+  },
+  {
+    number: 91462,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{0029}\u{0061}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 2, 2],
+    expected_reorder: [6, 7, 8, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91463,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0029}\u{05D1}\u{0061}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91464,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0029}\u{05D1}\u{0061}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 2, 2],
+    expected_reorder: [6, 7, 8, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91465,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0029}\u{05D1}\u{0061}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 1, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91466,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0029}\u{05D1}\u{0061}\u{005D}\u{0062}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 2, 2],
+    expected_reorder: [6, 7, 8, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91467,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0061}\u{05D2}\u{0028}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 1, 0, 0, 0, 0],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91468,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0061}\u{05D2}\u{0028}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91469,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0061}\u{0028}\u{05D2}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91470,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0061}\u{0028}\u{05D2}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91471,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0061}\u{0028}\u{005B}\u{05D2}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91472,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0061}\u{0028}\u{005B}\u{05D2}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91473,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0061}\u{0028}\u{005B}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 0, 0, 1, 0],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91474,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0061}\u{0028}\u{005B}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91475,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0061}\u{0028}\u{005B}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 0, 0, 0, 1],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91476,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0061}\u{0028}\u{005B}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 2, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91477,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{0061}\u{05D2}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91478,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{0061}\u{05D2}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91479,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{0061}\u{005B}\u{05D2}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91480,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{0061}\u{005B}\u{05D2}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91481,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{0061}\u{005B}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 0, 0, 1, 0],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91482,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{0061}\u{005B}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91483,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{0061}\u{005B}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 0, 0, 0, 1],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91484,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{0061}\u{005B}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91485,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{0061}\u{05D2}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 0, 1, 0, 0],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91486,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{0061}\u{05D2}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91487,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{0061}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 0, 0, 1, 0],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91488,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{0061}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91489,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{0061}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 0, 0, 0, 1],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91490,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{0061}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91491,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{0029}\u{0061}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 0, 0, 1, 0],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91492,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{0029}\u{0061}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91493,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{0029}\u{0061}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 0, 0, 0, 1],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91494,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{0029}\u{0061}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91495,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{0061}\u{05D2}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 1, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91496,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{0061}\u{05D2}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91497,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{0061}\u{005B}\u{05D2}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 1, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91498,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{0061}\u{005B}\u{05D2}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91499,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{0061}\u{005B}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 1, 0, 0, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91500,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{0061}\u{005B}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91501,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{0061}\u{005B}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 1, 0, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91502,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{0061}\u{005B}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91503,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{0061}\u{05D2}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 1, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91504,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{0061}\u{05D2}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91505,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{0061}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 1, 0, 0, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91506,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{0061}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91507,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{0061}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 1, 0, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91508,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{0061}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91509,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{0029}\u{0061}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 0, 1, 0],
+    expected_reorder: [5, 4, 3, 2, 1, 0, 6, 7, 8],
+  },
+  {
+    number: 91510,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{0029}\u{0061}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91511,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{0029}\u{0061}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 0, 0, 1],
+    expected_reorder: [5, 4, 3, 2, 1, 0, 6, 7, 8],
+  },
+  {
+    number: 91512,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{0029}\u{0061}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91513,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{0061}\u{05D2}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 1, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91514,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{0061}\u{05D2}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91515,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{0061}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 1, 0, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91516,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{0061}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91517,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{0061}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 0, 1, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91518,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{0061}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91519,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{0029}\u{0061}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 0, 1, 0],
+    expected_reorder: [5, 4, 3, 2, 1, 0, 6, 7, 8],
+  },
+  {
+    number: 91520,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{0029}\u{0061}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91521,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{0029}\u{0061}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 0, 0, 1],
+    expected_reorder: [5, 4, 3, 2, 1, 0, 6, 7, 8],
+  },
+  {
+    number: 91522,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{0029}\u{0061}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91523,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0029}\u{05D1}\u{0061}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 0, 1, 0],
+    expected_reorder: [5, 4, 3, 2, 1, 0, 6, 7, 8],
+  },
+  {
+    number: 91524,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0029}\u{05D1}\u{0061}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91525,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0029}\u{05D1}\u{0061}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 0, 0, 1],
+    expected_reorder: [5, 4, 3, 2, 1, 0, 6, 7, 8],
+  },
+  {
+    number: 91526,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{0029}\u{05D1}\u{0061}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91527,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{0061}\u{05D2}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 1, 0, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91528,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{0061}\u{05D2}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91529,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{0061}\u{005B}\u{05D2}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 1, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91530,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{0061}\u{005B}\u{05D2}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91531,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{0061}\u{005B}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 1, 0, 0, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91532,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{0061}\u{005B}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91533,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{0061}\u{005B}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 1, 0, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91534,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{0061}\u{005B}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 2, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91535,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{0061}\u{05D2}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 1, 0, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91536,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{0061}\u{05D2}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91537,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{0061}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 1, 0, 0, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91538,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{0061}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91539,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{0061}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 1, 0, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91540,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{0061}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91541,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{0029}\u{0061}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 0, 1, 0],
+    expected_reorder: [0, 5, 4, 3, 2, 1, 6, 7, 8],
+  },
+  {
+    number: 91542,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{0029}\u{0061}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91543,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{0029}\u{0061}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 0, 0, 1],
+    expected_reorder: [0, 5, 4, 3, 2, 1, 6, 7, 8],
+  },
+  {
+    number: 91544,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{0029}\u{0061}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91545,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{0061}\u{05D2}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 1, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91546,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{0061}\u{05D2}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91547,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{0061}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 1, 0, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91548,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{0061}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91549,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{0061}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 0, 1, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91550,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{0061}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91551,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{0029}\u{0061}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 0, 1, 0],
+    expected_reorder: [0, 5, 4, 3, 2, 1, 6, 7, 8],
+  },
+  {
+    number: 91552,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{0029}\u{0061}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91553,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{0029}\u{0061}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 0, 0, 1],
+    expected_reorder: [0, 5, 4, 3, 2, 1, 6, 7, 8],
+  },
+  {
+    number: 91554,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{0029}\u{0061}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91555,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0029}\u{05D1}\u{0061}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 0, 1, 0],
+    expected_reorder: [0, 5, 4, 3, 2, 1, 6, 7, 8],
+  },
+  {
+    number: 91556,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0029}\u{05D1}\u{0061}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91557,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0029}\u{05D1}\u{0061}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 0, 0, 1],
+    expected_reorder: [0, 5, 4, 3, 2, 1, 6, 7, 8],
+  },
+  {
+    number: 91558,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{0029}\u{05D1}\u{0061}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91559,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{0061}\u{05D2}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 1, 1, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 4, 3, 2, 5, 6, 7, 8],
+  },
+  {
+    number: 91560,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{0061}\u{05D2}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91561,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{0061}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 1, 1, 0, 0, 1, 0],
+    expected_reorder: [0, 1, 4, 3, 2, 5, 6, 7, 8],
+  },
+  {
+    number: 91562,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{0061}\u{0029}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91563,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{0061}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 1, 1, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 4, 3, 2, 5, 6, 7, 8],
+  },
+  {
+    number: 91564,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{0061}\u{0029}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91565,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{0029}\u{0061}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 1, 1, 0, 0, 1, 0],
+    expected_reorder: [0, 1, 4, 3, 2, 5, 6, 7, 8],
+  },
+  {
+    number: 91566,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{0029}\u{0061}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91567,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{0029}\u{0061}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 1, 1, 0, 0, 0, 1],
+    expected_reorder: [0, 1, 4, 3, 2, 5, 6, 7, 8],
+  },
+  {
+    number: 91568,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{0029}\u{0061}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91569,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0029}\u{05D1}\u{0061}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 1, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91570,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0029}\u{05D1}\u{0061}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91571,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0029}\u{05D1}\u{0061}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 0, 0, 1, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91572,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{0029}\u{05D1}\u{0061}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91573,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0029}\u{05D1}\u{0061}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 1, 0, 1, 0, 1, 0],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91574,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0029}\u{05D1}\u{0061}\u{05D2}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91575,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0029}\u{05D1}\u{0061}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 0, 1, 0, 1, 0, 0, 1],
+    expected_reorder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91576,
+    input: "\u{0028}\u{0028}\u{005B}\u{05D0}\u{0029}\u{05D1}\u{0061}\u{005D}\u{05D2}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91577,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{05D2}\u{2680}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 0],
+    expected_reorder: [7, 6, 5, 4, 3, 2, 1, 0, 8],
+  },
+  {
+    number: 91578,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{05D2}\u{2680}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91579,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{05D2}\u{005B}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 0],
+    expected_reorder: [7, 6, 5, 4, 3, 2, 1, 0, 8],
+  },
+  {
+    number: 91580,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{05D2}\u{005B}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91581,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{05D2}\u{005B}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 0, 0],
+    expected_reorder: [6, 5, 4, 3, 2, 1, 0, 7, 8],
+  },
+  {
+    number: 91582,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{05D2}\u{005B}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91583,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{05D2}\u{005B}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 0, 0],
+    expected_reorder: [6, 5, 4, 3, 2, 1, 0, 7, 8],
+  },
+  {
+    number: 91584,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{05D2}\u{005B}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91585,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{05D2}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 0],
+    expected_reorder: [7, 6, 5, 4, 3, 2, 1, 0, 8],
+  },
+  {
+    number: 91586,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{05D2}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91587,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{05D2}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 0, 0],
+    expected_reorder: [6, 5, 4, 3, 2, 1, 0, 7, 8],
+  },
+  {
+    number: 91588,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{05D2}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91589,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{05D2}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 0, 0],
+    expected_reorder: [6, 5, 4, 3, 2, 1, 0, 7, 8],
+  },
+  {
+    number: 91590,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{05D2}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91591,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{0029}\u{05D2}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 0, 0],
+    expected_reorder: [6, 5, 4, 3, 2, 1, 0, 7, 8],
+  },
+  {
+    number: 91592,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{0029}\u{05D2}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91593,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{0029}\u{05D2}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 0, 0],
+    expected_reorder: [6, 5, 4, 3, 2, 1, 0, 7, 8],
+  },
+  {
+    number: 91594,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{0029}\u{05D2}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91595,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{05D2}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 0],
+    expected_reorder: [7, 6, 5, 4, 3, 2, 1, 0, 8],
+  },
+  {
+    number: 91596,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{05D2}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91597,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{05D2}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 0, 0],
+    expected_reorder: [6, 5, 4, 3, 2, 1, 0, 7, 8],
+  },
+  {
+    number: 91598,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{05D2}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91599,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{05D2}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 0, 0],
+    expected_reorder: [6, 5, 4, 3, 2, 1, 0, 7, 8],
+  },
+  {
+    number: 91600,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{05D2}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91601,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{0029}\u{05D2}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 0, 0],
+    expected_reorder: [6, 5, 4, 3, 2, 1, 0, 7, 8],
+  },
+  {
+    number: 91602,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{0029}\u{05D2}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91603,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{0029}\u{05D2}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 0, 0],
+    expected_reorder: [6, 5, 4, 3, 2, 1, 0, 7, 8],
+  },
+  {
+    number: 91604,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{0029}\u{05D2}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91605,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{0029}\u{05D2}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 0, 0],
+    expected_reorder: [6, 5, 4, 3, 2, 1, 0, 7, 8],
+  },
+  {
+    number: 91606,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{0029}\u{05D2}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91607,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{0029}\u{05D2}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 0, 0],
+    expected_reorder: [6, 5, 4, 3, 2, 1, 0, 7, 8],
+  },
+  {
+    number: 91608,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{0029}\u{05D2}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91609,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{05D2}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 1, 1, 0],
+    expected_reorder: [0, 7, 6, 5, 4, 3, 2, 1, 8],
+  },
+  {
+    number: 91610,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{05D2}\u{2680}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91611,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{05D2}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 1, 0, 0],
+    expected_reorder: [0, 6, 5, 4, 3, 2, 1, 7, 8],
+  },
+  {
+    number: 91612,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{05D2}\u{0029}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91613,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{05D2}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 1, 0, 0],
+    expected_reorder: [0, 6, 5, 4, 3, 2, 1, 7, 8],
+  },
+  {
+    number: 91614,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{05D2}\u{0029}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91615,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{0029}\u{05D2}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 1, 0, 0],
+    expected_reorder: [0, 6, 5, 4, 3, 2, 1, 7, 8],
+  },
+  {
+    number: 91616,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{0029}\u{05D2}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91617,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{0029}\u{05D2}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 1, 0, 0],
+    expected_reorder: [0, 6, 5, 4, 3, 2, 1, 7, 8],
+  },
+  {
+    number: 91618,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{0029}\u{05D2}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91619,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{0029}\u{05D2}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 1, 0, 0],
+    expected_reorder: [0, 6, 5, 4, 3, 2, 1, 7, 8],
+  },
+  {
+    number: 91620,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{0029}\u{05D2}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91621,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{0029}\u{05D2}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 1, 0, 0],
+    expected_reorder: [0, 6, 5, 4, 3, 2, 1, 7, 8],
+  },
+  {
+    number: 91622,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{0029}\u{05D2}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91623,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{0029}\u{05D2}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 1, 1, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 4, 3, 2, 5, 6, 7, 8],
+  },
+  {
+    number: 91624,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{0029}\u{05D2}\u{2680}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91625,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{0029}\u{05D2}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 1, 1, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 4, 3, 2, 5, 6, 7, 8],
+  },
+  {
+    number: 91626,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{0029}\u{05D2}\u{005D}\u{2680}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91627,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{05D2}\u{0061}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 1, 0, 0, 0, 0],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91628,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{05D2}\u{0061}\u{005B}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 2, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91629,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{05D2}\u{005B}\u{0061}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 1, 0, 0, 0, 0],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91630,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{05D2}\u{005B}\u{0061}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91631,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{05D2}\u{005B}\u{0029}\u{0061}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 0, 0],
+    expected_reorder: [6, 5, 4, 3, 2, 1, 0, 7, 8],
+  },
+  {
+    number: 91632,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{05D2}\u{005B}\u{0029}\u{0061}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91633,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{05D2}\u{005B}\u{0029}\u{005D}\u{0061}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 0, 0],
+    expected_reorder: [6, 5, 4, 3, 2, 1, 0, 7, 8],
+  },
+  {
+    number: 91634,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{05D2}\u{005B}\u{0029}\u{005D}\u{0061}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91635,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{05D2}\u{0061}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 0, 0, 1, 0, 0, 0],
+    expected_reorder: [2, 1, 0, 3, 4, 5, 6, 7, 8],
+  },
+  {
+    number: 91636,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{05D2}\u{0061}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91637,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{05D2}\u{0029}\u{0061}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 0, 0],
+    expected_reorder: [6, 5, 4, 3, 2, 1, 0, 7, 8],
+  },
+  {
+    number: 91638,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{05D2}\u{0029}\u{0061}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91639,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{05D2}\u{0029}\u{005D}\u{0061}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 0, 0],
+    expected_reorder: [6, 5, 4, 3, 2, 1, 0, 7, 8],
+  },
+  {
+    number: 91640,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{05D2}\u{0029}\u{005D}\u{0061}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91641,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{0029}\u{05D2}\u{0061}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 0, 0],
+    expected_reorder: [6, 5, 4, 3, 2, 1, 0, 7, 8],
+  },
+  {
+    number: 91642,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{0029}\u{05D2}\u{0061}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91643,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{0029}\u{05D2}\u{005D}\u{0061}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 0, 0],
+    expected_reorder: [6, 5, 4, 3, 2, 1, 0, 7, 8],
+  },
+  {
+    number: 91644,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{0029}\u{05D2}\u{005D}\u{0061}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91645,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{05D2}\u{0061}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 0, 0, 1, 1, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 5, 4, 3, 6, 7, 8],
+  },
+  {
+    number: 91646,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{05D2}\u{0061}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91647,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{05D2}\u{0029}\u{0061}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 0, 0],
+    expected_reorder: [6, 5, 4, 3, 2, 1, 0, 7, 8],
+  },
+  {
+    number: 91648,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{05D2}\u{0029}\u{0061}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91649,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{05D2}\u{0029}\u{005D}\u{0061}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 0, 0],
+    expected_reorder: [6, 5, 4, 3, 2, 1, 0, 7, 8],
+  },
+  {
+    number: 91650,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{05D2}\u{0029}\u{005D}\u{0061}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91651,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{0029}\u{05D2}\u{0061}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 0, 0],
+    expected_reorder: [6, 5, 4, 3, 2, 1, 0, 7, 8],
+  },
+  {
+    number: 91652,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{0029}\u{05D2}\u{0061}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91653,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{0029}\u{05D2}\u{005D}\u{0061}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 0, 0],
+    expected_reorder: [6, 5, 4, 3, 2, 1, 0, 7, 8],
+  },
+  {
+    number: 91654,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{0029}\u{05D2}\u{005D}\u{0061}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91655,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{0029}\u{05D2}\u{0061}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 0, 0],
+    expected_reorder: [6, 5, 4, 3, 2, 1, 0, 7, 8],
+  },
+  {
+    number: 91656,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{0029}\u{05D2}\u{0061}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91657,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{0029}\u{05D2}\u{005D}\u{0061}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 0, 0],
+    expected_reorder: [6, 5, 4, 3, 2, 1, 0, 7, 8],
+  },
+  {
+    number: 91658,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{0029}\u{05D2}\u{005D}\u{0061}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91659,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{05D2}\u{0061}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 0, 1, 1, 1, 0, 0, 0],
+    expected_reorder: [0, 1, 2, 5, 4, 3, 6, 7, 8],
+  },
+  {
+    number: 91660,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{05D2}\u{0061}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 2, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91661,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{05D2}\u{0029}\u{0061}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 1, 0, 0],
+    expected_reorder: [0, 6, 5, 4, 3, 2, 1, 7, 8],
+  },
+  {
+    number: 91662,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{05D2}\u{0029}\u{0061}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91663,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{05D2}\u{0029}\u{005D}\u{0061}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 1, 0, 0],
+    expected_reorder: [0, 6, 5, 4, 3, 2, 1, 7, 8],
+  },
+  {
+    number: 91664,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{05D2}\u{0029}\u{005D}\u{0061}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91665,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{0029}\u{05D2}\u{0061}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 1, 0, 0],
+    expected_reorder: [0, 6, 5, 4, 3, 2, 1, 7, 8],
+  },
+  {
+    number: 91666,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{0029}\u{05D2}\u{0061}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91667,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{0029}\u{05D2}\u{005D}\u{0061}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 1, 0, 0],
+    expected_reorder: [0, 6, 5, 4, 3, 2, 1, 7, 8],
+  },
+  {
+    number: 91668,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{0029}\u{05D2}\u{005D}\u{0061}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91669,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{0029}\u{05D2}\u{0061}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 1, 0, 0],
+    expected_reorder: [0, 6, 5, 4, 3, 2, 1, 7, 8],
+  },
+  {
+    number: 91670,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{0029}\u{05D2}\u{0061}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91671,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{0029}\u{05D2}\u{005D}\u{0061}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 1, 0, 0],
+    expected_reorder: [0, 6, 5, 4, 3, 2, 1, 7, 8],
+  },
+  {
+    number: 91672,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{0029}\u{05D2}\u{005D}\u{0061}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91673,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{0029}\u{05D2}\u{0061}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 1, 1, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 4, 3, 2, 5, 6, 7, 8],
+  },
+  {
+    number: 91674,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{0029}\u{05D2}\u{0061}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 2, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91675,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{0029}\u{05D2}\u{005D}\u{0061}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 1, 1, 0, 1, 0, 0],
+    expected_reorder: [0, 1, 4, 3, 2, 5, 6, 7, 8],
+  },
+  {
+    number: 91676,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{0029}\u{05D2}\u{005D}\u{0061}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 2],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91677,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{05D2}\u{005B}\u{05D3}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 0],
+    expected_reorder: [7, 6, 5, 4, 3, 2, 1, 0, 8],
+  },
+  {
+    number: 91678,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{05D2}\u{005B}\u{05D3}\u{0029}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91679,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{05D2}\u{005B}\u{0029}\u{05D3}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 0],
+    expected_reorder: [7, 6, 5, 4, 3, 2, 1, 0, 8],
+  },
+  {
+    number: 91680,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{05D2}\u{005B}\u{0029}\u{05D3}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91681,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{05D2}\u{005B}\u{0029}\u{005D}\u{05D3}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91682,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{05D2}\u{005B}\u{0029}\u{005D}\u{05D3}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91683,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{05D2}\u{0029}\u{05D3}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 0],
+    expected_reorder: [7, 6, 5, 4, 3, 2, 1, 0, 8],
+  },
+  {
+    number: 91684,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{05D2}\u{0029}\u{05D3}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91685,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{05D2}\u{0029}\u{005D}\u{05D3}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91686,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{05D2}\u{0029}\u{005D}\u{05D3}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91687,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{0029}\u{05D2}\u{005D}\u{05D3}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91688,
+    input: "\u{05D0}\u{0028}\u{05D1}\u{0028}\u{005B}\u{0029}\u{05D2}\u{005D}\u{05D3}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91689,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{05D2}\u{0029}\u{05D3}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 0],
+    expected_reorder: [7, 6, 5, 4, 3, 2, 1, 0, 8],
+  },
+  {
+    number: 91690,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{05D2}\u{0029}\u{05D3}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91691,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{05D2}\u{0029}\u{005D}\u{05D3}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91692,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{05D2}\u{0029}\u{005D}\u{05D3}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91693,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{0029}\u{05D2}\u{005D}\u{05D3}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91694,
+    input: "\u{05D0}\u{0028}\u{0028}\u{05D1}\u{005B}\u{0029}\u{05D2}\u{005D}\u{05D3}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91695,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{0029}\u{05D2}\u{005D}\u{05D3}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91696,
+    input: "\u{05D0}\u{0028}\u{0028}\u{005B}\u{05D1}\u{0029}\u{05D2}\u{005D}\u{05D3}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91697,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{05D2}\u{0029}\u{05D3}\u{005D}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 1, 1, 0],
+    expected_reorder: [0, 7, 6, 5, 4, 3, 2, 1, 8],
+  },
+  {
+    number: 91698,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{05D2}\u{0029}\u{05D3}\u{005D}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91699,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{05D2}\u{0029}\u{005D}\u{05D3}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [0, 8, 7, 6, 5, 4, 3, 2, 1],
+  },
+  {
+    number: 91700,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{05D2}\u{0029}\u{005D}\u{05D3}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91701,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{0029}\u{05D2}\u{005D}\u{05D3}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [0, 8, 7, 6, 5, 4, 3, 2, 1],
+  },
+  {
+    number: 91702,
+    input: "\u{0028}\u{05D0}\u{0028}\u{05D1}\u{005B}\u{0029}\u{05D2}\u{005D}\u{05D3}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91703,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{0029}\u{05D2}\u{005D}\u{05D3}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [0, 8, 7, 6, 5, 4, 3, 2, 1],
+  },
+  {
+    number: 91704,
+    input: "\u{0028}\u{05D0}\u{0028}\u{005B}\u{05D1}\u{0029}\u{05D2}\u{005D}\u{05D3}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+  {
+    number: 91705,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{0029}\u{05D2}\u{005D}\u{05D3}",
+    direction: Some(@bidi.Direction::LTR),
+    expected_base_level: 0,
+    expected_levels: [0, 0, 1, 1, 1, 0, 1, 1, 1],
+    expected_reorder: [0, 1, 4, 3, 2, 5, 8, 7, 6],
+  },
+  {
+    number: 91706,
+    input: "\u{0028}\u{0028}\u{05D0}\u{005B}\u{05D1}\u{0029}\u{05D2}\u{005D}\u{05D3}",
+    direction: Some(@bidi.Direction::RTL),
+    expected_base_level: 1,
+    expected_levels: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    expected_reorder: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+  },
+]
+
+///|
+test "BidiCharacterTest.txt part 18" {
+  for case in test_cases {
+    let direction = case.direction
+    let result = @bidi.process(case.input, direction?)
+    @debug.assert_eq(
+      result.base_level,
+      case.expected_base_level,
+      msg="case \{case.number}: paragraph base level",
+    )
+    for index, expected_level in case.expected_levels {
+      if expected_level >= 0 {
+        @debug.assert_eq(
+          result.levels[index],
+          expected_level,
+          msg="case \{case.number}: resolved level at index \{index}",
+        )
+      }
+    }
+    @debug.assert_eq(
+      @bidi.reorder(result),
+      case.expected_reorder,
+      msg="case \{case.number}: visual reorder",
+    )
   }
 }

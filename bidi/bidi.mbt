@@ -82,32 +82,40 @@ pub fn requires_bidi(text : String) -> Bool {
 
 ///|
 /// Process text according to the Unicode Bidirectional Algorithm
+/// If `direction` is omitted, infer it from the first strong character.
 /// Returns a BidiParagraph with resolved embedding levels for each character
-pub fn process(text : String) -> BidiParagraph {
-  let base_level = determine_paragraph_level(text, default_level=0)
-  process_with_base_level(text, base_level)
+pub fn process(text : String, direction? : Direction) -> BidiParagraph {
+  let base_level = if direction is Some(direction) {
+    direction.level()
+  } else {
+    determine_paragraph_level(text, default_level=0)
+  }
+  process_at_base_level(text, base_level)
 }
 
 ///|
 /// Process text with explicit base direction
 /// Use when the paragraph direction is known externally
+#deprecated("Use process(text, direction=direction) instead")
 pub fn process_with_direction(
   text : String,
   direction : Direction,
 ) -> BidiParagraph {
-  let base_level = match direction {
-    LTR => 0
-    RTL => 1
-  }
-  process_with_base_level(text, base_level)
+  process(text, direction~)
 }
 
 ///|
 /// Process text with explicit base level
+#deprecated("Use process(text, direction=LTR or RTL) instead")
 pub fn process_with_base_level(
   text : String,
   base_level : Int,
 ) -> BidiParagraph {
+  process_at_base_level(text, base_level)
+}
+
+///|
+fn process_at_base_level(text : String, base_level : Int) -> BidiParagraph {
   // Convert to char array and get original classes
   let chars : Array[Char] = []
   for c in text {

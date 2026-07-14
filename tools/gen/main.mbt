@@ -304,7 +304,7 @@ async fn generate_bidi_tests(root : StringView, part_size : Int) -> Unit {
 fn part_size(matches : @argparse.Matches) -> Int raise {
   let size = match matches.values {
     { "part-size": [value], .. } => @support.parse_decimal_int(value)
-    _ => 500
+    _ => 5000
   }
   guard size > 0 else { fail("--part-size must be positive") }
   size
@@ -334,7 +334,7 @@ async fn main {
         "part-size",
         long="part-size",
         about="Bidi conformance tests per package",
-        default_values=["500"],
+        default_values=["5000"],
         global=true,
       ),
     ],

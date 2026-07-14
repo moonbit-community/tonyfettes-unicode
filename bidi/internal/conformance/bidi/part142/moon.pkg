@@ -1,3 +1,4 @@
 import {
   "tonyfettes/unicode/bidi" @bidi,
+  "moonbitlang/core/debug",
 } for "test"

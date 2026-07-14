@@ -10,6 +10,16 @@ test "generate one file per normalization part" {
   assert_eq(files.length(), 2)
   guard files is [first, second] else { fail("expected two generated files") }
   assert_eq(first.relative_path, "normalization/conformance_part0_test.mbt")
+  assert_true(
+    first.source.contains("Array[(String, String, String, String, String)]"),
+  )
+  assert_true(
+    first.source.contains(
+      "(\"\\u{0041}\", \"\\u{0041}\", \"\\u{0041}\", \"\\u{0041}\", \"\\u{0041}\")",
+    ),
+  )
+  assert_true(first.source.contains("let (c1, c2, c3, _, _) = case"))
+  assert_false(first.source.contains("struct TestCase"))
   assert_true(first.source.contains("\\u{0041}"))
   assert_eq(second.relative_path, "normalization/conformance_part1_test.mbt")
   assert_true(second.source.contains("\\u{00C5}"))

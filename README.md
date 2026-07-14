@@ -111,9 +111,9 @@ let paragraph = @bidi.process("abc\u{05D0}\u{05D1}")
 let visual = @bidi.reorder_string(paragraph)
 let order = @bidi.reorder(paragraph)
 
-let forced = @bidi.process_with_direction(
+let forced = @bidi.process(
   "\u{05D0}\u{05D1}\u{05D2}",
-  @bidi.Direction::LTR,
+  direction=@bidi.Direction::LTR,
 )
 ```
 
@@ -191,14 +191,15 @@ default to `true`.
 | --- | --- |
 | `detect_direction(String) -> Direction` | Detect the base direction from the first strong character. |
 | `requires_bidi(String) -> Bool` | Check whether text contains right-to-left characters. |
-| `process(String) -> BidiParagraph` | Resolve classes and levels with an inferred base direction. |
-| `process_with_direction(String, Direction) -> BidiParagraph` | Resolve with an explicit base direction. |
-| `process_with_base_level(String, Int) -> BidiParagraph` | Resolve with an explicit base embedding level. |
+| `process(String, direction? : Direction) -> BidiParagraph` | Resolve classes and levels, optionally forcing the base direction. |
 | `reorder(BidiParagraph) -> Array[Int]` | Return visual-order indexes. |
 | `reorder_string(BidiParagraph) -> String` | Return visually reordered text. |
 | `bidi_class(Char) -> BidiClass` | Return the Unicode Bidi_Class value. |
 | `get_mirrored(Char, Int) -> Char` | Return the mirrored character at an RTL level when one exists. |
 | `direction_from_level(Int) -> Direction` | Convert an embedding level to `LTR` or `RTL`. |
+
+`process_with_direction` and `process_with_base_level` remain available as
+deprecated compatibility wrappers.
 
 ## Development
 
@@ -227,7 +228,7 @@ moon run --target native tools/gen all
 
 Individual commands are `ucd`, `idna`, `bidi`, `normalization-tests`,
 `idna-tests`, and `bidi-tests`. To control the number of Bidi conformance cases
-per generated package, run
+per generated package (default: 5000), run
 `moon run --target native tools/gen -- bidi-tests --part-size N`. Downloaded
 Unicode source files are cached in `tools/.cache/`.
 
