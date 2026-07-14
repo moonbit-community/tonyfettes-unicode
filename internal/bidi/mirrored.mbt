@@ -99,7 +99,6 @@ let mirrored_glyphs : FixedArray[Int] = [
 ]
 
 ///|
-/// Binary search for character in mirrored list
 fn find_mirrored_index(c : Char) -> Int {
   let cp = c.to_int()
   let mut left = 0
@@ -115,18 +114,15 @@ fn find_mirrored_index(c : Char) -> Int {
       return mid
     }
   }
-  -1 // Not found
+  -1
 }
 
 ///|
-/// Check if a character has the Bidi_Mirrored property
 pub fn is_bidi_mirrored(c : Char) -> Bool {
   find_mirrored_index(c) >= 0
 }
 
 ///|
-/// Get the Bidi_Mirroring_Glyph for a character
-/// Returns the mirrored character if it has one, otherwise returns the original
 pub fn bidi_mirroring_glyph(c : Char) -> Char {
   let idx = find_mirrored_index(c)
   if idx < 0 {

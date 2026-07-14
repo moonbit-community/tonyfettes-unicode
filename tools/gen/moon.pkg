@@ -2,9 +2,17 @@ supported_targets = "native"
 
 import {
   "tonyfettes/unicode-tools/ucd",
+  "tonyfettes/unicode-tools/support",
+  "tonyfettes/unicode-tools/idna_data",
+  "tonyfettes/unicode-tools/bidi_data",
+  "tonyfettes/unicode-tools/normalization_tests",
+  "tonyfettes/unicode-tools/idna_tests",
+  "tonyfettes/unicode-tools/bidi_tests",
   "moonbitlang/core/argparse",
   "moonbitlang/async",
   "moonbitlang/async/fs",
+  "moonbitlang/async/http",
+  "moonbitlang/async/os_error",
   "moonbitlang/async/process",
 }
 

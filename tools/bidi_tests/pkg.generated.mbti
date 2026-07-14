@@ -1,0 +1,51 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "tonyfettes/unicode-tools/bidi_tests"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn generate_parts(String, String, Int) -> GeneratedParts raise
+
+pub fn package_source() -> String
+
+// Errors
+
+// Types and methods
+pub(all) struct BidiCase {
+  classes : Array[String]
+  bitset : Int
+  levels : Array[Int?]
+  reorder : Array[Int]
+}
+
+pub(all) struct CharacterCase {
+  code_points : Array[Int]
+  paragraph_direction : Int
+  base_level : Int
+  levels : Array[Int?]
+  reorder : Array[Int]
+}
+
+pub(all) struct GeneratedPart {
+  relative_directory : String
+  source : String
+} derive(Eq, @debug.Debug)
+
+pub struct GeneratedParts {
+  bidi_cases : Array[BidiCase]
+  character_cases : Array[CharacterCase]
+  part_size : Int
+  mut phase : Int
+  mut part_number : Int
+  mut bidi_index : Int
+  mut bidi_bit : Int
+  mut character_index : Int
+}
+pub fn GeneratedParts::next(Self) -> GeneratedPart? raise
+
+// Type aliases
+
+// Traits
+

@@ -55,18 +55,19 @@ idna -> internal/idna
 Unicode data tables are generated from official Unicode source files:
 
 ```bash
-python3 scripts/generate_ucd.py       # Generate internal/ucd/*.mbt
-python3 scripts/generate_idna.py      # Generate internal/idna/*.mbt
-python3 scripts/generate_normalization_tests.py  # Generate conformance tests
-python3 scripts/generate_idna_tests.py           # Generate IDNA tests
+moon run --target native tools/gen data   # Generate all Unicode lookup tables
+moon run --target native tools/gen tests  # Generate all conformance tests
+moon run --target native tools/gen all    # Generate tables and tests
 ```
 
-Downloaded Unicode data is cached in `scripts/.cache/`.
+Individual commands are `ucd`, `idna`, `bidi`, `normalization-tests`,
+`idna-tests`, and `bidi-tests`. Downloaded Unicode data is cached in
+`tools/.cache/`.
 
 ## Publishing
 
 ```bash
-python3 scripts/collect_publish.py    # Collect files into publish/ directory
+moon publish --dry-run  # Verify files selected by moon.mod exclusions
 ```
 
 ## Testing Notes

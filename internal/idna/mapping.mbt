@@ -4100,11 +4100,10 @@ fn find_idna_range(c : Char) -> Int {
       return mid
     }
   }
-  -1 // Not found, should not happen for valid Unicode
+  -1
 }
 
 ///|
-/// Convert status code to IdnaStatus enum
 fn status_from_code(code : Int) -> IdnaStatus {
   match code {
     0 => Valid
@@ -4120,19 +4119,21 @@ fn status_from_code(code : Int) -> IdnaStatus {
 
 ///|
 /// Look up IDNA status and mapping for a character
-/// Returns (status, mapping) where mapping is empty array if no mapping
 pub fn lookup_idna_mapping(c : Char) -> (IdnaStatus, Array[Char]) {
   let idx = find_idna_range(c)
   if idx < 0 {
-    // Not found, treat as disallowed
     return (Disallowed, [])
   }
   let status = status_from_code(idna_range_statuses[idx])
   let mapping_start = idna_mapping_starts[idx]
   let mapping_len = idna_mapping_lens[idx]
   let mapping : Array[Char] = []
-  for i = 0; i < mapping_len; i = i + 1 {
-    mapping.push(idna_mapping_data[mapping_start + i].unsafe_to_char())
+  for
+    code_point in idna_mapping_data.view(
+      start=mapping_start,
+      end=mapping_start + mapping_len,
+    ) {
+    mapping.push(code_point.unsafe_to_char())
   }
   (status, mapping)
 }

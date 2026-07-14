@@ -352,8 +352,8 @@ pub fn emit_case_mapping(
       #|  let start = full_upper_data_starts[idx]
       #|  let len = full_upper_lens[idx]
       #|  let result : Array[Char] = []
-      #|  for i = 0; i < len; i = i + 1 {
-      #|    result.push(full_upper_data[start + i].unsafe_to_char())
+      #|  for code_point in full_upper_data.view(start=start, end=start + len) {
+      #|    result.push(code_point.unsafe_to_char())
       #|  }
       #|  Some(result)
       #|}
@@ -370,8 +370,8 @@ pub fn emit_case_mapping(
       #|  let start = full_lower_data_starts[idx]
       #|  let len = full_lower_lens[idx]
       #|  let result : Array[Char] = []
-      #|  for i = 0; i < len; i = i + 1 {
-      #|    result.push(full_lower_data[start + i].unsafe_to_char())
+      #|  for code_point in full_lower_data.view(start=start, end=start + len) {
+      #|    result.push(code_point.unsafe_to_char())
       #|  }
       #|  Some(result)
       #|}
@@ -388,8 +388,8 @@ pub fn emit_case_mapping(
       #|  let start = full_title_data_starts[idx]
       #|  let len = full_title_lens[idx]
       #|  let result : Array[Char] = []
-      #|  for i = 0; i < len; i = i + 1 {
-      #|    result.push(full_title_data[start + i].unsafe_to_char())
+      #|  for code_point in full_title_data.view(start=start, end=start + len) {
+      #|    result.push(code_point.unsafe_to_char())
       #|  }
       #|  Some(result)
       #|}
@@ -515,8 +515,8 @@ pub fn emit_decomposition(data : UnicodeData) -> String {
       #|
       #|  let start = decomp_data_starts[idx]
       #|  let result : Array[Char] = []
-      #|  for i = 0; i < len; i = i + 1 {
-      #|    result.push(decomp_data[start + i].unsafe_to_char())
+      #|  for code_point in decomp_data.view(start=start, end=start + len) {
+      #|    result.push(code_point.unsafe_to_char())
       #|  }
       #|  Some(result)
       #|}
@@ -539,8 +539,11 @@ pub fn emit_decomposition(data : UnicodeData) -> String {
       #|  let canonical_len = decomp_canonical_lens[idx]
       #|  let start = decomp_data_starts[idx] + canonical_len
       #|  let result : Array[Char] = []
-      #|  for i = 0; i < compat_len; i = i + 1 {
-      #|    result.push(decomp_data[start + i].unsafe_to_char())
+      #|  for code_point in decomp_data.view(
+      #|    start=start,
+      #|    end=start + compat_len,
+      #|  ) {
+      #|    result.push(code_point.unsafe_to_char())
       #|  }
       #|  Some(result)
       #|}

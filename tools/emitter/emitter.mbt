@@ -14,6 +14,22 @@ pub fn Emitter::write(self : Emitter, source : String) -> Unit {
 }
 
 ///|
+pub fn Emitter::write_char(self : Emitter, character : Char) -> Unit {
+  self.out.write_char(character)
+}
+
+///|
+pub fn Emitter::write_int(self : Emitter, value : Int) -> Unit {
+  self.out.write_object(value)
+}
+
+///|
+pub fn Emitter::write_line(self : Emitter, source : String) -> Unit {
+  self.write(source)
+  self.write_char('\n')
+}
+
+///|
 pub fn Emitter::finish(self : Emitter) -> String {
   self.out.to_string()
 }

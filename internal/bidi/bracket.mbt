@@ -3,11 +3,10 @@
 /// Generated from BidiBrackets.txt
 
 ///|
-/// Bracket type
 pub(all) enum BracketType {
-  Open // Opening bracket
-  Close // Closing bracket
-  None // Not a bracket
+  Open
+  Close
+  None
 } derive(Eq)
 
 ///|
@@ -66,7 +65,6 @@ let bracket_types : FixedArray[Int] = [
 ]
 
 ///|
-/// Binary search for character in bracket list
 fn find_bracket_index(c : Char) -> Int {
   let cp = c.to_int()
   let mut left = 0
@@ -82,11 +80,10 @@ fn find_bracket_index(c : Char) -> Int {
       return mid
     }
   }
-  -1 // Not found
+  -1
 }
 
 ///|
-/// Get the bracket type for a character
 pub fn bracket_type(c : Char) -> BracketType {
   let idx = find_bracket_index(c)
   if idx < 0 {
@@ -99,8 +96,6 @@ pub fn bracket_type(c : Char) -> BracketType {
 }
 
 ///|
-/// Get the paired bracket for a character
-/// Returns None if the character is not a bracket
 pub fn paired_bracket(c : Char) -> Char? {
   let idx = find_bracket_index(c)
   if idx < 0 {
@@ -111,22 +106,20 @@ pub fn paired_bracket(c : Char) -> Char? {
 }
 
 ///|
-/// Check if a character is an opening bracket
 pub fn is_open_bracket(c : Char) -> Bool {
   bracket_type(c) == Open
 }
 
 ///|
-/// Check if a character is a closing bracket
 pub fn is_close_bracket(c : Char) -> Bool {
   bracket_type(c) == Close
 }
 
 ///|
-/// Check if two characters form a bracket pair (open, close)
 pub fn is_bracket_pair(open : Char, close : Char) -> Bool {
-  match paired_bracket(open) {
-    Some(pair) => pair == close && bracket_type(open) == Open
-    None => false
+  if paired_bracket(open) is Some(pair) {
+    pair == close && bracket_type(open) == Open
+  } else {
+    false
   }
 }

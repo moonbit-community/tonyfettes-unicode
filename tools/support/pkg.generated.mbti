@@ -1,0 +1,58 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "tonyfettes/unicode-tools/support"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn bool_literal(Bool) -> String
+
+pub fn code_points_to_moonbit_string(ArrayView[Int]) -> String
+
+pub fn escape_moonbit_string(StringView) -> String
+
+pub fn hex_upper(Int, min_width? : Int) -> String
+
+pub fn int_array_literal(ArrayView[Int]) -> String
+
+pub fn moonbit_code_point_escape(Int) -> String
+
+pub fn optional_int_array_literal(ArrayView[Int?]) -> String
+
+pub fn parse_code_point_range(StringView) -> CodePointRange raise
+
+pub fn parse_code_point_sequence(StringView) -> Array[Int] raise
+
+pub fn parse_decimal_int(StringView) -> Int raise
+
+pub fn parse_escaped_text(StringView) -> ParsedText
+
+pub fn parse_hex_int(StringView) -> Int raise
+
+pub fn strip_comment(StringView) -> StringView
+
+pub fn truncate_chars(StringView, Int) -> String
+
+// Errors
+
+// Types and methods
+pub(all) struct CodePointRange {
+  start : Int
+  end : Int
+} derive(Eq, @debug.Debug)
+
+pub(all) struct GeneratedFile {
+  relative_path : String
+  source : String
+} derive(Eq, @debug.Debug)
+
+pub(all) struct ParsedText {
+  text : String
+  has_surrogate : Bool
+} derive(Eq, @debug.Debug)
+
+// Type aliases
+
+// Traits
+

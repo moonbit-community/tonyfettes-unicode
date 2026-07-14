@@ -5,36 +5,29 @@
 ///|
 /// All 23 Bidi_Class values from UAX #9
 pub(all) enum BidiClass {
-  // Strong types
-  L // Left-to-Right
-  R // Right-to-Left
-  AL // Arabic Letter
-
-  // Weak types
-  EN // European Number
-  ES // European Separator
-  ET // European Terminator
-  AN // Arabic Number
-  CS // Common Separator
-  NSM // Non-Spacing Mark
-  BN // Boundary Neutral
-
-  // Neutral types
-  B // Paragraph Separator
-  S // Segment Separator
-  WS // Whitespace
-  ON // Other Neutral
-
-  // Explicit formatting
-  LRE // Left-to-Right Embedding
-  LRO // Left-to-Right Override
-  RLE // Right-to-Left Embedding
-  RLO // Right-to-Left Override
-  PDF // Pop Directional Formatting
-  LRI // Left-to-Right Isolate
-  RLI // Right-to-Left Isolate
-  FSI // First Strong Isolate
-  PDI // Pop Directional Isolate
+  L
+  R
+  AL
+  EN
+  ES
+  ET
+  AN
+  CS
+  NSM
+  BN
+  B
+  S
+  WS
+  ON
+  LRE
+  LRO
+  RLE
+  RLO
+  PDF
+  LRI
+  RLI
+  FSI
+  PDI
 } derive(Eq)
 
 ///|
@@ -392,17 +385,14 @@ let bidi_range_classes : FixedArray[Int] = [
 ]
 
 ///|
-/// Binary search for character in Bidi ranges
 fn find_bidi_range(c : Char) -> Int {
   let cp = c.to_int()
   let mut left = 0
   let mut right = bidi_range_starts.length() - 1
-
   while left <= right {
     let mid = (left + right) / 2
     let start = bidi_range_starts[mid]
     let end = bidi_range_ends[mid]
-
     if cp < start {
       right = mid - 1
     } else if cp > end {
@@ -411,12 +401,10 @@ fn find_bidi_range(c : Char) -> Int {
       return mid
     }
   }
-
-  -1 // Not found
+  -1
 }
 
 ///|
-/// Convert class code to BidiClass enum
 fn bidi_from_code(code : Int) -> BidiClass {
   match code {
     0 => L
@@ -442,125 +430,76 @@ fn bidi_from_code(code : Int) -> BidiClass {
     20 => RLI
     21 => FSI
     22 => PDI
-    _ => L // Default to L for unknown
+    _ => L
   }
 }
 
 ///|
-/// Look up Bidi_Class for a character
 pub fn lookup_bidi_class(c : Char) -> BidiClass {
   let idx = find_bidi_range(c)
   if idx < 0 {
-    return L // Default to L for characters not in table
+    L
+  } else {
+    bidi_from_code(bidi_range_classes[idx])
   }
-  bidi_from_code(bidi_range_classes[idx])
 }
 
 ///|
-/// Check if a character is a strong type (L, R, or AL)
 pub fn is_strong(c : Char) -> Bool {
-  match lookup_bidi_class(c) {
-    L | R | AL => true
-    _ => false
-  }
+  lookup_bidi_class(c) is (L | R | AL)
 }
 
 ///|
-/// Check if a character is a strong RTL type (R or AL)
 pub fn is_strong_rtl(c : Char) -> Bool {
-  match lookup_bidi_class(c) {
-    R | AL => true
-    _ => false
-  }
+  lookup_bidi_class(c) is (R | AL)
 }
 
 ///|
-/// Check if a character is an explicit formatting character
 pub fn is_explicit_formatting(c : Char) -> Bool {
-  match lookup_bidi_class(c) {
-    LRE | LRO | RLE | RLO | PDF | LRI | RLI | FSI | PDI => true
-    _ => false
-  }
+  lookup_bidi_class(c) is (LRE | LRO | RLE | RLO | PDF | LRI | RLI | FSI | PDI)
 }
 
 ///|
-/// Check if a character is an isolate initiator
 pub fn is_isolate_initiator(c : Char) -> Bool {
-  match lookup_bidi_class(c) {
-    LRI | RLI | FSI => true
-    _ => false
-  }
+  lookup_bidi_class(c) is (LRI | RLI | FSI)
 }
 
 ///|
-/// Check if Bidi class is a strong type
 pub fn BidiClass::is_strong(self : BidiClass) -> Bool {
-  match self {
-    L | R | AL => true
-    _ => false
-  }
+  self is (L | R | AL)
 }
 
 ///|
-/// Check if Bidi class is a strong RTL type
 pub fn BidiClass::is_strong_rtl(self : BidiClass) -> Bool {
-  match self {
-    R | AL => true
-    _ => false
-  }
+  self is (R | AL)
 }
 
 ///|
-/// Check if Bidi class is a weak type
 pub fn BidiClass::is_weak(self : BidiClass) -> Bool {
-  match self {
-    EN | ES | ET | AN | CS | NSM | BN => true
-    _ => false
-  }
+  self is (EN | ES | ET | AN | CS | NSM | BN)
 }
 
 ///|
-/// Check if Bidi class is a neutral type
 pub fn BidiClass::is_neutral(self : BidiClass) -> Bool {
-  match self {
-    B | S | WS | ON => true
-    _ => false
-  }
+  self is (B | S | WS | ON)
 }
 
 ///|
-/// Check if Bidi class is an explicit formatting type
 pub fn BidiClass::is_explicit(self : BidiClass) -> Bool {
-  match self {
-    LRE | LRO | RLE | RLO | PDF | LRI | RLI | FSI | PDI => true
-    _ => false
-  }
+  self is (LRE | LRO | RLE | RLO | PDF | LRI | RLI | FSI | PDI)
 }
 
 ///|
-/// Check if Bidi class is an isolate initiator
 pub fn BidiClass::is_isolate_initiator(self : BidiClass) -> Bool {
-  match self {
-    LRI | RLI | FSI => true
-    _ => false
-  }
+  self is (LRI | RLI | FSI)
 }
 
 ///|
-/// Check if Bidi class should be removed per X9 rule
-/// X9: Remove LRE, RLE, LRO, RLO, PDF, and BN (but NOT isolate characters)
 pub fn BidiClass::is_x9_removed(self : BidiClass) -> Bool {
-  match self {
-    LRE | RLE | LRO | RLO | PDF | BN => true
-    _ => false
-  }
+  self is (LRE | RLE | LRO | RLO | PDF | BN)
 }
 
 ///|
-/// Check if Bidi class is a neutral or isolate type (for N rules)
 pub fn BidiClass::is_neutral_or_isolate(self : BidiClass) -> Bool {
-  match self {
-    B | S | WS | ON | FSI | LRI | RLI | PDI => true
-    _ => false
-  }
+  self is (B | S | WS | ON | FSI | LRI | RLI | PDI)
 }

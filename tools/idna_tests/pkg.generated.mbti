@@ -1,0 +1,14 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "tonyfettes/unicode-tools/idna_tests"
+
+// Values
+pub fn generate_source(String) -> String
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+

@@ -26,7 +26,6 @@ options(
     "AGENTS.md",
     "CLAUDE.md",
     "docs",
-    "scripts",
     "tools",
     "moon.work",
     "bidi/internal/conformance",

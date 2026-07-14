@@ -5,12 +5,12 @@
 ///|
 /// Joining type values
 pub(all) enum JoiningType {
-  LeftJoining // L
-  RightJoining // R
-  DualJoining // D
-  JoinCausing // C
-  Transparent // T
-  NonJoining // U
+  LeftJoining
+  RightJoining
+  DualJoining
+  JoinCausing
+  Transparent
+  NonJoining
 } derive(Eq)
 
 ///|
@@ -173,7 +173,6 @@ let joining_range_types : FixedArray[Int] = [
 ]
 
 ///|
-/// Binary search for character in joining ranges
 fn find_joining_range(c : Char) -> Int {
   let cp = c.to_int()
   let mut left = 0
@@ -190,11 +189,10 @@ fn find_joining_range(c : Char) -> Int {
       return mid
     }
   }
-  -1 // Not found
+  -1
 }
 
 ///|
-/// Convert type code to JoiningType enum
 fn joining_from_code(code : Int) -> JoiningType {
   match code {
     0 => LeftJoining
@@ -207,7 +205,6 @@ fn joining_from_code(code : Int) -> JoiningType {
 }
 
 ///|
-/// Look up Joining_Type for a character
 pub fn lookup_joining_type(c : Char) -> JoiningType {
   let idx = find_joining_range(c)
   if idx < 0 {

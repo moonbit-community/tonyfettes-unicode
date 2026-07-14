@@ -218,20 +218,24 @@ Run `moon info` after public API changes to refresh `pkg.generated.mbti` files.
 Unicode data and conformance tests are generated from official Unicode files:
 
 ```bash
-python3 scripts/generate_ucd.py
-python3 scripts/generate_bidi.py
-python3 scripts/generate_idna.py
-python3 scripts/generate_normalization_tests.py
-python3 scripts/generate_bidi_tests.py
-python3 scripts/generate_idna_tests.py
+moon run --target native tools/gen data
+moon run --target native tools/gen tests
+
+# Or regenerate everything in one pass:
+moon run --target native tools/gen all
 ```
 
-Downloaded Unicode source files are cached in `scripts/.cache/`.
+Individual commands are `ucd`, `idna`, `bidi`, `normalization-tests`,
+`idna-tests`, and `bidi-tests`. To control the number of Bidi conformance cases
+per generated package, run
+`moon run --target native tools/gen -- bidi-tests --part-size N`. Downloaded
+Unicode source files are cached in `tools/.cache/`.
 
-To collect files for publishing:
+The exclusions in `moon.mod` keep generators and conformance fixtures out of
+the published package. Verify the package contents with:
 
 ```bash
-python3 scripts/collect_publish.py
+moon publish --dry-run
 ```
 
 ## Standards
