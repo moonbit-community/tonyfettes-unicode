@@ -25,6 +25,14 @@ BIDI_CLASS_URL = f"https://www.unicode.org/Public/{UNICODE_VERSION}/ucd/extracte
 BIDI_MIRRORING_URL = f"https://www.unicode.org/Public/{UNICODE_VERSION}/ucd/BidiMirroring.txt"
 BIDI_BRACKETS_URL = f"https://www.unicode.org/Public/{UNICODE_VERSION}/ucd/BidiBrackets.txt"
 
+BIDI_CLASS_ALIASES = {
+    "Left_To_Right": "L",
+    "Right_To_Left": "R",
+    "Arabic_Letter": "AL",
+    "European_Terminator": "ET",
+}
+MAX_CODE_POINT = 0x10FFFF
+
 
 def download_file(url: str, cache_dir: Path) -> str:
     """Download a file and cache it locally."""
@@ -59,11 +67,26 @@ def parse_bidi_class(content: str) -> list[tuple]:
     Parse DerivedBidiClass.txt.
     Returns list of (start, end, bidi_class).
     """
-    entries = []
+    # DerivedBidiClass uses ordered @missing declarations for unassigned code
+    # points in RTL and currency blocks. Start with the universal L default,
+    # apply each narrower default in file order, then overlay explicit data.
+    classes = ["L"] * (MAX_CODE_POINT + 1)
+    explicit_entries = []
 
-    for line in content.strip().split("\n"):
-        if "#" in line:
-            line = line.split("#")[0]
+    for raw_line in content.strip().split("\n"):
+        stripped = raw_line.strip()
+        if stripped.startswith("# @missing:"):
+            declaration = stripped.removeprefix("# @missing:").strip()
+            parts = [p.strip() for p in declaration.split(";")]
+            if len(parts) < 2:
+                continue
+            start, end = parse_range(parts[0])
+            bidi_class = BIDI_CLASS_ALIASES.get(parts[1], parts[1])
+            for cp in range(start, end + 1):
+                classes[cp] = bidi_class
+            continue
+
+        line = raw_line.split("#", 1)[0]
         line = line.strip()
         if not line:
             continue
@@ -74,9 +97,22 @@ def parse_bidi_class(content: str) -> list[tuple]:
 
         start, end = parse_range(parts[0])
         bidi_class = parts[1].strip()
+        explicit_entries.append((start, end, bidi_class))
 
-        entries.append((start, end, bidi_class))
+    for start, end, bidi_class in explicit_entries:
+        for cp in range(start, end + 1):
+            classes[cp] = bidi_class
 
+    entries = []
+    start = 0
+    previous_class = classes[0]
+    for cp in range(1, MAX_CODE_POINT + 1):
+        bidi_class = classes[cp]
+        if bidi_class != previous_class:
+            entries.append((start, cp - 1, previous_class))
+            start = cp
+            previous_class = bidi_class
+    entries.append((start, MAX_CODE_POINT, previous_class))
     return entries
 
 
@@ -218,7 +254,36 @@ pub(all) enum BidiClass {
   RLI  // Right-to-Left Isolate
   FSI  // First Strong Isolate
   PDI  // Pop Directional Isolate
-} derive(Show, Eq)
+} derive(Eq)
+
+///|
+pub impl Show for BidiClass with fn output(self, logger) {
+  match self {
+    L => logger.write_string("L")
+    R => logger.write_string("R")
+    AL => logger.write_string("AL")
+    EN => logger.write_string("EN")
+    ES => logger.write_string("ES")
+    ET => logger.write_string("ET")
+    AN => logger.write_string("AN")
+    CS => logger.write_string("CS")
+    NSM => logger.write_string("NSM")
+    BN => logger.write_string("BN")
+    B => logger.write_string("B")
+    S => logger.write_string("S")
+    WS => logger.write_string("WS")
+    ON => logger.write_string("ON")
+    LRE => logger.write_string("LRE")
+    LRO => logger.write_string("LRO")
+    RLE => logger.write_string("RLE")
+    RLO => logger.write_string("RLO")
+    PDF => logger.write_string("PDF")
+    LRI => logger.write_string("LRI")
+    RLI => logger.write_string("RLI")
+    FSI => logger.write_string("FSI")
+    PDI => logger.write_string("PDI")
+  }
+}
 
 ///|
 /// Range start code points
@@ -411,6 +476,16 @@ pub fn BidiClass::is_explicit(self : BidiClass) -> Bool {
 pub fn BidiClass::is_isolate_initiator(self : BidiClass) -> Bool {
   match self {
     LRI | RLI | FSI => true
+    _ => false
+  }
+}
+
+///|
+/// Check if Bidi class should be removed per X9 rule
+/// X9: Remove LRE, RLE, LRO, RLO, PDF, and BN (but NOT isolate characters)
+pub fn BidiClass::is_x9_removed(self : BidiClass) -> Bool {
+  match self {
+    LRE | RLE | LRO | RLO | PDF | BN => true
     _ => false
   }
 }

@@ -13,6 +13,11 @@ test "to_ascii: simple IDN" {
 }
 
 ///|
+test "to_ascii: accepts an existing valid A-label" {
+  inspect(to_ascii("xn--mnchen-3ya.de"), content="xn--mnchen-3ya.de")
+}
+
+///|
 test "to_ascii: Chinese domain" {
   // 中文.com
   inspect(to_ascii("中文.com"), content="xn--fiq228c.com")
@@ -258,6 +263,13 @@ test "bidi: pure ASCII label passes bidi check" {
 }
 
 ///|
+test "bidi: to_unicode validates all labels at domain level" {
+  let hebrew_label = to_ascii("בדיקה", check_bidi=false)
+  let result = to_unicode_result("\{hebrew_label}.123", check_bidi=true)
+  guard result is Err(@idna.InvalidBidi) else { fail("Expected InvalidBidi") }
+}
+
+///|
 test "bidi: disabled check allows mixed bidi" {
   // With bidi check disabled, mixed content is allowed
   let result = to_ascii("exampleم.com", check_bidi=false)
@@ -351,6 +363,14 @@ test "ace: invalid Punycode after xn-- fails" {
   // Invalid Punycode sequence after xn--
   let result = to_unicode_result("xn--###invalid.com")
   assert_true(result is Err(_))
+}
+
+///|
+test "ace: decoded A-label must contain non-ASCII code points" {
+  let result = to_unicode_result("xn--example-.com")
+  guard result is Err(@idna.InvalidAcePrefix) else {
+    fail("Expected InvalidAcePrefix")
+  }
 }
 
 ///|

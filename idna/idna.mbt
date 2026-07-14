@@ -63,15 +63,10 @@ pub fn to_ascii(
   check_joiners? : Bool = true,
   verify_dns_length? : Bool = true,
 ) -> String raise IdnaError {
-  // Process the domain (mapping, normalization, basic validation)
-  // Note: Bidi is handled separately to support ACE-encoded inputs
-  let processed = process_domain(
-    domain,
-    use_std3_ascii_rules~,
-    check_hyphens~,
-    check_bidi=false, // Domain-level bidi handled below after ACE decoding
-    check_joiners~,
-  )
+  // Map and normalize before splitting. Labels are validated below, after
+  // existing A-labels have been decoded to their Unicode form.
+  let mapped = map_domain(domain, use_std3_ascii_rules~)
+  let processed = @normalization.nfc(mapped)
 
   // Split into labels
   let labels = split_labels(processed)
@@ -142,10 +137,7 @@ fn process_label_for_ascii(
   // Check if label has ACE prefix (xn--)
   if has_ace_prefix(label) {
     // Decode ACE label to get Unicode content
-    let punycode_part = get_substring_after_prefix(label, 4)
-    let decoded = @punycode.decode(punycode_part) catch {
-      error => raise PunycodeError(error)
-    }
+    let decoded = decode_ace_label(label)
 
     // Apply mapping and normalize
     let mapped = map_label(decoded, use_std3_ascii_rules~)
@@ -170,7 +162,15 @@ fn process_label_for_ascii(
     return (normalized, label.to_lower())
   }
 
-  // Non-ACE label: just encode
+  // Validate non-ACE labels here. Raw A-labels must not be subjected to the
+  // hyphen checks before decoding, because the xn-- prefix is intentional.
+  validate_label(
+    label,
+    use_std3_ascii_rules~,
+    check_hyphens~,
+    check_bidi=false, // Bidi done at domain level
+    check_joiners~,
+  )
   let ascii_label = encode_label_to_ascii(label)
   (label, ascii_label)
 }
@@ -206,10 +206,17 @@ pub fn to_unicode(
       label,
       use_std3_ascii_rules~,
       check_hyphens~,
-      check_bidi~,
       check_joiners~,
     )
     unicode_labels.push(unicode_label)
+  }
+  if check_bidi {
+    let labels_for_bidi = if has_trailing_dot {
+      unicode_labels.iter().take(label_count - 1).collect()
+    } else {
+      unicode_labels
+    }
+    validate_domain_bidi(labels_for_bidi)
   }
   unicode_labels.join(".")
 }
@@ -217,15 +224,7 @@ pub fn to_unicode(
 ///|
 /// Encode a label to ASCII (Punycode if needed), without ACE validation
 fn encode_label_to_ascii(label : String) -> String raise IdnaError {
-  // Check if label is already ASCII
-  let mut all_ascii = true
-  for c in label {
-    if c.to_int() >= 0x80 {
-      all_ascii = false
-      break
-    }
-  }
-  if all_ascii {
+  if is_all_ascii(label) {
     // Already ASCII, return as-is (lowercased)
     label.to_lower()
   } else {
@@ -233,7 +232,7 @@ fn encode_label_to_ascii(label : String) -> String raise IdnaError {
     let encoded = @punycode.encode(label.to_lower()) catch {
       error => raise PunycodeError(error)
     }
-    ace_prefix + encoded
+    "\{ace_prefix}\{encoded}"
   }
 }
 
@@ -243,16 +242,10 @@ fn label_to_unicode(
   label : String,
   use_std3_ascii_rules~ : Bool,
   check_hyphens~ : Bool,
-  check_bidi~ : Bool,
   check_joiners~ : Bool,
 ) -> String raise IdnaError {
   let unicode_label = if has_ace_prefix(label) {
-    // Decode Punycode - skip "xn--" prefix
-    let punycode_part = get_substring_after_prefix(label, 4)
-    let decoded = @punycode.decode(punycode_part) catch {
-      error => raise PunycodeError(error)
-    }
-    decoded
+    decode_ace_label(label)
   } else {
     label
   }
@@ -266,10 +259,29 @@ fn label_to_unicode(
     normalized,
     use_std3_ascii_rules~,
     check_hyphens~,
-    check_bidi~,
+    check_bidi=false, // Bidi is validated across the complete domain
     check_joiners~,
   )
   normalized
+}
+
+///|
+/// Decode an A-label and enforce the UTS #46 requirement that its decoded
+/// form is non-empty and contains at least one non-ASCII code point.
+fn decode_ace_label(label : String) -> String raise IdnaError {
+  let punycode_part = get_substring_after_prefix(label, 4)
+  let decoded = @punycode.decode(punycode_part) catch {
+    error => raise PunycodeError(error)
+  }
+  if is_all_ascii(decoded) {
+    raise InvalidAcePrefix
+  }
+  decoded
+}
+
+///|
+fn is_all_ascii(label : String) -> Bool {
+  label.all(c => c.to_int() < 0x80)
 }
 
 ///|

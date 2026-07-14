@@ -6,7 +6,10 @@ let sample_unicode_data : String =
   #|00C0;LATIN CAPITAL LETTER A WITH GRAVE;Lu;0;L;0041 0300;;;;N;;;;00E0;
   #|0300;COMBINING GRAVE ACCENT;Mn;230;NSM;;;;;N;;;;;
   #|0301;COMBINING ACUTE ACCENT;Mn;230;NSM;;;;;N;;;;;
-  #|AC00;HANGUL SYLLABLE GA;Lo;0;L;;;;;N;;;;;
+  #|3400;<CJK Ideograph Extension A, First>;Lo;0;L;;;;;N;;;;;
+  #|3402;<CJK Ideograph Extension A, Last>;Lo;0;L;;;;;N;;;;;
+  #|AC00;<Hangul Syllable, First>;Lo;0;L;;;;;N;;;;;
+  #|AC02;<Hangul Syllable, Last>;Lo;0;L;;;;;N;;;;;
 
 ///|
 test "parse UnicodeData fields" {
@@ -21,8 +24,12 @@ test "parse UnicodeData fields" {
   inspect(data.simple_lowercase.length(), content="2")
   inspect(data.simple_titlecase.length(), content="1")
   inspect(
-    data.general_categories.any(entry => entry.code_point == 0xAC00),
-    content="false",
+    data.general_categories.any(entry => entry.code_point == 0x3401),
+    content="true",
+  )
+  inspect(
+    data.general_categories.any(entry => entry.code_point == 0xAC01),
+    content="true",
   )
 }
 

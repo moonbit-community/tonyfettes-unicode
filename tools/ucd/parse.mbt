@@ -1,10 +1,4 @@
 ///|
-const HangulSBase : Int = 0xAC00
-
-///|
-const HangulSCount : Int = 11172
-
-///|
 fn strip_comment(line : StringView) -> StringView {
   match line.split_once("#") {
     Some((before, _)) => before.trim()
@@ -45,6 +39,19 @@ fn is_identity_or_empty(cp : Int, targets : Array[Int]) -> Bool {
 }
 
 ///|
+fn append_general_category(
+  general_categories : Array[GeneralCategoryEntry],
+  mark_code_points : Array[Int],
+  cp : Int,
+  category : String,
+) -> Unit {
+  general_categories.push({ code_point: cp, category })
+  if is_mark_category(category) {
+    mark_code_points.push(cp)
+  }
+}
+
+///|
 pub fn parse_unicode_data(content : String) -> UnicodeData raise {
   let ccc_entries : Array[CccEntry] = []
   let canonical_decompositions : Array[DecompositionEntry] = []
@@ -54,6 +61,8 @@ pub fn parse_unicode_data(content : String) -> UnicodeData raise {
   let simple_uppercase : Array[SimpleMappingEntry] = []
   let simple_lowercase : Array[SimpleMappingEntry] = []
   let simple_titlecase : Array[SimpleMappingEntry] = []
+  let mut range_start = -1
+  let mut range_category = ""
   for raw_line in content.split("\n") {
     let line = raw_line.trim()
     if line.length() == 0 || line.strip_prefix("#") is Some(_) {
@@ -64,17 +73,32 @@ pub fn parse_unicode_data(content : String) -> UnicodeData raise {
       continue
     }
     let cp = parse_hex_int(fields[0])
-    if cp >= HangulSBase && cp < HangulSBase + HangulSCount {
+    let name = fields[1].trim()
+    let general_category = fields[2].trim().to_owned()
+    if name.has_suffix(", First>") {
+      if range_start >= 0 {
+        fail("Nested UnicodeData First range")
+      }
+      range_start = cp
+      range_category = general_category
       continue
     }
-    let general_category = fields[2].trim()
-    general_categories.push({
-      code_point: cp,
-      category: general_category.to_owned(),
-    })
-    if is_mark_category(general_category) {
-      mark_code_points.push(cp)
+    if name.has_suffix(", Last>") {
+      if range_start < 0 || range_category != general_category {
+        fail("Mismatched UnicodeData First/Last range")
+      }
+      for range_cp in range_start..<=cp {
+        append_general_category(
+          general_categories, mark_code_points, range_cp, range_category,
+        )
+      }
+      range_start = -1
+      range_category = ""
+      continue
     }
+    append_general_category(
+      general_categories, mark_code_points, cp, general_category,
+    )
     let ccc_text = fields[3].trim()
     let ccc = if ccc_text.length() > 0 {
       parse_decimal_int(ccc_text)
@@ -124,6 +148,9 @@ pub fn parse_unicode_data(content : String) -> UnicodeData raise {
         simple_titlecase.push({ code_point: cp, target })
       }
     }
+  }
+  if range_start >= 0 {
+    fail("Unterminated UnicodeData First range")
   }
   {
     ccc_entries,

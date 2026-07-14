@@ -62,6 +62,10 @@ const InitialN : Int = 0x80
 const Delimiter : Char = '-'
 
 ///|
+/// Largest positive value representable by MoonBit's signed Int type.
+const MaxInt : Int = 0x7FFFFFFF
+
+///|
 /// Bias adaptation function (RFC 3492 Section 3.4)
 fn adapt(delta : Int, numpoints : Int, firsttime : Bool) -> Int {
   let mut delta = delta
@@ -149,19 +153,20 @@ pub fn encode(input : String) -> String raise PunycodeError {
     }
 
     // Increase delta enough to advance the decoder's <n,i> state to <m,0>
-    let delta_increment = (m - n) * (handled + 1)
-    if delta > 0x7FFFFFFF - delta_increment {
+    let code_point_step = m - n
+    let point_count = handled + 1
+    if code_point_step > (MaxInt - delta) / point_count {
       raise Overflow
     }
-    delta = delta + delta_increment
+    delta = delta + code_point_step * point_count
     n = m
     for c in chars {
       let cp = c.to_int()
       if cp < n {
-        delta = delta + 1
-        if delta == 0 {
+        if delta == MaxInt {
           raise Overflow
         }
+        delta = delta + 1
       } else if cp == n {
         // Represent delta as a generalized variable-length integer
         let mut q = delta
@@ -186,6 +191,9 @@ pub fn encode(input : String) -> String raise PunycodeError {
         delta = 0
         handled = handled + 1
       }
+    }
+    if delta == MaxInt {
+      raise Overflow
     }
     delta = delta + 1
     n = n + 1
@@ -247,7 +255,7 @@ pub fn decode(input : String) -> String raise PunycodeError {
       if digit >= Base {
         raise BadInput
       }
-      if digit > (0x7FFFFFFF - i_val) / w {
+      if digit > (MaxInt - i_val) / w {
         raise Overflow
       }
       i_val = i_val + digit * w
@@ -261,7 +269,7 @@ pub fn decode(input : String) -> String raise PunycodeError {
       if digit < t {
         break
       }
-      if w > 0x7FFFFFFF / (Base - t) {
+      if w > MaxInt / (Base - t) {
         raise Overflow
       }
       w = w * (Base - t)
@@ -269,14 +277,16 @@ pub fn decode(input : String) -> String raise PunycodeError {
     }
     let out_len = output.length() + 1
     bias = adapt(i_val - oldi, out_len, oldi == 0)
-    if i_val / out_len > 0x7FFFFFFF - n {
+    if i_val / out_len > MaxInt - n {
       raise Overflow
     }
     n = n + i_val / out_len
     i_val = i_val % out_len
 
-    // Insert n at position i_val
-    output.insert(i_val, n.unsafe_to_char())
+    // Reject values that are not valid Unicode scalar values before building
+    // the output string. Int::to_char also rejects surrogate code points.
+    guard n.to_char() is Some(decoded_char) else { raise BadInput }
+    output.insert(i_val, decoded_char)
     i_val = i_val + 1
   }
 

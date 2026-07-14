@@ -152,6 +152,12 @@ test "bidi_class: Arabic letters" {
 }
 
 ///|
+test "bidi_class: unassigned code points use block defaults" {
+  inspect(@bidi.bidi_class('\u{0590}'), content="R")
+  inspect(@bidi.bidi_class('\u{070E}'), content="AL")
+}
+
+///|
 test "bidi_class: European numbers" {
   inspect(@bidi.bidi_class('0'), content="EN")
   inspect(@bidi.bidi_class('9'), content="EN")

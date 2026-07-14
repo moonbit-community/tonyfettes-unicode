@@ -97,6 +97,34 @@ test "decode: pure ASCII" {
 }
 
 ///|
+test "decode: rejects code points outside Unicode scalar range" {
+  try decode("en32g") catch {
+    BadInput => ()
+    error => raise error
+  } noraise {
+    _ => fail("Expected BadInput")
+  }
+  try decode("ib9b") catch {
+    BadInput => ()
+    error => raise error
+  } noraise {
+    _ => fail("Expected BadInput for surrogate code point")
+  }
+}
+
+///|
+test "encode: detects delta multiplication overflow" {
+  let ascii_prefix = "a".repeat(3857)
+  let input = "\{ascii_prefix}\u{10FFFF}"
+  try encode(input) catch {
+    Overflow => ()
+    error => raise error
+  } noraise {
+    _ => fail("Expected Overflow")
+  }
+}
+
+///|
 test "roundtrip: various strings" {
   let test_cases = [
     "hello", "münchen", "München", "中文", "日本語", "العربية", "한국어",

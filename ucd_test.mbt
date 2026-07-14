@@ -45,7 +45,16 @@ test "general_category: space" {
 ///|
 test "general_category: CJK ideographs" {
   inspect(general_category('\u{4E00}'), content="Lo") // First CJK Unified Ideograph
+  inspect(general_category('\u{4E01}'), content="Lo") // Interior range member
   inspect(general_category('\u{9FFF}'), content="Lo") // Last CJK Unified Ideograph (approx)
+  inspect(general_category('\u{20001}'), content="Lo") // Supplementary range member
+}
+
+///|
+test "general_category: Hangul syllables" {
+  inspect(general_category('\u{AC00}'), content="Lo")
+  inspect(general_category('\u{B098}'), content="Lo")
+  inspect(general_category('\u{D7A3}'), content="Lo")
 }
 
 ///|
@@ -58,6 +67,8 @@ test "general_category: marks" {
 ///|
 test "general_category: private use" {
   inspect(general_category('\u{E000}'), content="Co") // Private Use Area start
+  inspect(general_category('\u{E001}'), content="Co") // Interior range member
+  inspect(general_category('\u{F0001}'), content="Co") // Supplementary private use
 }
 
 ///|

@@ -24,11 +24,6 @@ UNICODE_DATA_URL = f"{BASE_URL}/UnicodeData.txt"
 COMPOSITION_EXCLUSIONS_URL = f"{BASE_URL}/CompositionExclusions.txt"
 SPECIAL_CASING_URL = f"{BASE_URL}/SpecialCasing.txt"
 
-# Hangul constants - handled algorithmically, not in tables
-HANGUL_S_BASE = 0xAC00
-HANGUL_S_COUNT = 11172
-
-
 def download_file(url: str, cache_dir: Path) -> str:
     """Download a file and cache it locally."""
     filename = url.split("/")[-1]
@@ -66,6 +61,8 @@ def parse_unicode_data(content: str) -> tuple[dict, dict, dict, set, dict, dict,
     upper_mapping = {}
     lower_mapping = {}
     title_mapping = {}
+    range_start = None
+    range_category = None
 
     for line in content.strip().split("\n"):
         if not line or line.startswith("#"):
@@ -76,13 +73,29 @@ def parse_unicode_data(content: str) -> tuple[dict, dict, dict, set, dict, dict,
             continue
 
         cp = int(fields[0], 16)
+        name = fields[1].strip()
+        general_category = fields[2].strip()
 
-        # Skip Hangul syllables - handled algorithmically
-        if HANGUL_S_BASE <= cp < HANGUL_S_BASE + HANGUL_S_COUNT:
+        # UnicodeData represents several large blocks with paired First/Last
+        # records. Expand those pairs for properties stored per code point.
+        if name.endswith(", First>"):
+            if range_start is not None:
+                raise ValueError("Nested UnicodeData First range")
+            range_start = cp
+            range_category = general_category
+            continue
+        if name.endswith(", Last>"):
+            if range_start is None or range_category != general_category:
+                raise ValueError("Mismatched UnicodeData First/Last range")
+            for range_cp in range(range_start, cp + 1):
+                gc_data[range_cp] = general_category
+                if general_category.startswith("M"):
+                    mark_cps.add(range_cp)
+            range_start = None
+            range_category = None
             continue
 
         # Field 2: General Category
-        general_category = fields[2].strip()
         gc_data[cp] = general_category
         if general_category.startswith("M"):  # Mn, Mc, Me
             mark_cps.add(cp)
@@ -129,6 +142,9 @@ def parse_unicode_data(content: str) -> tuple[dict, dict, dict, set, dict, dict,
             title_cp = int(title, 16)
             if title_cp != cp:
                 title_mapping[cp] = title_cp
+
+    if range_start is not None:
+        raise ValueError("Unterminated UnicodeData First range")
 
     return ccc_data, canonical_decomp, compat_decomp, mark_cps, gc_data, upper_mapping, lower_mapping, title_mapping
 

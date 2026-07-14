@@ -1,17 +1,17 @@
 ///|
-let cache_dir : String = "scripts/.cache"
+const CacheDir : String = "../scripts/.cache"
 
 ///|
-let output_dir : String = "internal/ucd"
+const OutputDir : String = "../internal/ucd"
 
 ///|
 async fn read_cache_file(name : String) -> String {
-  @fs.read_file(cache_dir + "/" + name).text()
+  @fs.read_file("\{CacheDir}/\{name}").text()
 }
 
 ///|
 async fn write_generated_file(name : String, source : String) -> Unit {
-  @fs.write_file(output_dir + "/" + name, source, create=0o644, truncate=true)
+  @fs.write_file("\{OutputDir}/\{name}", source, create=0o644, truncate=true)
 }
 
 ///|
@@ -53,7 +53,7 @@ async fn generate_ucd() -> Unit {
 
 ///|
 async fn format_generated_files() -> Unit {
-  let status = @process.run("moon", ["fmt", output_dir])
+  let status = @process.run("moon", ["fmt", OutputDir])
   if status != 0 {
     fail("moon fmt internal/ucd failed")
   }
@@ -65,9 +65,7 @@ async fn main {
     @argparse.Command("ucd"),
     @argparse.Command("all"),
   ])
-  let matches = cmd.parse() catch {
-    err => fail(err.to_string())
-  }
+  let matches = cmd.parse() catch { err => fail(err.to_string()) }
   match matches.subcommand {
     None | Some(("ucd", _)) | Some(("all", _)) => {
       generate_ucd()
