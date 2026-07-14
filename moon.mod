@@ -1,6 +1,6 @@
 name = "tonyfettes/unicode"
 
-version = "0.3.2"
+version = "0.3.3"
 
 license = "Apache-2.0"
 
@@ -20,3 +20,17 @@ keywords = [
   "nfkd",
   "punycode",
 ]
+
+options(
+  exclude: [
+    "AGENTS.md",
+    "CLAUDE.md",
+    "docs",
+    "scripts",
+    "tools",
+    "moon.work",
+    "bidi/internal/conformance",
+    "normalization/conformance_part*_test.mbt",
+    "idna/conformance_test.mbt",
+  ],
+)
