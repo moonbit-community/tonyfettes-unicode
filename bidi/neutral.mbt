@@ -54,12 +54,15 @@ fn resolve_neutral_types(
 
       // N1: If preceding and following are same type, neutrals become that type
       // N2: Otherwise, neutrals become embedding direction
-      let resolved : @bidi_data.BidiClass = if preceding == following {
-        preceding
-      } else if seq.level % 2 == 0 {
-        @bidi_data.BidiClass::L
-      } else {
-        @bidi_data.BidiClass::R
+      let resolved : @bidi_data.BidiClass = match preceding {
+        L if following is L => @bidi_data.BidiClass::L
+        R if following is R => @bidi_data.BidiClass::R
+        _ =>
+          if seq.level % 2 == 0 {
+            @bidi_data.BidiClass::L
+          } else {
+            @bidi_data.BidiClass::R
+          }
       }
 
       // Apply resolved type to all neutrals in the run

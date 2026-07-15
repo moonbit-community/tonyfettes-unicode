@@ -23,51 +23,37 @@ fn resolve_weak_types(
   let mut prev_type = seq.sos
   for idx in indices {
     let bc = types[idx]
-    if bc == @bidi_data.BidiClass::NSM {
+    if bc is NSM {
       // Check if previous character was isolate initiator or PDI
       // In resolved types, isolate initiators keep their type
-      if prev_type.is_isolate_initiator() ||
-        prev_type == @bidi_data.BidiClass::PDI {
+      if prev_type.is_isolate_initiator() || prev_type is PDI {
         types[idx] = @bidi_data.BidiClass::ON
       } else {
         types[idx] = prev_type
       }
     }
     // Update prev_type (don't follow BN)
-    if types[idx] != @bidi_data.BidiClass::BN {
+    if !(types[idx] is BN) {
       prev_type = types[idx]
     }
   }
 
   // W2: EN - European Number after AL
-  // Search backward from each EN to find first strong type.
-  // If it's AL, change EN to AN.
-  for i = 0; i < indices.length(); i = i + 1 {
-    let idx = indices[i]
-    if types[idx] == @bidi_data.BidiClass::EN {
-      // Search backward for strong type
-      let mut j = i - 1
-      while j >= 0 {
-        let bc = types[indices[j]]
-        match bc {
-          AL => {
-            types[idx] = @bidi_data.BidiClass::AN
-            break
-          }
-          L | R => break
-          _ => j -= 1
-        }
-      }
-      // Also check sos
-      if j < 0 && seq.sos == @bidi_data.BidiClass::AL {
-        types[idx] = @bidi_data.BidiClass::AN
-      }
+  // Track the most recent strong type instead of rescanning for every EN.
+  let mut last_strong = seq.sos
+  for idx in indices {
+    match types[idx] {
+      L => last_strong = @bidi_data.BidiClass::L
+      R => last_strong = @bidi_data.BidiClass::R
+      AL => last_strong = @bidi_data.BidiClass::AL
+      EN => if last_strong is AL { types[idx] = @bidi_data.BidiClass::AN }
+      _ => ()
     }
   }
 
   // W3: AL - Arabic Letter becomes R
   for idx in indices {
-    if types[idx] == @bidi_data.BidiClass::AL {
+    if types[idx] is AL {
       types[idx] = @bidi_data.BidiClass::R
     }
   }
@@ -79,21 +65,17 @@ fn resolve_weak_types(
   for i = 1; i < indices.length() - 1; i = i + 1 {
     let idx = indices[i]
     let bc = types[idx]
-    if bc == @bidi_data.BidiClass::ES || bc == @bidi_data.BidiClass::CS {
+    if bc is ES || bc is CS {
       let prev_idx = indices[i - 1]
       let next_idx = indices[i + 1]
       let prev_bc = types[prev_idx]
       let next_bc = types[next_idx]
-      if bc == @bidi_data.BidiClass::ES &&
-        prev_bc == @bidi_data.BidiClass::EN &&
-        next_bc == @bidi_data.BidiClass::EN {
+      if bc is ES && prev_bc is EN && next_bc is EN {
         types[idx] = @bidi_data.BidiClass::EN
-      } else if bc == @bidi_data.BidiClass::CS {
-        if prev_bc == @bidi_data.BidiClass::EN &&
-          next_bc == @bidi_data.BidiClass::EN {
+      } else if bc is CS {
+        if prev_bc is EN && next_bc is EN {
           types[idx] = @bidi_data.BidiClass::EN
-        } else if prev_bc == @bidi_data.BidiClass::AN &&
-          next_bc == @bidi_data.BidiClass::AN {
+        } else if prev_bc is AN && next_bc is AN {
           types[idx] = @bidi_data.BidiClass::AN
         }
       }
@@ -105,17 +87,16 @@ fn resolve_weak_types(
   // First, find all ENs and expand to adjacent ETs
   for i = 0; i < indices.length(); i = i + 1 {
     let idx = indices[i]
-    if types[idx] == @bidi_data.BidiClass::EN {
+    if types[idx] is EN {
       // Look backward for ETs
       let mut j = i - 1
-      while j >= 0 && types[indices[j]] == @bidi_data.BidiClass::ET {
+      while j >= 0 && types[indices[j]] is ET {
         types[indices[j]] = @bidi_data.BidiClass::EN
         j -= 1
       }
       // Look forward for ETs
       j = i + 1
-      while j < indices.length() &&
-            types[indices[j]] == @bidi_data.BidiClass::ET {
+      while j < indices.length() && types[indices[j]] is ET {
         types[indices[j]] = @bidi_data.BidiClass::EN
         j += 1
       }
@@ -126,41 +107,20 @@ fn resolve_weak_types(
   // All remaining ES, ET, and CS characters become ON.
   for idx in indices {
     let bc = types[idx]
-    if bc == @bidi_data.BidiClass::ES ||
-      bc == @bidi_data.BidiClass::ET ||
-      bc == @bidi_data.BidiClass::CS {
+    if bc is ES || bc is ET || bc is CS {
       types[idx] = @bidi_data.BidiClass::ON
     }
   }
 
   // W7: EN becomes L when sos is L or after L
-  // Search backward from each EN for first strong type.
-  // If it's L, or if sos is L and no strong type found, change EN to L.
-  for i = 0; i < indices.length(); i = i + 1 {
-    let idx = indices[i]
-    if types[idx] == @bidi_data.BidiClass::EN {
-      // Search backward for strong type
-      let mut found_strong = false
-      let mut j = i - 1
-      while j >= 0 {
-        let bc = types[indices[j]]
-        match bc {
-          L => {
-            types[idx] = @bidi_data.BidiClass::L
-            found_strong = true
-            break
-          }
-          R => {
-            found_strong = true
-            break
-          }
-          _ => j -= 1
-        }
-      }
-      // Check sos
-      if !found_strong && seq.sos == @bidi_data.BidiClass::L {
-        types[idx] = @bidi_data.BidiClass::L
-      }
+  // W3 has already changed AL to R, so only L and R need tracking here.
+  last_strong = seq.sos
+  for idx in indices {
+    match types[idx] {
+      L => last_strong = @bidi_data.BidiClass::L
+      R => last_strong = @bidi_data.BidiClass::R
+      EN => if last_strong is L { types[idx] = @bidi_data.BidiClass::L }
+      _ => ()
     }
   }
 }
@@ -180,17 +140,15 @@ fn resolve_nsm_after_brackets(
 
   let mut prev_type = seq.sos
   for idx in indices {
-    if original_classes[idx] == @bidi_data.BidiClass::NSM &&
-      types[idx] == @bidi_data.BidiClass::ON {
-      if prev_type.is_isolate_initiator() ||
-        prev_type == @bidi_data.BidiClass::PDI {
+    if original_classes[idx] is NSM && types[idx] is ON {
+      if prev_type.is_isolate_initiator() || prev_type is PDI {
         types[idx] = @bidi_data.BidiClass::ON
       } else {
         types[idx] = prev_type
       }
     }
 
-    if types[idx] != @bidi_data.BidiClass::BN {
+    if !(types[idx] is BN) {
       prev_type = types[idx]
     }
   }

@@ -22,7 +22,7 @@ fn determine_paragraph_level(text : String, default_level~ : Int) -> Int {
       isolate_count += 1
       continue
     }
-    if bc == PDI {
+    if bc is PDI {
       if isolate_count > 0 {
         isolate_count -= 1
       }

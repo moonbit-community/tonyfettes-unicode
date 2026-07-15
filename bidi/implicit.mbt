@@ -14,7 +14,7 @@ fn apply_implicit_levels(
     let level = levels[i]
 
     // Skip removed characters (BN)
-    if bc == @bidi_data.BidiClass::BN {
+    if bc is BN {
       continue
     }
 

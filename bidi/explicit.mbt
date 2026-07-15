@@ -115,7 +115,7 @@ fn process_explicit(
       RLI => {
         levels[i] = stack[stack.length() - 1].level
         let ovr = stack[stack.length() - 1].override_status
-        if ovr != @bidi_data.BidiClass::ON {
+        if !(ovr is ON) {
           types[i] = ovr
         }
         let new_level = next_odd_level(stack[stack.length() - 1].level)
@@ -138,7 +138,7 @@ fn process_explicit(
       LRI => {
         levels[i] = stack[stack.length() - 1].level
         let ovr = stack[stack.length() - 1].override_status
-        if ovr != @bidi_data.BidiClass::ON {
+        if !(ovr is ON) {
           types[i] = ovr
         }
         let new_level = next_even_level(stack[stack.length() - 1].level)
@@ -161,12 +161,12 @@ fn process_explicit(
       FSI => {
         levels[i] = stack[stack.length() - 1].level
         let ovr = stack[stack.length() - 1].override_status
-        if ovr != @bidi_data.BidiClass::ON {
+        if !(ovr is ON) {
           types[i] = ovr
         }
         // Determine direction of isolate content
         let isolate_dir = determine_isolate_direction(types, i + 1)
-        let new_level = if isolate_dir == RTL {
+        let new_level = if isolate_dir is RTL {
           next_odd_level(stack[stack.length() - 1].level)
         } else {
           next_even_level(stack[stack.length() - 1].level)
@@ -211,7 +211,7 @@ fn process_explicit(
         }
         levels[i] = stack[stack.length() - 1].level
         let ovr = stack[stack.length() - 1].override_status
-        if ovr != @bidi_data.BidiClass::ON {
+        if !(ovr is ON) {
           types[i] = ovr
         }
       }
@@ -234,7 +234,7 @@ fn process_explicit(
       _ => {
         levels[i] = stack[stack.length() - 1].level
         let ovr = stack[stack.length() - 1].override_status
-        if ovr != @bidi_data.BidiClass::ON && bc != @bidi_data.BidiClass::BN {
+        if !(ovr is ON) && !(bc is BN) {
           types[i] = ovr
         }
       }
@@ -253,19 +253,17 @@ fn adjust_nsm_levels(
   let mut saw_explicit = false
   for i = 0; i < original_classes.length(); i = i + 1 {
     let bc = original_classes[i]
-    if bc == @bidi_data.BidiClass::LRE ||
-      bc == @bidi_data.BidiClass::LRO ||
-      bc == @bidi_data.BidiClass::RLE ||
-      bc == @bidi_data.BidiClass::RLO ||
-      bc == @bidi_data.BidiClass::PDF ||
+    if bc is LRE ||
+      bc is LRO ||
+      bc is RLE ||
+      bc is RLO ||
+      bc is PDF ||
       bc.is_isolate_initiator() {
       saw_explicit = true
     }
-    if bc == @bidi_data.BidiClass::NSM && last_idx >= 0 {
+    if bc is NSM && last_idx >= 0 {
       let last_bc = original_classes[last_idx]
-      if !last_bc.is_isolate_initiator() &&
-        last_bc != @bidi_data.BidiClass::PDI &&
-        !saw_explicit {
+      if !last_bc.is_isolate_initiator() && !(last_bc is PDI) && !saw_explicit {
         levels[i] = levels[last_idx]
       }
     }
@@ -287,7 +285,7 @@ fn determine_isolate_direction(
     let bc = types[i]
     if bc.is_isolate_initiator() {
       isolate_count += 1
-    } else if bc == @bidi_data.BidiClass::PDI {
+    } else if bc is PDI {
       if isolate_count > 0 {
         isolate_count -= 1
       } else {
@@ -356,7 +354,7 @@ fn compute_isolating_run_sequences(
 
     // Skip BN and explicit formatting characters
     let bc = types[i]
-    if bc == @bidi_data.BidiClass::BN {
+    if bc is BN {
       processed[i] = true
       continue
     }
@@ -374,7 +372,7 @@ fn compute_isolating_run_sequences(
           current += 1
           continue
         }
-        if types[current] == @bidi_data.BidiClass::BN {
+        if types[current] is BN {
           processed[current] = true
           current += 1
           continue
@@ -414,12 +412,12 @@ fn compute_isolating_run_sequences(
     } else {
       // Find previous character level (skip BN)
       let mut prev = first_idx - 1
-      while prev > 0 && types[prev] == @bidi_data.BidiClass::BN {
+      while prev > 0 && types[prev] is BN {
         prev -= 1
       }
-      if prev < 0 || types[prev] == @bidi_data.BidiClass::BN {
+      if prev < 0 || types[prev] is BN {
         paragraph_level
-      } else if original_classes[prev] == @bidi_data.BidiClass::B {
+      } else if original_classes[prev] is B {
         paragraph_level
       } else {
         levels[prev]
@@ -435,12 +433,12 @@ fn compute_isolating_run_sequences(
     // eos: higher of level after sequence and sequence level
     let level_after = if last_idx >= len - 1 {
       paragraph_level
-    } else if original_classes[last_idx] == @bidi_data.BidiClass::B {
+    } else if original_classes[last_idx] is B {
       paragraph_level
     } else {
       // Find next character level (skip BN)
       let mut next = last_idx + 1
-      while next < len && types[next] == @bidi_data.BidiClass::BN {
+      while next < len && types[next] is BN {
         next += 1
       }
       // Check if this is an isolate initiator - look for matching PDI
@@ -452,7 +450,7 @@ fn compute_isolating_run_sequences(
         }
       } else if next >= len {
         paragraph_level
-      } else if original_classes[next] == @bidi_data.BidiClass::B {
+      } else if original_classes[next] is B {
         paragraph_level
       } else {
         levels[next]

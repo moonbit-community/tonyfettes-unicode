@@ -57,7 +57,7 @@ fn reset_whitespace_levels(
   // Also reset any S or B in the middle, plus preceding whitespace/isolates
   for k = 0; k < len; k = k + 1 {
     let bc = original_classes[k]
-    if bc == @bidi_data.BidiClass::S || bc == @bidi_data.BidiClass::B {
+    if bc is S || bc is B {
       levels[k] = paragraph_level
       // L1.3: Reset preceding whitespace and isolate formatting characters
       // (skipping X9-removed characters)
