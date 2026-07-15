@@ -212,11 +212,11 @@ pub fn generate_mapping_source(content : String) -> String raise {
       #|  let mapping_start = idna_mapping_starts[idx]
       #|  let mapping_len = idna_mapping_lens[idx]
       #|  let mapping : Array[Char] = []
-    #|  for code_point in idna_mapping_data.view(
-    #|    start=mapping_start,
-    #|    end=mapping_start + mapping_len,
-    #|  ) {
-    #|    mapping.push(code_point.unsafe_to_char())
+      #|  for code_point in idna_mapping_data.view(
+      #|    start=mapping_start,
+      #|    end=mapping_start + mapping_len,
+      #|  ) {
+      #|    mapping.push(code_point.unsafe_to_char())
       #|  }
       #|  (status, mapping)
       #|}

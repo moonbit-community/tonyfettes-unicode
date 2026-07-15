@@ -31,7 +31,7 @@ async fn read_source(root : StringView, name : String, url : String) -> String {
     fail("Download failed for \{url}: HTTP \{response.code}")
   }
   let content = body.text()
-  @fs.write_file(path, content, create=0o644, truncate=true)
+  @fs.write_file(path, content, create_mode=CreateOrTruncate, permission=0o644)
   content
 }
 
@@ -61,7 +61,7 @@ async fn write_source(
   if parent_directory(path) is Some(parent) {
     ensure_directory(parent)
   }
-  @fs.write_file(path, source, create=0o644, truncate=true)
+  @fs.write_file(path, source, create_mode=CreateOrTruncate, permission=0o644)
 }
 
 ///|
@@ -136,11 +136,8 @@ async fn generate_ucd(root : StringView) -> Unit {
     @ucd.emit_case_mapping(unicode_data, special_casing),
   )
   let generated_files = [
-    "internal/ucd/ccc.mbt",
-    "internal/ucd/decomposition.mbt",
-    "internal/ucd/composition.mbt",
-    "internal/ucd/general_category.mbt",
-    "internal/ucd/case_mapping.mbt",
+    "internal/ucd/ccc.mbt", "internal/ucd/decomposition.mbt", "internal/ucd/composition.mbt",
+    "internal/ucd/general_category.mbt", "internal/ucd/case_mapping.mbt",
   ]
   for file in generated_files {
     format_file(root, file)
@@ -263,7 +260,7 @@ fn is_old_bidi_test(name : StringView) -> Bool {
 
 ///|
 async fn remove_directory_if_present(path : String) -> Unit {
-  try @fs.rmdir(path, recursive=true) catch {
+  @fs.rmdir(path, recursive=true) catch {
     @os_error.OSError(_) as error if error.is_ENOENT() => ()
     error => raise error
   }
@@ -304,7 +301,7 @@ async fn generate_bidi_tests(root : StringView, part_size : Int) -> Unit {
 fn part_size(matches : @argparse.Matches) -> Int raise {
   let size = match matches.values {
     { "part-size": [value], .. } => @support.parse_decimal_int(value)
-    _ => 5000
+    _ => 500
   }
   guard size > 0 else { fail("--part-size must be positive") }
   size
@@ -334,7 +331,7 @@ async fn main {
         "part-size",
         long="part-size",
         about="Bidi conformance tests per package",
-        default_values=["5000"],
+        default_values=["500"],
         global=true,
       ),
     ],
