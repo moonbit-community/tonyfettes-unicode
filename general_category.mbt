@@ -9,7 +9,7 @@ pub(all) enum GeneralCategoryGroup {
   P // Punctuation
   S // Symbol
   C // Other
-} derive(Eq)
+} derive(Debug, Eq)
 
 ///|
 pub impl Show for GeneralCategoryGroup with fn output(self, logger) {
