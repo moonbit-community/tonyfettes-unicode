@@ -28,7 +28,6 @@ options(
     "docs",
     "tools",
     "moon.work",
-    "bidi/internal/conformance",
     "normalization/conformance_part*_test.mbt",
     "idna/conformance_test.mbt",
   ],
