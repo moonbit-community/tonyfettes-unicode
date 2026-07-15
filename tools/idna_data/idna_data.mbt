@@ -106,11 +106,11 @@ pub fn generate_mapping_source(content : String) -> String raise {
       #|pub(all) enum IdnaStatus {
       #|  Valid             // 0: Valid character
       #|  Ignored           // 1: Character is removed
-      #|  Mapped            // 2: Character is mapped to other characters
-      #|  Deviation         // 3: Treated as valid in nontransitional mode
+      #|  Mapped(Array[Char]) // 2: Character is mapped to other characters
+      #|  Deviation(Array[Char]) // 3: Treated as valid in nontransitional mode
       #|  Disallowed        // 4: Character is not allowed
       #|  DisallowedSTD3Valid  // 5: Valid only without UseSTD3ASCIIRules
-      #|  DisallowedSTD3Mapped // 6: Mapped only without UseSTD3ASCIIRules
+      #|  DisallowedSTD3Mapped(Array[Char]) // 6: Mapped only without UseSTD3ASCIIRules
       #|} derive(Eq)
       #|
       #|///|
@@ -118,11 +118,11 @@ pub fn generate_mapping_source(content : String) -> String raise {
       #|  match self {
       #|    Valid => logger.write_string("Valid")
       #|    Ignored => logger.write_string("Ignored")
-      #|    Mapped => logger.write_string("Mapped")
-      #|    Deviation => logger.write_string("Deviation")
+      #|    Mapped(_) => logger.write_string("Mapped")
+      #|    Deviation(_) => logger.write_string("Deviation")
       #|    Disallowed => logger.write_string("Disallowed")
       #|    DisallowedSTD3Valid => logger.write_string("DisallowedSTD3Valid")
-      #|    DisallowedSTD3Mapped => logger.write_string("DisallowedSTD3Mapped")
+      #|    DisallowedSTD3Mapped(_) => logger.write_string("DisallowedSTD3Mapped")
       #|  }
       #|}
       #|
@@ -188,27 +188,7 @@ pub fn generate_mapping_source(content : String) -> String raise {
       #|}
       #|
       #|///|
-      #|fn status_from_code(code : Int) -> IdnaStatus {
-      #|  match code {
-      #|    0 => Valid
-      #|    1 => Ignored
-      #|    2 => Mapped
-      #|    3 => Deviation
-      #|    4 => Disallowed
-      #|    5 => DisallowedSTD3Valid
-      #|    6 => DisallowedSTD3Mapped
-      #|    _ => Disallowed
-      #|  }
-      #|}
-      #|
-      #|///|
-      #|/// Look up IDNA status and mapping for a character
-      #|pub fn lookup_idna_mapping(c : Char) -> (IdnaStatus, Array[Char]) {
-      #|  let idx = find_idna_range(c)
-      #|  if idx < 0 {
-      #|    return (Disallowed, [])
-      #|  }
-      #|  let status = status_from_code(idna_range_statuses[idx])
+      #|fn mapping_for_range(idx : Int) -> Array[Char] {
       #|  let mapping_start = idna_mapping_starts[idx]
       #|  let mapping_len = idna_mapping_lens[idx]
       #|  let mapping : Array[Char] = []
@@ -218,7 +198,31 @@ pub fn generate_mapping_source(content : String) -> String raise {
       #|  ) {
       #|    mapping.push(code_point.unsafe_to_char())
       #|  }
-      #|  (status, mapping)
+      #|  mapping
+      #|}
+      #|
+      #|///|
+      #|fn status_for_range(idx : Int) -> IdnaStatus {
+      #|  match idna_range_statuses[idx] {
+      #|    0 => Valid
+      #|    1 => Ignored
+      #|    2 => Mapped(mapping_for_range(idx))
+      #|    3 => Deviation(mapping_for_range(idx))
+      #|    4 => Disallowed
+      #|    5 => DisallowedSTD3Valid
+      #|    6 => DisallowedSTD3Mapped(mapping_for_range(idx))
+      #|    _ => Disallowed
+      #|  }
+      #|}
+      #|
+      #|///|
+      #|/// Look up the IDNA status for a character
+      #|pub fn lookup_idna_mapping(c : Char) -> IdnaStatus {
+      #|  let idx = find_idna_range(c)
+      #|  if idx < 0 {
+      #|    return Disallowed
+      #|  }
+      #|  status_for_range(idx)
       #|}
       #|
     ),

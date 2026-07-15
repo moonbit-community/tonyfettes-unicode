@@ -10,6 +10,11 @@ test "parse and emit IDNA mapping data" {
   inspect(source.contains("0x0041"), content="true")
   inspect(source.contains("let idna_mapping_data"), content="true")
   inspect(source.contains("  0x0061"), content="true")
+  inspect(source.contains("Mapped(Array[Char])"), content="true")
+  inspect(
+    source.contains("pub fn lookup_idna_mapping(c : Char) -> IdnaStatus"),
+    content="true",
+  )
 }
 
 ///|
