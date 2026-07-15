@@ -8,30 +8,30 @@ test "legacy UCD package surface" {
 
 ///|
 test "legacy normalization package surface" {
-  let form : @legacy_normalization.NormalizationForm = @legacy_normalization.NFC
-  inspect(@legacy_normalization.normalize("e\u{0301}", form), content="é")
+  let form : @unicode/normalization.NormalizationForm = @unicode/normalization.NFC
+  inspect(@unicode/normalization.normalize("e\u{0301}", form), content="é")
 }
 
 ///|
 test "legacy Punycode package surface" {
-  let error : @legacy_punycode.PunycodeError = @legacy_punycode.BadInput
+  let error : @unicode/punycode.PunycodeError = @unicode/punycode.BadInput
   inspect(error, content="BadInput")
-  inspect(@legacy_punycode.encode("bücher"), content="bcher-kva")
+  inspect(@unicode/punycode.encode("bücher"), content="bcher-kva")
 }
 
 ///|
 test "legacy Bidi package surface" {
-  let direction : @legacy_bidi.Direction = @legacy_bidi.LTR
-  let _ : @legacy_bidi.BidiClass = @legacy_bidi.bidi_class('A')
+  let direction : @unicode/bidi.Direction = @unicode/bidi.LTR
+  let _ : @unicode/bidi.BidiClass = @unicode/bidi.bidi_class('A')
   inspect(direction.level(), content="0")
-  let paragraph = @legacy_bidi.process("abc", direction~)
+  let paragraph = @unicode/bidi.process("abc", direction~)
   inspect(paragraph.base_level, content="0")
-  inspect(@legacy_bidi.reorder_string(paragraph), content="abc")
+  inspect(@unicode/bidi.reorder_string(paragraph), content="abc")
 }
 
 ///|
 test "legacy IDNA package surface" {
-  let error : @legacy_idna.IdnaError = @legacy_idna.EmptyLabel
+  let error : @unicode/idna.IdnaError = @unicode/idna.EmptyLabel
   inspect(error, content="EmptyLabel")
-  inspect(@legacy_idna.to_ascii("example.com"), content="example.com")
+  inspect(@unicode/idna.to_ascii("example.com"), content="example.com")
 }
