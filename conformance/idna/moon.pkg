@@ -1,3 +1,7 @@
 import {
   "tonyfettes/idna" @impl,
 }
+
+import {
+  "moonbitlang/core/test",
+} for "test"

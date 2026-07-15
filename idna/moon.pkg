@@ -10,4 +10,5 @@ import {
   "tonyfettes/idna/internal/base_fuzz" @fuzz,
   "tonyfettes/idna/internal/fuzz" @idna_fuzz,
   "moonbitlang/core/random",
+  "moonbitlang/core/test",
 } for "test"

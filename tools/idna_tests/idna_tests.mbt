@@ -222,29 +222,27 @@ fn write_error_test(
     out.write("///|\n")
   }
   write_test_name(out, case, status~)
-  out.write("  let result = to_ascii_result(\n    \"")
+  out.write("  @test.assert_raise(() => {\n    @idna.to_ascii(\n      \"")
   out.write(@support.escape_moonbit_string(case.source))
-  out.write("\",\n    use_std3_ascii_rules=")
+  out.write("\",\n      use_std3_ascii_rules=")
   out.write(@support.bool_literal(flags.use_std3_ascii_rules))
-  out.write(",\n    check_hyphens=")
+  out.write(",\n      check_hyphens=")
   out.write(@support.bool_literal(flags.check_hyphens))
-  out.write(",\n    check_bidi=")
+  out.write(",\n      check_bidi=")
   out.write(@support.bool_literal(flags.check_bidi))
-  out.write(",\n    check_joiners=")
+  out.write(",\n      check_joiners=")
   out.write(@support.bool_literal(flags.check_joiners))
-  out.write(",\n    verify_dns_length=")
+  out.write(",\n      verify_dns_length=")
   out.write(@support.bool_literal(flags.verify_dns_length))
   out.write(
     (
       #|,
-      #|  )
-      #|  guard result is Err(_) else {
-      #|    fail("Expected error for line
+      #|    )
+      #|  })
+      #|}
+      #|
     ),
   )
-  out.write_char(' ')
-  out.write_int(case.line_number)
-  out.write(", got Ok\")\n  }\n}\n\n")
 }
 
 ///|
