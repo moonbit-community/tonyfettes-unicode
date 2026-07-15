@@ -300,28 +300,22 @@ test "fuzz: hebrew rtl domains with bidi check" {
 }
 
 ///|
-test "fuzz: mixed bidi labels may be rejected" {
+test "fuzz: mixed bidi labels rejected" {
   let rng = @random.Rand::chacha8(seed=fuzz_seed)
-  let mut error_count = 0
   for _ in 0..<fuzz_iterations {
     let label = @idna_fuzz.random_mixed_bidi_label(rng)
-    try
+    let error = @test.expect_error(() => {
       @idna.to_ascii(
         label,
         check_bidi=true,
         check_joiners=false,
         verify_dns_length=false,
       )
-    catch {
-      InvalidBidi => error_count = error_count + 1
-      _ => ()
-    } noraise {
-      _ => ()
+    })
+    guard error is InvalidBidi else {
+      fail("expected InvalidBidi for mixed LTR/RTL label")
     }
   }
-  // We expect at least some InvalidBidi errors for mixed LTR/RTL content
-  // (might not be all, since the exact rules are complex)
-  assert_true(error_count > 0)
 }
 
 // =============================================================================
@@ -331,45 +325,34 @@ test "fuzz: mixed bidi labels may be rejected" {
 ///|
 test "fuzz: joiners at boundary rejected" {
   let rng = @random.Rand::chacha8(seed=fuzz_seed)
-  let mut error_count = 0
   for _ in 0..<fuzz_iterations {
     let label = @idna_fuzz.random_label_with_joiners(rng, at_boundary=true)
-    try
+    let error = @test.expect_error(() => {
       @idna.to_ascii(
         label,
         check_bidi=false,
         check_joiners=true,
         verify_dns_length=false,
       )
-    catch {
-      InvalidJoiner => error_count = error_count + 1
-      _ => ()
-    } noraise {
-      _ => ()
+    })
+    guard error is InvalidJoiner else {
+      fail("expected InvalidJoiner for joiner at label boundary")
     }
   }
-  // We expect joiner errors when joiner is at label boundary
-  assert_true(error_count > 0)
 }
 
 ///|
-test "fuzz: joiners in middle may pass" {
+test "fuzz: joiners after virama accepted" {
   let rng = @random.Rand::chacha8(seed=fuzz_seed)
   for _ in 0..<fuzz_iterations {
     let label = @idna_fuzz.random_label_with_joiners(rng, at_boundary=false)
-    // Just testing the code path runs.
-    try
-      @idna.to_ascii(
-        label,
-        check_bidi=false,
-        check_joiners=true,
-        verify_dns_length=false,
-      )
-    catch {
-      _ => ()
-    } noraise {
-      ascii => assert_true(@idna_fuzz.is_ascii_string(ascii))
-    }
+    let ascii = @idna.to_ascii(
+      label,
+      check_bidi=false,
+      check_joiners=true,
+      verify_dns_length=false,
+    )
+    assert_true(@idna_fuzz.is_ascii_string(ascii))
   }
 }
 
@@ -440,60 +423,46 @@ test "fuzz: mapped characters transformed" {
 ///|
 test "fuzz: disallowed characters rejected" {
   let rng = @random.Rand::chacha8(seed=fuzz_seed)
-  let mut error_count = 0
   for _ in 0..<fuzz_iterations {
     let label = @idna_fuzz.random_label_with_disallowed(rng)
-    try @idna.to_ascii(label, check_bidi=false, check_joiners=false) catch {
-      DisallowedCodePoint(_) => error_count = error_count + 1
-      _ => ()
-    } noraise {
-      _ => ()
+    let error = @test.expect_error(() => {
+      @idna.to_ascii(label, check_bidi=false, check_joiners=false)
+    })
+    guard error is DisallowedCodePoint(_) else {
+      fail("expected DisallowedCodePoint")
     }
   }
-  // We expect most inputs with disallowed chars to fail
-  assert_true(error_count > 0)
 }
 
 ///|
 test "fuzz: label too long rejected" {
   let rng = @random.Rand::chacha8(seed=fuzz_seed)
-  let mut error_count = 0
   for _ in 0..<100 {
     let label = @idna_fuzz.random_long_label(rng)
-    try
+    let error = @test.expect_error(() => {
       @idna.to_ascii(
         label,
-        use_std3_ascii_rules=false, // Allow non-LDH ASCII for this test
         check_bidi=false,
         check_joiners=false,
         verify_dns_length=true,
       )
-    catch {
-      LabelTooLong => error_count = error_count + 1
-      _ => ()
-    } noraise {
-      _ => ()
-    }
+    })
+    guard error is LabelTooLong else { fail("expected LabelTooLong") }
   }
-  // We expect long labels to fail
-  assert_true(error_count > 0)
 }
 
 ///|
 test "fuzz: leading combining mark rejected" {
   let rng = @random.Rand::chacha8(seed=fuzz_seed)
-  let mut error_count = 0
   for _ in 0..<fuzz_iterations {
     let label = @idna_fuzz.random_label_leading_combining(rng)
-    try @idna.to_ascii(label, check_bidi=false, check_joiners=false) catch {
-      LeadingCombiningMark => error_count = error_count + 1
-      _ => ()
-    } noraise {
-      _ => ()
+    let error = @test.expect_error(() => {
+      @idna.to_ascii(label, check_bidi=false, check_joiners=false)
+    })
+    guard error is LeadingCombiningMark else {
+      fail("expected LeadingCombiningMark")
     }
   }
-  // We expect leading combining marks to fail
-  assert_true(error_count > 0)
 }
 
 // =============================================================================
@@ -503,10 +472,9 @@ test "fuzz: leading combining mark rejected" {
 ///|
 test "fuzz: std3 hyphen at start rejected" {
   let rng = @random.Rand::chacha8(seed=fuzz_seed)
-  let mut error_count = 0
   for _ in 0..<200 {
     let label = @idna_fuzz.random_label_boundary_hyphen(rng, at_start=true)
-    try
+    let error = @test.expect_error(() => {
       @idna.to_ascii(
         label,
         use_std3_ascii_rules=true,
@@ -514,24 +482,19 @@ test "fuzz: std3 hyphen at start rejected" {
         check_bidi=false,
         check_joiners=false,
       )
-    catch {
-      InvalidHyphen => error_count = error_count + 1
-      _ => ()
-    } noraise {
-      _ => ()
+    })
+    guard error is InvalidHyphen else {
+      fail("expected InvalidHyphen at label start")
     }
   }
-  // We expect hyphen at start to fail
-  assert_true(error_count > 0)
 }
 
 ///|
 test "fuzz: std3 hyphen at end rejected" {
   let rng = @random.Rand::chacha8(seed=fuzz_seed)
-  let mut error_count = 0
   for _ in 0..<200 {
     let label = @idna_fuzz.random_label_boundary_hyphen(rng, at_start=false)
-    try
+    let error = @test.expect_error(() => {
       @idna.to_ascii(
         label,
         use_std3_ascii_rules=true,
@@ -539,15 +502,11 @@ test "fuzz: std3 hyphen at end rejected" {
         check_bidi=false,
         check_joiners=false,
       )
-    catch {
-      InvalidHyphen => error_count = error_count + 1
-      _ => ()
-    } noraise {
-      _ => ()
+    })
+    guard error is InvalidHyphen else {
+      fail("expected InvalidHyphen at label end")
     }
   }
-  // We expect hyphen at end to fail
-  assert_true(error_count > 0)
 }
 
 // =============================================================================
