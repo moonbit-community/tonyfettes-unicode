@@ -1,8 +1,11 @@
-target
-target/
-_build
+# MoonBit
 _build/
 .mooncakes/
-.vscode/
-.DS_Store
 publish/
+.repos/
+
+# VSCode
+.vscode/
+
+# macOS
+.DS_Store
