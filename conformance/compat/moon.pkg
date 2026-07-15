@@ -1,0 +1,7 @@
+import {
+  "tonyfettes/unicode",
+  "tonyfettes/unicode/normalization" @legacy_normalization,
+  "tonyfettes/unicode/punycode" @legacy_punycode,
+  "tonyfettes/unicode/bidi" @legacy_bidi,
+  "tonyfettes/unicode/idna" @legacy_idna,
+} for "test"

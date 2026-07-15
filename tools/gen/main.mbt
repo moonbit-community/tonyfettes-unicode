@@ -110,39 +110,35 @@ async fn generate_ucd(root : StringView) -> Unit {
   let full_exclusions = @ucd.build_full_composition_exclusions(
     unicode_data, exclusions,
   )
+  write_source(root, "ucd/data/ccc.mbt", @ucd.emit_ccc(ccc_ranges, mark_ranges))
   write_source(
     root,
-    "internal/ucd/ccc.mbt",
-    @ucd.emit_ccc(ccc_ranges, mark_ranges),
-  )
-  write_source(
-    root,
-    "internal/ucd/decomposition.mbt",
+    "ucd/data/decomposition.mbt",
     @ucd.emit_decomposition(unicode_data),
   )
   write_source(
     root,
-    "internal/ucd/composition.mbt",
+    "ucd/data/composition.mbt",
     @ucd.emit_composition(compositions, full_exclusions),
   )
   write_source(
     root,
-    "internal/ucd/general_category.mbt",
+    "ucd/data/general_category.mbt",
     @ucd.emit_general_category(general_category_ranges),
   )
   write_source(
     root,
-    "internal/ucd/case_mapping.mbt",
+    "ucd/data/case_mapping.mbt",
     @ucd.emit_case_mapping(unicode_data, special_casing),
   )
   let generated_files = [
-    "internal/ucd/ccc.mbt", "internal/ucd/decomposition.mbt", "internal/ucd/composition.mbt",
-    "internal/ucd/general_category.mbt", "internal/ucd/case_mapping.mbt",
+    "ucd/data/ccc.mbt", "ucd/data/decomposition.mbt", "ucd/data/composition.mbt",
+    "ucd/data/general_category.mbt", "ucd/data/case_mapping.mbt",
   ]
   for file in generated_files {
     format_file(root, file)
   }
-  generate_interfaces(root, "internal/ucd")
+  generate_interfaces(root, "ucd/data")
 }
 
 ///|
@@ -159,17 +155,17 @@ async fn generate_idna_data(root : StringView) -> Unit {
   )
   write_source(
     root,
-    "internal/idna/mapping.mbt",
+    "idna/internal/idna/mapping.mbt",
     @idna_data.generate_mapping_source(mapping),
   )
   write_source(
     root,
-    "internal/idna/joining.mbt",
+    "idna/internal/idna/joining.mbt",
     @idna_data.generate_joining_source(joining),
   )
-  format_file(root, "internal/idna/mapping.mbt")
-  format_file(root, "internal/idna/joining.mbt")
-  generate_interfaces(root, "internal/idna")
+  format_file(root, "idna/internal/idna/mapping.mbt")
+  format_file(root, "idna/internal/idna/joining.mbt")
+  generate_interfaces(root, "idna/internal/idna")
 }
 
 ///|
@@ -192,23 +188,24 @@ async fn generate_bidi_data(root : StringView) -> Unit {
   )
   write_source(
     root,
-    "internal/bidi/bidi_class.mbt",
+    "bidi/bidi_class.mbt",
     @bidi_data.generate_bidi_class_source(classes),
   )
   write_source(
     root,
-    "internal/bidi/mirrored.mbt",
+    "bidi/internal/bidi/mirrored.mbt",
     @bidi_data.generate_mirrored_source(mirroring),
   )
   write_source(
     root,
-    "internal/bidi/bracket.mbt",
+    "bidi/internal/bidi/bracket.mbt",
     @bidi_data.generate_bracket_source(brackets),
   )
-  format_file(root, "internal/bidi/bidi_class.mbt")
-  format_file(root, "internal/bidi/mirrored.mbt")
-  format_file(root, "internal/bidi/bracket.mbt")
-  generate_interfaces(root, "internal/bidi")
+  format_file(root, "bidi/bidi_class.mbt")
+  format_file(root, "bidi/internal/bidi/mirrored.mbt")
+  format_file(root, "bidi/internal/bidi/bracket.mbt")
+  generate_interfaces(root, "bidi")
+  generate_interfaces(root, "bidi/internal/bidi")
 }
 
 ///|
@@ -225,7 +222,7 @@ async fn generate_normalization_tests(root : StringView) -> Unit {
     "NormalizationTest.txt",
     "https://www.unicode.org/Public/\{UnicodeVersion}/ucd/NormalizationTest.txt",
   )
-  let directory = "\{root}/normalization"
+  let directory = "\{root}/conformance/normalization"
   for name in @fs.readdir(directory) {
     if is_old_normalization_test(name) {
       @fs.remove("\{directory}/\{name}")
@@ -246,10 +243,10 @@ async fn generate_idna_tests(root : StringView) -> Unit {
   )
   write_source(
     root,
-    "idna/conformance_test.mbt",
+    "conformance/idna/conformance_test.mbt",
     @idna_tests.generate_source(content),
   )
-  format_file(root, "idna/conformance_test.mbt")
+  format_file(root, "conformance/idna/conformance_test.mbt")
 }
 
 ///|
@@ -275,14 +272,14 @@ async fn generate_bidi_tests(root : StringView, part_size : Int) -> Unit {
     "BidiCharacterTest.txt",
     "\{base}/BidiCharacterTest.txt",
   )
-  let bidi_directory = "\{root}/bidi"
+  let bidi_directory = "\{root}/conformance/bidi"
   for name in @fs.readdir(bidi_directory) {
     if is_old_bidi_test(name) {
       @fs.remove("\{bidi_directory}/\{name}")
     }
   }
-  remove_directory_if_present("\{bidi_directory}/conformance")
-  remove_directory_if_present("\{bidi_directory}/internal/conformance")
+  remove_directory_if_present("\{bidi_directory}/bidi")
+  remove_directory_if_present("\{bidi_directory}/character")
   let parts = @bidi_tests.generate_parts(
     bidi_content, character_content, part_size,
   )
@@ -293,8 +290,8 @@ async fn generate_bidi_tests(root : StringView, part_size : Int) -> Unit {
     write_source(root, package_path, @bidi_tests.package_source())
     write_source(root, test_path, part.source)
   }
-  format_file(root, "bidi/internal/conformance")
-  generate_matching_interfaces(root, "bidi/internal/conformance")
+  format_file(root, "conformance/bidi")
+  generate_matching_interfaces(root, "conformance/bidi")
 }
 
 ///|

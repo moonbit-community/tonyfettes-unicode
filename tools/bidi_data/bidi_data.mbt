@@ -315,32 +315,20 @@ let bidi_class_implementation : String =
   #|}
   #|
   #|///|
-  #|pub fn lookup_bidi_class(c : Char) -> BidiClass {
+  #|fn lookup_bidi_class(c : Char) -> BidiClass {
   #|  let idx = find_bidi_range(c)
   #|  if idx < 0 { L } else { bidi_from_code(bidi_range_classes[idx]) }
   #|}
   #|
-  #|///|
-  #|pub fn is_strong(c : Char) -> Bool {
-  #|  lookup_bidi_class(c) is (L | R | AL)
-  #|}
-  #|
-  #|///|
-  #|pub fn is_strong_rtl(c : Char) -> Bool {
+  #|fn is_strong_rtl(c : Char) -> Bool {
   #|  lookup_bidi_class(c) is (R | AL)
   #|}
   #|
   #|///|
-  #|pub fn is_explicit_formatting(c : Char) -> Bool {
+  #|fn is_explicit_formatting(c : Char) -> Bool {
   #|  lookup_bidi_class(c) is (LRE | LRO | RLE | RLO | PDF | LRI | RLI | FSI | PDI)
   #|}
   #|
-  #|///|
-  #|pub fn is_isolate_initiator(c : Char) -> Bool {
-  #|  lookup_bidi_class(c) is (LRI | RLI | FSI)
-  #|}
-  #|
-  #|///|
   #|pub fn BidiClass::is_strong(self : BidiClass) -> Bool {
   #|  self is (L | R | AL)
   #|}

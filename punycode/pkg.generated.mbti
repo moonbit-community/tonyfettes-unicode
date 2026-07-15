@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "tonyfettes/unicode/punycode"
+package "tonyfettes/punycode"
 
 // Values
 pub fn decode(String) -> String raise PunycodeError

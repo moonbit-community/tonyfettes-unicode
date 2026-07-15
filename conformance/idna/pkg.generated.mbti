@@ -1,0 +1,17 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "tonyfettes/unicode-conformance/idna"
+
+// Values
+pub fn to_ascii(String, use_std3_ascii_rules? : Bool, check_hyphens? : Bool, check_bidi? : Bool, check_joiners? : Bool, verify_dns_length? : Bool) -> String raise @tonyfettes/idna.IdnaError
+
+pub fn to_unicode(String, use_std3_ascii_rules? : Bool, check_hyphens? : Bool, check_bidi? : Bool, check_joiners? : Bool) -> String raise @tonyfettes/idna.IdnaError
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+pub using @tonyfettes/idna {type IdnaError}
+
+// Traits
+

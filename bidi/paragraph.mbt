@@ -15,7 +15,7 @@
 fn determine_paragraph_level(text : String, default_level~ : Int) -> Int {
   let mut isolate_count = 0
   for c in text {
-    let bc = @bidi_data.lookup_bidi_class(c)
+    let bc = lookup_bidi_class(c)
 
     // Skip characters inside isolates
     if bc.is_isolate_initiator() {

@@ -18,27 +18,32 @@ generated tables target Unicode 16.0.0.
 
 ## Installation
 
-Add the package to your MoonBit module:
+Add only the feature modules your application needs:
 
 ```bash
-moon add tonyfettes/unicode
+moon add tonyfettes/ucd
+moon add tonyfettes/normalization
+moon add tonyfettes/punycode
+moon add tonyfettes/bidi
+moon add tonyfettes/idna
 ```
 
 Import the packages you need in `moon.pkg`:
 
 ```moonbit
 import {
-  "tonyfettes/unicode"
-  "tonyfettes/unicode/normalization"
-  "tonyfettes/unicode/punycode"
-  "tonyfettes/unicode/idna"
-  "tonyfettes/unicode/bidi"
+  "tonyfettes/ucd"
+  "tonyfettes/normalization"
+  "tonyfettes/punycode"
+  "tonyfettes/idna"
+  "tonyfettes/bidi"
 }
 ```
 
 MoonBit uses the last package path segment as the default alias, so these
-imports are used as `@unicode`, `@normalization`, `@punycode`, `@idna`, and
-`@bidi`.
+imports are used as `@ucd`, `@normalization`, `@punycode`, `@idna`, and
+`@bidi`. Existing users may continue depending on `tonyfettes/unicode`; it is
+an umbrella compatibility module that preserves the old package paths.
 
 ## Usage
 
@@ -120,17 +125,17 @@ let forced = @bidi.process(
 ### Case And Category Data
 
 ```moonbit
-let category = @unicode.general_category('A') // Lu
+let category = @ucd.general_category('A') // Lu
 let group = category.group() // L
 
-let simple = @unicode.to_simple_uppercase('a') // 'A'
-let full = @unicode.to_uppercase('\u{00DF}') // "SS"
-let lower = @unicode.to_lowercase('\u{0130}') // "i" + combining dot above
+let simple = @ucd.to_simple_uppercase('a') // 'A'
+let full = @ucd.to_uppercase('\u{00DF}') // "SS"
+let lower = @ucd.to_lowercase('\u{0130}') // "i" + combining dot above
 ```
 
 ## Public Packages
 
-### `tonyfettes/unicode`
+### `tonyfettes/ucd`
 
 Root package for Unicode Character Database helpers.
 
@@ -145,7 +150,7 @@ Root package for Unicode Character Database helpers.
 | `to_lowercase(Char) -> String` | Full lowercase mapping. |
 | `to_titlecase(Char) -> String` | Full titlecase mapping. |
 
-### `tonyfettes/unicode/normalization`
+### `tonyfettes/normalization`
 
 | API | Description |
 | --- | --- |
@@ -158,7 +163,7 @@ Root package for Unicode Character Database helpers.
 
 The available forms are `NFD`, `NFC`, `NFKD`, and `NFKC`.
 
-### `tonyfettes/unicode/punycode`
+### `tonyfettes/punycode`
 
 | API | Description |
 | --- | --- |
@@ -167,7 +172,7 @@ The available forms are `NFD`, `NFC`, `NFKD`, and `NFKC`.
 
 `PunycodeError` variants are `Overflow`, `InvalidInput`, and `BadInput`.
 
-### `tonyfettes/unicode/idna`
+### `tonyfettes/idna`
 
 | API | Description |
 | --- | --- |
@@ -185,7 +190,7 @@ The available forms are `NFD`, `NFC`, `NFKD`, and `NFKC`.
 `to_unicode` accepts the same options except `verify_dns_length`; they also
 default to `true`.
 
-### `tonyfettes/unicode/bidi`
+### `tonyfettes/bidi`
 
 | API | Description |
 | --- | --- |
@@ -208,7 +213,7 @@ Common commands:
 ```bash
 moon check
 moon test
-moon test normalization
+moon test -p tonyfettes/normalization
 moon fmt
 moon info
 moon build
@@ -228,15 +233,17 @@ moon run --target native tools/gen all
 
 Individual commands are `ucd`, `idna`, `bidi`, `normalization-tests`,
 `idna-tests`, and `bidi-tests`. To control the number of Bidi conformance cases
-per generated package (default: 5000), run
+per generated package (default: 500), run
 `moon run --target native tools/gen -- bidi-tests --part-size N`. Downloaded
 Unicode source files are cached in `tools/.cache/`.
 
-The exclusions in `moon.mod` keep generators and conformance fixtures out of
-the published package. Verify the package contents with:
+Large generated conformance fixtures live in the workspace-only
+`tonyfettes/unicode-conformance` module, so they remain part of local and CI
+tests without inflating published feature archives. Verify a feature module's
+contents from its directory, for example:
 
 ```bash
-moon publish --dry-run
+moon -C bidi package --list
 ```
 
 ## Standards

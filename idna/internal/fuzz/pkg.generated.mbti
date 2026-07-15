@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "tonyfettes/unicode/idna/internal/fuzz"
+package "tonyfettes/idna/internal/fuzz"
 
 import {
   "moonbitlang/core/random",

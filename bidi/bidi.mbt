@@ -33,9 +33,9 @@ pub(all) struct BidiParagraph {
   /// Original characters
   chars : Array[Char]
   /// Original Bidi classes (before resolution)
-  original_classes : Array[@bidi_data.BidiClass]
+  original_classes : Array[BidiClass]
   /// Resolved Bidi classes (after W and N rules)
-  resolved_classes : Array[@bidi_data.BidiClass]
+  resolved_classes : Array[BidiClass]
   /// Resolved embedding level per character (0-125)
   levels : Array[Int]
   /// Paragraph embedding level (0 for LTR, 1 for RTL)
@@ -47,12 +47,9 @@ pub(all) struct BidiParagraph {
 let max_depth : Int = 125
 
 ///|
-pub using @bidi_data {type BidiClass}
-
-///|
 /// Look up Bidi_Class for a character
 pub fn bidi_class(c : Char) -> BidiClass {
-  @bidi_data.lookup_bidi_class(c)
+  lookup_bidi_class(c)
 }
 
 ///|
@@ -73,7 +70,7 @@ pub fn detect_direction(text : String) -> Direction {
 /// Returns false for pure LTR text (optimization)
 pub fn requires_bidi(text : String) -> Bool {
   for c in text {
-    if @bidi_data.is_strong_rtl(c) || @bidi_data.is_explicit_formatting(c) {
+    if is_strong_rtl(c) || is_explicit_formatting(c) {
       return true
     }
   }
@@ -121,9 +118,7 @@ fn process_at_base_level(text : String, base_level : Int) -> BidiParagraph {
   for c in text {
     chars.push(c)
   }
-  let original_classes : Array[@bidi_data.BidiClass] = chars.map(
-    @bidi_data.lookup_bidi_class,
-  )
+  let original_classes : Array[BidiClass] = chars.map(lookup_bidi_class)
 
   // Make a copy for resolution
   let resolved_classes = original_classes.copy()

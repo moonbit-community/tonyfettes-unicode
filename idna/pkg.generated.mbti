@@ -1,8 +1,8 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "tonyfettes/unicode/idna"
+package "tonyfettes/idna"
 
 import {
-  "tonyfettes/unicode/punycode",
+  "tonyfettes/punycode",
 }
 
 // Values

@@ -409,7 +409,7 @@ fn GeneratedParts::next_bidi_part(
   write_bidi_test_runner(out, part_number)
   self.part_number += 1
   Some({
-    relative_directory: "bidi/internal/conformance/bidi/part\{part_number}",
+    relative_directory: "conformance/bidi/bidi/part\{part_number}",
     source: out.finish(),
   })
 }
@@ -450,7 +450,7 @@ fn GeneratedParts::next_character_part(self : GeneratedParts) -> GeneratedPart? 
   write_character_test_runner(out, part_number)
   self.part_number += 1
   Some({
-    relative_directory: "bidi/internal/conformance/character/part\{part_number}",
+    relative_directory: "conformance/bidi/character/part\{part_number}",
     source: out.finish(),
   })
 }
@@ -504,7 +504,7 @@ pub fn generate_parts(
 pub fn package_source() -> String {
   (
     #|import {
-    #|  "tonyfettes/unicode/bidi" @bidi,
+    #|  "tonyfettes/bidi" @bidi,
     #|  "moonbitlang/core/debug",
     #|} for "test"
     #|

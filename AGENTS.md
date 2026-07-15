@@ -19,35 +19,37 @@ moon info           # Regenerate pkg.generated.mbti files
 
 ## Architecture
 
-### Public Packages
+### Public Modules
 
-- **punycode/**: RFC 3492 Punycode encoding/decoding
+- **ucd/** (`tonyfettes/ucd`): Unicode Character Database lookup, case mapping,
+  and general category APIs
+- **normalization/** (`tonyfettes/normalization`): UAX #15 Unicode normalization
+- **punycode/** (`tonyfettes/punycode`): RFC 3492 Punycode encoding/decoding
   - `encode(String) -> String raise PunycodeError`
   - `decode(String) -> String raise PunycodeError`
-
-- **normalization/**: UAX #15 Unicode normalization
-  - `nfc()`, `nfd()`, `nfkc()`, `nfkd()` - normalization forms
-  - `normalize()`, `is_normalized()` - general API
-
-- **idna/**: UTS #46 IDNA processing
+- **bidi/** (`tonyfettes/bidi`): UAX #9 bidirectional text processing
+- **idna/** (`tonyfettes/idna`): UTS #46 IDNA processing
   - `to_ascii()` - convert domain to ASCII (Punycode)
   - `to_unicode()` - convert domain from Punycode
-
-- **Root package**: Case mapping and general category
-  - `to_simple_uppercase/lowercase/titlecase(Char) -> Char`
-  - `general_category(Char) -> GeneralCategory`
+- **unicode/** (`tonyfettes/unicode`): compatibility umbrella preserving the old
+  package paths
+- **conformance/** (`tonyfettes/unicode-conformance`): workspace-only generated
+  conformance tests; it is not a published dependency
 
 ### Internal Data Packages (auto-generated)
 
-- **internal/ucd/**: Unicode Character Database lookup tables (CCC, decomposition, composition, case mapping, general category)
-- **internal/idna/**: IDNA-specific data (mapping, bidi, joining rules)
+- **ucd/data/**: Unicode Character Database lookup tables
+- **idna/internal/idna/**: IDNA mapping and joining tables
+- **bidi/internal/bidi/**: Bidi mirroring and bracket tables
 
 ### Dependencies
 
 ```
-idna -> normalization -> internal/ucd
+normalization -> ucd
+idna -> ucd
+idna -> normalization
 idna -> punycode
-idna -> internal/idna
+idna -> bidi
 ```
 
 ## Code Generation
@@ -67,7 +69,8 @@ Individual commands are `ucd`, `idna`, `bidi`, `normalization-tests`,
 ## Publishing
 
 ```bash
-moon publish --dry-run  # Verify files selected by moon.mod exclusions
+moon package --list          # Verify the compatibility umbrella
+moon -C bidi package --list  # Verify an individual feature module
 ```
 
 ## Testing Notes

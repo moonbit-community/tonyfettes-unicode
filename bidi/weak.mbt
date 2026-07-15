@@ -7,7 +7,7 @@
 ///|
 /// Resolve weak types within an isolating run sequence
 fn resolve_weak_types(
-  types : Array[@bidi_data.BidiClass],
+  types : Array[BidiClass],
   _levels : Array[Int],
   seq : IsolatingRunSequence,
 ) -> Unit {
@@ -27,7 +27,7 @@ fn resolve_weak_types(
       // Check if previous character was isolate initiator or PDI
       // In resolved types, isolate initiators keep their type
       if prev_type.is_isolate_initiator() || prev_type is PDI {
-        types[idx] = @bidi_data.BidiClass::ON
+        types[idx] = BidiClass::ON
       } else {
         types[idx] = prev_type
       }
@@ -43,10 +43,10 @@ fn resolve_weak_types(
   let mut last_strong = seq.sos
   for idx in indices {
     match types[idx] {
-      L => last_strong = @bidi_data.BidiClass::L
-      R => last_strong = @bidi_data.BidiClass::R
-      AL => last_strong = @bidi_data.BidiClass::AL
-      EN => if last_strong is AL { types[idx] = @bidi_data.BidiClass::AN }
+      L => last_strong = BidiClass::L
+      R => last_strong = BidiClass::R
+      AL => last_strong = BidiClass::AL
+      EN => if last_strong is AL { types[idx] = BidiClass::AN }
       _ => ()
     }
   }
@@ -54,7 +54,7 @@ fn resolve_weak_types(
   // W3: AL - Arabic Letter becomes R
   for idx in indices {
     if types[idx] is AL {
-      types[idx] = @bidi_data.BidiClass::R
+      types[idx] = BidiClass::R
     }
   }
 
@@ -71,12 +71,12 @@ fn resolve_weak_types(
       let prev_bc = types[prev_idx]
       let next_bc = types[next_idx]
       if bc is ES && prev_bc is EN && next_bc is EN {
-        types[idx] = @bidi_data.BidiClass::EN
+        types[idx] = BidiClass::EN
       } else if bc is CS {
         if prev_bc is EN && next_bc is EN {
-          types[idx] = @bidi_data.BidiClass::EN
+          types[idx] = BidiClass::EN
         } else if prev_bc is AN && next_bc is AN {
-          types[idx] = @bidi_data.BidiClass::AN
+          types[idx] = BidiClass::AN
         }
       }
     }
@@ -91,13 +91,13 @@ fn resolve_weak_types(
       // Look backward for ETs
       let mut j = i - 1
       while j >= 0 && types[indices[j]] is ET {
-        types[indices[j]] = @bidi_data.BidiClass::EN
+        types[indices[j]] = BidiClass::EN
         j -= 1
       }
       // Look forward for ETs
       j = i + 1
       while j < indices.length() && types[indices[j]] is ET {
-        types[indices[j]] = @bidi_data.BidiClass::EN
+        types[indices[j]] = BidiClass::EN
         j += 1
       }
     }
@@ -108,7 +108,7 @@ fn resolve_weak_types(
   for idx in indices {
     let bc = types[idx]
     if bc is ES || bc is ET || bc is CS {
-      types[idx] = @bidi_data.BidiClass::ON
+      types[idx] = BidiClass::ON
     }
   }
 
@@ -117,9 +117,9 @@ fn resolve_weak_types(
   last_strong = seq.sos
   for idx in indices {
     match types[idx] {
-      L => last_strong = @bidi_data.BidiClass::L
-      R => last_strong = @bidi_data.BidiClass::R
-      EN => if last_strong is L { types[idx] = @bidi_data.BidiClass::L }
+      L => last_strong = BidiClass::L
+      R => last_strong = BidiClass::R
+      EN => if last_strong is L { types[idx] = BidiClass::L }
       _ => ()
     }
   }
@@ -129,8 +129,8 @@ fn resolve_weak_types(
 /// Re-resolve NSM after bracket pairing so combining marks follow
 /// brackets that were retyped by N0.
 fn resolve_nsm_after_brackets(
-  types : Array[@bidi_data.BidiClass],
-  original_classes : Array[@bidi_data.BidiClass],
+  types : Array[BidiClass],
+  original_classes : Array[BidiClass],
   seq : IsolatingRunSequence,
 ) -> Unit {
   let indices = seq.indices
@@ -142,7 +142,7 @@ fn resolve_nsm_after_brackets(
   for idx in indices {
     if original_classes[idx] is NSM && types[idx] is ON {
       if prev_type.is_isolate_initiator() || prev_type is PDI {
-        types[idx] = @bidi_data.BidiClass::ON
+        types[idx] = BidiClass::ON
       } else {
         types[idx] = prev_type
       }

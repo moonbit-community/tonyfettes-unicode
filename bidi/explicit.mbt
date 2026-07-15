@@ -8,7 +8,7 @@
 /// Directional status stack entry
 priv struct DirectionalStatus {
   level : Int
-  override_status : @bidi_data.BidiClass // L, R, or ON (neutral = no override)
+  override_status : BidiClass // L, R, or ON (neutral = no override)
   isolate_status : Bool
 }
 
@@ -16,7 +16,7 @@ priv struct DirectionalStatus {
 /// Process explicit formatting characters (X1-X10)
 /// Returns list of (isolate_initiator_index, pdi_index) pairs
 fn process_explicit(
-  types : Array[@bidi_data.BidiClass],
+  types : Array[BidiClass],
   levels : Array[Int],
   paragraph_level : Int,
 ) -> Array[(Int, Int)] {
@@ -24,7 +24,7 @@ fn process_explicit(
   let stack : Array[DirectionalStatus] = [
     {
       level: paragraph_level,
-      override_status: @bidi_data.BidiClass::ON,
+      override_status: BidiClass::ON,
       isolate_status: false,
     },
   ]
@@ -46,7 +46,7 @@ fn process_explicit(
           overflow_embedding_count.val == 0 {
           stack.push({
             level: new_level,
-            override_status: @bidi_data.BidiClass::ON,
+            override_status: BidiClass::ON,
             isolate_status: false,
           })
         } else if overflow_isolate_count.val == 0 {
@@ -54,7 +54,7 @@ fn process_explicit(
         }
         // X9: Remove from output (set level, keep type for X9 removal)
         levels[i] = stack[stack.length() - 1].level
-        types[i] = @bidi_data.BidiClass::BN
+        types[i] = BidiClass::BN
       }
 
       // X3: LRE - Left-to-Right Embedding
@@ -65,14 +65,14 @@ fn process_explicit(
           overflow_embedding_count.val == 0 {
           stack.push({
             level: new_level,
-            override_status: @bidi_data.BidiClass::ON,
+            override_status: BidiClass::ON,
             isolate_status: false,
           })
         } else if overflow_isolate_count.val == 0 {
           overflow_embedding_count.val += 1
         }
         levels[i] = stack[stack.length() - 1].level
-        types[i] = @bidi_data.BidiClass::BN
+        types[i] = BidiClass::BN
       }
 
       // X4: RLO - Right-to-Left Override
@@ -83,14 +83,14 @@ fn process_explicit(
           overflow_embedding_count.val == 0 {
           stack.push({
             level: new_level,
-            override_status: @bidi_data.BidiClass::R,
+            override_status: BidiClass::R,
             isolate_status: false,
           })
         } else if overflow_isolate_count.val == 0 {
           overflow_embedding_count.val += 1
         }
         levels[i] = stack[stack.length() - 1].level
-        types[i] = @bidi_data.BidiClass::BN
+        types[i] = BidiClass::BN
       }
 
       // X5: LRO - Left-to-Right Override
@@ -101,14 +101,14 @@ fn process_explicit(
           overflow_embedding_count.val == 0 {
           stack.push({
             level: new_level,
-            override_status: @bidi_data.BidiClass::L,
+            override_status: BidiClass::L,
             isolate_status: false,
           })
         } else if overflow_isolate_count.val == 0 {
           overflow_embedding_count.val += 1
         }
         levels[i] = stack[stack.length() - 1].level
-        types[i] = @bidi_data.BidiClass::BN
+        types[i] = BidiClass::BN
       }
 
       // X5a: RLI - Right-to-Left Isolate
@@ -126,7 +126,7 @@ fn process_explicit(
           isolate_stack.push(i)
           stack.push({
             level: new_level,
-            override_status: @bidi_data.BidiClass::ON,
+            override_status: BidiClass::ON,
             isolate_status: true,
           })
         } else {
@@ -149,7 +149,7 @@ fn process_explicit(
           isolate_stack.push(i)
           stack.push({
             level: new_level,
-            override_status: @bidi_data.BidiClass::ON,
+            override_status: BidiClass::ON,
             isolate_status: true,
           })
         } else {
@@ -178,7 +178,7 @@ fn process_explicit(
           isolate_stack.push(i)
           stack.push({
             level: new_level,
-            override_status: @bidi_data.BidiClass::ON,
+            override_status: BidiClass::ON,
             isolate_status: true,
           })
         } else {
@@ -227,7 +227,7 @@ fn process_explicit(
           let _ = stack.pop()
         }
         levels[i] = stack[stack.length() - 1].level
-        types[i] = @bidi_data.BidiClass::BN
+        types[i] = BidiClass::BN
       }
 
       // X6: For all other types
@@ -246,7 +246,7 @@ fn process_explicit(
 ///|
 /// Ensure NSM levels follow the last non-X9 character.
 fn adjust_nsm_levels(
-  original_classes : Array[@bidi_data.BidiClass],
+  original_classes : Array[BidiClass],
   levels : Array[Int],
 ) -> Unit {
   let mut last_idx = -1
@@ -277,7 +277,7 @@ fn adjust_nsm_levels(
 ///|
 /// Determine direction for FSI by finding first strong character
 fn determine_isolate_direction(
-  types : Array[@bidi_data.BidiClass],
+  types : Array[BidiClass],
   start : Int,
 ) -> Direction {
   let mut isolate_count = 0
@@ -319,17 +319,17 @@ fn next_even_level(level : Int) -> Int {
 /// Isolating run sequence - indices of characters that form a sequence
 priv struct IsolatingRunSequence {
   indices : Array[Int] // Character indices in this sequence
-  sos : @bidi_data.BidiClass // Start-of-sequence type (L or R)
-  eos : @bidi_data.BidiClass // End-of-sequence type (L or R)
+  sos : BidiClass // Start-of-sequence type (L or R)
+  eos : BidiClass // End-of-sequence type (L or R)
   level : Int // Embedding level of the sequence
 }
 
 ///|
 /// Compute isolating run sequences (X10)
 fn compute_isolating_run_sequences(
-  types : Array[@bidi_data.BidiClass],
+  types : Array[BidiClass],
   levels : Array[Int],
-  original_classes : Array[@bidi_data.BidiClass],
+  original_classes : Array[BidiClass],
   paragraph_level : Int,
   isolate_pairs : Array[(Int, Int)],
 ) -> Array[IsolatingRunSequence] {
@@ -424,10 +424,10 @@ fn compute_isolating_run_sequences(
       }
     }
     let sos_level = @cmp.maximum(level_before, seq_level)
-    let sos : @bidi_data.BidiClass = if sos_level % 2 == 0 {
-      @bidi_data.BidiClass::L
+    let sos : BidiClass = if sos_level % 2 == 0 {
+      BidiClass::L
     } else {
-      @bidi_data.BidiClass::R
+      BidiClass::R
     }
 
     // eos: higher of level after sequence and sequence level
@@ -457,10 +457,10 @@ fn compute_isolating_run_sequences(
       }
     }
     let eos_level = @cmp.maximum(level_after, seq_level)
-    let eos : @bidi_data.BidiClass = if eos_level % 2 == 0 {
-      @bidi_data.BidiClass::L
+    let eos : BidiClass = if eos_level % 2 == 0 {
+      BidiClass::L
     } else {
-      @bidi_data.BidiClass::R
+      BidiClass::R
     }
     sequences.push({ indices, sos, eos, level: seq_level })
   }

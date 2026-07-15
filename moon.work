@@ -1,4 +1,10 @@
 members = [
   ".",
+  "ucd",
+  "normalization",
+  "punycode",
+  "bidi",
+  "idna",
+  "conformance",
   "tools",
 ]

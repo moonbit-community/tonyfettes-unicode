@@ -225,8 +225,11 @@ fn write_test_body(
 }
 
 ///|
-fn generate_section_source(section : Section) -> String {
-  let part = section.id.replace_all(old="Part", new="")
+fn generate_section_source(
+  section : Section,
+  part : String,
+  cases : ArrayView[NormalizationCase],
+) -> String {
   let out = @emitter.Emitter::new()
   out.write("///|\n/// Unicode Normalization Conformance Tests - ")
   out.write(section.id)
@@ -256,7 +259,7 @@ fn generate_section_source(section : Section) -> String {
   )
   out.write(part)
   out.write(" : Array[(String, String, String, String, String)] = [\n")
-  for index, case in section.cases {
+  for index, case in cases {
     write_case(out, case, index == 0)
   }
   write_test_body(out, section, part)
@@ -271,10 +274,31 @@ pub fn generate_files(content : String) -> Array[@support.GeneratedFile] raise {
       continue
     }
     let part = section.id.replace_all(old="Part", new="")
-    files.push({
-      relative_path: "normalization/conformance_part\{part}_test.mbt",
-      source: generate_section_source(section),
-    })
+    let part_size = 4000
+    let mut start = 0
+    let mut chunk = 0
+    while start < section.cases.length() {
+      let end = if start + part_size < section.cases.length() {
+        start + part_size
+      } else {
+        section.cases.length()
+      }
+      let file_part = if section.cases.length() <= part_size {
+        part
+      } else {
+        "\{part}_\{chunk}"
+      }
+      files.push({
+        relative_path: "conformance/normalization/conformance_part\{file_part}_test.mbt",
+        source: generate_section_source(
+          section,
+          file_part,
+          section.cases[start:end],
+        ),
+      })
+      start = end
+      chunk += 1
+    }
   }
   files
 }

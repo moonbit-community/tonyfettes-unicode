@@ -1,13 +1,13 @@
 import {
-  "tonyfettes/unicode/punycode",
-  "tonyfettes/unicode/normalization",
-  "tonyfettes/unicode/internal/bidi",
-  "tonyfettes/unicode/internal/idna" @idna_data,
-  "tonyfettes/unicode/internal/ucd",
+  "tonyfettes/punycode",
+  "tonyfettes/normalization",
+  "tonyfettes/bidi",
+  "tonyfettes/idna/internal/idna" @idna_data,
+  "tonyfettes/ucd/data" @ucd,
 }
 
 import {
-  "tonyfettes/unicode/internal/fuzz",
-  "tonyfettes/unicode/idna/internal/fuzz" @idna_fuzz,
+  "tonyfettes/idna/internal/base_fuzz" @fuzz,
+  "tonyfettes/idna/internal/fuzz" @idna_fuzz,
   "moonbitlang/core/random",
 } for "test"

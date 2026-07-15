@@ -1,0 +1,13 @@
+name = "tonyfettes/ucd"
+
+version = "0.3.4"
+
+license = "Apache-2.0"
+
+repository = "https://github.com/moonbit-community/tonyfettes-unicode"
+
+readme = "README.md"
+
+description = "Unicode Character Database lookup and case mapping for MoonBit"
+
+keywords = [ "unicode", "ucd", "case-mapping", "general-category" ]

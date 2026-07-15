@@ -24,7 +24,7 @@ priv struct BracketStackEntry {
 /// Resolve bracket pairs within an isolating run sequence
 fn resolve_bracket_pairs(
   chars : Array[Char],
-  types : Array[@bidi_data.BidiClass],
+  types : Array[BidiClass],
   _levels : Array[Int],
   seq : IsolatingRunSequence,
 ) -> Unit {
@@ -41,15 +41,15 @@ fn resolve_bracket_pairs(
 
   // Get embedding direction
   let embedding_is_ltr = seq.level % 2 == 0
-  let embedding_direction : @bidi_data.BidiClass = if embedding_is_ltr {
-    @bidi_data.BidiClass::L
+  let embedding_direction : BidiClass = if embedding_is_ltr {
+    BidiClass::L
   } else {
-    @bidi_data.BidiClass::R
+    BidiClass::R
   }
-  let opposite_direction : @bidi_data.BidiClass = if embedding_is_ltr {
-    @bidi_data.BidiClass::R
+  let opposite_direction : BidiClass = if embedding_is_ltr {
+    BidiClass::R
   } else {
-    @bidi_data.BidiClass::L
+    BidiClass::L
   }
 
   // Prefix counts let each pair query the strong types in its contents in O(1).
@@ -75,8 +75,8 @@ fn resolve_bracket_pairs(
   for pair in pairs {
     while context_position < pair.open_position {
       match types[indices[context_position]] {
-        L => context_type = @bidi_data.BidiClass::L
-        R | EN | AN => context_type = @bidi_data.BidiClass::R
+        L => context_type = BidiClass::L
+        R | EN | AN => context_type = BidiClass::R
         _ => ()
       }
       context_position += 1
@@ -119,7 +119,7 @@ fn resolve_bracket_pairs(
 /// Returns pairs sorted by opening position in the isolating run sequence.
 fn find_bracket_pairs(
   chars : Array[Char],
-  types : Array[@bidi_data.BidiClass],
+  types : Array[BidiClass],
   indices : Array[Int],
 ) -> Array[BracketPair] {
   let pairs : Array[BracketPair] = []

@@ -1,0 +1,32 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "tonyfettes/bidi/internal/bidi"
+
+// Values
+pub fn bidi_mirroring_glyph(Char) -> Char
+
+pub fn bracket_type(Char) -> BracketType
+
+pub fn is_bidi_mirrored(Char) -> Bool
+
+pub fn is_bracket_pair(Char, Char) -> Bool
+
+pub fn is_close_bracket(Char) -> Bool
+
+pub fn is_open_bracket(Char) -> Bool
+
+pub fn paired_bracket(Char) -> Char?
+
+// Errors
+
+// Types and methods
+pub(all) enum BracketType {
+  Open
+  Close
+  None
+} derive(Eq)
+pub impl Show for BracketType
+
+// Type aliases
+
+// Traits
+

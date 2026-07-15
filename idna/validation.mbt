@@ -289,7 +289,7 @@ fn validate_ltr_label_in_rtl_domain(
 
   // In RTL domain, LTR labels must start with L (not EN, ES, etc.)
   // This is stricter than pure LTR domain rules
-  let first_bc = @bidi.lookup_bidi_class(chars[0])
+  let first_bc = @bidi.bidi_class(chars[0])
   match first_bc {
     @bidi.L => ()
     _ => raise InvalidBidi // B1 - first char must be L in RTL domain context
@@ -300,7 +300,7 @@ fn validate_ltr_label_in_rtl_domain(
 
   // Same allowed classes as regular LTR, but no R/AL/AN
   for c in chars {
-    let bc = @bidi.lookup_bidi_class(c)
+    let bc = @bidi.bidi_class(c)
     match bc {
       @bidi.L
       | @bidi.EN
@@ -326,7 +326,7 @@ fn validate_ltr_label_in_rtl_domain(
 /// Check if label is RTL (contains R, AL, or AN characters)
 fn is_rtl_label_check(chars : Array[Char]) -> Bool {
   for c in chars {
-    let bc = @bidi.lookup_bidi_class(c)
+    let bc = @bidi.bidi_class(c)
     match bc {
       @bidi.R | @bidi.AL | @bidi.AN => return true
       _ => continue
@@ -339,7 +339,7 @@ fn is_rtl_label_check(chars : Array[Char]) -> Bool {
 /// Validate an RTL label according to RFC 5893
 fn validate_rtl_label(chars : Array[Char]) -> Unit raise IdnaError {
   // Rule 1 (B1): First character must be R or AL
-  let first_bc = @bidi.lookup_bidi_class(chars[0])
+  let first_bc = @bidi.bidi_class(chars[0])
   match first_bc {
     @bidi.R | @bidi.AL => ()
     _ => raise InvalidBidi
@@ -351,7 +351,7 @@ fn validate_rtl_label(chars : Array[Char]) -> Unit raise IdnaError {
   let mut has_en = false
   let mut has_an = false
   for c in chars {
-    let bc = @bidi.lookup_bidi_class(c)
+    let bc = @bidi.bidi_class(c)
     match bc {
       @bidi.R
       | @bidi.AL
@@ -400,7 +400,7 @@ fn validate_ltr_label(chars : Array[Char]) -> Unit raise IdnaError {
 
   // Rule 5 (B5): First character must be L
   // (Relaxed for pure ASCII/neutral labels in pure LTR domains)
-  let first_bc = @bidi.lookup_bidi_class(chars[0])
+  let first_bc = @bidi.bidi_class(chars[0])
   match first_bc {
     @bidi.L => ()
     // Allow pure ASCII/neutral labels (existing behavior for pure LTR domains)
@@ -419,7 +419,7 @@ fn validate_ltr_label(chars : Array[Char]) -> Unit raise IdnaError {
 
   // Rule 5: Only certain Bidi classes allowed in LTR label
   for c in chars {
-    let bc = @bidi.lookup_bidi_class(c)
+    let bc = @bidi.bidi_class(c)
     match bc {
       @bidi.L
       | @bidi.EN

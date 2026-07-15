@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "tonyfettes/unicode/normalization/internal/fuzz"
+package "tonyfettes/normalization/internal/fuzz"
 
 // Values
 pub fn ccc_is_sorted(String) -> Bool

@@ -1,6 +1,6 @@
 # Unicode Module Split
 
-Status: Approved
+Status: Validated
 
 ## Outcome
 
@@ -57,8 +57,22 @@ depend directly on the feature module they need.
 2. Run `moon check` and `moon test` for every feature module and for the whole
    workspace.
 3. Regenerate all Unicode data and conformance fixtures, then repeat checks.
-4. Run `moon publish --dry-run` in every published module.
+4. Run `moon package --list` in every published module.
 5. Record archive sizes and verify conformance fixtures are absent.
+
+## Validation evidence
+
+- `moon run --target native tools/gen all` completed with cached Unicode 16.0.0
+  source data and the default Bidi part size of 500.
+- `moon fmt`, `moon info`, and `moon check` completed without warnings.
+- `moon test` passed all 8422 tests, including the workspace-only generated
+  conformance suites and legacy-package compatibility tests.
+- The five compatibility `.mbti` files are identical to the interfaces at
+  commit `f3e356f1`.
+- `moon package --list` and zip integrity checks passed for all six published
+  modules. No archive contains a conformance path.
+- Archive sizes are 16 KB (`unicode`), 137 KB (`ucd`), 15 KB
+  (`normalization`), 10 KB (`punycode`), 27 KB (`bidi`), and 107 KB (`idna`).
 
 ## Rollback
 

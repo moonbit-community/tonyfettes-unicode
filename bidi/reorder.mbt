@@ -6,7 +6,7 @@
 ///|
 /// L1: Reset levels of segment/paragraph separators and whitespace
 fn reset_whitespace_levels(
-  original_classes : Array[@bidi_data.BidiClass],
+  original_classes : Array[BidiClass],
   levels : Array[Int],
   paragraph_level : Int,
 ) -> Unit {

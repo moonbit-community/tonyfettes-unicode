@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "tonyfettes/unicode/normalization"
+package "tonyfettes/normalization"
 
 // Values
 pub fn is_normalized(String, NormalizationForm) -> Bool

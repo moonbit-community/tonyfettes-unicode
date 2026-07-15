@@ -7,7 +7,7 @@
 ///|
 /// Resolve neutral types within an isolating run sequence
 fn resolve_neutral_types(
-  types : Array[@bidi_data.BidiClass],
+  types : Array[BidiClass],
   _levels : Array[Int],
   seq : IsolatingRunSequence,
 ) -> Unit {
@@ -54,15 +54,10 @@ fn resolve_neutral_types(
 
       // N1: If preceding and following are same type, neutrals become that type
       // N2: Otherwise, neutrals become embedding direction
-      let resolved : @bidi_data.BidiClass = match preceding {
-        L if following is L => @bidi_data.BidiClass::L
-        R if following is R => @bidi_data.BidiClass::R
-        _ =>
-          if seq.level % 2 == 0 {
-            @bidi_data.BidiClass::L
-          } else {
-            @bidi_data.BidiClass::R
-          }
+      let resolved : BidiClass = match preceding {
+        L if following is L => BidiClass::L
+        R if following is R => BidiClass::R
+        _ => if seq.level % 2 == 0 { BidiClass::L } else { BidiClass::R }
       }
 
       // Apply resolved type to all neutrals in the run
@@ -78,7 +73,7 @@ fn resolve_neutral_types(
 
 ///|
 /// Check if type is neutral or isolate (for N rules)
-fn is_neutral_or_isolate(bc : @bidi_data.BidiClass) -> Bool {
+fn is_neutral_or_isolate(bc : BidiClass) -> Bool {
   match bc {
     B | S | WS | ON | LRI | RLI | FSI | PDI => true
     _ => false
@@ -89,18 +84,18 @@ fn is_neutral_or_isolate(bc : @bidi_data.BidiClass) -> Bool {
 /// Get the preceding strong type in the sequence
 /// Returns effective strong type (L, R) - EN and AN become R
 fn get_preceding_strong_type(
-  types : Array[@bidi_data.BidiClass],
+  types : Array[BidiClass],
   indices : Array[Int],
   before_pos : Int,
-  sos : @bidi_data.BidiClass,
-) -> @bidi_data.BidiClass {
+  sos : BidiClass,
+) -> BidiClass {
   let mut i = before_pos - 1
   while i >= 0 {
     let bc = types[indices[i]]
     match bc {
-      L => return @bidi_data.BidiClass::L
-      R => return @bidi_data.BidiClass::R
-      EN | AN => return @bidi_data.BidiClass::R // EN and AN are treated as R
+      L => return BidiClass::L
+      R => return BidiClass::R
+      EN | AN => return BidiClass::R // EN and AN are treated as R
       _ => i -= 1
     }
   }
@@ -111,18 +106,18 @@ fn get_preceding_strong_type(
 /// Get the following strong type in the sequence
 /// Returns effective strong type (L, R) - EN and AN become R
 fn get_following_strong_type(
-  types : Array[@bidi_data.BidiClass],
+  types : Array[BidiClass],
   indices : Array[Int],
   after_pos : Int,
-  eos : @bidi_data.BidiClass,
-) -> @bidi_data.BidiClass {
+  eos : BidiClass,
+) -> BidiClass {
   let mut i = after_pos + 1
   while i < indices.length() {
     let bc = types[indices[i]]
     match bc {
-      L => return @bidi_data.BidiClass::L
-      R => return @bidi_data.BidiClass::R
-      EN | AN => return @bidi_data.BidiClass::R // EN and AN are treated as R
+      L => return BidiClass::L
+      R => return BidiClass::R
+      EN | AN => return BidiClass::R // EN and AN are treated as R
       _ => i += 1
     }
   }

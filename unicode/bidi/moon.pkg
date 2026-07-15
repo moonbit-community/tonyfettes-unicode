@@ -1,0 +1,4 @@
+import {
+  "tonyfettes/bidi" @impl,
+  "tonyfettes/unicode/internal/bidi" @legacy_data,
+}
