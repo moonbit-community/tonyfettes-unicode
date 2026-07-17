@@ -250,6 +250,40 @@ contents from its directory, for example:
 moon -C bidi package --list
 ```
 
+### Releasing
+
+The native release tool keeps the six published module versions aligned,
+validates the workspace, and checks every package archive. During preparation it
+dry-runs the independent `ucd`, `punycode`, and `bidi` modules:
+
+```bash
+moon run --target native tools/release -- prepare --version 0.4.0
+```
+
+Review and commit the resulting manifest changes, then create and push the
+matching `v0.4.0` tag. Publication is a separate, explicit step:
+
+```bash
+moon run --target native tools/release -- publish \
+  --version 0.4.0 \
+  --execute
+```
+
+The tool publishes `ucd`, `punycode`, `bidi`, `normalization`, `idna`, and the
+`unicode` compatibility umbrella in dependency order. Modules that depend on
+same-release packages are dry-run immediately before their real publication,
+after the tool refreshes the registry and their dependencies are available. It
+never publishes the workspace-only `conformance` or `tools` modules. If
+publication stops partway through, resolve the problem and resume at the failed
+module, for example:
+
+```bash
+moon run --target native tools/release -- publish \
+  --version 0.4.0 \
+  --from normalization \
+  --execute
+```
+
 ## Standards
 
 - [UAX #9: Unicode Bidirectional Algorithm](https://unicode.org/reports/tr9/)
