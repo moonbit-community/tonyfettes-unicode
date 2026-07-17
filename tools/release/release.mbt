@@ -71,6 +71,15 @@ fn publish_dry_run_succeeded(
 }
 
 ///|
+fn remote_tag_matches(
+  output : StringView,
+  tag : StringView,
+  local_object : StringView,
+) -> Bool {
+  output.trim() == "\{local_object}\trefs/tags/\{tag}"
+}
+
+///|
 fn manifest_version_and_line(
   source : String,
   path : String,

@@ -119,17 +119,50 @@ async fn verify_published_versions(
 ///|
 async fn ensure_release_tag(root : StringView, version : String) -> Unit {
   let tag = "v\{version}"
-  let (status, output) = @process.collect_stdout(
+  let (local_status, local_output) = @process.collect_stdout(
     "git",
     ["tag", "--points-at", "HEAD", "--list", tag],
     cwd=root,
   )
-  guard status == 0 else {
-    raise ReleaseError("git tag failed with exit status \{status}")
+  guard local_status == 0 else {
+    raise ReleaseError("git tag failed with exit status \{local_status}")
   }
-  guard output.text().trim() == tag else {
+  guard local_output.text().trim() == tag else {
     raise ReleaseError(
       "HEAD must have the release tag \{tag} before publishing",
+    )
+  }
+  let (object_status, object_output) = @process.collect_stdout(
+    "git",
+    ["rev-parse", "--verify", "refs/tags/\{tag}"],
+    cwd=root,
+  )
+  guard object_status == 0 else {
+    raise ReleaseError(
+      "Resolving release tag \{tag} failed with exit status \{object_status}",
+    )
+  }
+  let local_object = object_output.text().trim()
+  let (remote_status, remote_output) = @process.collect_stdout(
+    "git",
+    [
+      "ls-remote",
+      "--exit-code",
+      "--refs",
+      "--tags",
+      "origin",
+      "refs/tags/\{tag}",
+    ],
+    cwd=root,
+  )
+  guard remote_status == 0 else {
+    raise ReleaseError(
+      "Release tag \{tag} must be pushed to origin before publishing (git ls-remote exited with status \{remote_status})",
+    )
+  }
+  guard remote_tag_matches(remote_output.text(), tag, local_object) else {
+    raise ReleaseError(
+      "Release tag \{tag} on origin does not match the local tag at HEAD",
     )
   }
 }

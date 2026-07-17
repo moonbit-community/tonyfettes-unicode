@@ -31,6 +31,29 @@ test "publish dry-run accepts the known false failure" {
 }
 
 ///|
+test "remote release tag must match the local tag object" {
+  let object = "0123456789abcdef0123456789abcdef01234567"
+  assert_true(
+    remote_tag_matches("\{object}\trefs/tags/v0.4.0\n", "v0.4.0", object),
+  )
+  assert_false(
+    remote_tag_matches(
+      "fedcba9876543210fedcba9876543210fedcba98\trefs/tags/v0.4.0\n", "v0.4.0", object,
+    ),
+  )
+  assert_false(
+    remote_tag_matches("\{object}\trefs/tags/v0.4.1\n", "v0.4.0", object),
+  )
+  assert_false(
+    remote_tag_matches(
+      "\{object}\trefs/tags/v0.4.0\n\{object}\trefs/tags/v0.4.1\n",
+      "v0.4.0",
+      object,
+    ),
+  )
+}
+
+///|
 test "manifest version is read and replaced without reformatting" {
   let source =
     #|name = "tonyfettes/example"
