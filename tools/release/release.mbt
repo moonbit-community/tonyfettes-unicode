@@ -10,16 +10,25 @@ suberror ReleaseError {
 priv struct ReleaseModule {
   name : String
   directory : String
+  requires_published_dependencies : Bool
 }
 
 ///|
 let published_modules : Array[ReleaseModule] = [
-  { name: "ucd", directory: "ucd" },
-  { name: "punycode", directory: "punycode" },
-  { name: "bidi", directory: "bidi" },
-  { name: "normalization", directory: "normalization" },
-  { name: "idna", directory: "idna" },
-  { name: "unicode", directory: "." },
+  { name: "ucd", directory: "ucd", requires_published_dependencies: false },
+  {
+    name: "punycode",
+    directory: "punycode",
+    requires_published_dependencies: false,
+  },
+  { name: "bidi", directory: "bidi", requires_published_dependencies: false },
+  {
+    name: "normalization",
+    directory: "normalization",
+    requires_published_dependencies: true,
+  },
+  { name: "idna", directory: "idna", requires_published_dependencies: true },
+  { name: "unicode", directory: ".", requires_published_dependencies: true },
 ]
 
 ///|

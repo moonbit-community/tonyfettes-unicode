@@ -87,6 +87,15 @@ test "manifest version declarations must be unique" {
 
 ///|
 test "publish resume points follow dependency order" {
+  guard published_modules is [ucd, punycode, bidi, normalization, idna, unicode] else {
+    fail("expected six published modules")
+  }
+  assert_false(ucd.requires_published_dependencies)
+  assert_false(punycode.requires_published_dependencies)
+  assert_false(bidi.requires_published_dependencies)
+  assert_true(normalization.requires_published_dependencies)
+  assert_true(idna.requires_published_dependencies)
+  assert_true(unicode.requires_published_dependencies)
   inspect(publish_start_index("ucd"), content="0")
   inspect(publish_start_index("normalization"), content="3")
   inspect(publish_start_index("unicode"), content="5")

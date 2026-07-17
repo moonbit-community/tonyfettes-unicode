@@ -168,7 +168,13 @@ async fn prepare_release(root : StringView, version : String) -> Unit {
       ["-C", release_module.directory, "package", "--list", "--frozen"],
       "Listing tonyfettes/\{release_module.name}@\{version}",
     )
-    run_publish_dry_run(root, release_module, version)
+    if release_module.requires_published_dependencies {
+      println(
+        "==> Deferring the tonyfettes/\{release_module.name}@\{version} dry-run until its same-release dependencies are published",
+      )
+    } else {
+      run_publish_dry_run(root, release_module, version)
+    }
   }
   println(
     "Release \{version} is prepared. Review and commit the manifest changes,",
@@ -193,6 +199,15 @@ async fn publish_release(
   run_checked(root, "moon", ["whoami"], "Checking mooncakes.io login")
   for index, release_module in published_modules {
     if index >= start_index {
+      if release_module.requires_published_dependencies {
+        run_checked(
+          root,
+          "moon",
+          ["-C", release_module.directory, "update"],
+          "Refreshing the registry for tonyfettes/\{release_module.name}@\{version}",
+        )
+      }
+      run_publish_dry_run(root, release_module, version)
       println("==> Publishing tonyfettes/\{release_module.name}@\{version}")
       let status = @process.run(
         "moon",
@@ -218,7 +233,7 @@ async fn run_cli() -> Unit {
     subcommands=[
       Command(
         "prepare",
-        about="Bump versions, validate the workspace, and dry-run publication",
+        about="Bump versions, validate the workspace, and dry-run independent modules",
         options=[
           OptionArg(
             "version",

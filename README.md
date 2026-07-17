@@ -249,7 +249,8 @@ moon -C bidi package --list
 ### Releasing
 
 The native release tool keeps the six published module versions aligned,
-validates the workspace, checks every package archive, and dry-runs publication:
+validates the workspace, and checks every package archive. During preparation it
+dry-runs the independent `ucd`, `punycode`, and `bidi` modules:
 
 ```bash
 moon run --target native tools/release -- prepare --version 0.4.0
@@ -265,12 +266,14 @@ moon run --target native tools/release -- publish \
 ```
 
 The tool publishes `ucd`, `punycode`, `bidi`, `normalization`, `idna`, and the
-`unicode` compatibility umbrella in dependency order. It never publishes the
-workspace-only `conformance` or `tools` modules. If publication stops partway
-through, resolve the problem and resume at the failed module, for example:
+`unicode` compatibility umbrella in dependency order. Modules that depend on
+same-release packages are dry-run immediately before their real publication,
+after the tool refreshes the registry and their dependencies are available. It
+never publishes the workspace-only `conformance` or `tools` modules. If
+publication stops partway through, resolve the problem and resume at the failed
+module, for example:
 
 ```bash
-moon update
 moon run --target native tools/release -- publish \
   --version 0.4.0 \
   --from normalization \
