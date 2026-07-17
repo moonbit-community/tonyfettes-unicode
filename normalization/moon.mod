@@ -1,6 +1,6 @@
 name = "tonyfettes/normalization"
 
-version = "0.3.4"
+version = "0.4.0"
 
 license = "Apache-2.0"
 
@@ -13,5 +13,5 @@ description = "Unicode normalization forms for MoonBit"
 keywords = [ "unicode", "normalization", "nfc", "nfd", "nfkc", "nfkd" ]
 
 import {
-  "tonyfettes/ucd@0.3.4",
+  "tonyfettes/ucd@0.4.0",
 }

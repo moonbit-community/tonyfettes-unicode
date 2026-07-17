@@ -1,6 +1,6 @@
 name = "tonyfettes/unicode"
 
-version = "0.3.4"
+version = "0.4.0"
 
 license = "Apache-2.0"
 
@@ -13,11 +13,11 @@ description = "Unicode in MoonBit"
 source = "unicode"
 
 import {
-  "tonyfettes/ucd@0.3.4",
-  "tonyfettes/normalization@0.3.4",
-  "tonyfettes/punycode@0.3.4",
-  "tonyfettes/bidi@0.3.4",
-  "tonyfettes/idna@0.3.4",
+  "tonyfettes/ucd@0.4.0",
+  "tonyfettes/normalization@0.4.0",
+  "tonyfettes/punycode@0.4.0",
+  "tonyfettes/bidi@0.4.0",
+  "tonyfettes/idna@0.4.0",
 }
 
 keywords = [

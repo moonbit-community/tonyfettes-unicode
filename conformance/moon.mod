@@ -9,8 +9,8 @@ repository = "https://github.com/moonbit-community/tonyfettes-unicode"
 description = "Workspace-only Unicode conformance tests"
 
 import {
-  "tonyfettes/unicode@0.3.4",
-  "tonyfettes/normalization@0.3.4",
-  "tonyfettes/bidi@0.3.4",
-  "tonyfettes/idna@0.3.4",
+  "tonyfettes/unicode@0.4.0",
+  "tonyfettes/normalization@0.4.0",
+  "tonyfettes/bidi@0.4.0",
+  "tonyfettes/idna@0.4.0",
 }

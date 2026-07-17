@@ -1,6 +1,6 @@
 name = "tonyfettes/punycode"
 
-version = "0.3.4"
+version = "0.4.0"
 
 license = "Apache-2.0"
 
