@@ -41,6 +41,26 @@ fn validate_release_version(version : String) -> Unit raise ReleaseError {
 }
 
 ///|
+fn publish_dry_run_succeeded(
+  status : Int,
+  output : StringView,
+  package_name : StringView,
+  version : StringView,
+) -> Bool {
+  if status == 0 {
+    true
+  } else {
+    // `moon publish --dry-run` currently exits -1 after a successful 202;
+    // process APIs expose that as 255 on Unix and -1 on Windows.
+    let known_false_failure = status == 255 || status == -1
+    let accepted = "Server status: 202 Accepted, detail: Dry run completed successfully. No changes were made. The dry-run was made for package \{package_name} version \{version}."
+    known_false_failure &&
+    output.contains(accepted) &&
+    output.trim_end().has_suffix("Error: `moon publish` failed")
+  }
+}
+
+///|
 fn manifest_version_and_line(
   source : String,
   path : String,

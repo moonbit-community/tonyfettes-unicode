@@ -12,6 +12,25 @@ test "release versions use stable semantic version syntax" {
 }
 
 ///|
+test "publish dry-run accepts the known false failure" {
+  let output =
+    #|Server status: 202 Accepted, detail: Dry run completed successfully. No changes were made. The dry-run was made for package tonyfettes/ucd version 0.4.0.
+    #|Error: `moon publish` failed
+  assert_true(publish_dry_run_succeeded(0, "", "tonyfettes/ucd", "0.4.0"))
+  assert_true(publish_dry_run_succeeded(255, output, "tonyfettes/ucd", "0.4.0"))
+  assert_true(publish_dry_run_succeeded(-1, output, "tonyfettes/ucd", "0.4.0"))
+  assert_false(publish_dry_run_succeeded(1, output, "tonyfettes/ucd", "0.4.0"))
+  assert_false(
+    publish_dry_run_succeeded(255, output, "tonyfettes/idna", "0.4.0"),
+  )
+  assert_false(
+    publish_dry_run_succeeded(
+      255, "Server status: 500 Internal Server Error", "tonyfettes/ucd", "0.4.0",
+    ),
+  )
+}
+
+///|
 test "manifest version is read and replaced without reformatting" {
   let source =
     #|name = "tonyfettes/example"

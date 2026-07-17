@@ -26,6 +26,27 @@ async fn run_checked(
 }
 
 ///|
+async fn run_publish_dry_run(
+  root : StringView,
+  release_module : ReleaseModule,
+  version : String,
+) -> Unit {
+  let package_name = "tonyfettes/\{release_module.name}"
+  let description = "Dry-running \{package_name}@\{version}"
+  println("==> \{description}")
+  let (status, output) = @process.collect_output_merged(
+    "moon",
+    ["-C", release_module.directory, "publish", "--dry-run", "--frozen"],
+    cwd=root,
+  )
+  let output_text = output.text()
+  println(output_text.trim_end())
+  guard publish_dry_run_succeeded(status, output_text, package_name, version) else {
+    raise ReleaseError("\{description} failed with exit status \{status}")
+  }
+}
+
+///|
 async fn ensure_clean_worktree(root : StringView) -> Unit {
   let (status, output) = @process.collect_stdout(
     "git",
@@ -147,12 +168,7 @@ async fn prepare_release(root : StringView, version : String) -> Unit {
       ["-C", release_module.directory, "package", "--list", "--frozen"],
       "Listing tonyfettes/\{release_module.name}@\{version}",
     )
-    run_checked(
-      root,
-      "moon",
-      ["-C", release_module.directory, "publish", "--dry-run", "--frozen"],
-      "Dry-running tonyfettes/\{release_module.name}@\{version}",
-    )
+    run_publish_dry_run(root, release_module, version)
   }
   println(
     "Release \{version} is prepared. Review and commit the manifest changes,",
