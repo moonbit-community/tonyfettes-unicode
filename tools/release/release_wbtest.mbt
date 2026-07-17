@@ -31,6 +31,16 @@ test "manifest version is read and replaced without reformatting" {
 }
 
 ///|
+test "manifest version accepts CRLF line endings" {
+  let source = "name = \"tonyfettes/example\"\r\n\r\nversion = \"0.3.4\"\r\n"
+  inspect(manifest_version(source, "moon.mod"), content="0.3.4")
+  inspect(
+    replace_manifest_version(source, "moon.mod", "0.4.0"),
+    content="name = \"tonyfettes/example\"\r\n\r\nversion = \"0.4.0\"\r\n",
+  )
+}
+
+///|
 test "manifest version declarations must be unique" {
   try
     manifest_version(

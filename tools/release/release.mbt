@@ -47,14 +47,15 @@ fn manifest_version_and_line(
 ) -> (String, String) raise ReleaseError {
   let mut found : (String, String)? = None
   for line in source.split("\n") {
-    if line.split_once("version = \"") is Some(("", rest)) &&
+    let manifest_line = line.trim_end(chars="\r")
+    if manifest_line.split_once("version = \"") is Some(("", rest)) &&
       rest.rev_split_once("\"") is Some((version, "")) {
       if found is Some(_) {
         raise ReleaseError(
           "\{path} contains more than one top-level version declaration",
         )
       }
-      found = Some((line.to_owned(), version.to_owned()))
+      found = Some((manifest_line.to_owned(), version.to_owned()))
     }
   }
   guard found is Some(result) else {
