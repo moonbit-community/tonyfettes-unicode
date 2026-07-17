@@ -12,6 +12,22 @@ async fn find_project_root() -> String {
 }
 
 ///|
+async fn[X] wait_with_heartbeat(
+  description : StringView,
+  action : async () -> X,
+) -> X {
+  @async.with_task_group(group => {
+    group.spawn_bg(no_wait=true, () => {
+      for ;; {
+        @async.sleep(10000)
+        println("    Still waiting for \{description}...")
+      }
+    })
+    action()
+  })
+}
+
+///|
 async fn run_checked(
   root : StringView,
   program : StringView,
@@ -23,6 +39,7 @@ async fn run_checked(
   guard status == 0 else {
     raise ReleaseError("\{description} failed with exit status \{status}")
   }
+  println("    Completed successfully")
 }
 
 ///|
@@ -34,20 +51,27 @@ async fn run_publish_dry_run(
   let package_name = "tonyfettes/\{release_module.name}"
   let description = "Dry-running \{package_name}@\{version}"
   println("==> \{description}")
-  let (status, output) = @process.collect_output_merged(
-    "moon",
-    ["-C", release_module.directory, "publish", "--dry-run", "--frozen"],
-    cwd=root,
-  )
+  // `moon publish` validates the archive in a fresh directory, so it must be
+  // allowed to install registry dependencies there.
+  println("    $ moon -C \{release_module.directory} publish --dry-run")
+  let (status, output) = wait_with_heartbeat(description, () => {
+    @process.collect_output_merged(
+      "moon",
+      ["-C", release_module.directory, "publish", "--dry-run"],
+      cwd=root,
+    )
+  })
   let output_text = output.text()
   println(output_text.trim_end())
   guard publish_dry_run_succeeded(status, output_text, package_name, version) else {
     raise ReleaseError("\{description} failed with exit status \{status}")
   }
+  println("    Dry-run accepted with exit status \{status}")
 }
 
 ///|
 async fn ensure_clean_worktree(root : StringView) -> Unit {
+  println("==> Checking that the Git worktree is clean")
   let (status, output) = @process.collect_stdout(
     "git",
     ["status", "--porcelain=v1"],
@@ -62,6 +86,7 @@ async fn ensure_clean_worktree(root : StringView) -> Unit {
       "The Git worktree must be clean before this operation:\n\{changes}",
     )
   }
+  println("    Git worktree is clean")
 }
 
 ///|
@@ -104,6 +129,7 @@ async fn verify_published_versions(
   root : StringView,
   expected_version : String,
 ) -> Unit {
+  println("==> Verifying published module versions")
   for release_module in published_modules {
     let path = release_module.manifest_path()
     let source = @fs.read_file("\{root}/\{path}").text()
@@ -113,12 +139,14 @@ async fn verify_published_versions(
         "\{path} has version \{actual_version}, expected \{expected_version}",
       )
     }
+    println("    \{path}: \{actual_version}")
   }
 }
 
 ///|
 async fn ensure_release_tag(root : StringView, version : String) -> Unit {
   let tag = "v\{version}"
+  println("==> Verifying that local tag \{tag} points at HEAD")
   let (local_status, local_output) = @process.collect_stdout(
     "git",
     ["tag", "--points-at", "HEAD", "--list", tag],
@@ -132,6 +160,7 @@ async fn ensure_release_tag(root : StringView, version : String) -> Unit {
       "HEAD must have the release tag \{tag} before publishing",
     )
   }
+  println("    Local tag \{tag} points at HEAD")
   let (object_status, object_output) = @process.collect_stdout(
     "git",
     ["rev-parse", "--verify", "refs/tags/\{tag}"],
@@ -143,18 +172,33 @@ async fn ensure_release_tag(root : StringView, version : String) -> Unit {
     )
   }
   let local_object = object_output.text().trim()
-  let (remote_status, remote_output) = @process.collect_stdout(
-    "git",
-    [
-      "ls-remote",
-      "--exit-code",
-      "--refs",
-      "--tags",
-      "origin",
-      "refs/tags/\{tag}",
-    ],
-    cwd=root,
+  let description = "origin release tag \{tag}"
+  println("==> Verifying \{description}")
+  println(
+    "    $ git ls-remote --exit-code --refs --tags origin refs/tags/\{tag}",
   )
+  let (remote_status, remote_output) = wait_with_heartbeat(description, () => {
+    @async.with_timeout(
+      60000,
+      error=ReleaseError(
+        "Timed out after 60 seconds while checking origin tag \{tag}; run the printed git ls-remote command manually to diagnose credentials or network access",
+      ),
+      () => {
+        @process.collect_stdout(
+          "git",
+          [
+            "ls-remote",
+            "--exit-code",
+            "--refs",
+            "--tags",
+            "origin",
+            "refs/tags/\{tag}",
+          ],
+          cwd=root,
+        )
+      },
+    )
+  })
   guard remote_status == 0 else {
     raise ReleaseError(
       "Release tag \{tag} must be pushed to origin before publishing (git ls-remote exited with status \{remote_status})",
@@ -165,6 +209,7 @@ async fn ensure_release_tag(root : StringView, version : String) -> Unit {
       "Release tag \{tag} on origin does not match the local tag at HEAD",
     )
   }
+  println("    Origin tag matches local tag object \{local_object}")
 }
 
 ///|
@@ -226,12 +271,20 @@ async fn publish_release(
 ) -> Unit {
   validate_release_version(version)
   let start_index = publish_start_index(first_module)
+  println("Publishing release v\{version} from module \{first_module}")
+  println(
+    "No registry changes will be made until every preflight check passes.",
+  )
   ensure_clean_worktree(root)
   verify_published_versions(root, version)
   ensure_release_tag(root, version)
   run_checked(root, "moon", ["whoami"], "Checking mooncakes.io login")
+  println("==> All preflight checks passed; starting module publication")
   for index, release_module in published_modules {
     if index >= start_index {
+      println(
+        "==> [\{index + 1}/\{published_modules.length()}] Releasing tonyfettes/\{release_module.name}@\{version}",
+      )
       if release_module.requires_published_dependencies {
         run_checked(
           root,
@@ -242,9 +295,10 @@ async fn publish_release(
       }
       run_publish_dry_run(root, release_module, version)
       println("==> Publishing tonyfettes/\{release_module.name}@\{version}")
+      println("    $ moon -C \{release_module.directory} publish")
       let status = @process.run(
         "moon",
-        ["-C", release_module.directory, "publish", "--frozen"],
+        ["-C", release_module.directory, "publish"],
         cwd=root,
       )
       guard status == 0 else {
@@ -252,6 +306,7 @@ async fn publish_release(
           "Publishing tonyfettes/\{release_module.name}@\{version} failed with exit status \{status}. After resolving the problem, resume with --from \{release_module.name}",
         )
       }
+      println("    Published tonyfettes/\{release_module.name}@\{version}")
     }
   }
   println("Published all modules for v\{version}")
