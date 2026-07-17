@@ -1,5 +1,7 @@
 ///|
 pub using @impl {
+  is_xid_continue,
+  is_xid_start,
   to_lowercase,
   to_simple_lowercase,
   to_simple_titlecase,

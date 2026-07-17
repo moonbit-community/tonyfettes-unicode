@@ -29,6 +29,58 @@ fn parse_code_point_sequence(text : StringView) -> Array[Int] raise {
 }
 
 ///|
+fn parse_code_point_range(text : StringView) -> CodePointRange raise {
+  if text.split_once("..") is Some((start_text, end_text)) {
+    { start: parse_hex_int(start_text), end: parse_hex_int(end_text) }
+  } else {
+    let code_point = parse_hex_int(text)
+    { start: code_point, end: code_point }
+  }
+}
+
+///|
+fn validate_property_ranges(
+  name : StringView,
+  ranges : Array[CodePointRange],
+) -> Unit raise {
+  if ranges.length() == 0 {
+    fail("Missing \{name} ranges")
+  }
+  let mut previous_end = -1
+  for range in ranges {
+    if range.start < 0 || range.start > range.end || range.end > 0x10FFFF {
+      fail("Invalid \{name} range")
+    }
+    if range.start <= previous_end {
+      fail("\{name} ranges must be sorted and non-overlapping")
+    }
+    previous_end = range.end
+  }
+}
+
+///|
+fn validate_xid_subset(
+  xid_start : Array[CodePointRange],
+  xid_continue : Array[CodePointRange],
+) -> Unit raise {
+  let mut continue_index = 0
+  for start_range in xid_start {
+    let mut next = start_range.start
+    while next <= start_range.end {
+      while continue_index < xid_continue.length() &&
+            xid_continue[continue_index].end < next {
+        continue_index += 1
+      }
+      if continue_index >= xid_continue.length() ||
+        xid_continue[continue_index].start > next {
+        fail("XID_Start must be a subset of XID_Continue")
+      }
+      next = xid_continue[continue_index].end + 1
+    }
+  }
+}
+
+///|
 fn is_mark_category(category : StringView) -> Bool {
   category.strip_prefix("M") is Some(_)
 }
@@ -218,4 +270,28 @@ pub fn parse_special_casing(content : String) -> SpecialCasingData raise {
     }
   }
   { lower_mapping, title_mapping, upper_mapping }
+}
+
+///|
+pub fn parse_derived_core_properties(content : String) -> XidProperties raise {
+  let xid_start : Array[CodePointRange] = []
+  let xid_continue : Array[CodePointRange] = []
+  for raw_line in content.split("\n") {
+    let line = strip_comment(raw_line)
+    if line.length() == 0 {
+      continue
+    }
+    if line.split_once(";") is Some((range_text, property_text)) {
+      let property = property_text.trim()
+      if property == "XID_Start" {
+        xid_start.push(parse_code_point_range(range_text))
+      } else if property == "XID_Continue" {
+        xid_continue.push(parse_code_point_range(range_text))
+      }
+    }
+  }
+  validate_property_ranges("XID_Start", xid_start)
+  validate_property_ranges("XID_Continue", xid_continue)
+  validate_xid_subset(xid_start, xid_continue)
+  { xid_start, xid_continue }
 }

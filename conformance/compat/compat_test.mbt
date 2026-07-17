@@ -4,6 +4,8 @@ test "legacy UCD package surface" {
   inspect(category, content="Lu")
   inspect(category.group(), content="L")
   inspect(@unicode.general_category('A'), content="Lu")
+  inspect(@unicode.is_xid_start('A'), content="true")
+  inspect(@unicode.is_xid_continue('0'), content="true")
 }
 
 ///|

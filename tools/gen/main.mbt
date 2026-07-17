@@ -101,6 +101,13 @@ async fn generate_ucd(root : StringView) -> Unit {
   let special_casing = @ucd.parse_special_casing(
     read_source(root, "SpecialCasing.txt", "\{base}/SpecialCasing.txt"),
   )
+  let xid_properties = @ucd.parse_derived_core_properties(
+    read_source(
+      root,
+      "DerivedCoreProperties.txt",
+      "\{base}/DerivedCoreProperties.txt",
+    ),
+  )
   let ccc_ranges = @ucd.compress_ccc_ranges(unicode_data)
   let mark_ranges = @ucd.compress_mark_ranges(unicode_data)
   let general_category_ranges = @ucd.compress_general_category_ranges(
@@ -131,9 +138,10 @@ async fn generate_ucd(root : StringView) -> Unit {
     "ucd/data/case_mapping.mbt",
     @ucd.emit_case_mapping(unicode_data, special_casing),
   )
+  write_source(root, "ucd/data/xid.mbt", @ucd.emit_xid(xid_properties))
   let generated_files = [
     "ucd/data/ccc.mbt", "ucd/data/decomposition.mbt", "ucd/data/composition.mbt",
-    "ucd/data/general_category.mbt", "ucd/data/case_mapping.mbt",
+    "ucd/data/general_category.mbt", "ucd/data/case_mapping.mbt", "ucd/data/xid.mbt",
   ]
   for file in generated_files {
     format_file(root, file)
