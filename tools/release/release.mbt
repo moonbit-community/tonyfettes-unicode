@@ -14,6 +14,7 @@ priv struct ReleaseModule {
 }
 
 ///|
+// TODO: Derive this topological order from workspace manifests and reject dependency cycles.
 let published_modules : Array[ReleaseModule] = [
   { name: "ucd", directory: "ucd", requires_published_dependencies: false },
   {
