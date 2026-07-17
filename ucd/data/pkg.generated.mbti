@@ -10,6 +10,10 @@ pub fn is_composition_excluded(Char) -> Bool
 
 pub fn is_mark(Char) -> Bool
 
+pub fn is_xid_continue(Char) -> Bool
+
+pub fn is_xid_start(Char) -> Bool
+
 pub fn lookup_ccc(Char) -> Int
 
 pub fn lookup_composition(Char, Char) -> Char?

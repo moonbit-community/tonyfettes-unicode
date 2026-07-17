@@ -8,6 +8,10 @@ import {
 // Values
 pub fn general_category(Char) -> GeneralCategory
 
+pub fn is_xid_continue(Char) -> Bool
+
+pub fn is_xid_start(Char) -> Bool
+
 pub fn to_lowercase(Char) -> String
 
 pub fn to_simple_lowercase(Char) -> Char

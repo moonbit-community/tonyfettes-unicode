@@ -22,7 +22,11 @@ pub fn emit_decomposition(UnicodeData) -> String
 
 pub fn emit_general_category(Array[GeneralCategoryRange]) -> String
 
+pub fn emit_xid(XidProperties) -> String
+
 pub fn parse_composition_exclusions(String) -> Array[Int] raise
+
+pub fn parse_derived_core_properties(String) -> XidProperties raise
 
 pub fn parse_special_casing(String) -> SpecialCasingData raise
 
@@ -42,6 +46,8 @@ type GeneralCategoryRange
 type SpecialCasingData
 
 type UnicodeData
+
+type XidProperties
 
 // Type aliases
 

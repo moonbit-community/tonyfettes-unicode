@@ -13,8 +13,8 @@ generated tables target Unicode 16.0.0.
 - IDNA processing from UTS #46, including mapping, validation, Bidi checks,
   joiner checks, and DNS length checks
 - Unicode Bidirectional Algorithm support from UAX #9
-- General_Category lookup and simple/full case mapping from the Unicode
-  Character Database
+- General_Category, XID_Start, and XID_Continue lookup plus simple/full case
+  mapping from the Unicode Character Database
 
 ## Installation
 
@@ -127,6 +127,8 @@ let forced = @bidi.process(
 ```moonbit
 let category = @ucd.general_category('A') // Lu
 let group = category.group() // L
+let can_start = @ucd.is_xid_start('A') // true
+let can_continue = @ucd.is_xid_continue('0') // true
 
 let simple = @ucd.to_simple_uppercase('a') // 'A'
 let full = @ucd.to_uppercase('\u{00DF}') // "SS"
@@ -143,6 +145,8 @@ Root package for Unicode Character Database helpers.
 | --- | --- |
 | `general_category(Char) -> GeneralCategory` | Return the two-letter Unicode General_Category value. |
 | `GeneralCategory::group() -> GeneralCategoryGroup` | Return the one-letter category group. |
+| `is_xid_start(Char) -> Bool` | Test the Unicode XID_Start identifier property. |
+| `is_xid_continue(Char) -> Bool` | Test the Unicode XID_Continue identifier property. |
 | `to_simple_uppercase(Char) -> Char` | Simple uppercase mapping. |
 | `to_simple_lowercase(Char) -> Char` | Simple lowercase mapping. |
 | `to_simple_titlecase(Char) -> Char` | Simple titlecase mapping. |

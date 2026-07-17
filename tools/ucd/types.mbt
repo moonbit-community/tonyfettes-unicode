@@ -48,6 +48,12 @@ struct SpecialCasingData {
 }
 
 ///|
+struct XidProperties {
+  xid_start : Array[CodePointRange]
+  xid_continue : Array[CodePointRange]
+}
+
+///|
 struct CodePointRange {
   start : Int
   end : Int

@@ -92,6 +92,26 @@ test "GeneralCategory::group" {
 }
 
 ///|
+test "XID_Start and XID_Continue" {
+  inspect(is_xid_start('A'), content="true")
+  inspect(is_xid_continue('A'), content="true")
+  inspect(is_xid_start('中'), content="true")
+  inspect(is_xid_continue('中'), content="true")
+  inspect(is_xid_start('0'), content="false")
+  inspect(is_xid_continue('0'), content="true")
+  inspect(is_xid_start('_'), content="false")
+  inspect(is_xid_continue('_'), content="true")
+  inspect(is_xid_start('\u{0301}'), content="false")
+  inspect(is_xid_continue('\u{0301}'), content="true")
+  inspect(is_xid_start('\u{2118}'), content="true")
+  inspect(is_xid_continue('\u{00B7}'), content="true")
+  inspect(is_xid_start('-'), content="false")
+  inspect(is_xid_continue('-'), content="false")
+  inspect(is_xid_start('\u{1F600}'), content="false")
+  inspect(is_xid_continue('\u{1F600}'), content="false")
+}
+
+///|
 test "to_simple_uppercase: basic" {
   inspect(to_simple_uppercase('a'), content="A")
   inspect(to_simple_uppercase('z'), content="Z")

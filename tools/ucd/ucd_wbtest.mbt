@@ -62,6 +62,41 @@ test "parse SpecialCasing unconditional mappings only" {
 }
 
 ///|
+test "parse XID properties" {
+  let input =
+    #|0030..0039 ; XID_Continue # Nd
+    #|0041..005A ; XID_Start # Lu
+    #|0041..005A ; XID_Continue # Lu
+    #|005F ; XID_Continue # Pc
+    #|00B7 ; XID_Continue # Other_ID_Continue
+    #|2118 ; XID_Start # Other_ID_Start
+    #|2118 ; XID_Continue # Other_ID_Start
+    #|212E ; ID_Start # ignored
+  let properties = parse_derived_core_properties(input)
+  inspect(properties.xid_start.length(), content="2")
+  inspect(properties.xid_start[0].start, content="65")
+  inspect(properties.xid_start[0].end, content="90")
+  inspect(properties.xid_continue.length(), content="5")
+  inspect(properties.xid_continue[3].start, content="183")
+}
+
+///|
+test "reject XID_Start outside XID_Continue" {
+  let input =
+    #|0041 ; XID_Start
+    #|0042 ; XID_Continue
+  try parse_derived_core_properties(input) catch {
+    Failure::Failure(message) =>
+      assert_true(
+        message.contains("XID_Start must be a subset of XID_Continue"),
+      )
+    error => raise error
+  } noraise {
+    _ => fail("expected invalid XID data to fail")
+  }
+}
+
+///|
 test "compress ranges and build composition data" {
   let data = parse_unicode_data(sample_unicode_data)
   let ccc_ranges = compress_ccc_ranges(data)
@@ -106,6 +141,26 @@ test "emit small CCC table" {
   )
   inspect(source.contains("  0x0300"), content="true")
   inspect(source.contains("pub fn lookup_ccc(c : Char) -> Int"), content="true")
+}
+
+///|
+test "emit XID table" {
+  let properties = parse_derived_core_properties(
+    (
+      #|0041..005A ; XID_Start
+      #|0041..005A ; XID_Continue
+      #|005F ; XID_Continue
+    ),
+  )
+  let source = emit_xid(properties)
+  inspect(
+    source.contains("let xid_start_starts : FixedArray[Int] = ["),
+    content="true",
+  )
+  inspect(
+    source.contains("pub fn is_xid_continue(c : Char) -> Bool"),
+    content="true",
+  )
 }
 
 ///|

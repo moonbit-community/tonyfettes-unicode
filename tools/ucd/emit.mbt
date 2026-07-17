@@ -158,6 +158,77 @@ pub fn emit_general_category(ranges : Array[GeneralCategoryRange]) -> String {
 }
 
 ///|
+pub fn emit_xid(properties : XidProperties) -> String {
+  let out = @emitter.Emitter::new()
+  out.write_file_header(
+    "XID_Start and XID_Continue lookup data", "DerivedCoreProperties.txt",
+  )
+  out.write_int_array(
+    "XID_Start range start code points",
+    "xid_start_starts",
+    properties.xid_start.map(range => range.start),
+    hex=true,
+  )
+  out.write_int_array(
+    "XID_Start range end code points (inclusive)",
+    "xid_start_ends",
+    properties.xid_start.map(range => range.end),
+    hex=true,
+  )
+  out.write_int_array(
+    "XID_Continue range start code points",
+    "xid_continue_starts",
+    properties.xid_continue.map(range => range.start),
+    hex=true,
+  )
+  out.write_int_array(
+    "XID_Continue range end code points (inclusive)",
+    "xid_continue_ends",
+    properties.xid_continue.map(range => range.end),
+    hex=true,
+  )
+  out.write(
+    (
+      #|///|
+      #|fn is_in_ranges(
+      #|  c : Char,
+      #|  starts : FixedArray[Int],
+      #|  ends : FixedArray[Int],
+      #|) -> Bool {
+      #|  let cp = c.to_int()
+      #|  let mut left = 0
+      #|  let mut right = starts.length() - 1
+      #|  while left <= right {
+      #|    let mid = (left + right) / 2
+      #|    if cp < starts[mid] {
+      #|      right = mid - 1
+      #|    } else if cp > ends[mid] {
+      #|      left = mid + 1
+      #|    } else {
+      #|      return true
+      #|    }
+      #|  }
+      #|  false
+      #|}
+      #|
+      #|///|
+      #|/// Check whether a character has the Unicode XID_Start property
+      #|pub fn is_xid_start(c : Char) -> Bool {
+      #|  is_in_ranges(c, xid_start_starts, xid_start_ends)
+      #|}
+      #|
+      #|///|
+      #|/// Check whether a character has the Unicode XID_Continue property
+      #|pub fn is_xid_continue(c : Char) -> Bool {
+      #|  is_in_ranges(c, xid_continue_starts, xid_continue_ends)
+      #|}
+      #|
+    ),
+  )
+  out.finish()
+}
+
+///|
 fn merged_full_mapping(
   simple : Array[SimpleMappingEntry],
   special : Array[FullMappingEntry],
