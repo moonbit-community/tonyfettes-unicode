@@ -120,12 +120,11 @@ fn validate_char_status(
   if use_std3_ascii_rules && c.to_int() < 0x80 && !is_ldh_ascii(c) {
     raise DisallowedCodePoint(cp=c.to_int())
   }
-  let (status, _) = @idna_data.lookup_idna_mapping(c)
-  match status {
-    @idna_data.Valid | @idna_data.Deviation =>
+  match @idna_data.lookup_idna_mapping(c) {
+    @idna_data.Valid | @idna_data.Deviation(_) =>
       // OK
       ()
-    @idna_data.Mapped | @idna_data.Ignored =>
+    @idna_data.Mapped(_) | @idna_data.Ignored =>
       // These should have been processed in the mapping step
       // If we see them here, something went wrong
       raise DisallowedCodePoint(cp=c.to_int())
@@ -135,7 +134,7 @@ fn validate_char_status(
         raise DisallowedCodePoint(cp=c.to_int())
       }
     // Otherwise OK
-    @idna_data.DisallowedSTD3Mapped =>
+    @idna_data.DisallowedSTD3Mapped(_) =>
       if use_std3_ascii_rules {
         raise DisallowedCodePoint(cp=c.to_int())
       }

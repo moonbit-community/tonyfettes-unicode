@@ -2,7 +2,7 @@
 package "tonyfettes/idna/internal/idna"
 
 // Values
-pub fn lookup_idna_mapping(Char) -> (IdnaStatus, Array[Char])
+pub fn lookup_idna_mapping(Char) -> IdnaStatus
 
 pub fn lookup_joining_type(Char) -> JoiningType
 
@@ -12,11 +12,11 @@ pub fn lookup_joining_type(Char) -> JoiningType
 pub(all) enum IdnaStatus {
   Valid
   Ignored
-  Mapped
-  Deviation
+  Mapped(Array[Char])
+  Deviation(Array[Char])
   Disallowed
   DisallowedSTD3Valid
-  DisallowedSTD3Mapped
+  DisallowedSTD3Mapped(Array[Char])
 } derive(Eq)
 pub impl Show for IdnaStatus
 

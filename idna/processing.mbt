@@ -6,15 +6,14 @@ fn map_domain(
 ) -> String raise IdnaError {
   let result = StringBuilder::new()
   for c in domain {
-    let (status, mapping) = @idna_data.lookup_idna_mapping(c)
-    match status {
-      @idna_data.Valid | @idna_data.Deviation =>
+    match @idna_data.lookup_idna_mapping(c) {
+      @idna_data.Valid | @idna_data.Deviation(_) =>
         // Keep the character (nontransitional mode keeps deviation as-is)
         result.write_char(c)
       @idna_data.Ignored =>
         // Remove the character (don't add to result)
         ()
-      @idna_data.Mapped =>
+      @idna_data.Mapped(mapping) =>
         // Replace with mapping
         for mapped_c in mapping {
           result.write_char(mapped_c)
@@ -26,7 +25,7 @@ fn map_domain(
         } else {
           result.write_char(c)
         }
-      @idna_data.DisallowedSTD3Mapped =>
+      @idna_data.DisallowedSTD3Mapped(mapping) =>
         if use_std3_ascii_rules {
           raise DisallowedCodePoint(cp=c.to_int())
         } else {
