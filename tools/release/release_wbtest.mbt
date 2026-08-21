@@ -39,26 +39,36 @@ test "publish dry-run accepts the known false failure" {
 }
 
 ///|
-test "remote release tag must match the local tag object" {
-  let object = "0123456789abcdef0123456789abcdef01234567"
-  assert_true(
-    remote_tag_matches("\{object}\trefs/tags/v0.4.0\n", "v0.4.0", object),
-  )
-  assert_false(
-    remote_tag_matches(
-      "fedcba9876543210fedcba9876543210fedcba98\trefs/tags/v0.4.0\n", "v0.4.0", object,
-    ),
-  )
-  assert_false(
-    remote_tag_matches("\{object}\trefs/tags/v0.4.1\n", "v0.4.0", object),
-  )
-  assert_false(
-    remote_tag_matches(
-      "\{object}\trefs/tags/v0.4.0\n\{object}\trefs/tags/v0.4.1\n",
-      "v0.4.0",
-      object,
-    ),
-  )
+test "release version comes from consistent published manifests" {
+  let versions = [
+    ("ucd/moon.mod", "0.4.0"),
+    ("punycode/moon.mod", "0.4.0"),
+    ("moon.mod", "0.4.0"),
+  ]
+  inspect(release_version_from_manifests(versions), content="0.4.0")
+  try
+    release_version_from_manifests([
+      ("ucd/moon.mod", "0.4.1"),
+      ("moon.mod", "0.4.0"),
+    ])
+  catch {
+    ReleaseError(message) =>
+      inspect(
+        message,
+        content="Published module versions are inconsistent: ucd/moon.mod has 0.4.1, expected 0.4.0 from moon.mod",
+      )
+  } noraise {
+    _ => fail("expected inconsistent published versions to fail")
+  }
+  try release_version_from_manifests([("ucd/moon.mod", "0.4.0")]) catch {
+    ReleaseError(message) =>
+      inspect(
+        message,
+        content="Published manifests do not contain the root moon.mod",
+      )
+  } noraise {
+    _ => fail("expected a missing root manifest to fail")
+  }
 }
 
 ///|

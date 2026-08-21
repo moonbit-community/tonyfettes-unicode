@@ -71,12 +71,32 @@ fn publish_dry_run_succeeded(
 }
 
 ///|
-fn remote_tag_matches(
-  output : StringView,
-  tag : StringView,
-  local_object : StringView,
-) -> Bool {
-  output.trim() == "\{local_object}\trefs/tags/\{tag}"
+fn release_version_from_manifests(
+  versions : ArrayView[(String, String)],
+) -> String raise ReleaseError {
+  let mut root_version : String? = None
+  for manifest in versions {
+    let (path, version) = manifest
+    if path == "moon.mod" {
+      guard root_version is None else {
+        raise ReleaseError("Published manifests contain more than one moon.mod")
+      }
+      root_version = Some(version)
+    }
+  }
+  guard root_version is Some(expected_version) else {
+    raise ReleaseError("Published manifests do not contain the root moon.mod")
+  }
+  validate_release_version(expected_version)
+  for manifest in versions {
+    let (path, actual_version) = manifest
+    guard actual_version == expected_version else {
+      raise ReleaseError(
+        "Published module versions are inconsistent: \{path} has \{actual_version}, expected \{expected_version} from moon.mod",
+      )
+    }
+  }
+  expected_version
 }
 
 ///|

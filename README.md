@@ -260,26 +260,28 @@ dry-runs the independent `ucd`, `punycode`, and `bidi` modules:
 moon run --target native tools/release -- prepare --version 0.4.0
 ```
 
-Review and commit the resulting manifest changes, then create and push the
-matching `v0.4.0` tag. Publication is a separate, explicit step:
+Review and commit the resulting manifest changes to the default branch, then
+wait for CI to pass. Publication is a separate, explicit step that does not
+require a Git tag. Run the `publish-package` workflow in GitHub Actions, or run
+the underlying command from a clean checkout of the commit to publish:
 
 ```bash
 moon run --target native tools/release -- publish \
-  --version 0.4.0 \
   --execute
 ```
 
 The tool publishes `ucd`, `punycode`, `bidi`, `normalization`, `idna`, and the
-`unicode` compatibility umbrella in dependency order. Modules that depend on
-same-release packages are dry-run immediately before their real publication,
-after the tool refreshes the registry and their dependencies are available. It
-never publishes the workspace-only `conformance` or `tools` modules. If
-publication stops partway through, resolve the problem and resume at the failed
-module, for example:
+`unicode` compatibility umbrella in dependency order. It reads the release
+version from the root `moon.mod` and verifies that all six published modules use
+that version. Modules that depend on same-release packages are dry-run
+immediately before their real publication, after the tool refreshes the
+registry and their dependencies are available. It never publishes the
+workspace-only `conformance` or `tools` modules. If publication stops partway
+through, rerun the workflow with its `from` input set to the failed module, or
+resume with the underlying command:
 
 ```bash
 moon run --target native tools/release -- publish \
-  --version 0.4.0 \
   --from normalization \
   --execute
 ```
