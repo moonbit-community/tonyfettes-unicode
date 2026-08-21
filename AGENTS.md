@@ -21,19 +21,19 @@ moon info           # Regenerate pkg.generated.mbti files
 
 ### Public Modules
 
-- **ucd/** (`tonyfettes/ucd`): Unicode Character Database lookup, case mapping,
+- **ucd/** (`moonbit-community/ucd`): Unicode Character Database lookup, case mapping,
   and general category APIs
-- **normalization/** (`tonyfettes/normalization`): UAX #15 Unicode normalization
-- **punycode/** (`tonyfettes/punycode`): RFC 3492 Punycode encoding/decoding
+- **normalization/** (`moonbit-community/normalization`): UAX #15 Unicode normalization
+- **punycode/** (`moonbit-community/punycode`): RFC 3492 Punycode encoding/decoding
   - `encode(String) -> String raise PunycodeError`
   - `decode(String) -> String raise PunycodeError`
-- **bidi/** (`tonyfettes/bidi`): UAX #9 bidirectional text processing
-- **idna/** (`tonyfettes/idna`): UTS #46 IDNA processing
+- **bidi/** (`moonbit-community/bidi`): UAX #9 bidirectional text processing
+- **idna/** (`moonbit-community/idna`): UTS #46 IDNA processing
   - `to_ascii()` - convert domain to ASCII (Punycode)
   - `to_unicode()` - convert domain from Punycode
-- **unicode/** (`tonyfettes/unicode`): compatibility umbrella preserving the old
+- **unicode/** (`moonbit-community/unicode`): compatibility umbrella preserving the old
   package paths
-- **conformance/** (`tonyfettes/unicode-conformance`): workspace-only generated
+- **conformance/** (`moonbit-community/unicode-conformance`): workspace-only generated
   conformance tests; it is not a published dependency
 
 ### Internal Data Packages (auto-generated)

@@ -4,7 +4,7 @@ Unicode Bidirectional Algorithm implementation for MoonBit, targeting UAX #9
 and Unicode 16.0.0.
 
 ```bash
-moon add tonyfettes/bidi
+moon add moonbit-community/bidi
 ```
 
 See the repository root README for API documentation and examples.

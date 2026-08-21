@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "tonyfettes/unicode/punycode"
+package "moonbit-community/unicode/punycode"
 
 // Values
 pub fn decode(String) -> String raise PunycodeError
@@ -19,4 +19,3 @@ pub impl Show for PunycodeError
 // Type aliases
 
 // Traits
-

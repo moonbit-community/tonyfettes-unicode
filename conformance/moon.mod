@@ -1,4 +1,4 @@
-name = "tonyfettes/unicode-conformance"
+name = "moonbit-community/unicode-conformance"
 
 version = "0.3.4"
 
@@ -9,8 +9,8 @@ repository = "https://github.com/moonbit-community/tonyfettes-unicode"
 description = "Workspace-only Unicode conformance tests"
 
 import {
-  "tonyfettes/unicode@0.4.0",
-  "tonyfettes/normalization@0.4.0",
-  "tonyfettes/bidi@0.4.0",
-  "tonyfettes/idna@0.4.0",
+  "moonbit-community/unicode@0.4.0",
+  "moonbit-community/normalization@0.4.0",
+  "moonbit-community/bidi@0.4.0",
+  "moonbit-community/idna@0.4.0",
 }

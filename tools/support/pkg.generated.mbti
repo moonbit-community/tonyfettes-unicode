@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "tonyfettes/unicode-tools/support"
+package "moonbit-community/unicode-tools/support"
 
 import {
   "moonbitlang/core/debug",
@@ -55,4 +55,3 @@ pub(all) struct ParsedText {
 // Type aliases
 
 // Traits
-

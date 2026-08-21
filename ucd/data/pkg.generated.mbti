@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "tonyfettes/ucd/data"
+package "moonbit-community/ucd/data"
 
 // Values
 pub fn get_canonical_decomposition(Char) -> Array[Char]?
@@ -39,4 +39,3 @@ pub fn lookup_simple_uppercase(Char) -> Char
 // Type aliases
 
 // Traits
-

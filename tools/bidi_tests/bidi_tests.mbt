@@ -504,7 +504,7 @@ pub fn generate_parts(
 pub fn package_source() -> String {
   (
     #|import {
-    #|  "tonyfettes/bidi" @bidi,
+    #|  "moonbit-community/bidi" @bidi,
     #|  "moonbitlang/core/debug",
     #|} for "test"
     #|

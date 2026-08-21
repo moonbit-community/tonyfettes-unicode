@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "tonyfettes/unicode-conformance/bidi/bidi/part675"
+package "moonbit-community/unicode-conformance/bidi/bidi/part675"
 
 // Values
 
@@ -10,4 +10,3 @@ package "tonyfettes/unicode-conformance/bidi/bidi/part675"
 // Type aliases
 
 // Traits
-

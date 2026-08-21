@@ -1,5 +1,5 @@
 import {
-  "tonyfettes/idna" @impl,
+  "moonbit-community/idna" @impl,
 }
 
 import {

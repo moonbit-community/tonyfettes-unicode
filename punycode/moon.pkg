@@ -1,4 +1,4 @@
 import {
-  "tonyfettes/punycode/internal/fuzz",
+  "moonbit-community/punycode/internal/fuzz",
   "moonbitlang/core/random",
 } for "test"

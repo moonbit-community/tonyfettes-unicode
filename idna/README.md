@@ -3,7 +3,7 @@
 Unicode IDNA processing for MoonBit following UTS #46 and Unicode 16.0.0.
 
 ```bash
-moon add tonyfettes/idna
+moon add moonbit-community/idna
 ```
 
 See the repository root README for API documentation and examples.

@@ -14,18 +14,26 @@ test "release versions use stable semantic version syntax" {
 ///|
 test "publish dry-run accepts the known false failure" {
   let output =
-    #|Server status: 202 Accepted, detail: Dry run completed successfully. No changes were made. The dry-run was made for package tonyfettes/ucd version 0.4.0.
+    #|Server status: 202 Accepted, detail: Dry run completed successfully. No changes were made. The dry-run was made for package moonbit-community/ucd version 0.4.0.
     #|Error: `moon publish` failed
-  assert_true(publish_dry_run_succeeded(0, "", "tonyfettes/ucd", "0.4.0"))
-  assert_true(publish_dry_run_succeeded(255, output, "tonyfettes/ucd", "0.4.0"))
-  assert_true(publish_dry_run_succeeded(-1, output, "tonyfettes/ucd", "0.4.0"))
-  assert_false(publish_dry_run_succeeded(1, output, "tonyfettes/ucd", "0.4.0"))
+  assert_true(
+    publish_dry_run_succeeded(0, "", "moonbit-community/ucd", "0.4.0"),
+  )
+  assert_true(
+    publish_dry_run_succeeded(255, output, "moonbit-community/ucd", "0.4.0"),
+  )
+  assert_true(
+    publish_dry_run_succeeded(-1, output, "moonbit-community/ucd", "0.4.0"),
+  )
   assert_false(
-    publish_dry_run_succeeded(255, output, "tonyfettes/idna", "0.4.0"),
+    publish_dry_run_succeeded(1, output, "moonbit-community/ucd", "0.4.0"),
+  )
+  assert_false(
+    publish_dry_run_succeeded(255, output, "moonbit-community/idna", "0.4.0"),
   )
   assert_false(
     publish_dry_run_succeeded(
-      255, "Server status: 500 Internal Server Error", "tonyfettes/ucd", "0.4.0",
+      255, "Server status: 500 Internal Server Error", "moonbit-community/ucd", "0.4.0",
     ),
   )
 }
@@ -56,7 +64,7 @@ test "remote release tag must match the local tag object" {
 ///|
 test "manifest version is read and replaced without reformatting" {
   let source =
-    #|name = "tonyfettes/example"
+    #|name = "moonbit-community/example"
     #|
     #|version = "0.3.4"
     #|
@@ -64,7 +72,7 @@ test "manifest version is read and replaced without reformatting" {
   inspect(
     replace_manifest_version(source, "moon.mod", "0.4.0"),
     content=(
-      #|name = "tonyfettes/example"
+      #|name = "moonbit-community/example"
       #|
       #|version = "0.4.0"
       #|
@@ -74,11 +82,11 @@ test "manifest version is read and replaced without reformatting" {
 
 ///|
 test "manifest version accepts CRLF line endings" {
-  let source = "name = \"tonyfettes/example\"\r\n\r\nversion = \"0.3.4\"\r\n"
+  let source = "name = \"moonbit-community/example\"\r\n\r\nversion = \"0.3.4\"\r\n"
   inspect(manifest_version(source, "moon.mod"), content="0.3.4")
   inspect(
     replace_manifest_version(source, "moon.mod", "0.4.0"),
-    content="name = \"tonyfettes/example\"\r\n\r\nversion = \"0.4.0\"\r\n",
+    content="name = \"moonbit-community/example\"\r\n\r\nversion = \"0.4.0\"\r\n",
   )
 }
 
@@ -97,7 +105,9 @@ test "manifest version declarations must be unique" {
   } noraise {
     _ => fail("expected duplicate version declaration to fail")
   }
-  try manifest_version("name = \"tonyfettes/ucd\"\n", "ucd/moon.mod") catch {
+  try
+    manifest_version("name = \"moonbit-community/ucd\"\n", "ucd/moon.mod")
+  catch {
     ReleaseError(message) =>
       inspect(
         message,

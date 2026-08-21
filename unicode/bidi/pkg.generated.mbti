@@ -1,8 +1,8 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "tonyfettes/unicode/bidi"
+package "moonbit-community/unicode/bidi"
 
 // Values
-pub fn bidi_class(Char) -> @tonyfettes/unicode/internal/bidi.BidiClass
+pub fn bidi_class(Char) -> @moonbit-community/unicode/internal/bidi.BidiClass
 
 pub fn detect_direction(String) -> Direction
 
@@ -33,8 +33,8 @@ pub(all) suberror BidiError {
 // Types and methods
 pub(all) struct BidiParagraph {
   chars : Array[Char]
-  original_classes : Array[@tonyfettes/unicode/internal/bidi.BidiClass]
-  resolved_classes : Array[@tonyfettes/unicode/internal/bidi.BidiClass]
+  original_classes : Array[@moonbit-community/unicode/internal/bidi.BidiClass]
+  resolved_classes : Array[@moonbit-community/unicode/internal/bidi.BidiClass]
   levels : Array[Int]
   base_level : Int
 }
@@ -47,7 +47,6 @@ pub fn Direction::level(Self) -> Int
 pub impl Show for Direction
 
 // Type aliases
-pub using @tonyfettes/unicode/internal/bidi {type BidiClass}
+pub using @moonbit-community/unicode/internal/bidi {type BidiClass}
 
 // Traits
-

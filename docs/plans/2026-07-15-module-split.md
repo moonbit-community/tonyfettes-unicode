@@ -4,27 +4,27 @@ Status: Validated
 
 ## Outcome
 
-Split the published `tonyfettes/unicode` module into independently consumable
+Split the published `moonbit-community/unicode` module into independently consumable
 modules so users only download the Unicode functionality they use:
 
-- `tonyfettes/ucd`
-- `tonyfettes/normalization`
-- `tonyfettes/punycode`
-- `tonyfettes/bidi`
-- `tonyfettes/idna`
+- `moonbit-community/ucd`
+- `moonbit-community/normalization`
+- `moonbit-community/punycode`
+- `moonbit-community/bidi`
+- `moonbit-community/idna`
 
-Keep `tonyfettes/unicode` as a compatibility umbrella whose existing package
+Keep `moonbit-community/unicode` as a compatibility umbrella whose existing package
 paths forward to the new modules.
 
 ## Boundaries
 
 - Each feature module owns its public types and implementation data.
-- `tonyfettes/ucd/data` exposes the low-level table lookups required by
+- `moonbit-community/ucd/data` exposes the low-level table lookups required by
   normalization and IDNA; user-facing case and category APIs remain at
-  `tonyfettes/ucd`.
-- `BidiClass` is owned by the public `tonyfettes/bidi` package rather than an
+  `moonbit-community/ucd`.
+- `BidiClass` is owned by the public `moonbit-community/bidi` package rather than an
   internal package.
-- `tonyfettes/idna` depends on UCD, normalization, Punycode, and Bidi.
+- `moonbit-community/idna` depends on UCD, normalization, Punycode, and Bidi.
 - No persistence, wire-format, security-policy, or third-party dependency
   changes are included.
 
@@ -32,21 +32,21 @@ paths forward to the new modules.
 
 Unit and fuzz tests stay with their owning feature modules. Large generated
 Unicode, IDNA, and Bidi conformance fixtures move to a workspace-only
-`tonyfettes/unicode-conformance` module. They remain part of local and CI test
+`moonbit-community/unicode-conformance` module. They remain part of local and CI test
 runs but are excluded from published `.mooncakes` archives.
 
-The existing `tonyfettes/unicode-tools` module remains workspace-only and is
+The existing `moonbit-community/unicode-tools` module remains workspace-only and is
 updated to emit data, interfaces, and conformance fixtures at the new paths.
 
 ## Compatibility
 
 The umbrella module keeps the existing public package paths:
 
-- `tonyfettes/unicode`
-- `tonyfettes/unicode/normalization`
-- `tonyfettes/unicode/punycode`
-- `tonyfettes/unicode/bidi`
-- `tonyfettes/unicode/idna`
+- `moonbit-community/unicode`
+- `moonbit-community/unicode/normalization`
+- `moonbit-community/unicode/punycode`
+- `moonbit-community/unicode/bidi`
+- `moonbit-community/unicode/idna`
 
 These packages are thin facades over the new modules. New consumers should
 depend directly on the feature module they need.

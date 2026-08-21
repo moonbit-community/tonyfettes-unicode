@@ -1,4 +1,4 @@
-name = "tonyfettes/bidi"
+name = "moonbit-community/bidi"
 
 version = "0.4.0"
 

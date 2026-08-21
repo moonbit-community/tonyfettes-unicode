@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "tonyfettes/unicode/internal/bidi"
+package "moonbit-community/unicode/internal/bidi"
 
 // Values
 
@@ -44,4 +44,3 @@ pub impl Show for BidiClass
 // Type aliases
 
 // Traits
-

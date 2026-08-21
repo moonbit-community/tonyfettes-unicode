@@ -1,4 +1,4 @@
-name = "tonyfettes/normalization"
+name = "moonbit-community/normalization"
 
 version = "0.4.0"
 
@@ -13,5 +13,5 @@ description = "Unicode normalization forms for MoonBit"
 keywords = [ "unicode", "normalization", "nfc", "nfd", "nfkc", "nfkd" ]
 
 import {
-  "tonyfettes/ucd@0.4.0",
+  "moonbit-community/ucd@0.4.0",
 }

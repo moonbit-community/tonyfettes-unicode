@@ -1,4 +1,4 @@
-name = "tonyfettes/punycode"
+name = "moonbit-community/punycode"
 
 version = "0.4.0"
 

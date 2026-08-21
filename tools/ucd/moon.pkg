@@ -1,4 +1,4 @@
 import {
-  "tonyfettes/unicode-tools/emitter",
+  "moonbit-community/unicode-tools/emitter",
   "moonbitlang/core/string",
 }

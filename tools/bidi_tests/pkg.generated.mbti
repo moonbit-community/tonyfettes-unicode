@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "tonyfettes/unicode-tools/bidi_tests"
+package "moonbit-community/unicode-tools/bidi_tests"
 
 import {
   "moonbitlang/core/debug",
@@ -48,4 +48,3 @@ pub fn GeneratedParts::next(Self) -> GeneratedPart? raise
 // Type aliases
 
 // Traits
-

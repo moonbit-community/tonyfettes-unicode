@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "tonyfettes/unicode-tools/ucd"
+package "moonbit-community/unicode-tools/ucd"
 
 // Values
 pub fn build_composition_table(UnicodeData, Array[Int]) -> Array[CompositionEntry]
@@ -52,4 +52,3 @@ type XidProperties
 // Type aliases
 
 // Traits
-

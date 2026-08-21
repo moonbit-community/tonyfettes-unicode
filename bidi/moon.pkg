@@ -1,5 +1,5 @@
 import {
-  "tonyfettes/bidi/internal/bidi" @bidi_data,
+  "moonbit-community/bidi/internal/bidi" @bidi_data,
   "moonbitlang/core/cmp",
 }
 

@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "tonyfettes/unicode-tools/idna_data"
+package "moonbit-community/unicode-tools/idna_data"
 
 // Values
 pub fn generate_joining_source(String) -> String raise
@@ -13,4 +13,3 @@ pub fn generate_mapping_source(String) -> String raise
 // Type aliases
 
 // Traits
-

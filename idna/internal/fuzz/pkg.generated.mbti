@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "tonyfettes/idna/internal/fuzz"
+package "moonbit-community/idna/internal/fuzz"
 
 import {
   "moonbitlang/core/random",
@@ -41,4 +41,3 @@ pub fn random_mixed_bidi_label(@random.Rand) -> String
 // Type aliases
 
 // Traits
-

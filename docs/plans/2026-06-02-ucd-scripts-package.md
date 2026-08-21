@@ -18,15 +18,15 @@ Status: completed on 2026-07-15.
 
 ## Packages
 
-- `tonyfettes/unicode-tools/emitter`
-- `tonyfettes/unicode-tools/support`
-- `tonyfettes/unicode-tools/ucd`
-- `tonyfettes/unicode-tools/idna_data`
-- `tonyfettes/unicode-tools/bidi_data`
-- `tonyfettes/unicode-tools/normalization_tests`
-- `tonyfettes/unicode-tools/idna_tests`
-- `tonyfettes/unicode-tools/bidi_tests`
-- `tonyfettes/unicode-tools/gen`
+- `moonbit-community/unicode-tools/emitter`
+- `moonbit-community/unicode-tools/support`
+- `moonbit-community/unicode-tools/ucd`
+- `moonbit-community/unicode-tools/idna_data`
+- `moonbit-community/unicode-tools/bidi_data`
+- `moonbit-community/unicode-tools/normalization_tests`
+- `moonbit-community/unicode-tools/idna_tests`
+- `moonbit-community/unicode-tools/bidi_tests`
+- `moonbit-community/unicode-tools/gen`
 
 ## Commands
 
