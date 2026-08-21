@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "tonyfettes/normalization/internal/fuzz"
+package "moonbit-community/normalization/internal/fuzz"
 
 // Values
 pub fn ccc_is_sorted(String) -> Bool
@@ -11,4 +11,3 @@ pub fn ccc_is_sorted(String) -> Bool
 // Type aliases
 
 // Traits
-

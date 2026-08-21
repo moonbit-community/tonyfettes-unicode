@@ -1,4 +1,4 @@
-name = "tonyfettes/unicode"
+name = "moonbit-community/unicode"
 
 version = "0.4.0"
 
@@ -13,11 +13,11 @@ description = "Unicode in MoonBit"
 source = "unicode"
 
 import {
-  "tonyfettes/ucd@0.4.0",
-  "tonyfettes/normalization@0.4.0",
-  "tonyfettes/punycode@0.4.0",
-  "tonyfettes/bidi@0.4.0",
-  "tonyfettes/idna@0.4.0",
+  "moonbit-community/ucd@0.4.0",
+  "moonbit-community/normalization@0.4.0",
+  "moonbit-community/punycode@0.4.0",
+  "moonbit-community/bidi@0.4.0",
+  "moonbit-community/idna@0.4.0",
 }
 
 keywords = [

@@ -1,4 +1,4 @@
-name = "tonyfettes/ucd"
+name = "moonbit-community/ucd"
 
 version = "0.4.0"
 

@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "tonyfettes/bidi/internal/bidi"
+package "moonbit-community/bidi/internal/bidi"
 
 // Values
 pub fn bidi_mirroring_glyph(Char) -> Char
@@ -29,4 +29,3 @@ pub impl Show for BracketType
 // Type aliases
 
 // Traits
-

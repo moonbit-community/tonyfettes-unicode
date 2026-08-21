@@ -1,8 +1,8 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "tonyfettes/unicode-conformance/normalization"
+package "moonbit-community/unicode-conformance/normalization"
 
 // Values
-pub fn is_normalized(String, @tonyfettes/normalization.NormalizationForm) -> Bool
+pub fn is_normalized(String, @moonbit-community/normalization.NormalizationForm) -> Bool
 
 pub fn nfc(String) -> String
 
@@ -12,14 +12,13 @@ pub fn nfkc(String) -> String
 
 pub fn nfkd(String) -> String
 
-pub fn normalize(String, @tonyfettes/normalization.NormalizationForm) -> String
+pub fn normalize(String, @moonbit-community/normalization.NormalizationForm) -> String
 
 // Errors
 
 // Types and methods
 
 // Type aliases
-pub using @tonyfettes/normalization {type NormalizationForm}
+pub using @moonbit-community/normalization {type NormalizationForm}
 
 // Traits
-

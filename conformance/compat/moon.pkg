@@ -1,7 +1,7 @@
 import {
-  "tonyfettes/unicode",
-  "tonyfettes/unicode/normalization" @unicode/normalization,
-  "tonyfettes/unicode/punycode" @unicode/punycode,
-  "tonyfettes/unicode/bidi" @unicode/bidi,
-  "tonyfettes/unicode/idna" @unicode/idna,
+  "moonbit-community/unicode",
+  "moonbit-community/unicode/normalization" @unicode/normalization,
+  "moonbit-community/unicode/punycode" @unicode/punycode,
+  "moonbit-community/unicode/bidi" @unicode/bidi,
+  "moonbit-community/unicode/idna" @unicode/idna,
 } for "test"

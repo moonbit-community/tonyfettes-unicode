@@ -48,7 +48,7 @@ async fn run_publish_dry_run(
   release_module : ReleaseModule,
   version : String,
 ) -> Unit {
-  let package_name = "tonyfettes/\{release_module.name}"
+  let package_name = "moonbit-community/\{release_module.name}"
   let description = "Dry-running \{package_name}@\{version}"
   println("==> \{description}")
   // `moon publish` validates the archive in a fresh directory, so it must be
@@ -244,11 +244,11 @@ async fn prepare_release(root : StringView, version : String) -> Unit {
       root,
       "moon",
       ["-C", release_module.directory, "package", "--list", "--frozen"],
-      "Listing tonyfettes/\{release_module.name}@\{version}",
+      "Listing moonbit-community/\{release_module.name}@\{version}",
     )
     if release_module.requires_published_dependencies {
       println(
-        "==> Deferring the tonyfettes/\{release_module.name}@\{version} dry-run until its same-release dependencies are published",
+        "==> Deferring the moonbit-community/\{release_module.name}@\{version} dry-run until its same-release dependencies are published",
       )
     } else {
       run_publish_dry_run(root, release_module, version)
@@ -283,18 +283,20 @@ async fn publish_release(
   for index, release_module in published_modules {
     if index >= start_index {
       println(
-        "==> [\{index + 1}/\{published_modules.length()}] Releasing tonyfettes/\{release_module.name}@\{version}",
+        "==> [\{index + 1}/\{published_modules.length()}] Releasing moonbit-community/\{release_module.name}@\{version}",
       )
       if release_module.requires_published_dependencies {
         run_checked(
           root,
           "moon",
           ["-C", release_module.directory, "update"],
-          "Refreshing the registry for tonyfettes/\{release_module.name}@\{version}",
+          "Refreshing the registry for moonbit-community/\{release_module.name}@\{version}",
         )
       }
       run_publish_dry_run(root, release_module, version)
-      println("==> Publishing tonyfettes/\{release_module.name}@\{version}")
+      println(
+        "==> Publishing moonbit-community/\{release_module.name}@\{version}",
+      )
       println("    $ moon -C \{release_module.directory} publish")
       let status = @process.run(
         "moon",
@@ -303,10 +305,12 @@ async fn publish_release(
       )
       guard status == 0 else {
         raise ReleaseError(
-          "Publishing tonyfettes/\{release_module.name}@\{version} failed with exit status \{status}. After resolving the problem, resume with --from \{release_module.name}",
+          "Publishing moonbit-community/\{release_module.name}@\{version} failed with exit status \{status}. After resolving the problem, resume with --from \{release_module.name}",
         )
       }
-      println("    Published tonyfettes/\{release_module.name}@\{version}")
+      println(
+        "    Published moonbit-community/\{release_module.name}@\{version}",
+      )
     }
   }
   println("Published all modules for v\{version}")

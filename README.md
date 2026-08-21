@@ -21,28 +21,28 @@ generated tables target Unicode 16.0.0.
 Add only the feature modules your application needs:
 
 ```bash
-moon add tonyfettes/ucd
-moon add tonyfettes/normalization
-moon add tonyfettes/punycode
-moon add tonyfettes/bidi
-moon add tonyfettes/idna
+moon add moonbit-community/ucd
+moon add moonbit-community/normalization
+moon add moonbit-community/punycode
+moon add moonbit-community/bidi
+moon add moonbit-community/idna
 ```
 
 Import the packages you need in `moon.pkg`:
 
 ```moonbit
 import {
-  "tonyfettes/ucd"
-  "tonyfettes/normalization"
-  "tonyfettes/punycode"
-  "tonyfettes/idna"
-  "tonyfettes/bidi"
+  "moonbit-community/ucd"
+  "moonbit-community/normalization"
+  "moonbit-community/punycode"
+  "moonbit-community/idna"
+  "moonbit-community/bidi"
 }
 ```
 
 MoonBit uses the last package path segment as the default alias, so these
 imports are used as `@ucd`, `@normalization`, `@punycode`, `@idna`, and
-`@bidi`. Existing users may continue depending on `tonyfettes/unicode`; it is
+`@bidi`. Existing users may continue depending on `moonbit-community/unicode`; it is
 an umbrella compatibility module that preserves the old package paths.
 
 ## Usage
@@ -137,7 +137,7 @@ let lower = @ucd.to_lowercase('\u{0130}') // "i" + combining dot above
 
 ## Public Packages
 
-### `tonyfettes/ucd`
+### `moonbit-community/ucd`
 
 Root package for Unicode Character Database helpers.
 
@@ -154,7 +154,7 @@ Root package for Unicode Character Database helpers.
 | `to_lowercase(Char) -> String` | Full lowercase mapping. |
 | `to_titlecase(Char) -> String` | Full titlecase mapping. |
 
-### `tonyfettes/normalization`
+### `moonbit-community/normalization`
 
 | API | Description |
 | --- | --- |
@@ -167,7 +167,7 @@ Root package for Unicode Character Database helpers.
 
 The available forms are `NFD`, `NFC`, `NFKD`, and `NFKC`.
 
-### `tonyfettes/punycode`
+### `moonbit-community/punycode`
 
 | API | Description |
 | --- | --- |
@@ -176,7 +176,7 @@ The available forms are `NFD`, `NFC`, `NFKD`, and `NFKC`.
 
 `PunycodeError` variants are `Overflow`, `InvalidInput`, and `BadInput`.
 
-### `tonyfettes/idna`
+### `moonbit-community/idna`
 
 | API | Description |
 | --- | --- |
@@ -194,7 +194,7 @@ The available forms are `NFD`, `NFC`, `NFKD`, and `NFKC`.
 `to_unicode` accepts the same options except `verify_dns_length`; they also
 default to `true`.
 
-### `tonyfettes/bidi`
+### `moonbit-community/bidi`
 
 | API | Description |
 | --- | --- |
@@ -217,7 +217,7 @@ Common commands:
 ```bash
 moon check
 moon test
-moon test -p tonyfettes/normalization
+moon test -p moonbit-community/normalization
 moon fmt
 moon info
 moon build
@@ -242,7 +242,7 @@ per generated package (default: 500), run
 Unicode source files are cached in `tools/.cache/`.
 
 Large generated conformance fixtures live in the workspace-only
-`tonyfettes/unicode-conformance` module, so they remain part of local and CI
+`moonbit-community/unicode-conformance` module, so they remain part of local and CI
 tests without inflating published feature archives. Verify a feature module's
 contents from its directory, for example:
 

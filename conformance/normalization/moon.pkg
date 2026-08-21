@@ -1,4 +1,4 @@
 import {
-  "tonyfettes/normalization" @impl,
+  "moonbit-community/normalization" @impl,
   "moonbitlang/core/debug",
 }

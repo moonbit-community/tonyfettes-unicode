@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "tonyfettes/unicode-tools/emitter"
+package "moonbit-community/unicode-tools/emitter"
 
 // Values
 
@@ -19,4 +19,3 @@ pub fn Emitter::write_line(Self, String) -> Unit
 // Type aliases
 
 // Traits
-

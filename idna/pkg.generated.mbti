@@ -1,8 +1,8 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "tonyfettes/idna"
+package "moonbit-community/idna"
 
 import {
-  "tonyfettes/punycode",
+  "moonbit-community/punycode",
 }
 
 // Values
@@ -31,4 +31,3 @@ pub impl Show for IdnaError
 // Type aliases
 
 // Traits
-

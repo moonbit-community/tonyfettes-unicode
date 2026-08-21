@@ -1,4 +1,4 @@
-name = "tonyfettes/idna"
+name = "moonbit-community/idna"
 
 version = "0.4.0"
 
@@ -13,8 +13,8 @@ description = "UTS #46 IDNA processing for MoonBit"
 keywords = [ "unicode", "idna", "uts46", "domain" ]
 
 import {
-  "tonyfettes/ucd@0.4.0",
-  "tonyfettes/normalization@0.4.0",
-  "tonyfettes/punycode@0.4.0",
-  "tonyfettes/bidi@0.4.0",
+  "moonbit-community/ucd@0.4.0",
+  "moonbit-community/normalization@0.4.0",
+  "moonbit-community/punycode@0.4.0",
+  "moonbit-community/bidi@0.4.0",
 }

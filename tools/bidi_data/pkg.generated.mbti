@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "tonyfettes/unicode-tools/bidi_data"
+package "moonbit-community/unicode-tools/bidi_data"
 
 // Values
 pub fn generate_bidi_class_source(String) -> String raise
@@ -15,4 +15,3 @@ pub fn generate_mirrored_source(String) -> String raise
 // Type aliases
 
 // Traits
-

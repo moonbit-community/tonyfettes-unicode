@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "tonyfettes/punycode/internal/fuzz"
+package "moonbit-community/punycode/internal/fuzz"
 
 import {
   "moonbitlang/core/random",
@@ -45,4 +45,3 @@ pub(all) enum CodePointCategory {
 // Type aliases
 
 // Traits
-

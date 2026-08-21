@@ -1,10 +1,10 @@
 import {
-  "tonyfettes/ucd/data" @ucd,
+  "moonbit-community/ucd/data" @ucd,
 }
 
 import {
-  "tonyfettes/normalization/internal/base_fuzz" @fuzz,
-  "tonyfettes/normalization/internal/fuzz" @normalization_fuzz,
+  "moonbit-community/normalization/internal/base_fuzz" @fuzz,
+  "moonbit-community/normalization/internal/fuzz" @normalization_fuzz,
   "moonbitlang/core/debug",
   "moonbitlang/core/random",
 } for "test"

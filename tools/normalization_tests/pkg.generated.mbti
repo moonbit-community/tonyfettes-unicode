@@ -1,8 +1,8 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "tonyfettes/unicode-tools/normalization_tests"
+package "moonbit-community/unicode-tools/normalization_tests"
 
 import {
-  "tonyfettes/unicode-tools/support",
+  "moonbit-community/unicode-tools/support",
 }
 
 // Values
@@ -15,4 +15,3 @@ pub fn generate_files(String) -> Array[@support.GeneratedFile] raise
 // Type aliases
 
 // Traits
-
