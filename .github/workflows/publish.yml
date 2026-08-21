@@ -1,0 +1,67 @@
+name: publish-package
+run-name: publish ${{ github.sha }} from ${{ inputs.from }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      from:
+        description: Resume publication from this module
+        required: true
+        default: ucd
+        type: choice
+        options:
+          - ucd
+          - punycode
+          - bidi
+          - normalization
+          - idna
+          - unicode
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mooncakes-publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.ref_name == github.event.repository.default_branch
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: install
+        run: |
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
+          echo "$HOME/.moon/bin" >> $GITHUB_PATH
+
+      - name: moon version
+        run: moon version --all
+
+      - name: test release tool
+        run: moon test tools/release --target native
+
+      - name: release commit
+        run: echo "Publishing commit $GITHUB_SHA"
+
+      - name: publish modules
+        run: |
+          set -euo pipefail
+          if [ -z "$MOONCAKES_CREDENTIALS" ]; then
+            echo "MOONCAKES_MOONBIT_COMMUNITY_TOKEN is not configured" >&2
+            exit 1
+          fi
+          credentials_file="$HOME/.moon/credentials.json"
+          mkdir -p "$HOME/.moon"
+          umask 077
+          printf '%s' "$MOONCAKES_CREDENTIALS" > "$credentials_file"
+          trap 'rm -f "$credentials_file"' EXIT
+          moon run --target native tools/release -- \
+            publish --from "$FROM_MODULE" --execute
+        env:
+          FROM_MODULE: ${{ inputs.from }}
+          MOONCAKES_CREDENTIALS: ${{ secrets.MOONCAKES_MOONBIT_COMMUNITY_TOKEN }}

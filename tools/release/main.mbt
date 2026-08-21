@@ -125,91 +125,21 @@ async fn update_published_versions(root : StringView, version : String) -> Unit 
 }
 
 ///|
-async fn verify_published_versions(
-  root : StringView,
-  expected_version : String,
-) -> Unit {
-  println("==> Verifying published module versions")
+async fn verify_published_versions(root : StringView) -> String {
+  let versions : Array[(String, String)] = []
   for release_module in published_modules {
     let path = release_module.manifest_path()
     let source = @fs.read_file("\{root}/\{path}").text()
     let actual_version = manifest_version(source, path)
-    guard actual_version == expected_version else {
-      raise ReleaseError(
-        "\{path} has version \{actual_version}, expected \{expected_version}",
-      )
-    }
+    versions.push((path, actual_version))
+  }
+  let version = release_version_from_manifests(versions)
+  println("==> Verifying published module versions")
+  for manifest in versions {
+    let (path, actual_version) = manifest
     println("    \{path}: \{actual_version}")
   }
-}
-
-///|
-async fn ensure_release_tag(root : StringView, version : String) -> Unit {
-  let tag = "v\{version}"
-  println("==> Verifying that local tag \{tag} points at HEAD")
-  let (local_status, local_output) = @process.collect_stdout(
-    "git",
-    ["tag", "--points-at", "HEAD", "--list", tag],
-    cwd=root,
-  )
-  guard local_status == 0 else {
-    raise ReleaseError("git tag failed with exit status \{local_status}")
-  }
-  guard local_output.text().trim() == tag else {
-    raise ReleaseError(
-      "HEAD must have the release tag \{tag} before publishing",
-    )
-  }
-  println("    Local tag \{tag} points at HEAD")
-  let (object_status, object_output) = @process.collect_stdout(
-    "git",
-    ["rev-parse", "--verify", "refs/tags/\{tag}"],
-    cwd=root,
-  )
-  guard object_status == 0 else {
-    raise ReleaseError(
-      "Resolving release tag \{tag} failed with exit status \{object_status}",
-    )
-  }
-  let local_object = object_output.text().trim()
-  let description = "origin release tag \{tag}"
-  println("==> Verifying \{description}")
-  println(
-    "    $ git ls-remote --exit-code --refs --tags origin refs/tags/\{tag}",
-  )
-  let (remote_status, remote_output) = wait_with_heartbeat(description, () => {
-    @async.with_timeout(
-      60000,
-      error=ReleaseError(
-        "Timed out after 60 seconds while checking origin tag \{tag}; run the printed git ls-remote command manually to diagnose credentials or network access",
-      ),
-      () => {
-        @process.collect_stdout(
-          "git",
-          [
-            "ls-remote",
-            "--exit-code",
-            "--refs",
-            "--tags",
-            "origin",
-            "refs/tags/\{tag}",
-          ],
-          cwd=root,
-        )
-      },
-    )
-  })
-  guard remote_status == 0 else {
-    raise ReleaseError(
-      "Release tag \{tag} must be pushed to origin before publishing (git ls-remote exited with status \{remote_status})",
-    )
-  }
-  guard remote_tag_matches(remote_output.text(), tag, local_object) else {
-    raise ReleaseError(
-      "Release tag \{tag} on origin does not match the local tag at HEAD",
-    )
-  }
-  println("    Origin tag matches local tag object \{local_object}")
+  version
 }
 
 ///|
@@ -257,27 +187,19 @@ async fn prepare_release(root : StringView, version : String) -> Unit {
   println(
     "Release \{version} is prepared. Review and commit the manifest changes,",
   )
-  println("create and push tag v\{version}, then run:")
-  println(
-    "moon run --target native tools/release -- publish --version \{version} --execute",
-  )
+  println("push the commit to the default branch, then run:")
+  println("moon run --target native tools/release -- publish --execute")
 }
 
 ///|
-async fn publish_release(
-  root : StringView,
-  version : String,
-  first_module : String,
-) -> Unit {
-  validate_release_version(version)
+async fn publish_release(root : StringView, first_module : String) -> Unit {
   let start_index = publish_start_index(first_module)
-  println("Publishing release v\{version} from module \{first_module}")
   println(
     "No registry changes will be made until every preflight check passes.",
   )
   ensure_clean_worktree(root)
-  verify_published_versions(root, version)
-  ensure_release_tag(root, version)
+  let version = verify_published_versions(root)
+  println("Publishing release \{version} from module \{first_module}")
   run_checked(root, "moon", ["whoami"], "Checking mooncakes.io login")
   println("==> All preflight checks passed; starting module publication")
   for index, release_module in published_modules {
@@ -313,7 +235,7 @@ async fn publish_release(
       )
     }
   }
-  println("Published all modules for v\{version}")
+  println("Published all modules for version \{version}")
 }
 
 ///|
@@ -348,12 +270,6 @@ async fn run_cli() -> Unit {
         ],
         options=[
           OptionArg(
-            "version",
-            long="version",
-            about="Release version in MAJOR.MINOR.PATCH form",
-            required=true,
-          ),
-          OptionArg(
             "from",
             long="from",
             about="Resume publication from this module",
@@ -373,16 +289,13 @@ async fn run_cli() -> Unit {
       prepare_release(root, version)
     }
     Some(("publish", child)) => {
-      guard child.values.get("version") is Some([version]) else {
-        raise ReleaseError("Missing required --version option")
-      }
       guard child.values.get("from") is Some([first_module]) else {
         raise ReleaseError("Invalid --from option")
       }
       guard child.flags.get("execute").unwrap_or(false) else {
         raise ReleaseError("Publication requires the explicit --execute flag")
       }
-      publish_release(root, version, first_module)
+      publish_release(root, first_module)
     }
     Some((name, _)) => raise ReleaseError("Unknown release command \{name}")
     None => raise ReleaseError("A release command is required")
