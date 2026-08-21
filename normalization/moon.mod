@@ -1,6 +1,6 @@
 name = "moonbit-community/normalization"
 
-version = "0.4.0"
+version = "0.5.0"
 
 license = "Apache-2.0"
 
@@ -13,5 +13,5 @@ description = "Unicode normalization forms for MoonBit"
 keywords = [ "unicode", "normalization", "nfc", "nfd", "nfkc", "nfkd" ]
 
 import {
-  "moonbit-community/ucd@0.4.0",
+  "moonbit-community/ucd@0.5.0",
 }
