@@ -43,7 +43,9 @@ jobs:
         run: moon version --all
 
       - name: test release tool
-        run: moon test tools/release --target native
+        run: |
+          moon update
+          moon test tools/release --target native
 
       - name: release commit
         run: echo "Publishing commit $GITHUB_SHA"
