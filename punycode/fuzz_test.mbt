@@ -51,7 +51,7 @@ test "fuzz: punycode roundtrip with latin extended" {
   let rng = @random.Rand::chacha8(seed=fuzz_seed)
   for _ in 0..<fuzz_iterations {
     // Generate strings with mostly Latin Extended characters
-    let sb = StringBuilder::new()
+    let sb = StringBuilder()
     let len = rng.int(limit=30) + 1
     for _ in 0..<len {
       let cp = @fuzz.random_codepoint(rng, LatinExtended)
@@ -105,7 +105,7 @@ test "fuzz: pure ASCII encodes with delimiter" {
   let rng = @random.Rand::chacha8(seed=fuzz_seed)
   for _ in 0..<500 {
     // Generate pure ASCII string
-    let sb = StringBuilder::new()
+    let sb = StringBuilder()
     let len = rng.int(limit=20) + 1
     for _ in 0..<len {
       let cp = @fuzz.random_codepoint(rng, Ascii)
@@ -155,7 +155,7 @@ test "fuzz: mixed ascii and unicode roundtrip" {
   let rng = @random.Rand::chacha8(seed=fuzz_seed)
   for _ in 0..<fuzz_iterations {
     // Generate string with mix of ASCII and non-ASCII
-    let sb = StringBuilder::new()
+    let sb = StringBuilder()
     let len = rng.int(limit=20) + 1
     for _ in 0..<len {
       let use_ascii = rng.int(limit=2) == 0

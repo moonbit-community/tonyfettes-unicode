@@ -29,7 +29,7 @@ pub impl Show for NormalizationForm with fn output(self, logger) {
 ///|
 /// Convert array of characters to string
 fn chars_to_string(chars : Array[Char]) -> String {
-  let sb = StringBuilder::new()
+  let sb = StringBuilder()
   for c in chars {
     sb.write_char(c)
   }

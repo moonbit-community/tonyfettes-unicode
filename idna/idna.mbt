@@ -284,7 +284,7 @@ fn has_ace_prefix(label : String) -> Bool {
 ///|
 /// Get substring after a given prefix length (safe version)
 fn get_substring_after_prefix(s : String, prefix_len : Int) -> String {
-  let result = StringBuilder::new()
+  let result = StringBuilder()
   let mut i = 0
   for c in s {
     if i >= prefix_len {
