@@ -108,36 +108,41 @@ async fn generate_ucd(root : StringView) -> Unit {
   let full_exclusions = @ucd.build_full_composition_exclusions(
     unicode_data, exclusions,
   )
-  write_source(root, "ucd/data/ccc.mbt", @ucd.emit_ccc(ccc_ranges, mark_ranges))
   write_source(
     root,
-    "ucd/data/decomposition.mbt",
+    "unicode-data/data/ccc.mbt",
+    @ucd.emit_ccc(ccc_ranges, mark_ranges),
+  )
+  write_source(
+    root,
+    "unicode-data/data/decomposition.mbt",
     @ucd.emit_decomposition(unicode_data),
   )
   write_source(
     root,
-    "ucd/data/composition.mbt",
+    "unicode-data/data/composition.mbt",
     @ucd.emit_composition(compositions, full_exclusions),
   )
   write_source(
     root,
-    "ucd/data/general_category.mbt",
+    "unicode-data/data/general_category.mbt",
     @ucd.emit_general_category(general_category_ranges),
   )
   write_source(
     root,
-    "ucd/data/case_mapping.mbt",
+    "unicode-data/data/case_mapping.mbt",
     @ucd.emit_case_mapping(unicode_data, special_casing),
   )
-  write_source(root, "ucd/data/xid.mbt", @ucd.emit_xid(xid_properties))
+  write_source(root, "unicode-data/data/xid.mbt", @ucd.emit_xid(xid_properties))
   let generated_files = [
-    "ucd/data/ccc.mbt", "ucd/data/decomposition.mbt", "ucd/data/composition.mbt",
-    "ucd/data/general_category.mbt", "ucd/data/case_mapping.mbt", "ucd/data/xid.mbt",
+    "unicode-data/data/ccc.mbt", "unicode-data/data/decomposition.mbt", "unicode-data/data/composition.mbt",
+    "unicode-data/data/general_category.mbt", "unicode-data/data/case_mapping.mbt",
+    "unicode-data/data/xid.mbt",
   ]
   for file in generated_files {
     format_file(root, file)
   }
-  generate_interfaces(root, "ucd/data")
+  generate_interfaces(root, "unicode-data/data")
 }
 
 ///|
@@ -154,17 +159,17 @@ async fn generate_idna_data(root : StringView) -> Unit {
   )
   write_source(
     root,
-    "idna/internal/idna/mapping.mbt",
+    "unicode-idna/internal/idna/mapping.mbt",
     @idna_data.generate_mapping_source(mapping),
   )
   write_source(
     root,
-    "idna/internal/idna/joining.mbt",
+    "unicode-idna/internal/idna/joining.mbt",
     @idna_data.generate_joining_source(joining),
   )
-  format_file(root, "idna/internal/idna/mapping.mbt")
-  format_file(root, "idna/internal/idna/joining.mbt")
-  generate_interfaces(root, "idna/internal/idna")
+  format_file(root, "unicode-idna/internal/idna/mapping.mbt")
+  format_file(root, "unicode-idna/internal/idna/joining.mbt")
+  generate_interfaces(root, "unicode-idna/internal/idna")
 }
 
 ///|
@@ -187,24 +192,24 @@ async fn generate_bidi_data(root : StringView) -> Unit {
   )
   write_source(
     root,
-    "bidi/bidi_class.mbt",
+    "unicode-bidi/bidi_class.mbt",
     @bidi_data.generate_bidi_class_source(classes),
   )
   write_source(
     root,
-    "bidi/internal/bidi/mirrored.mbt",
+    "unicode-bidi/internal/bidi/mirrored.mbt",
     @bidi_data.generate_mirrored_source(mirroring),
   )
   write_source(
     root,
-    "bidi/internal/bidi/bracket.mbt",
+    "unicode-bidi/internal/bidi/bracket.mbt",
     @bidi_data.generate_bracket_source(brackets),
   )
-  format_file(root, "bidi/bidi_class.mbt")
-  format_file(root, "bidi/internal/bidi/mirrored.mbt")
-  format_file(root, "bidi/internal/bidi/bracket.mbt")
-  generate_interfaces(root, "bidi")
-  generate_interfaces(root, "bidi/internal/bidi")
+  format_file(root, "unicode-bidi/bidi_class.mbt")
+  format_file(root, "unicode-bidi/internal/bidi/mirrored.mbt")
+  format_file(root, "unicode-bidi/internal/bidi/bracket.mbt")
+  generate_interfaces(root, "unicode-bidi")
+  generate_interfaces(root, "unicode-bidi/internal/bidi")
 }
 
 ///|

@@ -21,28 +21,30 @@ generated tables target Unicode 16.0.0.
 Add only the feature modules your application needs:
 
 ```bash
-moon add moonbit-community/ucd
+moon add moonbit-community/unicode-data
 moon add moonbit-community/normalization
 moon add moonbit-community/punycode
-moon add moonbit-community/bidi
-moon add moonbit-community/idna
+moon add moonbit-community/unicode-bidi
+moon add moonbit-community/unicode-idna
 ```
 
 Import the packages you need in `moon.pkg`:
 
 ```moonbit
 import {
-  "moonbit-community/ucd"
+  "moonbit-community/unicode-data" @ucd
   "moonbit-community/normalization"
   "moonbit-community/punycode"
-  "moonbit-community/idna"
-  "moonbit-community/bidi"
+  "moonbit-community/unicode-idna" @idna
+  "moonbit-community/unicode-bidi" @bidi
 }
 ```
 
 MoonBit uses the last package path segment as the default alias, so these
-imports are used as `@ucd`, `@normalization`, `@punycode`, `@idna`, and
-`@bidi`. Existing users may continue depending on `moonbit-community/unicode`; it is
+imports are used as `@normalization` and `@punycode`. The hyphenated module
+names need explicit aliases, so the examples above bind `unicode-data`,
+`unicode-idna`, and `unicode-bidi` to `@ucd`, `@idna`, and `@bidi`. Existing
+users may continue depending on `moonbit-community/unicode`; it is
 an umbrella compatibility module that preserves the old package paths.
 
 ## Usage
@@ -137,7 +139,7 @@ let lower = @ucd.to_lowercase('\u{0130}') // "i" + combining dot above
 
 ## Public Packages
 
-### `moonbit-community/ucd`
+### `moonbit-community/unicode-data`
 
 Root package for Unicode Character Database helpers.
 
@@ -176,7 +178,7 @@ The available forms are `NFD`, `NFC`, `NFKD`, and `NFKC`.
 
 `PunycodeError` variants are `Overflow`, `InvalidInput`, and `BadInput`.
 
-### `moonbit-community/idna`
+### `moonbit-community/unicode-idna`
 
 | API | Description |
 | --- | --- |
@@ -194,7 +196,7 @@ The available forms are `NFD`, `NFC`, `NFKD`, and `NFKC`.
 `to_unicode` accepts the same options except `verify_dns_length`; they also
 default to `true`.
 
-### `moonbit-community/bidi`
+### `moonbit-community/unicode-bidi`
 
 | API | Description |
 | --- | --- |
@@ -244,14 +246,14 @@ test dependency separate from the published modules. Verify a feature module's
 contents from its directory, for example:
 
 ```bash
-moon -C bidi package --list
+moon -C unicode-bidi package --list
 ```
 
 ### Releasing
 
 The native release tool keeps the six published module versions aligned,
 validates the workspace, and checks every package archive. During preparation it
-dry-runs the independent `ucd`, `punycode`, and `bidi` modules:
+dry-runs the independent `unicode-data`, `punycode`, and `unicode-bidi` modules:
 
 ```bash
 moon run --target native tools/release -- prepare --version 0.4.0
@@ -267,8 +269,9 @@ moon run --target native tools/release -- publish \
   --execute
 ```
 
-The tool publishes `ucd`, `punycode`, `bidi`, `normalization`, `idna`, and the
-`unicode` compatibility umbrella in dependency order. It reads the release
+The tool publishes `unicode-data`, `punycode`, `unicode-bidi`, `normalization`,
+`unicode-idna`, and the `unicode` compatibility umbrella in dependency order. It
+reads the release
 version from the root `moon.mod` and verifies that all six published modules use
 that version. Modules that depend on same-release packages are dry-run
 immediately before their real publication, after the tool refreshes the

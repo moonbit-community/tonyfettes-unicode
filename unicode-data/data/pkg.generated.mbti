@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "moonbit-community/ucd/data"
+package "moonbit-community/unicode-data/data"
 
 // Values
 pub fn get_canonical_decomposition(Char) -> Array[Char]?

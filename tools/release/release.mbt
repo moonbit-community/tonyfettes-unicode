@@ -16,19 +16,31 @@ priv struct ReleaseModule {
 ///|
 // TODO: Derive this topological order from workspace manifests and reject dependency cycles.
 let published_modules : Array[ReleaseModule] = [
-  { name: "ucd", directory: "ucd", requires_published_dependencies: false },
+  {
+    name: "unicode-data",
+    directory: "unicode-data",
+    requires_published_dependencies: false,
+  },
   {
     name: "punycode",
     directory: "punycode",
     requires_published_dependencies: false,
   },
-  { name: "bidi", directory: "bidi", requires_published_dependencies: false },
+  {
+    name: "unicode-bidi",
+    directory: "unicode-bidi",
+    requires_published_dependencies: false,
+  },
   {
     name: "normalization",
     directory: "normalization",
     requires_published_dependencies: true,
   },
-  { name: "idna", directory: "idna", requires_published_dependencies: true },
+  {
+    name: "unicode-idna",
+    directory: "unicode-idna",
+    requires_published_dependencies: true,
+  },
   { name: "unicode", directory: ".", requires_published_dependencies: true },
 ]
 
@@ -152,6 +164,6 @@ fn publish_start_index(name : String) -> Int raise ReleaseError {
     }
   }
   raise ReleaseError(
-    "Unknown --from module '\{name}'; expected one of ucd, punycode, bidi, normalization, idna, unicode",
+    "Unknown --from module '\{name}'; expected one of unicode-data, punycode, unicode-bidi, normalization, unicode-idna, unicode",
   )
 }

@@ -1,4 +1,4 @@
-name = "moonbit-community/ucd"
+name = "moonbit-community/unicode-data"
 
 version = "0.5.0"
 

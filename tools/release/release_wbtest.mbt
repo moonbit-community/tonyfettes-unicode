@@ -14,26 +14,35 @@ test "release versions use stable semantic version syntax" {
 ///|
 test "publish dry-run accepts the known false failure" {
   let output =
-    #|Server status: 202 Accepted, detail: Dry run completed successfully. No changes were made. The dry-run was made for package moonbit-community/ucd version 0.4.0.
+    #|Server status: 202 Accepted, detail: Dry run completed successfully. No changes were made. The dry-run was made for package moonbit-community/unicode-data version 0.4.0.
     #|Error: `moon publish` failed
   assert_true(
-    publish_dry_run_succeeded(0, "", "moonbit-community/ucd", "0.4.0"),
+    publish_dry_run_succeeded(0, "", "moonbit-community/unicode-data", "0.4.0"),
   )
   assert_true(
-    publish_dry_run_succeeded(255, output, "moonbit-community/ucd", "0.4.0"),
+    publish_dry_run_succeeded(
+      255, output, "moonbit-community/unicode-data", "0.4.0",
+    ),
   )
   assert_true(
-    publish_dry_run_succeeded(-1, output, "moonbit-community/ucd", "0.4.0"),
-  )
-  assert_false(
-    publish_dry_run_succeeded(1, output, "moonbit-community/ucd", "0.4.0"),
-  )
-  assert_false(
-    publish_dry_run_succeeded(255, output, "moonbit-community/idna", "0.4.0"),
+    publish_dry_run_succeeded(
+      -1, output, "moonbit-community/unicode-data", "0.4.0",
+    ),
   )
   assert_false(
     publish_dry_run_succeeded(
-      255, "Server status: 500 Internal Server Error", "moonbit-community/ucd", "0.4.0",
+      1, output, "moonbit-community/unicode-data", "0.4.0",
+    ),
+  )
+  assert_false(
+    publish_dry_run_succeeded(
+      255, output, "moonbit-community/unicode-idna", "0.4.0",
+    ),
+  )
+  assert_false(
+    publish_dry_run_succeeded(
+      255, "Server status: 500 Internal Server Error", "moonbit-community/unicode-data",
+      "0.4.0",
     ),
   )
 }
@@ -41,26 +50,28 @@ test "publish dry-run accepts the known false failure" {
 ///|
 test "release version comes from consistent published manifests" {
   let versions = [
-    ("ucd/moon.mod", "0.4.0"),
+    ("unicode-data/moon.mod", "0.4.0"),
     ("punycode/moon.mod", "0.4.0"),
     ("moon.mod", "0.4.0"),
   ]
   inspect(release_version_from_manifests(versions), content="0.4.0")
   try
     release_version_from_manifests([
-      ("ucd/moon.mod", "0.4.1"),
+      ("unicode-data/moon.mod", "0.4.1"),
       ("moon.mod", "0.4.0"),
     ])
   catch {
     ReleaseError(message) =>
       inspect(
         message,
-        content="Published module versions are inconsistent: ucd/moon.mod has 0.4.1, expected 0.4.0 from moon.mod",
+        content="Published module versions are inconsistent: unicode-data/moon.mod has 0.4.1, expected 0.4.0 from moon.mod",
       )
   } noraise {
     _ => fail("expected inconsistent published versions to fail")
   }
-  try release_version_from_manifests([("ucd/moon.mod", "0.4.0")]) catch {
+  try
+    release_version_from_manifests([("unicode-data/moon.mod", "0.4.0")])
+  catch {
     ReleaseError(message) =>
       inspect(
         message,
@@ -104,24 +115,26 @@ test "manifest version accepts CRLF line endings" {
 test "manifest version declarations must be unique" {
   try
     manifest_version(
-      "version = \"0.3.4\"\nversion = \"0.4.0\"\n", "ucd/moon.mod",
+      "version = \"0.3.4\"\nversion = \"0.4.0\"\n", "unicode-data/moon.mod",
     )
   catch {
     ReleaseError(message) =>
       inspect(
         message,
-        content="ucd/moon.mod contains more than one top-level version declaration",
+        content="unicode-data/moon.mod contains more than one top-level version declaration",
       )
   } noraise {
     _ => fail("expected duplicate version declaration to fail")
   }
   try
-    manifest_version("name = \"moonbit-community/ucd\"\n", "ucd/moon.mod")
+    manifest_version(
+      "name = \"moonbit-community/unicode-data\"\n", "unicode-data/moon.mod",
+    )
   catch {
     ReleaseError(message) =>
       inspect(
         message,
-        content="ucd/moon.mod does not contain a top-level version = \"...\" declaration",
+        content="unicode-data/moon.mod does not contain a top-level version = \"...\" declaration",
       )
   } noraise {
     _ => fail("expected missing version declaration to fail")
@@ -130,23 +143,31 @@ test "manifest version declarations must be unique" {
 
 ///|
 test "publish resume points follow dependency order" {
-  guard published_modules is [ucd, punycode, bidi, normalization, idna, unicode] else {
+  guard published_modules
+    is [
+      unicode_data,
+      punycode,
+      unicode_bidi,
+      normalization,
+      unicode_idna,
+      unicode,
+    ] else {
     fail("expected six published modules")
   }
-  assert_false(ucd.requires_published_dependencies)
+  assert_false(unicode_data.requires_published_dependencies)
   assert_false(punycode.requires_published_dependencies)
-  assert_false(bidi.requires_published_dependencies)
+  assert_false(unicode_bidi.requires_published_dependencies)
   assert_true(normalization.requires_published_dependencies)
-  assert_true(idna.requires_published_dependencies)
+  assert_true(unicode_idna.requires_published_dependencies)
   assert_true(unicode.requires_published_dependencies)
-  inspect(publish_start_index("ucd"), content="0")
+  inspect(publish_start_index("unicode-data"), content="0")
   inspect(publish_start_index("normalization"), content="3")
   inspect(publish_start_index("unicode"), content="5")
   try publish_start_index("tools") catch {
     ReleaseError(message) =>
       inspect(
         message,
-        content="Unknown --from module 'tools'; expected one of ucd, punycode, bidi, normalization, idna, unicode",
+        content="Unknown --from module 'tools'; expected one of unicode-data, punycode, unicode-bidi, normalization, unicode-idna, unicode",
       )
   } noraise {
     _ => fail("expected unknown resume module to fail")

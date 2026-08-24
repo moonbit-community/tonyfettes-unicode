@@ -11,7 +11,7 @@ description = "Workspace-only Unicode conformance tests"
 import {
   "moonbit-community/unicode@0.5.0",
   "moonbit-community/normalization@0.5.0",
-  "moonbit-community/bidi@0.5.0",
-  "moonbit-community/idna@0.5.0",
+  "moonbit-community/unicode-bidi@0.5.0",
+  "moonbit-community/unicode-idna@0.5.0",
   "moonbitlang/async@0.20.2",
 }

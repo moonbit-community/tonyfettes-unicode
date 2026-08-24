@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "moonbit-community/idna/internal/idna"
+package "moonbit-community/unicode-idna/internal/idna"
 
 // Values
 pub fn lookup_idna_mapping(Char) -> IdnaStatus
