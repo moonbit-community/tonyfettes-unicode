@@ -40,3 +40,7 @@ jobs:
         run: |
           moon info
           git diff --exit-code
+
+      - name: moon test
+        run: |
+          moon test
