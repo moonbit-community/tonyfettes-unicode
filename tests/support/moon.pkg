@@ -1,4 +1,4 @@
-supported_targets = "+native"
+supported_targets = "-all+native+wasm"
 
 import {
   "moonbitlang/async/fs",

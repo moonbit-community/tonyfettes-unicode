@@ -1,0 +1,37 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbit-community/unicode-tests/support"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn code_points_to_string(ArrayView[Int]) -> String?
+
+pub fn parse_code_point_sequence(StringView) -> Array[Int] raise
+
+pub fn parse_decimal_int(StringView) -> Int raise
+
+pub fn parse_escaped_text(StringView) -> ParsedText
+
+pub fn parse_hex_int(StringView) -> Int raise
+
+pub fn parse_levels(StringView) -> Array[Int] raise
+
+pub fn parse_reorder(StringView) -> Array[Int] raise
+
+pub fn parse_status(StringView) -> Array[String]?
+
+pub async fn read_data_file(String) -> String
+
+// Errors
+
+// Types and methods
+pub struct ParsedText {
+  text : String
+  has_surrogate : Bool
+} derive(Eq, @debug.Debug)
+
+// Type aliases
+
+// Traits
