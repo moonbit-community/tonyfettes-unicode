@@ -200,7 +200,7 @@ pub fn random_any_codepoint(rng : @random.Rand) -> Char {
 /// Generate a random Unicode string with mixed categories
 pub fn random_unicode_string(rng : @random.Rand, max_len? : Int = 50) -> String {
   let len = rng.int(limit=max_len) + 1
-  let sb = StringBuilder::new()
+  let sb = StringBuilder()
   let categories : Array[CodePointCategory] = [
     Ascii,
     Ascii,
@@ -227,7 +227,7 @@ pub fn random_combining_sequence(
   base_count? : Int = 3,
   mark_count? : Int = 5,
 ) -> String {
-  let sb = StringBuilder::new()
+  let sb = StringBuilder()
   for _ in 0..<base_count {
     // Add a base character (Latin Extended has many decomposable base chars)
     let base = random_codepoint(rng, LatinExtended)
@@ -246,7 +246,7 @@ pub fn random_combining_sequence(
 /// Generate a random Hangul string (jamo and syllables mixed)
 pub fn random_hangul_string(rng : @random.Rand, max_len? : Int = 20) -> String {
   let len = rng.int(limit=max_len) + 1
-  let sb = StringBuilder::new()
+  let sb = StringBuilder()
   for _ in 0..<len {
     let choice = rng.int(limit=5)
     let cp = if choice < 2 {
@@ -271,7 +271,7 @@ pub fn random_deep_decomposition_string(
   max_len? : Int = 20,
 ) -> String {
   let len = rng.int(limit=max_len) + 1
-  let sb = StringBuilder::new()
+  let sb = StringBuilder()
   for _ in 0..<len {
     let cp = random_codepoint(rng, Decomposable)
     sb.write_char(cp)

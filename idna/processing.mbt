@@ -4,7 +4,7 @@ fn map_domain(
   domain : String,
   use_std3_ascii_rules~ : Bool,
 ) -> String raise IdnaError {
-  let result = StringBuilder::new()
+  let result = StringBuilder()
   for c in domain {
     match @idna_data.lookup_idna_mapping(c) {
       @idna_data.Valid | @idna_data.Deviation(_) =>
@@ -51,7 +51,7 @@ fn map_label(
 /// Split domain into labels at separators
 fn split_labels(domain : String) -> Array[String] {
   let labels : Array[String] = []
-  let current = StringBuilder::new()
+  let current = StringBuilder()
   for c in domain {
     if is_label_separator(c) {
       labels.push(current.to_string())

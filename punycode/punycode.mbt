@@ -116,7 +116,7 @@ fn is_basic(c : Char) -> Bool {
 ///|
 /// Encode a Unicode string to Punycode
 pub fn encode(input : String) -> String raise PunycodeError {
-  let output = StringBuilder::new()
+  let output = StringBuilder()
 
   // Convert input to array of characters
   let chars : Array[Char] = []
@@ -297,7 +297,7 @@ pub fn decode(input : String) -> String raise PunycodeError {
 ///|
 /// Convert array of characters to string
 fn chars_to_string(chars : Array[Char]) -> String {
-  let sb = StringBuilder::new()
+  let sb = StringBuilder()
   for c in chars {
     sb.write_char(c)
   }

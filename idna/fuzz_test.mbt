@@ -134,7 +134,7 @@ test "fuzz: to_ascii produces pure ASCII for any Unicode input" {
   let rng = @random.Rand::chacha8(seed=fuzz_seed)
   for _ in 0..<fuzz_iterations {
     // Generate label with random Unicode code points (full range U+0000 to U+10FFFF)
-    let sb = StringBuilder::new()
+    let sb = StringBuilder()
     let len = rng.int(limit=10) + 1
     for _ in 0..<len {
       let cp = @fuzz.random_any_codepoint(rng)

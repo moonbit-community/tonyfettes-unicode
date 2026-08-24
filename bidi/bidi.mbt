@@ -178,7 +178,7 @@ pub fn reorder(para : BidiParagraph) -> Array[Int] {
 /// Reorder text and return the visually-ordered string
 pub fn reorder_string(para : BidiParagraph) -> String {
   let order = reorder(para)
-  let sb = StringBuilder::new()
+  let sb = StringBuilder()
   for i in order {
     let c = para.chars[i]
     let level = para.levels[i]
