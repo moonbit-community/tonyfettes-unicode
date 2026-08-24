@@ -77,15 +77,6 @@ async fn generate_interfaces(root : StringView, relative_path : String) -> Unit 
 }
 
 ///|
-async fn generate_matching_interfaces(
-  root : StringView,
-  package_pattern : String,
-) -> Unit {
-  let status = @process.run("moon", ["info", "-p", package_pattern], cwd=root)
-  guard status == 0 else { fail("moon info -p \{package_pattern} failed") }
-}
-
-///|
 async fn generate_ucd(root : StringView) -> Unit {
   let base = "https://www.unicode.org/Public/\{UnicodeVersion}/ucd"
   let unicode_data = @ucd.parse_unicode_data(
@@ -217,102 +208,6 @@ async fn generate_bidi_data(root : StringView) -> Unit {
 }
 
 ///|
-fn is_old_normalization_test(name : StringView) -> Bool {
-  name == "conformance_test.mbt" ||
-  (name.has_prefix("conformance_test_part") && name.has_suffix(".mbt")) ||
-  (name.has_prefix("conformance_part") && name.has_suffix("_test.mbt"))
-}
-
-///|
-async fn generate_normalization_tests(root : StringView) -> Unit {
-  let content = read_source(
-    root,
-    "NormalizationTest.txt",
-    "https://www.unicode.org/Public/\{UnicodeVersion}/ucd/NormalizationTest.txt",
-  )
-  let directory = "\{root}/conformance/normalization"
-  for name in @fs.readdir(directory) {
-    if is_old_normalization_test(name) {
-      @fs.remove("\{directory}/\{name}")
-    }
-  }
-  for file in @normalization_tests.generate_files(content) {
-    write_source(root, file.relative_path, file.source)
-    format_file(root, file.relative_path)
-  }
-}
-
-///|
-async fn generate_idna_tests(root : StringView) -> Unit {
-  let content = read_source(
-    root,
-    "IdnaTestV2.txt",
-    "https://www.unicode.org/Public/idna/\{UnicodeVersion}/IdnaTestV2.txt",
-  )
-  write_source(
-    root,
-    "conformance/idna/conformance_test.mbt",
-    @idna_tests.generate_source(content),
-  )
-  format_file(root, "conformance/idna/conformance_test.mbt")
-}
-
-///|
-fn is_old_bidi_test(name : StringView) -> Bool {
-  (name.has_prefix("conformance_biditest_") && name.has_suffix("_test.mbt")) ||
-  (name.has_prefix("conformance_character") && name.has_suffix("_test.mbt"))
-}
-
-///|
-async fn remove_directory_if_present(path : String) -> Unit {
-  @fs.rmdir(path, recursive=true) catch {
-    @os_error.OSError(_) as error if error.is_ENOENT() => ()
-    error => raise error
-  }
-}
-
-///|
-async fn generate_bidi_tests(root : StringView, part_size : Int) -> Unit {
-  let base = "https://www.unicode.org/Public/\{UnicodeVersion}/ucd"
-  let bidi_content = read_source(root, "BidiTest.txt", "\{base}/BidiTest.txt")
-  let character_content = read_source(
-    root,
-    "BidiCharacterTest.txt",
-    "\{base}/BidiCharacterTest.txt",
-  )
-  let bidi_directory = "\{root}/conformance/bidi"
-  for name in @fs.readdir(bidi_directory) {
-    if is_old_bidi_test(name) {
-      @fs.remove("\{bidi_directory}/\{name}")
-    }
-  }
-  remove_directory_if_present("\{bidi_directory}/bidi")
-  remove_directory_if_present("\{bidi_directory}/character")
-  let parts = @bidi_tests.generate_parts(
-    bidi_content, character_content, part_size,
-  )
-  for ;; {
-    guard parts.next() is Some(part) else { break }
-    let package_path = "\{part.relative_directory}/moon.pkg"
-    let test_path = "\{part.relative_directory}/conformance_test.mbt"
-    write_source(root, package_path, @bidi_tests.package_source())
-    write_source(root, test_path, part.source)
-  }
-  format_file(root, "conformance/bidi")
-  generate_matching_interfaces(root, "conformance/bidi")
-}
-
-///|
-fn part_size(matches : @argparse.Matches) -> Int raise {
-  let size = match matches.values {
-    { "part-size": [value], .. } => @support.parse_decimal_int(value)
-    _ => 500
-  }
-  guard size > 0 else { fail("--part-size must be positive") }
-  size
-}
-
-///|
 async fn generate_data(root : StringView) -> Unit {
   generate_ucd(root)
   generate_idna_data(root)
@@ -320,54 +215,25 @@ async fn generate_data(root : StringView) -> Unit {
 }
 
 ///|
-async fn generate_tests(root : StringView, part_size : Int) -> Unit {
-  generate_normalization_tests(root)
-  generate_idna_tests(root)
-  generate_bidi_tests(root, part_size)
-}
-
-///|
 async fn main {
   let command = @argparse.Command(
     "unicode-gen",
-    about="Generate Unicode tables and conformance tests with MoonBit",
-    options=[
-      @argparse.OptionArg(
-        "part-size",
-        long="part-size",
-        about="Bidi conformance tests per package",
-        default_values=["500"],
-        global=true,
-      ),
-    ],
+    about="Generate Unicode lookup tables with MoonBit",
     subcommands=[
       @argparse.Command("ucd"),
       @argparse.Command("idna"),
       @argparse.Command("bidi"),
-      @argparse.Command("normalization-tests"),
-      @argparse.Command("idna-tests"),
-      @argparse.Command("bidi-tests"),
       @argparse.Command("data"),
-      @argparse.Command("tests"),
       @argparse.Command("all"),
     ],
   )
   let matches = command.parse() catch { error => fail(error.to_string()) }
   let root = find_project_root()
-  let size = part_size(matches)
   match matches.subcommand {
-    None | Some(("all", _)) => {
-      generate_data(root)
-      generate_tests(root, size)
-    }
+    None | Some(("all", _)) | Some(("data", _)) => generate_data(root)
     Some(("ucd", _)) => generate_ucd(root)
     Some(("idna", _)) => generate_idna_data(root)
     Some(("bidi", _)) => generate_bidi_data(root)
-    Some(("normalization-tests", _)) => generate_normalization_tests(root)
-    Some(("idna-tests", _)) => generate_idna_tests(root)
-    Some(("bidi-tests", _)) => generate_bidi_tests(root, size)
-    Some(("data", _)) => generate_data(root)
-    Some(("tests", _)) => generate_tests(root, size)
     Some(_) => fail("unreachable subcommand")
   }
 }

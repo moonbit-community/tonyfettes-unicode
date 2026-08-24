@@ -1,4 +1,0 @@
-import {
-  "moonbit-community/normalization" @impl,
-  "moonbitlang/core/debug",
-}

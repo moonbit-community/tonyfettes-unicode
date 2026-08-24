@@ -2,12 +2,8 @@ supported_targets = "native"
 
 import {
   "moonbit-community/unicode-tools/ucd",
-  "moonbit-community/unicode-tools/support",
   "moonbit-community/unicode-tools/idna_data",
   "moonbit-community/unicode-tools/bidi_data",
-  "moonbit-community/unicode-tools/normalization_tests",
-  "moonbit-community/unicode-tools/idna_tests",
-  "moonbit-community/unicode-tools/bidi_tests",
   "moonbitlang/core/argparse",
   "moonbitlang/async",
   "moonbitlang/async/fs",

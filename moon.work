@@ -5,6 +5,6 @@ members = [
   "punycode",
   "bidi",
   "idna",
-  "conformance",
+  "tests",
   "tools",
 ]

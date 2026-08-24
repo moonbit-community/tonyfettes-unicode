@@ -47,4 +47,4 @@ jobs:
 
       - name: moon test
         run: |
-          moon test -j4
+          moon test -j4 --target native

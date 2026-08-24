@@ -45,6 +45,7 @@ options(
     "/docs",
     "/tools",
     "/conformance",
+    "/tests",
     "/ucd",
     "/normalization",
     "/punycode",

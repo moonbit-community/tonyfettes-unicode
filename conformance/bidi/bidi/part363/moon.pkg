@@ -1,4 +1,0 @@
-import {
-  "moonbit-community/bidi",
-  "moonbitlang/core/debug",
-} for "test"

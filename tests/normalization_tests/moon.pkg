@@ -1,0 +1,8 @@
+supported_targets = "+native"
+
+import {
+  "moonbit-community/normalization",
+  "moonbit-community/unicode-tests/support",
+  "moonbitlang/async",
+  "moonbitlang/core/debug",
+} for "test"

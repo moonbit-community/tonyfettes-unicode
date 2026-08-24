@@ -1,7 +1,0 @@
-import {
-  "moonbit-community/idna" @impl,
-}
-
-import {
-  "moonbitlang/core/test",
-} for "test"
