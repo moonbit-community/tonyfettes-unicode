@@ -33,8 +33,9 @@ moon info           # Regenerate pkg.generated.mbti files
   - `to_unicode()` - convert domain from Punycode
 - **unicode/** (`moonbit-community/unicode`): compatibility umbrella preserving the old
   package paths
-- **conformance/** (`moonbit-community/unicode-conformance`): workspace-only generated
-  conformance tests; it is not a published dependency
+- **tests/** (`moonbit-community/unicode-tests`): workspace-only conformance tests.
+  They read the official Unicode test data files committed under `tests/data/`
+  directly at run time with `moonbitlang/async`; no test code is generated
 
 ### Internal Data Packages (auto-generated)
 
@@ -58,13 +59,20 @@ Unicode data tables are generated from official Unicode source files:
 
 ```bash
 moon run --target native tools/gen data   # Generate all Unicode lookup tables
-moon run --target native tools/gen tests  # Generate all conformance tests
-moon run --target native tools/gen all    # Generate tables and tests
+moon run --target native tools/gen all    # Alias for `data`
 ```
 
-Individual commands are `ucd`, `idna`, `bidi`, `normalization-tests`,
-`idna-tests`, and `bidi-tests`. Downloaded Unicode data is cached in
-`tools/.cache/`.
+Individual commands are `ucd`, `idna`, and `bidi`. Downloaded Unicode data is
+cached in `tools/.cache/`.
+
+## Conformance Tests
+
+Conformance tests live in the workspace-only `tests/` module and read the
+official Unicode test files (`BidiTest.txt`, `BidiCharacterTest.txt`,
+`NormalizationTest.txt`, `IdnaTestV2.txt`) directly at test time via
+`moonbitlang/async`. The data files are committed under `tests/data/`, so the
+test module keeps its `moonbitlang/async` dependency separate from the
+published modules.
 
 ## Publishing
 
@@ -76,7 +84,8 @@ moon -C bidi package --list  # Verify an individual feature module
 ## Testing Notes
 
 - Unit tests: `*_test.mbt` files with `test` blocks and `inspect()` assertions
-- Conformance tests: Large generated test files (millions of lines) from Unicode test suites
+- Conformance tests: `tests/` module (`moonbit-community/unicode-tests`), which
+  reads the Unicode test data files in `tests/data/` at run time
 - Fuzz tests: `fuzz_test.mbt` files for property-based testing
 
 ## Commit Convention

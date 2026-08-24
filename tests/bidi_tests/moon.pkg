@@ -1,0 +1,8 @@
+supported_targets = "-all+native+wasm"
+
+import {
+  "moonbit-community/bidi",
+  "moonbit-community/unicode-tests/support",
+  "moonbitlang/async",
+  "moonbitlang/core/debug",
+} for "test"

@@ -225,25 +225,22 @@ moon build
 
 Run `moon info` after public API changes to refresh `pkg.generated.mbti` files.
 
-Unicode data and conformance tests are generated from official Unicode files:
+Unicode data tables are generated from official Unicode files:
 
 ```bash
 moon run --target native tools/gen data
-moon run --target native tools/gen tests
 
 # Or regenerate everything in one pass:
 moon run --target native tools/gen all
 ```
 
-Individual commands are `ucd`, `idna`, `bidi`, `normalization-tests`,
-`idna-tests`, and `bidi-tests`. To control the number of Bidi conformance cases
-per generated package (default: 500), run
-`moon run --target native tools/gen -- bidi-tests --part-size N`. Downloaded
-Unicode source files are cached in `tools/.cache/`.
+Individual commands are `ucd`, `idna`, and `bidi`. Downloaded Unicode source
+files are cached in `tools/.cache/`.
 
-Large generated conformance fixtures live in the workspace-only
-`moonbit-community/unicode-conformance` module, so they remain part of local and CI
-tests without inflating published feature archives. Verify a feature module's
+Conformance tests live in the workspace-only `moonbit-community/unicode-tests`
+module (`tests/`). They read the official Unicode test data files committed
+under `tests/data/` directly at test time with `moonbitlang/async`, keeping the
+test dependency separate from the published modules. Verify a feature module's
 contents from its directory, for example:
 
 ```bash
@@ -276,7 +273,7 @@ version from the root `moon.mod` and verifies that all six published modules use
 that version. Modules that depend on same-release packages are dry-run
 immediately before their real publication, after the tool refreshes the
 registry and their dependencies are available. It never publishes the
-workspace-only `conformance` or `tools` modules. If publication stops partway
+workspace-only `tests` or `tools` modules. If publication stops partway
 through, rerun the workflow with its `from` input set to the failed module, or
 resume with the underlying command:
 
