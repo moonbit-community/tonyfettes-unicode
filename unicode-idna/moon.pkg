@@ -1,0 +1,15 @@
+import {
+  "moonbit-community/punycode",
+  "moonbit-community/normalization",
+  "moonbit-community/unicode-bidi" @bidi,
+  "moonbit-community/unicode-idna/internal/idna" @idna_data,
+  "moonbit-community/unicode-data/data" @ucd,
+}
+
+import {
+  "moonbit-community/unicode-idna" @idna,
+  "moonbit-community/unicode-idna/internal/base_fuzz" @fuzz,
+  "moonbit-community/unicode-idna/internal/fuzz" @idna_fuzz,
+  "moonbitlang/core/random",
+  "moonbitlang/core/test",
+} for "test"

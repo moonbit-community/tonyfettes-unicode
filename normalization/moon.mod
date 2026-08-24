@@ -13,5 +13,5 @@ description = "Unicode normalization forms for MoonBit"
 keywords = [ "unicode", "normalization", "nfc", "nfd", "nfkc", "nfkd" ]
 
 import {
-  "moonbit-community/ucd@0.5.0",
+  "moonbit-community/unicode-data@0.5.0",
 }

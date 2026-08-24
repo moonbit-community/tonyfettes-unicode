@@ -1,0 +1,4 @@
+import {
+  "moonbit-community/unicode-idna/internal/base_fuzz",
+  "moonbitlang/core/random",
+}

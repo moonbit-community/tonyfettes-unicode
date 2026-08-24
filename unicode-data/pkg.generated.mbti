@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "moonbit-community/ucd"
+package "moonbit-community/unicode-data"
 
 import {
   "moonbitlang/core/debug",

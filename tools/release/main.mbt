@@ -273,7 +273,7 @@ async fn run_cli() -> Unit {
             "from",
             long="from",
             about="Resume publication from this module",
-            default_values=["ucd"],
+            default_values=["unicode-data"],
           ),
         ],
       ),

@@ -1,0 +1,9 @@
+import {
+  "moonbit-community/unicode-bidi/internal/bidi" @bidi_data,
+  "moonbitlang/core/cmp",
+}
+
+import {
+  "moonbit-community/unicode-bidi" @bidi,
+  "moonbitlang/core/debug",
+} for "test"

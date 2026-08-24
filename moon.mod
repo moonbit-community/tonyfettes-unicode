@@ -13,11 +13,11 @@ description = "Unicode in MoonBit"
 source = "unicode"
 
 import {
-  "moonbit-community/ucd@0.5.0",
+  "moonbit-community/unicode-data@0.5.0",
   "moonbit-community/normalization@0.5.0",
   "moonbit-community/punycode@0.5.0",
-  "moonbit-community/bidi@0.5.0",
-  "moonbit-community/idna@0.5.0",
+  "moonbit-community/unicode-bidi@0.5.0",
+  "moonbit-community/unicode-idna@0.5.0",
 }
 
 keywords = [
@@ -44,13 +44,12 @@ options(
     "/CLAUDE.md",
     "/docs",
     "/tools",
-    "/conformance",
     "/tests",
-    "/ucd",
+    "/unicode-data",
     "/normalization",
     "/punycode",
-    "/bidi",
-    "/idna",
+    "/unicode-bidi",
+    "/unicode-idna",
     "/internal",
     "/moon.work",
   ],

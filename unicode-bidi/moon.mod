@@ -1,4 +1,4 @@
-name = "moonbit-community/bidi"
+name = "moonbit-community/unicode-bidi"
 
 version = "0.5.0"
 

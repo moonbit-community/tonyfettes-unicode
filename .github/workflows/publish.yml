@@ -7,14 +7,14 @@ on:
       from:
         description: Resume publication from this module
         required: true
-        default: ucd
+        default: unicode-data
         type: choice
         options:
-          - ucd
+          - unicode-data
           - punycode
-          - bidi
+          - unicode-bidi
           - normalization
-          - idna
+          - unicode-idna
           - unicode
 
 permissions:

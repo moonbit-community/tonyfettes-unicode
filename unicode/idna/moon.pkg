@@ -1,5 +1,5 @@
 import {
-  "moonbit-community/idna" @impl,
+  "moonbit-community/unicode-idna" @impl,
   "moonbit-community/punycode" @punycode_impl,
   "moonbit-community/unicode/punycode" @legacy_punycode,
 }
