@@ -4,7 +4,7 @@
 
 ///|
 /// Code points with decomposition mappings (sorted for binary search)
-let decomp_cps : FixedArray[Int] = [
+let decomp_cps : ReadOnlyArray[Int] = [
   0x00A0, 0x00A8, 0x00AA, 0x00AF, 0x00B2, 0x00B3, 0x00B4, 0x00B5, 0x00B8, 0x00B9,
   0x00BA, 0x00BC, 0x00BD, 0x00BE, 0x00C0, 0x00C1, 0x00C2, 0x00C3, 0x00C4, 0x00C5,
   0x00C7, 0x00C8, 0x00C9, 0x00CA, 0x00CB, 0x00CC, 0x00CD, 0x00CE, 0x00CF, 0x00D1,
@@ -623,7 +623,7 @@ let decomp_cps : FixedArray[Int] = [
 
 ///|
 /// Data start index for each code point
-let decomp_data_starts : FixedArray[Int] = [
+let decomp_data_starts : ReadOnlyArray[Int] = [
   0, 1, 3, 4, 6, 7, 8, 10, 11, 13, 14, 15, 18, 21, 24, 26, 28, 30, 32, 34, 36, 38,
   40, 42, 44, 46, 48, 50, 52, 54, 56, 58, 60, 62, 64, 66, 68, 70, 72, 74, 76, 78,
   80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110, 112, 114,
@@ -1045,7 +1045,7 @@ let decomp_data_starts : FixedArray[Int] = [
 
 ///|
 /// Canonical decomposition length (0 if none)
-let decomp_canonical_lens : FixedArray[Int] = [
+let decomp_canonical_lens : ReadOnlyArray[Int] = [
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
   2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
   2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
@@ -1269,7 +1269,7 @@ let decomp_canonical_lens : FixedArray[Int] = [
 
 ///|
 /// Compatibility decomposition length (0 if none)
-let decomp_compat_lens : FixedArray[Int] = [
+let decomp_compat_lens : ReadOnlyArray[Int] = [
   1, 2, 1, 2, 1, 1, 2, 1, 2, 1, 1, 3, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -1493,7 +1493,7 @@ let decomp_compat_lens : FixedArray[Int] = [
 
 ///|
 /// Decomposition data (flattened code points)
-let decomp_data : FixedArray[Int] = [
+let decomp_data : ReadOnlyArray[Int] = [
   0x0020, 0x0020, 0x0308, 0x0061, 0x0020, 0x0304, 0x0032, 0x0033, 0x0020, 0x0301,
   0x03BC, 0x0020, 0x0327, 0x0031, 0x006F, 0x0031, 0x2044, 0x0034, 0x0031, 0x2044,
   0x0032, 0x0033, 0x2044, 0x0034, 0x0041, 0x0300, 0x0041, 0x0301, 0x0041, 0x0302,

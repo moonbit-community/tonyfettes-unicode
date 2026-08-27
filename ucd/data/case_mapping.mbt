@@ -4,7 +4,7 @@
 
 ///|
 /// Code points with uppercase mappings (sorted for binary search)
-let upper_cps : FixedArray[Int] = [
+let upper_cps : ReadOnlyArray[Int] = [
   0x0061, 0x0062, 0x0063, 0x0064, 0x0065, 0x0066, 0x0067, 0x0068, 0x0069, 0x006A,
   0x006B, 0x006C, 0x006D, 0x006E, 0x006F, 0x0070, 0x0071, 0x0072, 0x0073, 0x0074,
   0x0075, 0x0076, 0x0077, 0x0078, 0x0079, 0x007A, 0x00B5, 0x00E0, 0x00E1, 0x00E2,
@@ -160,7 +160,7 @@ let upper_cps : FixedArray[Int] = [
 
 ///|
 /// Uppercase mapping targets
-let upper_targets : FixedArray[Int] = [
+let upper_targets : ReadOnlyArray[Int] = [
   0x0041, 0x0042, 0x0043, 0x0044, 0x0045, 0x0046, 0x0047, 0x0048, 0x0049, 0x004A,
   0x004B, 0x004C, 0x004D, 0x004E, 0x004F, 0x0050, 0x0051, 0x0052, 0x0053, 0x0054,
   0x0055, 0x0056, 0x0057, 0x0058, 0x0059, 0x005A, 0x039C, 0x00C0, 0x00C1, 0x00C2,
@@ -316,7 +316,7 @@ let upper_targets : FixedArray[Int] = [
 
 ///|
 /// Code points with lowercase mappings (sorted for binary search)
-let lower_cps : FixedArray[Int] = [
+let lower_cps : ReadOnlyArray[Int] = [
   0x0041, 0x0042, 0x0043, 0x0044, 0x0045, 0x0046, 0x0047, 0x0048, 0x0049, 0x004A,
   0x004B, 0x004C, 0x004D, 0x004E, 0x004F, 0x0050, 0x0051, 0x0052, 0x0053, 0x0054,
   0x0055, 0x0056, 0x0057, 0x0058, 0x0059, 0x005A, 0x00C0, 0x00C1, 0x00C2, 0x00C3,
@@ -471,7 +471,7 @@ let lower_cps : FixedArray[Int] = [
 
 ///|
 /// Lowercase mapping targets
-let lower_targets : FixedArray[Int] = [
+let lower_targets : ReadOnlyArray[Int] = [
   0x0061, 0x0062, 0x0063, 0x0064, 0x0065, 0x0066, 0x0067, 0x0068, 0x0069, 0x006A,
   0x006B, 0x006C, 0x006D, 0x006E, 0x006F, 0x0070, 0x0071, 0x0072, 0x0073, 0x0074,
   0x0075, 0x0076, 0x0077, 0x0078, 0x0079, 0x007A, 0x00E0, 0x00E1, 0x00E2, 0x00E3,
@@ -626,7 +626,7 @@ let lower_targets : FixedArray[Int] = [
 
 ///|
 /// Code points with titlecase mappings (sorted for binary search)
-let title_cps : FixedArray[Int] = [
+let title_cps : ReadOnlyArray[Int] = [
   0x0061, 0x0062, 0x0063, 0x0064, 0x0065, 0x0066, 0x0067, 0x0068, 0x0069, 0x006A,
   0x006B, 0x006C, 0x006D, 0x006E, 0x006F, 0x0070, 0x0071, 0x0072, 0x0073, 0x0074,
   0x0075, 0x0076, 0x0077, 0x0078, 0x0079, 0x007A, 0x00B5, 0x00E0, 0x00E1, 0x00E2,
@@ -778,7 +778,7 @@ let title_cps : FixedArray[Int] = [
 
 ///|
 /// Titlecase mapping targets
-let title_targets : FixedArray[Int] = [
+let title_targets : ReadOnlyArray[Int] = [
   0x0041, 0x0042, 0x0043, 0x0044, 0x0045, 0x0046, 0x0047, 0x0048, 0x0049, 0x004A,
   0x004B, 0x004C, 0x004D, 0x004E, 0x004F, 0x0050, 0x0051, 0x0052, 0x0053, 0x0054,
   0x0055, 0x0056, 0x0057, 0x0058, 0x0059, 0x005A, 0x039C, 0x00C0, 0x00C1, 0x00C2,
@@ -930,7 +930,7 @@ let title_targets : FixedArray[Int] = [
 
 ///|
 /// Binary search helper - returns index if found, -1 otherwise
-fn binary_search_case(arr : FixedArray[Int], cp : Int) -> Int {
+fn binary_search_case(arr : ReadOnlyArray[Int], cp : Int) -> Int {
   let mut left = 0
   let mut right = arr.length() - 1
 
@@ -991,7 +991,7 @@ pub fn lookup_simple_titlecase(c : Char) -> Char {
 
 ///|
 /// Code points with full upper mappings (sorted for binary search)
-let full_upper_cps : FixedArray[Int] = [
+let full_upper_cps : ReadOnlyArray[Int] = [
   0x0061, 0x0062, 0x0063, 0x0064, 0x0065, 0x0066, 0x0067, 0x0068, 0x0069, 0x006A,
   0x006B, 0x006C, 0x006D, 0x006E, 0x006F, 0x0070, 0x0071, 0x0072, 0x0073, 0x0074,
   0x0075, 0x0076, 0x0077, 0x0078, 0x0079, 0x007A, 0x00B5, 0x00DF, 0x00E0, 0x00E1,
@@ -1155,7 +1155,7 @@ let full_upper_cps : FixedArray[Int] = [
 
 ///|
 /// Data start index for each full upper mapping
-let full_upper_data_starts : FixedArray[Int] = [
+let full_upper_data_starts : ReadOnlyArray[Int] = [
   0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
   23, 24, 25, 26, 27, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43,
   44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63,
@@ -1262,7 +1262,7 @@ let full_upper_data_starts : FixedArray[Int] = [
 
 ///|
 /// Length of each full upper mapping
-let full_upper_lens : FixedArray[Int] = [
+let full_upper_lens : ReadOnlyArray[Int] = [
   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
   2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -1325,7 +1325,7 @@ let full_upper_lens : FixedArray[Int] = [
 
 ///|
 /// Flattened full upper mapping target code points
-let full_upper_data : FixedArray[Int] = [
+let full_upper_data : ReadOnlyArray[Int] = [
   0x0041, 0x0042, 0x0043, 0x0044, 0x0045, 0x0046, 0x0047, 0x0048, 0x0049, 0x004A,
   0x004B, 0x004C, 0x004D, 0x004E, 0x004F, 0x0050, 0x0051, 0x0052, 0x0053, 0x0054,
   0x0055, 0x0056, 0x0057, 0x0058, 0x0059, 0x005A, 0x039C, 0x0053, 0x0053, 0x00C0,
@@ -1501,7 +1501,7 @@ let full_upper_data : FixedArray[Int] = [
 
 ///|
 /// Code points with full lower mappings (sorted for binary search)
-let full_lower_cps : FixedArray[Int] = [
+let full_lower_cps : ReadOnlyArray[Int] = [
   0x0041, 0x0042, 0x0043, 0x0044, 0x0045, 0x0046, 0x0047, 0x0048, 0x0049, 0x004A,
   0x004B, 0x004C, 0x004D, 0x004E, 0x004F, 0x0050, 0x0051, 0x0052, 0x0053, 0x0054,
   0x0055, 0x0056, 0x0057, 0x0058, 0x0059, 0x005A, 0x00C0, 0x00C1, 0x00C2, 0x00C3,
@@ -1656,7 +1656,7 @@ let full_lower_cps : FixedArray[Int] = [
 
 ///|
 /// Data start index for each full lower mapping
-let full_lower_data_starts : FixedArray[Int] = [
+let full_lower_data_starts : ReadOnlyArray[Int] = [
   0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
   23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42,
   43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62,
@@ -1755,7 +1755,7 @@ let full_lower_data_starts : FixedArray[Int] = [
 
 ///|
 /// Length of each full lower mapping
-let full_lower_lens : FixedArray[Int] = [
+let full_lower_lens : ReadOnlyArray[Int] = [
   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2,
@@ -1815,7 +1815,7 @@ let full_lower_lens : FixedArray[Int] = [
 
 ///|
 /// Flattened full lower mapping target code points
-let full_lower_data : FixedArray[Int] = [
+let full_lower_data : ReadOnlyArray[Int] = [
   0x0061, 0x0062, 0x0063, 0x0064, 0x0065, 0x0066, 0x0067, 0x0068, 0x0069, 0x006A,
   0x006B, 0x006C, 0x006D, 0x006E, 0x006F, 0x0070, 0x0071, 0x0072, 0x0073, 0x0074,
   0x0075, 0x0076, 0x0077, 0x0078, 0x0079, 0x007A, 0x00E0, 0x00E1, 0x00E2, 0x00E3,
@@ -1970,7 +1970,7 @@ let full_lower_data : FixedArray[Int] = [
 
 ///|
 /// Code points with full title mappings (sorted for binary search)
-let full_title_cps : FixedArray[Int] = [
+let full_title_cps : ReadOnlyArray[Int] = [
   0x0061, 0x0062, 0x0063, 0x0064, 0x0065, 0x0066, 0x0067, 0x0068, 0x0069, 0x006A,
   0x006B, 0x006C, 0x006D, 0x006E, 0x006F, 0x0070, 0x0071, 0x0072, 0x0073, 0x0074,
   0x0075, 0x0076, 0x0077, 0x0078, 0x0079, 0x007A, 0x00B5, 0x00DF, 0x00E0, 0x00E1,
@@ -2126,7 +2126,7 @@ let full_title_cps : FixedArray[Int] = [
 
 ///|
 /// Data start index for each full title mapping
-let full_title_data_starts : FixedArray[Int] = [
+let full_title_data_starts : ReadOnlyArray[Int] = [
   0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
   23, 24, 25, 26, 27, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43,
   44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63,
@@ -2227,7 +2227,7 @@ let full_title_data_starts : FixedArray[Int] = [
 
 ///|
 /// Length of each full title mapping
-let full_title_lens : FixedArray[Int] = [
+let full_title_lens : ReadOnlyArray[Int] = [
   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
   2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -2287,7 +2287,7 @@ let full_title_lens : FixedArray[Int] = [
 
 ///|
 /// Flattened full title mapping target code points
-let full_title_data : FixedArray[Int] = [
+let full_title_data : ReadOnlyArray[Int] = [
   0x0041, 0x0042, 0x0043, 0x0044, 0x0045, 0x0046, 0x0047, 0x0048, 0x0049, 0x004A,
   0x004B, 0x004C, 0x004D, 0x004E, 0x004F, 0x0050, 0x0051, 0x0052, 0x0053, 0x0054,
   0x0055, 0x0056, 0x0057, 0x0058, 0x0059, 0x005A, 0x039C, 0x0053, 0x0073, 0x00C0,
