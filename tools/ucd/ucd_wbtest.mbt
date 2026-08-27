@@ -136,7 +136,7 @@ test "emit small CCC table" {
     { start: 0x0300, end: 0x0301 },
   ])
   inspect(
-    source.contains("let ccc_starts : FixedArray[Int] = ["),
+    source.contains("let ccc_starts : ReadOnlyArray[Int] = ["),
     content="true",
   )
   inspect(source.contains("  0x0300"), content="true")
@@ -154,7 +154,7 @@ test "emit XID table" {
   )
   let source = emit_xid(properties)
   inspect(
-    source.contains("let xid_start_starts : FixedArray[Int] = ["),
+    source.contains("let xid_start_starts : ReadOnlyArray[Int] = ["),
     content="true",
   )
   inspect(
@@ -170,12 +170,12 @@ test "emit decomposition and case mapping arrays" {
     #|00DF; 0073 0073; 0053 0073; 0053 0053; # LATIN SMALL LETTER SHARP S
   let special = parse_special_casing(input)
   inspect(
-    emit_decomposition(data).contains("let decomp_cps : FixedArray[Int]"),
+    emit_decomposition(data).contains("let decomp_cps : ReadOnlyArray[Int]"),
     content="true",
   )
   inspect(
     emit_case_mapping(data, special).contains(
-      "let full_upper_cps : FixedArray[Int]",
+      "let full_upper_cps : ReadOnlyArray[Int]",
     ),
     content="true",
   )

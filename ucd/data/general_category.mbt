@@ -4,7 +4,7 @@
 
 ///|
 /// General_Category range start code points
-let gc_range_starts : FixedArray[Int] = [
+let gc_range_starts : ReadOnlyArray[Int] = [
   0x0000, 0x0020, 0x0021, 0x0024, 0x0025, 0x0028, 0x0029, 0x002A, 0x002B, 0x002C,
   0x002D, 0x002E, 0x0030, 0x003A, 0x003C, 0x003F, 0x0041, 0x005B, 0x005C, 0x005D,
   0x005E, 0x005F, 0x0060, 0x0061, 0x007B, 0x007C, 0x007D, 0x007E, 0x007F, 0x00A0,
@@ -433,7 +433,7 @@ let gc_range_starts : FixedArray[Int] = [
 
 ///|
 /// General_Category range end code points (inclusive)
-let gc_range_ends : FixedArray[Int] = [
+let gc_range_ends : ReadOnlyArray[Int] = [
   0x001F, 0x0020, 0x0023, 0x0024, 0x0027, 0x0028, 0x0029, 0x002A, 0x002B, 0x002C,
   0x002D, 0x002F, 0x0039, 0x003B, 0x003E, 0x0040, 0x005A, 0x005B, 0x005C, 0x005D,
   0x005E, 0x005F, 0x0060, 0x007A, 0x007B, 0x007C, 0x007D, 0x007E, 0x009F, 0x00A0,
@@ -862,7 +862,7 @@ let gc_range_ends : FixedArray[Int] = [
 
 ///|
 /// General_Category values for each range (enum ordinal)
-let gc_values : FixedArray[Int] = [
+let gc_values : ReadOnlyArray[Int] = [
   25, 11, 20, 22, 20, 16, 17, 20, 21, 20, 15, 20, 8, 20, 21, 20, 0, 16, 20, 17, 23,
   14, 23, 1, 16, 21, 17, 21, 25, 11, 20, 22, 24, 20, 23, 24, 4, 18, 21, 26, 24, 23,
   24, 21, 10, 23, 1, 20, 23, 10, 4, 19, 10, 20, 0, 21, 0, 1, 21, 1, 0, 1, 0, 1, 0,

@@ -27,7 +27,7 @@ pub impl Show for JoiningType with fn output(self, logger) {
 
 ///|
 /// Range start code points
-let joining_range_starts : FixedArray[Int] = [
+let joining_range_starts : ReadOnlyArray[Int] = [
   0x00AD, 0x0300, 0x0483, 0x0488, 0x0591, 0x05BF, 0x05C1, 0x05C4, 0x05C7, 0x0610,
   0x061C, 0x0620, 0x0622, 0x0626, 0x0627, 0x0628, 0x0629, 0x062A, 0x062F, 0x0633,
   0x0640, 0x0641, 0x0648, 0x0649, 0x064B, 0x066E, 0x0670, 0x0671, 0x0675, 0x0678,
@@ -88,7 +88,7 @@ let joining_range_starts : FixedArray[Int] = [
 
 ///|
 /// Range end code points (inclusive)
-let joining_range_ends : FixedArray[Int] = [
+let joining_range_ends : ReadOnlyArray[Int] = [
   0x00AD, 0x036F, 0x0487, 0x0489, 0x05BD, 0x05BF, 0x05C2, 0x05C5, 0x05C7, 0x061A,
   0x061C, 0x0620, 0x0625, 0x0626, 0x0627, 0x0628, 0x0629, 0x062E, 0x0632, 0x063F,
   0x0640, 0x0647, 0x0648, 0x064A, 0x065F, 0x066F, 0x0670, 0x0673, 0x0677, 0x0687,
@@ -149,7 +149,7 @@ let joining_range_ends : FixedArray[Int] = [
 
 ///|
 /// Joining type codes for each range
-let joining_range_types : FixedArray[Int] = [
+let joining_range_types : ReadOnlyArray[Int] = [
   4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 2, 1, 2, 1, 2, 1, 2, 1, 2, 3, 2, 1, 2, 4, 2, 4,
   1, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 1, 4, 4, 4, 4, 1, 2, 2, 4, 1, 4, 2, 1,
   2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 4, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 4, 2, 4, 3,

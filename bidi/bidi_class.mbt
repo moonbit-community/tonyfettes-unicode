@@ -61,7 +61,7 @@ pub impl Show for BidiClass with fn output(self, logger) {
 
 ///|
 /// Range start code points
-let bidi_range_starts : FixedArray[Int] = [
+let bidi_range_starts : ReadOnlyArray[Int] = [
   0x0000, 0x0009, 0x000A, 0x000B, 0x000C, 0x000D, 0x000E, 0x001C, 0x001F, 0x0020,
   0x0021, 0x0023, 0x0026, 0x002B, 0x002C, 0x002D, 0x002E, 0x0030, 0x003A, 0x003B,
   0x0041, 0x005B, 0x0061, 0x007B, 0x007F, 0x0085, 0x0086, 0x00A0, 0x00A1, 0x00A2,
@@ -196,7 +196,7 @@ let bidi_range_starts : FixedArray[Int] = [
 
 ///|
 /// Range end code points (inclusive)
-let bidi_range_ends : FixedArray[Int] = [
+let bidi_range_ends : ReadOnlyArray[Int] = [
   0x0008, 0x0009, 0x000A, 0x000B, 0x000C, 0x000D, 0x001B, 0x001E, 0x001F, 0x0020,
   0x0022, 0x0025, 0x002A, 0x002B, 0x002C, 0x002D, 0x002F, 0x0039, 0x003A, 0x0040,
   0x005A, 0x0060, 0x007A, 0x007E, 0x0084, 0x0085, 0x009F, 0x00A0, 0x00A1, 0x00A5,
@@ -331,7 +331,7 @@ let bidi_range_ends : FixedArray[Int] = [
 
 ///|
 /// Bidi class codes for each range
-let bidi_range_classes : FixedArray[Int] = [
+let bidi_range_classes : ReadOnlyArray[Int] = [
   9, 11, 10, 11, 12, 10, 9, 10, 11, 12, 13, 5, 13, 4, 7, 4, 7, 3, 7, 13, 0, 13, 0,
   13, 9, 10, 9, 7, 13, 5, 13, 0, 13, 9, 13, 5, 3, 13, 0, 13, 3, 0, 13, 0, 13, 0,
   13, 0, 13, 0, 13, 0, 13, 0, 13, 0, 13, 8, 0, 13, 0, 13, 0, 13, 0, 13, 0, 13, 0,

@@ -29,7 +29,7 @@ pub impl Show for IdnaStatus with fn output(self, logger) {
 
 ///|
 /// Range start code points
-let idna_range_starts : FixedArray[Int] = [
+let idna_range_starts : ReadOnlyArray[Int] = [
   0x0000, 0x002D, 0x002F, 0x0030, 0x003A, 0x0041, 0x0042, 0x0043, 0x0044, 0x0045,
   0x0046, 0x0047, 0x0048, 0x0049, 0x004A, 0x004B, 0x004C, 0x004D, 0x004E, 0x004F,
   0x0050, 0x0051, 0x0052, 0x0053, 0x0054, 0x0055, 0x0056, 0x0057, 0x0058, 0x0059,
@@ -990,7 +990,7 @@ let idna_range_starts : FixedArray[Int] = [
 
 ///|
 /// Range end code points (inclusive)
-let idna_range_ends : FixedArray[Int] = [
+let idna_range_ends : ReadOnlyArray[Int] = [
   0x002C, 0x002E, 0x002F, 0x0039, 0x0040, 0x0041, 0x0042, 0x0043, 0x0044, 0x0045,
   0x0046, 0x0047, 0x0048, 0x0049, 0x004A, 0x004B, 0x004C, 0x004D, 0x004E, 0x004F,
   0x0050, 0x0051, 0x0052, 0x0053, 0x0054, 0x0055, 0x0056, 0x0057, 0x0058, 0x0059,
@@ -1951,7 +1951,7 @@ let idna_range_ends : FixedArray[Int] = [
 
 ///|
 /// Status codes for each range
-let idna_range_statuses : FixedArray[Int] = [
+let idna_range_statuses : ReadOnlyArray[Int] = [
   0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
   2, 2, 2, 2, 0, 0, 0, 4, 2, 0, 2, 0, 2, 0, 1, 0, 2, 0, 2, 2, 2, 2, 0, 0, 2, 2, 2,
   0, 2, 2, 2, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
@@ -2297,7 +2297,7 @@ let idna_range_statuses : FixedArray[Int] = [
 
 ///|
 /// Mapping data start indices
-let idna_mapping_starts : FixedArray[Int] = [
+let idna_mapping_starts : ReadOnlyArray[Int] = [
   0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
   19, 20, 21, 22, 23, 24, 25, 26, 26, 26, 26, 26, 27, 27, 29, 29, 30, 30, 30, 30,
   32, 32, 33, 34, 36, 37, 37, 37, 39, 40, 41, 41, 44, 47, 50, 50, 51, 52, 53, 54,
@@ -2937,7 +2937,7 @@ let idna_mapping_starts : FixedArray[Int] = [
 
 ///|
 /// Mapping data lengths
-let idna_mapping_lens : FixedArray[Int] = [
+let idna_mapping_lens : ReadOnlyArray[Int] = [
   0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
   1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 2, 0, 1, 0, 0, 0, 2, 0, 1, 1, 2, 1, 0, 0, 2, 1, 1,
   0, 3, 3, 3, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -3283,7 +3283,7 @@ let idna_mapping_lens : FixedArray[Int] = [
 
 ///|
 /// Mapping data (flattened code points)
-let idna_mapping_data : FixedArray[Int] = [
+let idna_mapping_data : ReadOnlyArray[Int] = [
   0x0061, 0x0062, 0x0063, 0x0064, 0x0065, 0x0066, 0x0067, 0x0068, 0x0069, 0x006A,
   0x006B, 0x006C, 0x006D, 0x006E, 0x006F, 0x0070, 0x0071, 0x0072, 0x0073, 0x0074,
   0x0075, 0x0076, 0x0077, 0x0078, 0x0079, 0x007A, 0x0020, 0x0020, 0x0308, 0x0061,

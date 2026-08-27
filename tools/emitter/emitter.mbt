@@ -100,7 +100,7 @@ pub fn Emitter::write_int_array(
 ) -> Unit {
   self.write("///|\n")
   self.write("/// " + doc + "\n")
-  self.write("let " + name + " : FixedArray[Int] = [\n")
+  self.write("let " + name + " : ReadOnlyArray[Int] = [\n")
   for value in values {
     self.write("  ")
     if hex {

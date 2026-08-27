@@ -192,8 +192,8 @@ pub fn emit_xid(properties : XidProperties) -> String {
       #|///|
       #|fn is_in_ranges(
       #|  c : Char,
-      #|  starts : FixedArray[Int],
-      #|  ends : FixedArray[Int],
+      #|  starts : ReadOnlyArray[Int],
+      #|  ends : ReadOnlyArray[Int],
       #|) -> Bool {
       #|  let cp = c.to_int()
       #|  let mut left = 0
@@ -332,7 +332,7 @@ pub fn emit_case_mapping(
     (
       #|///|
       #|/// Binary search helper - returns index if found, -1 otherwise
-      #|fn binary_search_case(arr : FixedArray[Int], cp : Int) -> Int {
+      #|fn binary_search_case(arr : ReadOnlyArray[Int], cp : Int) -> Int {
       #|  let mut left = 0
       #|  let mut right = arr.length() - 1
       #|
