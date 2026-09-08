@@ -6,12 +6,15 @@
 ///|
 /// Reorder characters according to Canonical Combining Class
 /// Starters (CCC=0) remain in place, combining marks are sorted by CCC
-fn canonical_order(chars : Array[Char]) -> Unit {
+/// Returns whether any combining mark (CCC != 0) was found, which lets
+/// callers skip the no-op canonical composition pass.
+fn canonical_order(chars : Array[Char]) -> Bool {
   let len = chars.length()
   if len < 2 {
-    return
+    return false
   }
   let mut i = 0
+  let mut saw_marks = false
   while i < len {
     let ccc = @ucd.lookup_ccc(chars[i])
 
@@ -20,6 +23,8 @@ fn canonical_order(chars : Array[Char]) -> Unit {
       i = i + 1
       continue
     }
+
+    saw_marks = true
 
     // Find the start of this combining mark sequence
     // (first non-starter after a starter or beginning)
@@ -39,6 +44,7 @@ fn canonical_order(chars : Array[Char]) -> Unit {
       stable_sort_by_ccc(chars, start, i)
     }
   }
+  saw_marks
 }
 
 ///|

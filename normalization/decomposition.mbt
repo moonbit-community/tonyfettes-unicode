@@ -5,10 +5,18 @@
 ///|
 /// Recursively decompose a single character
 /// Returns array of characters in fully decomposed form
-fn decompose_char(c : Char, compatibility~ : Bool) -> Array[Char] {
-  // Handle Hangul syllables algorithmically
+fn decompose_char_into(
+  result : Array[Char],
+  c : Char,
+  compatibility~ : Bool,
+) -> Unit {
+  // Handle Hangul syllables algorithmically (their jamo have no further
+  // decomposition, so push them directly).
   if is_hangul_syllable(c) {
-    return decompose_hangul(c)
+    for part in decompose_hangul(c) {
+      result.push(part)
+    }
+    return
   }
 
   // Look up decomposition mapping
@@ -22,15 +30,13 @@ fn decompose_char(c : Char, compatibility~ : Bool) -> Array[Char] {
     @ucd.get_canonical_decomposition(c)
   }
   match mapping {
-    None => [c] // No decomposition, return as-is
-    Some(decomposed) => {
+    // No decomposition: keep the character as-is without allocating
+    None => result.push(c)
+    Some(decomposed) =>
       // Recursively decompose each component
-      let result : Array[Char] = []
       for d in decomposed {
-        result.append(decompose_char(d, compatibility~))
+        decompose_char_into(result, d, compatibility~)
       }
-      result
-    }
   }
 }
 
@@ -40,7 +46,7 @@ fn decompose_char(c : Char, compatibility~ : Bool) -> Array[Char] {
 fn decompose_string(s : String, compatibility~ : Bool) -> Array[Char] {
   let result : Array[Char] = []
   for c in s {
-    result.append(decompose_char(c, compatibility~))
+    decompose_char_into(result, c, compatibility~)
   }
   result
 }

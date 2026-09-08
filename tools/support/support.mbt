@@ -39,10 +39,10 @@ pub fn parse_decimal_int(text : StringView) -> Int raise {
 pub fn parse_code_point_range(text : StringView) -> CodePointRange raise {
   let text = text.trim()
   if text.split_once("..") is Some((start_text, end_text)) {
-    { start: parse_hex_int(start_text), end: parse_hex_int(end_text) }
+    { start: parse_hex_int(start_text), end: parse_hex_int(end_text), }
   } else {
     let code_point = parse_hex_int(text)
-    { start: code_point, end: code_point }
+    { start: code_point, end: code_point, }
   }
 }
 
@@ -205,7 +205,7 @@ fn parse_braced_hex(chars : ArrayView[Char]) -> (Int, ArrayView[Char])? {
 ///|
 pub fn parse_escaped_text(text : StringView) -> ParsedText {
   if text == "\"\"" {
-    return { text: "", has_surrogate: false }
+    return { text: "", has_surrogate: false, }
   }
   let chars = text.iter().collect()
   let out = @emitter.Emitter::new()
@@ -241,7 +241,7 @@ pub fn parse_escaped_text(text : StringView) -> ParsedText {
       }
     }
   }
-  { text: out.finish(), has_surrogate }
+  { text: out.finish(), has_surrogate, }
 }
 
 ///|

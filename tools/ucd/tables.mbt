@@ -69,13 +69,13 @@ pub fn compress_ccc_ranges(data : UnicodeData) -> Array[CccRange] {
     if entry.code_point == prev_cp + 1 && entry.value == prev_value {
       prev_cp = entry.code_point
     } else {
-      ranges.push({ start, end: prev_cp, value: prev_value })
+      ranges.push({ start, end: prev_cp, value: prev_value, })
       start = entry.code_point
       prev_cp = entry.code_point
       prev_value = entry.value
     }
   }
-  ranges.push({ start, end: prev_cp, value: prev_value })
+  ranges.push({ start, end: prev_cp, value: prev_value, })
   ranges
 }
 
@@ -92,12 +92,12 @@ pub fn compress_mark_ranges(data : UnicodeData) -> Array[CodePointRange] {
     if cp == prev_cp + 1 {
       prev_cp = cp
     } else {
-      ranges.push({ start, end: prev_cp })
+      ranges.push({ start, end: prev_cp, })
       start = cp
       prev_cp = cp
     }
   }
-  ranges.push({ start, end: prev_cp })
+  ranges.push({ start, end: prev_cp, })
   ranges
 }
 
@@ -129,7 +129,7 @@ pub fn compress_general_category_ranges(
       prev_cp = cp
     } else {
       if prev_value >= 0 {
-        ranges.push({ start, end: prev_cp, value: prev_value })
+        ranges.push({ start, end: prev_cp, value: prev_value, })
       }
       start = cp
       prev_cp = cp
@@ -137,7 +137,7 @@ pub fn compress_general_category_ranges(
     }
   }
   if prev_value >= 0 {
-    ranges.push({ start, end: prev_cp, value: prev_value })
+    ranges.push({ start, end: prev_cp, value: prev_value, })
   }
   ranges
 }

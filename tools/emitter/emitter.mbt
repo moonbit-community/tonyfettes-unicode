@@ -5,7 +5,7 @@ struct Emitter {
 
 ///|
 pub fn Emitter::new() -> Emitter {
-  { out: StringBuilder() }
+  { out: StringBuilder(), }
 }
 
 ///|

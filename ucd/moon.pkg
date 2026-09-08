@@ -1,3 +1,7 @@
 import {
   "moonbit-community/ucd/data" @ucd_data,
 }
+
+import {
+  "moonbitlang/core/bench",
+} for "test"

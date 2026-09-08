@@ -235,7 +235,7 @@ fn merged_full_mapping(
 ) -> Array[FullMappingEntry] {
   let result : Array[FullMappingEntry] = []
   for entry in simple {
-    result.push({ code_point: entry.code_point, targets: [entry.target] })
+    result.push({ code_point: entry.code_point, targets: [entry.target], })
   }
   for entry in special {
     match
@@ -478,7 +478,7 @@ pub fn emit_decomposition(data : UnicodeData) -> String {
   }
   for compat in data.compatibility_decompositions {
     if entries.search_by(entry => entry.code_point == compat.code_point) is None {
-      entries.push({ code_point: compat.code_point, code_points: [] })
+      entries.push({ code_point: compat.code_point, code_points: [], })
     }
   }
   entries.sort_by((left, right) => left.code_point - right.code_point)
