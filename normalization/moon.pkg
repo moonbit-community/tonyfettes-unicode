@@ -5,6 +5,7 @@ import {
 import {
   "moonbit-community/normalization/internal/base_fuzz" @fuzz,
   "moonbit-community/normalization/internal/fuzz" @normalization_fuzz,
+  "moonbitlang/core/bench",
   "moonbitlang/core/debug",
   "moonbitlang/core/random",
 } for "test"
