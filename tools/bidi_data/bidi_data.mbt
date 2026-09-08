@@ -75,7 +75,7 @@ fn parse_bidi_ranges(content : String) -> Array[BidiRange] raise {
   for entry in explicit {
     fill_class_range(
       classes,
-      { start: entry.start, end: entry.end },
+      { start: entry.start, end: entry.end, },
       entry.bidi_class,
     )
   }
@@ -85,12 +85,12 @@ fn parse_bidi_ranges(content : String) -> Array[BidiRange] raise {
   for code_point in 1..<=MaxCodePoint {
     let current = classes[code_point]
     if current != previous {
-      result.push({ start, end: code_point - 1, bidi_class: previous })
+      result.push({ start, end: code_point - 1, bidi_class: previous, })
       start = code_point
       previous = current
     }
   }
-  result.push({ start, end: MaxCodePoint, bidi_class: previous })
+  result.push({ start, end: MaxCodePoint, bidi_class: previous, })
   result
 }
 

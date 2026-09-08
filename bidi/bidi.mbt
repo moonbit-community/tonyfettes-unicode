@@ -155,7 +155,7 @@ fn process_at_base_level(text : String, base_level : Int) -> BidiParagraph {
 
   // L1: Reset whitespace and separator levels
   reset_whitespace_levels(original_classes, levels, base_level)
-  { chars, original_classes, resolved_classes, levels, base_level }
+  { chars, original_classes, resolved_classes, levels, base_level, }
 }
 
 ///|

@@ -36,7 +36,7 @@ fn parse_mapping_table(content : String) -> Array[MappingEntry] raise {
     } else {
       []
     }
-    entries.push({ start: range.start, end: range.end, status, mapping })
+    entries.push({ start: range.start, end: range.end, status, mapping, })
   }
   entries
 }

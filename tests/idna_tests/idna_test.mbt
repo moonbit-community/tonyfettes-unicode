@@ -67,7 +67,7 @@ fn parse_test_line(line : StringView, line_number : Int) -> TestCase? {
   if source.has_surrogate || to_ascii_has_surrogate {
     return None
   }
-  Some({ line_number, source: source.text, to_ascii, status: ascii_status })
+  Some({ line_number, source: source.text, to_ascii, status: ascii_status, })
 }
 
 ///|
