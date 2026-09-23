@@ -28,9 +28,9 @@ fn process_explicit(
       isolate_status: false,
     },
   ]
-  let overflow_isolate_count : Ref[Int] = { val: 0 }
-  let overflow_embedding_count : Ref[Int] = { val: 0 }
-  let valid_isolate_count : Ref[Int] = { val: 0 }
+  let overflow_isolate_count : Ref[Int] = { val: 0, }
+  let overflow_embedding_count : Ref[Int] = { val: 0, }
+  let valid_isolate_count : Ref[Int] = { val: 0, }
 
   // Track isolate pairs for later run sequence computation
   let isolate_pairs : Array[(Int, Int)] = []
@@ -462,7 +462,7 @@ fn compute_isolating_run_sequences(
     } else {
       BidiClass::R
     }
-    sequences.push({ indices, sos, eos, level: seq_level })
+    sequences.push({ indices, sos, eos, level: seq_level, })
   }
   sequences
 }

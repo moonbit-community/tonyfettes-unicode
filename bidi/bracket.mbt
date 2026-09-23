@@ -139,7 +139,7 @@ fn find_bracket_pairs(
       Open =>
         // Push to stack
         if stack.length() < 63 { // BD16 limit
-          stack.push({ bracket: c, char_index: idx, sequence_position })
+          stack.push({ bracket: c, char_index: idx, sequence_position, })
         } else {
           overflow = true
           break

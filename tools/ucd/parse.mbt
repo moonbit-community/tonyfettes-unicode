@@ -31,10 +31,10 @@ fn parse_code_point_sequence(text : StringView) -> Array[Int] raise {
 ///|
 fn parse_code_point_range(text : StringView) -> CodePointRange raise {
   if text.split_once("..") is Some((start_text, end_text)) {
-    { start: parse_hex_int(start_text), end: parse_hex_int(end_text) }
+    { start: parse_hex_int(start_text), end: parse_hex_int(end_text), }
   } else {
     let code_point = parse_hex_int(text)
-    { start: code_point, end: code_point }
+    { start: code_point, end: code_point, }
   }
 }
 
@@ -97,7 +97,7 @@ fn append_general_category(
   cp : Int,
   category : String,
 ) -> Unit {
-  general_categories.push({ code_point: cp, category })
+  general_categories.push({ code_point: cp, category, })
   if is_mark_category(category) {
     mark_code_points.push(cp)
   }
@@ -158,7 +158,7 @@ pub fn parse_unicode_data(content : String) -> UnicodeData raise {
       0
     }
     if ccc != 0 {
-      ccc_entries.push({ code_point: cp, value: ccc })
+      ccc_entries.push({ code_point: cp, value: ccc, })
     }
     let decomp = fields[5].trim()
     if decomp.length() > 0 {
@@ -167,7 +167,7 @@ pub fn parse_unicode_data(content : String) -> UnicodeData raise {
           Some((_, rest)) => {
             let code_points = parse_code_point_sequence(rest)
             if code_points.length() > 0 {
-              compatibility_decompositions.push({ code_point: cp, code_points })
+              compatibility_decompositions.push({ code_point: cp, code_points, })
             }
           }
           None => ()
@@ -175,7 +175,7 @@ pub fn parse_unicode_data(content : String) -> UnicodeData raise {
       } else {
         let code_points = parse_code_point_sequence(decomp)
         if code_points.length() > 0 {
-          canonical_decompositions.push({ code_point: cp, code_points })
+          canonical_decompositions.push({ code_point: cp, code_points, })
         }
       }
     }
@@ -183,21 +183,21 @@ pub fn parse_unicode_data(content : String) -> UnicodeData raise {
     if upper.length() > 0 {
       let target = parse_hex_int(upper)
       if target != cp {
-        simple_uppercase.push({ code_point: cp, target })
+        simple_uppercase.push({ code_point: cp, target, })
       }
     }
     let lower = fields[13].trim()
     if lower.length() > 0 {
       let target = parse_hex_int(lower)
       if target != cp {
-        simple_lowercase.push({ code_point: cp, target })
+        simple_lowercase.push({ code_point: cp, target, })
       }
     }
     let title = fields[14].trim()
     if title.length() > 0 {
       let target = parse_hex_int(title)
       if target != cp {
-        simple_titlecase.push({ code_point: cp, target })
+        simple_titlecase.push({ code_point: cp, target, })
       }
     }
   }
@@ -260,16 +260,16 @@ pub fn parse_special_casing(content : String) -> SpecialCasingData raise {
     let title = parse_code_point_sequence(fields[2])
     let upper = parse_code_point_sequence(fields[3])
     if !is_identity_or_empty(cp, lower) {
-      lower_mapping.push({ code_point: cp, targets: lower })
+      lower_mapping.push({ code_point: cp, targets: lower, })
     }
     if !is_identity_or_empty(cp, title) {
-      title_mapping.push({ code_point: cp, targets: title })
+      title_mapping.push({ code_point: cp, targets: title, })
     }
     if !is_identity_or_empty(cp, upper) {
-      upper_mapping.push({ code_point: cp, targets: upper })
+      upper_mapping.push({ code_point: cp, targets: upper, })
     }
   }
-  { lower_mapping, title_mapping, upper_mapping }
+  { lower_mapping, title_mapping, upper_mapping, }
 }
 
 ///|
@@ -293,5 +293,5 @@ pub fn parse_derived_core_properties(content : String) -> XidProperties raise {
   validate_property_ranges("XID_Start", xid_start)
   validate_property_ranges("XID_Continue", xid_continue)
   validate_xid_subset(xid_start, xid_continue)
-  { xid_start, xid_continue }
+  { xid_start, xid_continue, }
 }

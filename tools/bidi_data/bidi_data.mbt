@@ -75,7 +75,7 @@ fn parse_bidi_ranges(content : String) -> Array[BidiRange] raise {
   for entry in explicit {
     fill_class_range(
       classes,
-      { start: entry.start, end: entry.end },
+      { start: entry.start, end: entry.end, },
       entry.bidi_class,
     )
   }
@@ -85,12 +85,12 @@ fn parse_bidi_ranges(content : String) -> Array[BidiRange] raise {
   for code_point in 1..<=MaxCodePoint {
     let current = classes[code_point]
     if current != previous {
-      result.push({ start, end: code_point - 1, bidi_class: previous })
+      result.push({ start, end: code_point - 1, bidi_class: previous, })
       start = code_point
       previous = current
     }
   }
-  result.push({ start, end: MaxCodePoint, bidi_class: previous })
+  result.push({ start, end: MaxCodePoint, bidi_class: previous, })
   result
 }
 
@@ -208,6 +208,12 @@ pub fn generate_bidi_class_source(content : String) -> String raise {
       #|  FSI
       #|  PDI
       #|} derive(Eq)
+      #|
+      #|///|
+      #|pub extend BidiClass with Eq::{not_equal, equal}
+      #|
+      #|///|
+      #|pub extend BidiClass with Show::{to_string, output}
       #|
       #|///|
       #|pub impl Show for BidiClass with fn output(self, logger) {
@@ -441,6 +447,12 @@ pub fn generate_bracket_source(content : String) -> String raise {
       #|  Close
       #|  None
       #|} derive(Eq)
+      #|
+      #|///|
+      #|pub extend BracketType with Eq::{not_equal, equal}
+      #|
+      #|///|
+      #|pub extend BracketType with Show::{to_string, output}
       #|
       #|///|
       #|pub impl Show for BracketType with fn output(self, logger) {

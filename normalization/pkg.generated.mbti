@@ -23,6 +23,10 @@ pub(all) enum NormalizationForm {
   NFKD
   NFKC
 } derive(Eq)
+pub fn NormalizationForm::equal(Self, Self) -> Bool
+pub fn NormalizationForm::not_equal(Self, Self) -> Bool
+pub fn NormalizationForm::output(Self, &Logger) -> Unit
+pub fn NormalizationForm::to_string(Self) -> String
 pub impl Show for NormalizationForm
 
 // Type aliases

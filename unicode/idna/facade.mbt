@@ -14,6 +14,9 @@ pub(all) suberror IdnaError {
 }
 
 ///|
+pub extend IdnaError with Show::{to_string, output}
+
+///|
 pub impl Show for IdnaError with fn output(self, logger) {
   match self {
     PunycodeError(error) =>

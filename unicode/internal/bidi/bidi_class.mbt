@@ -26,6 +26,12 @@ pub(all) enum BidiClass {
 } derive(Eq)
 
 ///|
+pub extend BidiClass with Eq::{not_equal, equal}
+
+///|
+pub extend BidiClass with Show::{to_string, output}
+
+///|
 pub impl Show for BidiClass with fn output(self, logger) {
   match self {
     L => logger.write_string("L")

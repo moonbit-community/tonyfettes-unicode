@@ -14,6 +14,12 @@ pub(all) enum JoiningType {
 } derive(Eq)
 
 ///|
+pub extend JoiningType with Eq::{not_equal, equal}
+
+///|
+pub extend JoiningType with Show::{to_string, output}
+
+///|
 pub impl Show for JoiningType with fn output(self, logger) {
   match self {
     LeftJoining => logger.write_string("LeftJoining")

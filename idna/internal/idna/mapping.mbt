@@ -15,6 +15,12 @@ pub(all) enum IdnaStatus {
 } derive(Eq)
 
 ///|
+pub extend IdnaStatus with Eq::{not_equal, equal}
+
+///|
+pub extend IdnaStatus with Show::{to_string, output}
+
+///|
 pub impl Show for IdnaStatus with fn output(self, logger) {
   match self {
     Valid => logger.write_string("Valid")
@@ -4109,7 +4115,7 @@ fn mapping_for_range(idx : Int) -> Array[Char] {
   let mapping_len = idna_mapping_lens[idx]
   let mapping : Array[Char] = []
   for
-    code_point in idna_mapping_data.view(
+    code_point in idna_mapping_data.exact_view(
       start=mapping_start,
       end=mapping_start + mapping_len,
     ) {

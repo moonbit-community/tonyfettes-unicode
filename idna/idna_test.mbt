@@ -3,114 +3,117 @@
 
 ///|
 test "to_ascii: pure ASCII domain" {
-  inspect(to_ascii("example.com"), content="example.com")
+  inspect(@idna.to_ascii("example.com"), content="example.com")
 }
 
 ///|
 test "to_ascii: simple IDN" {
   // münchen.de -> xn--mnchen-3ya.de
-  inspect(to_ascii("münchen.de"), content="xn--mnchen-3ya.de")
+  inspect(@idna.to_ascii("münchen.de"), content="xn--mnchen-3ya.de")
 }
 
 ///|
 test "to_ascii: accepts an existing valid A-label" {
-  inspect(to_ascii("xn--mnchen-3ya.de"), content="xn--mnchen-3ya.de")
+  inspect(@idna.to_ascii("xn--mnchen-3ya.de"), content="xn--mnchen-3ya.de")
 }
 
 ///|
 test "to_ascii: Chinese domain" {
   // 中文.com
-  inspect(to_ascii("中文.com"), content="xn--fiq228c.com")
+  inspect(@idna.to_ascii("中文.com"), content="xn--fiq228c.com")
 }
 
 ///|
 test "to_ascii: Japanese domain" {
   // ドメイン.jp
-  inspect(to_ascii("ドメイン.jp"), content="xn--eckwd4c7c.jp")
+  inspect(@idna.to_ascii("ドメイン.jp"), content="xn--eckwd4c7c.jp")
 }
 
 ///|
 test "to_ascii: mixed ASCII and Unicode" {
-  inspect(to_ascii("bücher.example.com"), content="xn--bcher-kva.example.com")
+  inspect(
+    @idna.to_ascii("bücher.example.com"),
+    content="xn--bcher-kva.example.com",
+  )
 }
 
 ///|
 test "to_ascii: uppercase conversion" {
-  inspect(to_ascii("EXAMPLE.COM"), content="example.com")
+  inspect(@idna.to_ascii("EXAMPLE.COM"), content="example.com")
 }
 
 ///|
 test "to_ascii: fullwidth separators" {
   // Fullwidth full stop U+FF0E should be treated as separator
-  inspect(to_ascii("example\u{FF0E}com"), content="example.com")
+  inspect(@idna.to_ascii("example\u{FF0E}com"), content="example.com")
 }
 
 ///|
 test "to_unicode: pure ASCII domain" {
-  inspect(to_unicode("example.com"), content="example.com")
+  inspect(@idna.to_unicode("example.com"), content="example.com")
 }
 
 ///|
 test "to_unicode: Punycode domain" {
   // xn--mnchen-3ya.de -> münchen.de
-  inspect(to_unicode("xn--mnchen-3ya.de"), content="münchen.de")
+  inspect(@idna.to_unicode("xn--mnchen-3ya.de"), content="münchen.de")
 }
 
 ///|
 test "to_unicode: Chinese Punycode" {
-  inspect(to_unicode("xn--fiq228c.com"), content="中文.com")
+  inspect(@idna.to_unicode("xn--fiq228c.com"), content="中文.com")
 }
 
 ///|
 test "roundtrip: German" {
   let original = "münchen.de"
-  let ascii = to_ascii(original)
-  let back = to_unicode(ascii)
+  let ascii = @idna.to_ascii(original)
+  let back = @idna.to_unicode(ascii)
   assert_eq(back, original)
 }
 
 ///|
 test "roundtrip: Chinese" {
   let original = "中文.com"
-  let ascii = to_ascii(original)
-  let back = to_unicode(ascii)
+  let ascii = @idna.to_ascii(original)
+  let back = @idna.to_unicode(ascii)
   assert_eq(back, original)
 }
 
 ///|
 test "roundtrip: Japanese" {
   let original = "ドメイン.jp"
-  let ascii = to_ascii(original)
-  let back = to_unicode(ascii)
+  let ascii = @idna.to_ascii(original)
+  let back = @idna.to_unicode(ascii)
   assert_eq(back, original)
 }
 
 ///|
 test "roundtrip: Korean" {
   let original = "한국어.kr"
-  let ascii = to_ascii(original)
-  let back = to_unicode(ascii)
+  let ascii = @idna.to_ascii(original)
+  let back = @idna.to_unicode(ascii)
   assert_eq(back, original)
 }
 
 ///|
 test "roundtrip: Russian" {
   let original = "пример.ru"
-  let ascii = to_ascii(original)
-  let back = to_unicode(ascii)
+  let ascii = @idna.to_ascii(original)
+  let back = @idna.to_unicode(ascii)
   assert_eq(back, original)
 }
 
 ///|
 test "invalid: disallowed character" {
   // U+0000 is disallowed
-  @test.assert_raise(() => to_ascii("example\u{0000}.com"))
+  @test.assert_raise(() => @idna.to_ascii("example\u{0000}.com"))
 }
 
 ///|
 test "to_ascii: double dots handled" {
   // Double dots create an empty label which triggers EmptyLabel error
-  let error = @test.expect_error(() => to_ascii("example..com"))
+  let error = @test.expect_error(() => @idna.to_ascii("example..com"))
   guard error is @idna.EmptyLabel else { fail("Expected EmptyLabel") }
 }
 
@@ -119,48 +122,48 @@ test "to_ascii: label too long" {
   // Create a label that will be > 63 characters after Punycode encoding
   // This is hard to test directly, so we test with already long ASCII
   let long_label = "a".repeat(64)
-  @test.assert_raise(() => to_ascii(long_label + ".com"))
+  @test.assert_raise(() => @idna.to_ascii(long_label + ".com"))
 }
 
 ///|
 test "mapping: ignored characters" {
   // Soft hyphen U+00AD is ignored
-  inspect(to_ascii("exam\u{00AD}ple.com"), content="example.com")
+  inspect(@idna.to_ascii("exam\u{00AD}ple.com"), content="example.com")
 }
 
 ///|
 test "mapping: mapped characters" {
   // U+00DF (ß) maps to "ss"
-  inspect(to_ascii("straße.de"), content="xn--strae-oqa.de")
+  inspect(@idna.to_ascii("straße.de"), content="xn--strae-oqa.de")
 }
 
 ///|
 test "validation: hyphen at start" {
-  @test.assert_raise(() => to_ascii("-example.com"))
+  @test.assert_raise(() => @idna.to_ascii("-example.com"))
 }
 
 ///|
 test "validation: hyphen at end" {
-  @test.assert_raise(() => to_ascii("example-.com"))
+  @test.assert_raise(() => @idna.to_ascii("example-.com"))
 }
 
 ///|
 test "std3 rules: space character rejected" {
   // Space U+0020 is rejected with STD3 rules (default) - not LDH
-  @test.assert_raise(() => to_ascii("exam ple.com"))
+  @test.assert_raise(() => @idna.to_ascii("exam ple.com"))
 }
 
 ///|
 test "std3 disabled: space character allowed" {
   // Space U+0020 is allowed without STD3 rules (marked "valid" in IDNA table)
-  let result = to_ascii("exam ple.com", use_std3_ascii_rules=false)
+  let result = @idna.to_ascii("exam ple.com", use_std3_ascii_rules=false)
   inspect(result, content="exam ple.com")
 }
 
 ///|
 test "std3 disabled: allows some characters" {
   // Without STD3 rules, some characters are allowed
-  let result = to_ascii(
+  let result = @idna.to_ascii(
     "example.com",
     use_std3_ascii_rules=false,
     check_hyphens=false,
@@ -171,13 +174,13 @@ test "std3 disabled: allows some characters" {
 ///|
 test "to_ascii: ideographic full stop" {
   // Ideographic full stop U+3002 should be treated as separator
-  inspect(to_ascii("中文\u{3002}com"), content="xn--fiq228c.com")
+  inspect(@idna.to_ascii("中文\u{3002}com"), content="xn--fiq228c.com")
 }
 
 ///|
 test "to_ascii: multiple labels" {
   inspect(
-    to_ascii("münchen.example.中文.com"),
+    @idna.to_ascii("münchen.example.中文.com"),
     content="xn--mnchen-3ya.example.xn--fiq228c.com",
   )
 }
@@ -185,14 +188,14 @@ test "to_ascii: multiple labels" {
 ///|
 test "to_unicode: mixed Punycode and ASCII" {
   inspect(
-    to_unicode("xn--mnchen-3ya.example.com"),
+    @idna.to_unicode("xn--mnchen-3ya.example.com"),
     content="münchen.example.com",
   )
 }
 
 ///|
 test "case folding: uppercase to lowercase" {
-  inspect(to_ascii("MÜNCHEN.DE"), content="xn--mnchen-3ya.de")
+  inspect(@idna.to_ascii("MÜNCHEN.DE"), content="xn--mnchen-3ya.de")
 }
 
 // =============================================================================
@@ -203,7 +206,7 @@ test "case folding: uppercase to lowercase" {
 test "bidi: valid RTL label starting with Arabic letter" {
   // Arabic domain - starts with AL (Arabic Letter)
   // U+0645 (م) is Arabic Letter with bidi class AL
-  let result = to_ascii("مثال.com", check_bidi=true)
+  let result = @idna.to_ascii("مثال.com", check_bidi=true)
   assert_true(result.has_prefix("xn--"))
 }
 
@@ -211,7 +214,7 @@ test "bidi: valid RTL label starting with Arabic letter" {
 test "bidi: valid RTL label with Hebrew" {
   // Hebrew domain - starts with R (Right-to-Left)
   // U+05D0 (א) is Hebrew with bidi class R
-  let result = to_ascii("בדיקה.com", check_bidi=true)
+  let result = @idna.to_ascii("בדיקה.com", check_bidi=true)
   assert_true(result.has_prefix("xn--"))
 }
 
@@ -220,7 +223,7 @@ test "bidi: RTL label cannot start with L character" {
   // Mix Hebrew (R) with leading Latin (L) - invalid
   // This label has RTL chars but doesn't start with R/AL
   let error = @test.expect_error(() => {
-    to_ascii("aבדיקה.com", check_bidi=true)
+    @idna.to_ascii("aבדיקה.com", check_bidi=true)
   })
   guard error is @idna.InvalidBidi else { fail("Expected InvalidBidi") }
 }
@@ -229,7 +232,7 @@ test "bidi: RTL label cannot start with L character" {
 test "bidi: RTL label cannot contain L character" {
   // Hebrew label with Latin in the middle - L not allowed in RTL
   let error = @test.expect_error(() => {
-    to_ascii("בדaיקה.com", check_bidi=true)
+    @idna.to_ascii("בדaיקה.com", check_bidi=true)
   })
   guard error is @idna.InvalidBidi else { fail("Expected InvalidBidi") }
 }
@@ -240,7 +243,7 @@ test "bidi: RTL label cannot have both EN and AN" {
   // U+0660-U+0669 are Arabic-Indic digits (AN)
   // 0-9 are European Numbers (EN)
   let error = @test.expect_error(() => {
-    to_ascii("مثال1\u{0660}.com", check_bidi=true)
+    @idna.to_ascii("مثال1\u{0660}.com", check_bidi=true)
   })
   guard error is @idna.InvalidBidi else { fail("Expected InvalidBidi") }
 }
@@ -249,7 +252,7 @@ test "bidi: RTL label cannot have both EN and AN" {
 test "bidi: LTR label cannot contain RTL characters" {
   // Latin label with Arabic character - invalid for LTR
   let error = @test.expect_error(() => {
-    to_ascii("exampleم.com", check_bidi=true)
+    @idna.to_ascii("exampleم.com", check_bidi=true)
   })
   guard error is @idna.InvalidBidi else { fail("Expected InvalidBidi") }
 }
@@ -257,15 +260,15 @@ test "bidi: LTR label cannot contain RTL characters" {
 ///|
 test "bidi: pure ASCII label passes bidi check" {
   // Pure ASCII is LTR and valid
-  let result = to_ascii("example.com", check_bidi=true)
+  let result = @idna.to_ascii("example.com", check_bidi=true)
   inspect(result, content="example.com")
 }
 
 ///|
 test "bidi: to_unicode validates all labels at domain level" {
-  let hebrew_label = to_ascii("בדיקה", check_bidi=false)
+  let hebrew_label = @idna.to_ascii("בדיקה", check_bidi=false)
   let error = @test.expect_error(() => {
-    to_unicode("\{hebrew_label}.123", check_bidi=true)
+    @idna.to_unicode("\{hebrew_label}.123", check_bidi=true)
   })
   guard error is @idna.InvalidBidi else { fail("Expected InvalidBidi") }
 }
@@ -273,7 +276,7 @@ test "bidi: to_unicode validates all labels at domain level" {
 ///|
 test "bidi: disabled check allows mixed bidi" {
   // With bidi check disabled, mixed content is allowed
-  let result = to_ascii("exampleم.com", check_bidi=false)
+  let result = @idna.to_ascii("exampleم.com", check_bidi=false)
   assert_true(result.has_prefix("xn--"))
 }
 
@@ -286,7 +289,11 @@ test "contextj: ZWNJ after Virama is valid" {
   // Devanagari Virama (U+094D) followed by ZWNJ (U+200C)
   // क् + ZWNJ - valid context
   ignore(
-    to_ascii("क\u{094D}\u{200C}ष.com", check_joiners=true, check_bidi=false),
+    @idna.to_ascii(
+      "क\u{094D}\u{200C}ष.com",
+      check_joiners=true,
+      check_bidi=false,
+    ),
   )
 }
 
@@ -294,7 +301,7 @@ test "contextj: ZWNJ after Virama is valid" {
 test "contextj: ZWNJ without valid context fails" {
   // ZWNJ at start of label - no valid context
   let error = @test.expect_error(() => {
-    to_ascii("\u{200C}example.com", check_joiners=true)
+    @idna.to_ascii("\u{200C}example.com", check_joiners=true)
   })
   guard error is @idna.InvalidJoiner else { fail("Expected InvalidJoiner") }
 }
@@ -303,7 +310,7 @@ test "contextj: ZWNJ without valid context fails" {
 test "contextj: ZWNJ between non-joining chars fails" {
   // ZWNJ between Latin characters - invalid
   let error = @test.expect_error(() => {
-    to_ascii("ex\u{200C}ample.com", check_joiners=true)
+    @idna.to_ascii("ex\u{200C}ample.com", check_joiners=true)
   })
   guard error is @idna.InvalidJoiner else { fail("Expected InvalidJoiner") }
 }
@@ -312,7 +319,11 @@ test "contextj: ZWNJ between non-joining chars fails" {
 test "contextj: ZWJ after Virama is valid" {
   // Devanagari Virama (U+094D) followed by ZWJ (U+200D)
   ignore(
-    to_ascii("क\u{094D}\u{200D}ष.com", check_joiners=true, check_bidi=false),
+    @idna.to_ascii(
+      "क\u{094D}\u{200D}ष.com",
+      check_joiners=true,
+      check_bidi=false,
+    ),
   )
 }
 
@@ -320,7 +331,7 @@ test "contextj: ZWJ after Virama is valid" {
 test "contextj: ZWJ without Virama fails" {
   // ZWJ without preceding Virama - invalid
   let error = @test.expect_error(() => {
-    to_ascii("ex\u{200D}ample.com", check_joiners=true)
+    @idna.to_ascii("ex\u{200D}ample.com", check_joiners=true)
   })
   guard error is @idna.InvalidJoiner else { fail("Expected InvalidJoiner") }
 }
@@ -329,7 +340,7 @@ test "contextj: ZWJ without Virama fails" {
 test "contextj: ZWJ at start of label fails" {
   // ZWJ at start - no preceding character
   let error = @test.expect_error(() => {
-    to_ascii("\u{200D}example.com", check_joiners=true)
+    @idna.to_ascii("\u{200D}example.com", check_joiners=true)
   })
   guard error is @idna.InvalidJoiner else { fail("Expected InvalidJoiner") }
 }
@@ -338,7 +349,7 @@ test "contextj: ZWJ at start of label fails" {
 test "contextj: disabled check allows joiners anywhere" {
   // With joiner check disabled, ZWNJ/ZWJ are allowed
   // ZWNJ is a Deviation character (not Ignored), so it stays in the string
-  let result = to_ascii("ex\u{200C}ample.com", check_joiners=false)
+  let result = @idna.to_ascii("ex\u{200C}ample.com", check_joiners=false)
   inspect(result, content="xn--example-9z6c.com")
 }
 
@@ -349,19 +360,19 @@ test "contextj: disabled check allows joiners anywhere" {
 ///|
 test "ace: valid Punycode decodes correctly" {
   // Test that a known Punycode domain decodes correctly
-  let result = to_unicode("xn--mnchen-3ya.de")
+  let result = @idna.to_unicode("xn--mnchen-3ya.de")
   inspect(result, content="münchen.de")
 }
 
 ///|
 test "ace: invalid Punycode after xn-- fails" {
   // Invalid Punycode sequence after xn--
-  @test.assert_raise(() => to_unicode("xn--###invalid.com"))
+  @test.assert_raise(() => @idna.to_unicode("xn--###invalid.com"))
 }
 
 ///|
 test "ace: decoded A-label must contain non-ASCII code points" {
-  let error = @test.expect_error(() => to_unicode("xn--example-.com"))
+  let error = @test.expect_error(() => @idna.to_unicode("xn--example-.com"))
   guard error is @idna.InvalidAcePrefix else {
     fail("Expected InvalidAcePrefix")
   }
@@ -370,13 +381,13 @@ test "ace: decoded A-label must contain non-ASCII code points" {
 ///|
 test "ace: uppercase XN-- prefix works" {
   // ACE prefix is case-insensitive
-  let result = to_unicode("XN--MNCHEN-3YA.de")
+  let result = @idna.to_unicode("XN--MNCHEN-3YA.de")
   inspect(result, content="münchen.de")
 }
 
 ///|
 test "ace: mixed case xN-- prefix works" {
-  let result = to_unicode("xN--mnchen-3ya.de")
+  let result = @idna.to_unicode("xN--mnchen-3ya.de")
   inspect(result, content="münchen.de")
 }
 
@@ -387,7 +398,7 @@ test "ace: mixed case xN-- prefix works" {
 ///|
 test "combining mark: at start of label fails" {
   // U+0301 (Combining Acute Accent) at start - invalid
-  let error = @test.expect_error(() => to_ascii("\u{0301}example.com"))
+  let error = @test.expect_error(() => @idna.to_ascii("\u{0301}example.com"))
   guard error is @idna.LeadingCombiningMark else {
     fail("Expected LeadingCombiningMark")
   }
@@ -396,7 +407,7 @@ test "combining mark: at start of label fails" {
 ///|
 test "combining mark: after base character is valid" {
   // e + combining acute = é (valid)
-  let result = to_ascii("caf\u{0065}\u{0301}.com")
+  let result = @idna.to_ascii("caf\u{0065}\u{0301}.com")
   // NFC normalizes to café
   assert_true(result.contains("caf"))
 }
@@ -404,13 +415,13 @@ test "combining mark: after base character is valid" {
 ///|
 test "combining mark: multiple marks after base is valid" {
   // Base + multiple combining marks
-  ignore(to_ascii("a\u{0301}\u{0327}.com", check_bidi=false))
+  ignore(@idna.to_ascii("a\u{0301}\u{0327}.com", check_bidi=false))
 }
 
 ///|
 test "combining mark: U+0300 grave at start fails" {
   // U+0300 (Combining Grave Accent) at start
-  let error = @test.expect_error(() => to_ascii("\u{0300}test.com"))
+  let error = @test.expect_error(() => @idna.to_ascii("\u{0300}test.com"))
   guard error is @idna.LeadingCombiningMark else {
     fail("Expected LeadingCombiningMark")
   }
@@ -434,26 +445,26 @@ test "error: domain too long" {
     "." +
     long_label +
     ".com"
-  let error = @test.expect_error(() => to_ascii(domain))
+  let error = @test.expect_error(() => @idna.to_ascii(domain))
   guard error is @idna.DomainTooLong else { fail("Expected DomainTooLong") }
 }
 
 ///|
 test "error: empty domain" {
-  let error = @test.expect_error(() => to_ascii(""))
+  let error = @test.expect_error(() => @idna.to_ascii(""))
   guard error is @idna.EmptyLabel else { fail("Expected EmptyLabel") }
 }
 
 ///|
 test "error: only separator" {
   // Just a dot creates empty labels
-  let error = @test.expect_error(() => to_ascii("."))
+  let error = @test.expect_error(() => @idna.to_ascii("."))
   guard error is @idna.EmptyLabel else { fail("Expected EmptyLabel") }
 }
 
 ///|
 test "error: trailing dot creates empty label" {
-  let error = @test.expect_error(() => to_ascii("example.com."))
+  let error = @test.expect_error(() => @idna.to_ascii("example.com."))
   guard error is @idna.EmptyLabel else { fail("Expected EmptyLabel") }
 }
 
@@ -461,7 +472,7 @@ test "error: trailing dot creates empty label" {
 test "error: hyphens at positions 3 and 4" {
   // "ab--cd" has hyphens at positions 3 and 4 (like ACE prefix pattern)
   let error = @test.expect_error(() => {
-    to_ascii("ab--cd.com", check_hyphens=true)
+    @idna.to_ascii("ab--cd.com", check_hyphens=true)
   })
   guard error is @idna.InvalidHyphen else { fail("Expected InvalidHyphen") }
 }
@@ -469,13 +480,13 @@ test "error: hyphens at positions 3 and 4" {
 ///|
 test "error: disallowed replacement character" {
   // U+FFFD (Replacement Character) is disallowed in IDNA
-  @test.assert_raise(() => to_ascii("exam\u{FFFD}ple.com"))
+  @test.assert_raise(() => @idna.to_ascii("exam\u{FFFD}ple.com"))
 }
 
 ///|
 test "error: disallowed private use character" {
   // U+E000 is private use area - disallowed
-  @test.assert_raise(() => to_ascii("exam\u{E000}ple.com"))
+  @test.assert_raise(() => @idna.to_ascii("exam\u{E000}ple.com"))
 }
 
 // =============================================================================
@@ -485,14 +496,14 @@ test "error: disallowed private use character" {
 ///|
 test "separator: halfwidth ideographic full stop" {
   // U+FF61 Halfwidth Ideographic Full Stop
-  inspect(to_ascii("example\u{FF61}com"), content="example.com")
+  inspect(@idna.to_ascii("example\u{FF61}com"), content="example.com")
 }
 
 ///|
 test "separator: all four separators" {
   // Test all four label separators in one domain
   // U+002E (.), U+3002 (。), U+FF0E (．), U+FF61 (｡)
-  let result = to_ascii(
+  let result = @idna.to_ascii(
     "a\u{002E}b\u{3002}c\u{FF0E}d\u{FF61}e",
     use_std3_ascii_rules=false,
     check_hyphens=false,
@@ -508,7 +519,9 @@ test "separator: all four separators" {
 test "mapping: multiple ignored characters" {
   // Multiple soft hyphens should all be removed
   inspect(
-    to_ascii("e\u{00AD}x\u{00AD}a\u{00AD}m\u{00AD}p\u{00AD}l\u{00AD}e.com"),
+    @idna.to_ascii(
+      "e\u{00AD}x\u{00AD}a\u{00AD}m\u{00AD}p\u{00AD}l\u{00AD}e.com",
+    ),
     content="example.com",
   )
 }
@@ -517,14 +530,14 @@ test "mapping: multiple ignored characters" {
 test "mapping: fullwidth to halfwidth" {
   // Fullwidth Latin letters map to ASCII
   // U+FF21 (Ａ) maps to U+0061 (a)
-  inspect(to_ascii("\u{FF21}\u{FF22}\u{FF23}.com"), content="abc.com")
+  inspect(@idna.to_ascii("\u{FF21}\u{FF22}\u{FF23}.com"), content="abc.com")
 }
 
 ///|
 test "mapping: Greek case folding" {
   // Greek capital letters are case-folded to lowercase
   // ΛΟΓΟΣ -> λογοσ (all lowercase sigma, not final sigma)
-  let result = to_ascii("ΛΟΓΟΣ.com", check_bidi=false)
+  let result = @idna.to_ascii("ΛΟΓΟΣ.com", check_bidi=false)
   inspect(result, content="xn--oxapmbu.com")
 }
 
@@ -534,21 +547,21 @@ test "mapping: Greek case folding" {
 
 ///|
 test "scripts: Cyrillic domain" {
-  let result = to_ascii("москва.рф")
+  let result = @idna.to_ascii("москва.рф")
   assert_true(result.has_prefix("xn--"))
   assert_true(result.contains("."))
 }
 
 ///|
 test "scripts: Thai domain" {
-  let result = to_ascii("ไทย.th", check_bidi=false)
+  let result = @idna.to_ascii("ไทย.th", check_bidi=false)
   assert_true(result.has_prefix("xn--"))
 }
 
 ///|
 test "scripts: Arabic domain with digits" {
   // Arabic with Arabic-Indic digits
-  let result = to_ascii(
+  let result = @idna.to_ascii(
     "مثال\u{0661}\u{0662}\u{0663}.com",
     check_bidi=false,
   )

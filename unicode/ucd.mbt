@@ -22,6 +22,15 @@ pub(all) enum GeneralCategoryGroup {
 } derive(Debug, Eq)
 
 ///|
+pub extend GeneralCategoryGroup with Debug::{to_repr}
+
+///|
+pub extend GeneralCategoryGroup with Eq::{not_equal, equal}
+
+///|
+pub extend GeneralCategoryGroup with Show::{to_string, output}
+
+///|
 pub impl Show for GeneralCategoryGroup with fn output(self, logger) {
   match self {
     L => logger.write_string("L")
@@ -67,6 +76,12 @@ pub(all) enum GeneralCategory {
   Co
   Cn
 } derive(Eq)
+
+///|
+pub extend GeneralCategory with Eq::{not_equal, equal}
+
+///|
+pub extend GeneralCategory with Show::{to_string, output}
 
 ///|
 pub impl Show for GeneralCategory with fn output(self, logger) {

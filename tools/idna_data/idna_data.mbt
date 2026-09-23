@@ -36,7 +36,7 @@ fn parse_mapping_table(content : String) -> Array[MappingEntry] raise {
     } else {
       []
     }
-    entries.push({ start: range.start, end: range.end, status, mapping })
+    entries.push({ start: range.start, end: range.end, status, mapping, })
   }
   entries
 }
@@ -112,6 +112,12 @@ pub fn generate_mapping_source(content : String) -> String raise {
       #|  DisallowedSTD3Valid  // 5: Valid only without UseSTD3ASCIIRules
       #|  DisallowedSTD3Mapped(Array[Char]) // 6: Mapped only without UseSTD3ASCIIRules
       #|} derive(Eq)
+      #|
+      #|///|
+      #|pub extend IdnaStatus with Eq::{not_equal, equal}
+      #|
+      #|///|
+      #|pub extend IdnaStatus with Show::{to_string, output}
       #|
       #|///|
       #|pub impl Show for IdnaStatus with fn output(self, logger) {
@@ -192,7 +198,7 @@ pub fn generate_mapping_source(content : String) -> String raise {
       #|  let mapping_start = idna_mapping_starts[idx]
       #|  let mapping_len = idna_mapping_lens[idx]
       #|  let mapping : Array[Char] = []
-      #|  for code_point in idna_mapping_data.view(
+      #|  for code_point in idna_mapping_data.exact_view(
       #|    start=mapping_start,
       #|    end=mapping_start + mapping_len,
       #|  ) {
@@ -270,6 +276,12 @@ pub fn generate_joining_source(content : String) -> String raise {
       #|  Transparent
       #|  NonJoining
       #|} derive(Eq)
+      #|
+      #|///|
+      #|pub extend JoiningType with Eq::{not_equal, equal}
+      #|
+      #|///|
+      #|pub extend JoiningType with Show::{to_string, output}
       #|
       #|///|
       #|pub impl Show for JoiningType with fn output(self, logger) {

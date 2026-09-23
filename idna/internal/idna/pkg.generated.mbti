@@ -18,6 +18,10 @@ pub(all) enum IdnaStatus {
   DisallowedSTD3Valid
   DisallowedSTD3Mapped(Array[Char])
 } derive(Eq)
+pub fn IdnaStatus::equal(Self, Self) -> Bool
+pub fn IdnaStatus::not_equal(Self, Self) -> Bool
+pub fn IdnaStatus::output(Self, &Logger) -> Unit
+pub fn IdnaStatus::to_string(Self) -> String
 pub impl Show for IdnaStatus
 
 pub(all) enum JoiningType {
@@ -28,6 +32,10 @@ pub(all) enum JoiningType {
   Transparent
   NonJoining
 } derive(Eq)
+pub fn JoiningType::equal(Self, Self) -> Bool
+pub fn JoiningType::not_equal(Self, Self) -> Bool
+pub fn JoiningType::output(Self, &Logger) -> Unit
+pub fn JoiningType::to_string(Self) -> String
 pub impl Show for JoiningType
 
 // Type aliases

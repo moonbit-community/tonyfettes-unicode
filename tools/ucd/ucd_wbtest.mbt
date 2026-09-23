@@ -132,8 +132,8 @@ test "build full composition exclusions" {
 
 ///|
 test "emit small CCC table" {
-  let source = emit_ccc([{ start: 0x0300, end: 0x0301, value: 230 }], [
-    { start: 0x0300, end: 0x0301 },
+  let source = emit_ccc([{ start: 0x0300, end: 0x0301, value: 230, }], [
+    { start: 0x0300, end: 0x0301, },
   ])
   inspect(
     source.contains("let ccc_starts : ReadOnlyArray[Int] = ["),
