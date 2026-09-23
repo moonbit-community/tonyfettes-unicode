@@ -24,6 +24,8 @@ pub(all) suberror IdnaError {
   InvalidAcePrefix
   LeadingCombiningMark
 }
+pub fn IdnaError::output(Self, &Logger) -> Unit
+pub fn IdnaError::to_string(Self) -> String
 pub impl Show for IdnaError
 
 // Types and methods

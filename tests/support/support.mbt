@@ -97,6 +97,12 @@ pub struct ParsedText {
 } derive(Debug, Eq)
 
 ///|
+pub extend ParsedText with Debug::{to_repr}
+
+///|
+pub extend ParsedText with Eq::{not_equal, equal}
+
+///|
 fn hex_value(character : Char) -> Int? {
   match character {
     '0'..='9' => Some(character.to_int() - '0'.to_int())
@@ -138,12 +144,12 @@ fn parse_braced_hex(chars : ArrayView[Char]) -> (Int, ArrayView[Char])? {
 /// `\x{...}` escapes. Tracks whether any surrogate code point appeared.
 pub fn parse_escaped_text(text : StringView) -> ParsedText {
   if text == "\"\"" {
-    return { text: "", has_surrogate: false }
+    return { text: "", has_surrogate: false, }
   }
   let chars = text.iter().collect()
   let out = StringBuilder()
   let mut has_surrogate = false
-  for remaining = chars.view() {
+  for remaining = chars.exact_view() {
     match remaining {
       [] => break
       ['\\', 'u', a, b, c, d, .. rest] =>
@@ -174,7 +180,7 @@ pub fn parse_escaped_text(text : StringView) -> ParsedText {
       }
     }
   }
-  { text: out.to_string(), has_surrogate }
+  { text: out.to_string(), has_surrogate, }
 }
 
 ///|

@@ -41,16 +41,25 @@ pub(all) struct CodePointRange {
   start : Int
   end : Int
 } derive(Eq, @debug.Debug)
+pub fn CodePointRange::equal(Self, Self) -> Bool
+pub fn CodePointRange::not_equal(Self, Self) -> Bool
+pub fn CodePointRange::to_repr(Self) -> @debug.Repr
 
 pub(all) struct GeneratedFile {
   relative_path : String
   source : String
 } derive(Eq, @debug.Debug)
+pub fn GeneratedFile::equal(Self, Self) -> Bool
+pub fn GeneratedFile::not_equal(Self, Self) -> Bool
+pub fn GeneratedFile::to_repr(Self) -> @debug.Repr
 
 pub(all) struct ParsedText {
   text : String
   has_surrogate : Bool
 } derive(Eq, @debug.Debug)
+pub fn ParsedText::equal(Self, Self) -> Bool
+pub fn ParsedText::not_equal(Self, Self) -> Bool
+pub fn ParsedText::to_repr(Self) -> @debug.Repr
 
 // Type aliases
 

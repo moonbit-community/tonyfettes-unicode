@@ -2410,7 +2410,7 @@ pub fn get_canonical_decomposition(c : Char) -> Array[Char]? {
 
   let start = decomp_data_starts[idx]
   let result : Array[Char] = []
-  for code_point in decomp_data.view(start~, end=start + len) {
+  for code_point in decomp_data.exact_view(start~, end=start + len) {
     result.push(code_point.unsafe_to_char())
   }
   Some(result)
@@ -2434,7 +2434,7 @@ pub fn get_compat_decomposition(c : Char) -> Array[Char]? {
   let canonical_len = decomp_canonical_lens[idx]
   let start = decomp_data_starts[idx] + canonical_len
   let result : Array[Char] = []
-  for code_point in decomp_data.view(start~, end=start + compat_len) {
+  for code_point in decomp_data.exact_view(start~, end=start + compat_len) {
     result.push(code_point.unsafe_to_char())
   }
   Some(result)

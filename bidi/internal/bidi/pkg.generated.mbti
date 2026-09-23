@@ -24,6 +24,10 @@ pub(all) enum BracketType {
   Close
   None
 } derive(Eq)
+pub fn BracketType::equal(Self, Self) -> Bool
+pub fn BracketType::not_equal(Self, Self) -> Bool
+pub fn BracketType::output(Self, &Logger) -> Unit
+pub fn BracketType::to_string(Self) -> String
 pub impl Show for BracketType
 
 // Type aliases

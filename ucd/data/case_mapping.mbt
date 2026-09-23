@@ -2460,7 +2460,7 @@ pub fn lookup_full_uppercase(c : Char) -> Array[Char]? {
   let start = full_upper_data_starts[idx]
   let len = full_upper_lens[idx]
   let result : Array[Char] = []
-  for code_point in full_upper_data.view(start~, end=start + len) {
+  for code_point in full_upper_data.exact_view(start~, end=start + len) {
     result.push(code_point.unsafe_to_char())
   }
   Some(result)
@@ -2478,7 +2478,7 @@ pub fn lookup_full_lowercase(c : Char) -> Array[Char]? {
   let start = full_lower_data_starts[idx]
   let len = full_lower_lens[idx]
   let result : Array[Char] = []
-  for code_point in full_lower_data.view(start~, end=start + len) {
+  for code_point in full_lower_data.exact_view(start~, end=start + len) {
     result.push(code_point.unsafe_to_char())
   }
   Some(result)
@@ -2496,7 +2496,7 @@ pub fn lookup_full_titlecase(c : Char) -> Array[Char]? {
   let start = full_title_data_starts[idx]
   let len = full_title_lens[idx]
   let result : Array[Char] = []
-  for code_point in full_title_data.view(start~, end=start + len) {
+  for code_point in full_title_data.exact_view(start~, end=start + len) {
     result.push(code_point.unsafe_to_char())
   }
   Some(result)

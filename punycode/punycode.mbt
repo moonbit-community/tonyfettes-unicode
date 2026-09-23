@@ -11,6 +11,9 @@ pub(all) suberror PunycodeError {
 }
 
 ///|
+pub extend PunycodeError with Show::{to_string, output}
+
+///|
 pub impl Show for PunycodeError with fn output(self, logger) {
   match self {
     Overflow => logger.write_string("Overflow")

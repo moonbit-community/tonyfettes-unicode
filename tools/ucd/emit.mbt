@@ -235,7 +235,7 @@ fn merged_full_mapping(
 ) -> Array[FullMappingEntry] {
   let result : Array[FullMappingEntry] = []
   for entry in simple {
-    result.push({ code_point: entry.code_point, targets: [entry.target] })
+    result.push({ code_point: entry.code_point, targets: [entry.target], })
   }
   for entry in special {
     match
@@ -423,7 +423,7 @@ pub fn emit_case_mapping(
       #|  let start = full_upper_data_starts[idx]
       #|  let len = full_upper_lens[idx]
       #|  let result : Array[Char] = []
-      #|  for code_point in full_upper_data.view(start=start, end=start + len) {
+      #|  for code_point in full_upper_data.exact_view(start=start, end=start + len) {
       #|    result.push(code_point.unsafe_to_char())
       #|  }
       #|  Some(result)
@@ -441,7 +441,7 @@ pub fn emit_case_mapping(
       #|  let start = full_lower_data_starts[idx]
       #|  let len = full_lower_lens[idx]
       #|  let result : Array[Char] = []
-      #|  for code_point in full_lower_data.view(start=start, end=start + len) {
+      #|  for code_point in full_lower_data.exact_view(start=start, end=start + len) {
       #|    result.push(code_point.unsafe_to_char())
       #|  }
       #|  Some(result)
@@ -459,7 +459,7 @@ pub fn emit_case_mapping(
       #|  let start = full_title_data_starts[idx]
       #|  let len = full_title_lens[idx]
       #|  let result : Array[Char] = []
-      #|  for code_point in full_title_data.view(start=start, end=start + len) {
+      #|  for code_point in full_title_data.exact_view(start=start, end=start + len) {
       #|    result.push(code_point.unsafe_to_char())
       #|  }
       #|  Some(result)
@@ -478,7 +478,7 @@ pub fn emit_decomposition(data : UnicodeData) -> String {
   }
   for compat in data.compatibility_decompositions {
     if entries.search_by(entry => entry.code_point == compat.code_point) is None {
-      entries.push({ code_point: compat.code_point, code_points: [] })
+      entries.push({ code_point: compat.code_point, code_points: [], })
     }
   }
   entries.sort_by((left, right) => left.code_point - right.code_point)
@@ -586,7 +586,7 @@ pub fn emit_decomposition(data : UnicodeData) -> String {
       #|
       #|  let start = decomp_data_starts[idx]
       #|  let result : Array[Char] = []
-      #|  for code_point in decomp_data.view(start=start, end=start + len) {
+      #|  for code_point in decomp_data.exact_view(start=start, end=start + len) {
       #|    result.push(code_point.unsafe_to_char())
       #|  }
       #|  Some(result)
@@ -610,7 +610,7 @@ pub fn emit_decomposition(data : UnicodeData) -> String {
       #|  let canonical_len = decomp_canonical_lens[idx]
       #|  let start = decomp_data_starts[idx] + canonical_len
       #|  let result : Array[Char] = []
-      #|  for code_point in decomp_data.view(
+      #|  for code_point in decomp_data.exact_view(
       #|    start=start,
       #|    end=start + compat_len,
       #|  ) {

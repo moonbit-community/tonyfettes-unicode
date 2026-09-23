@@ -10,6 +10,12 @@ pub(all) enum BracketType {
 } derive(Eq)
 
 ///|
+pub extend BracketType with Eq::{not_equal, equal}
+
+///|
+pub extend BracketType with Show::{to_string, output}
+
+///|
 pub impl Show for BracketType with fn output(self, logger) {
   match self {
     Open => logger.write_string("Open")

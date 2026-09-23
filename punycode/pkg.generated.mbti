@@ -12,6 +12,8 @@ pub(all) suberror PunycodeError {
   InvalidInput
   BadInput
 }
+pub fn PunycodeError::output(Self, &Logger) -> Unit
+pub fn PunycodeError::to_string(Self) -> String
 pub impl Show for PunycodeError
 
 // Types and methods

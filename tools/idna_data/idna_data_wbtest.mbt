@@ -12,6 +12,14 @@ test "parse and emit IDNA mapping data" {
   inspect(source.contains("  0x0061"), content="true")
   inspect(source.contains("Mapped(Array[Char])"), content="true")
   inspect(
+    source.contains("pub extend IdnaStatus with Eq::{not_equal, equal}"),
+    content="true",
+  )
+  inspect(
+    source.contains("pub extend IdnaStatus with Show::{to_string, output}"),
+    content="true",
+  )
+  inspect(
     source.contains("pub fn lookup_idna_mapping(c : Char) -> IdnaStatus"),
     content="true",
   )
@@ -28,4 +36,12 @@ test "parse and emit joining data" {
   )
   inspect(source.contains("let joining_range_types"), content="true")
   inspect(source.contains("  2"), content="true")
+  inspect(
+    source.contains("pub extend JoiningType with Eq::{not_equal, equal}"),
+    content="true",
+  )
+  inspect(
+    source.contains("pub extend JoiningType with Show::{to_string, output}"),
+    content="true",
+  )
 }

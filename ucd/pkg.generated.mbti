@@ -59,7 +59,11 @@ pub(all) enum GeneralCategory {
   Co
   Cn
 } derive(Eq)
+pub fn GeneralCategory::equal(Self, Self) -> Bool
 pub fn GeneralCategory::group(Self) -> GeneralCategoryGroup
+pub fn GeneralCategory::not_equal(Self, Self) -> Bool
+pub fn GeneralCategory::output(Self, &Logger) -> Unit
+pub fn GeneralCategory::to_string(Self) -> String
 pub impl Show for GeneralCategory
 
 pub(all) enum GeneralCategoryGroup {
@@ -71,6 +75,11 @@ pub(all) enum GeneralCategoryGroup {
   S
   C
 } derive(Eq, @debug.Debug)
+pub fn GeneralCategoryGroup::equal(Self, Self) -> Bool
+pub fn GeneralCategoryGroup::not_equal(Self, Self) -> Bool
+pub fn GeneralCategoryGroup::output(Self, &Logger) -> Unit
+pub fn GeneralCategoryGroup::to_repr(Self) -> @debug.Repr
+pub fn GeneralCategoryGroup::to_string(Self) -> String
 pub impl Show for GeneralCategoryGroup
 
 // Type aliases

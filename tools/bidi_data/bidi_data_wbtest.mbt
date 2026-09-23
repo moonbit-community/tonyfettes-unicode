@@ -12,6 +12,14 @@ test "ordered missing declarations and explicit ranges" {
   inspect(source.contains("let bidi_range_starts"), content="true")
   inspect(source.contains("  0x0590"), content="true")
   inspect(source.contains("  0x0600"), content="true")
+  inspect(
+    source.contains("pub extend BidiClass with Eq::{not_equal, equal}"),
+    content="true",
+  )
+  inspect(
+    source.contains("pub extend BidiClass with Show::{to_string, output}"),
+    content="true",
+  )
 }
 
 ///|
@@ -21,4 +29,8 @@ test "mirror and bracket emitters" {
   let brackets = generate_bracket_source("0028; 0029; o\n0029; 0028; c\n")
   inspect(brackets.contains("let paired_brackets"), content="true")
   inspect(brackets.contains("pub fn paired_bracket"), content="true")
+  inspect(
+    brackets.contains("pub extend BracketType with Eq::{not_equal, equal}"),
+    content="true",
+  )
 }

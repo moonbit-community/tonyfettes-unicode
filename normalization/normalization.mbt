@@ -17,6 +17,12 @@ pub(all) enum NormalizationForm {
 } derive(Eq)
 
 ///|
+pub extend NormalizationForm with Eq::{not_equal, equal}
+
+///|
+pub extend NormalizationForm with Show::{to_string, output}
+
+///|
 pub impl Show for NormalizationForm with fn output(self, logger) {
   match self {
     NFD => logger.write_string("NFD")

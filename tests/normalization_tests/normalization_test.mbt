@@ -38,7 +38,7 @@ fn parse_case(line : StringView, line_number : Int) -> NormalizationCase? raise 
   guard parse_field(c3) is Some(c3) else { return None }
   guard parse_field(c4) is Some(c4) else { return None }
   guard parse_field(c5) is Some(c5) else { return None }
-  Some({ line_number, c1, c2, c3, c4, c5 })
+  Some({ line_number, c1, c2, c3, c4, c5, })
 }
 
 ///|

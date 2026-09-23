@@ -31,6 +31,7 @@ pub(all) enum BidiClass {
   FSI
   PDI
 } derive(Eq)
+pub fn BidiClass::equal(Self, Self) -> Bool
 pub fn BidiClass::is_explicit(Self) -> Bool
 pub fn BidiClass::is_isolate_initiator(Self) -> Bool
 pub fn BidiClass::is_neutral(Self) -> Bool
@@ -39,6 +40,9 @@ pub fn BidiClass::is_strong(Self) -> Bool
 pub fn BidiClass::is_strong_rtl(Self) -> Bool
 pub fn BidiClass::is_weak(Self) -> Bool
 pub fn BidiClass::is_x9_removed(Self) -> Bool
+pub fn BidiClass::not_equal(Self, Self) -> Bool
+pub fn BidiClass::output(Self, &Logger) -> Unit
+pub fn BidiClass::to_string(Self) -> String
 pub impl Show for BidiClass
 
 // Type aliases

@@ -31,6 +31,9 @@ pub struct ParsedText {
   text : String
   has_surrogate : Bool
 } derive(Eq, @debug.Debug)
+pub fn ParsedText::equal(Self, Self) -> Bool
+pub fn ParsedText::not_equal(Self, Self) -> Bool
+pub fn ParsedText::to_repr(Self) -> @debug.Repr
 
 // Type aliases
 

@@ -20,6 +20,12 @@ pub(all) enum Direction {
 } derive(Eq)
 
 ///|
+pub extend Direction with Eq::{not_equal, equal}
+
+///|
+pub extend Direction with Show::{to_string, output}
+
+///|
 pub impl Show for Direction with fn output(self, logger) {
   match self {
     LTR => logger.write_string("LTR")
@@ -155,7 +161,7 @@ fn process_at_base_level(text : String, base_level : Int) -> BidiParagraph {
 
   // L1: Reset whitespace and separator levels
   reset_whitespace_levels(original_classes, levels, base_level)
-  { chars, original_classes, resolved_classes, levels, base_level }
+  { chars, original_classes, resolved_classes, levels, base_level, }
 }
 
 ///|
