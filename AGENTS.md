@@ -77,8 +77,8 @@ published modules.
 ## Publishing
 
 ```bash
-moon package --list          # Verify the compatibility umbrella
-moon -C bidi package --list  # Verify an individual feature module
+moon -C unicode package --list  # Verify the compatibility umbrella
+moon -C bidi package --list     # Verify an individual feature module
 ```
 
 ## Testing Notes

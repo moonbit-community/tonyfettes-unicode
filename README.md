@@ -240,11 +240,12 @@ files are cached in `tools/.cache/`.
 Conformance tests live in the workspace-only `moonbit-community/unicode-tests`
 module (`tests/`). They read the official Unicode test data files committed
 under `tests/data/` directly at test time with `moonbitlang/async`, keeping the
-test dependency separate from the published modules. Verify a feature module's
-contents from its directory, for example:
+test dependency separate from the published modules. Verify a module's contents
+from its directory, for example:
 
 ```bash
-moon -C bidi package --list
+moon -C unicode package --list  # the compatibility umbrella
+moon -C bidi package --list     # an individual feature module
 ```
 
 ### Releasing
@@ -269,10 +270,10 @@ moon run --target native tools/release -- publish \
 
 The tool publishes `ucd`, `punycode`, `bidi`, `normalization`, `idna`, and the
 `unicode` compatibility umbrella in dependency order. It reads the release
-version from the root `moon.mod` and verifies that all six published modules use
-that version. Modules that depend on same-release packages are dry-run
-immediately before their real publication, after the tool refreshes the
-registry and their dependencies are available. It never publishes the
+version from the umbrella manifest `unicode/moon.mod` and verifies that all six
+published modules use that version. Modules that depend on same-release packages
+are dry-run immediately before their real publication, after the tool refreshes
+the registry and their dependencies are available. It never publishes the
 workspace-only `tests` or `tools` modules. If publication stops partway
 through, rerun the workflow with its `from` input set to the failed module, or
 resume with the underlying command:
