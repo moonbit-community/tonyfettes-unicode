@@ -43,19 +43,19 @@ test "release version comes from consistent published manifests" {
   let versions = [
     ("ucd/moon.mod", "0.4.0"),
     ("punycode/moon.mod", "0.4.0"),
-    ("moon.mod", "0.4.0"),
+    ("unicode/moon.mod", "0.4.0"),
   ]
   inspect(release_version_from_manifests(versions), content="0.4.0")
   try
     release_version_from_manifests([
       ("ucd/moon.mod", "0.4.1"),
-      ("moon.mod", "0.4.0"),
+      ("unicode/moon.mod", "0.4.0"),
     ])
   catch {
     ReleaseError(message) =>
       inspect(
         message,
-        content="Published module versions are inconsistent: ucd/moon.mod has 0.4.1, expected 0.4.0 from moon.mod",
+        content="Published module versions are inconsistent: ucd/moon.mod has 0.4.1, expected 0.4.0 from unicode/moon.mod",
       )
   } noraise {
     _ => fail("expected inconsistent published versions to fail")
@@ -64,7 +64,7 @@ test "release version comes from consistent published manifests" {
     ReleaseError(message) =>
       inspect(
         message,
-        content="Published manifests do not contain the root moon.mod",
+        content="Published manifests do not contain the umbrella manifest unicode/moon.mod",
       )
   } noraise {
     _ => fail("expected a missing root manifest to fail")
@@ -78,9 +78,9 @@ test "manifest version is read and replaced without reformatting" {
     #|
     #|version = "0.3.4"
     #|
-  inspect(manifest_version(source, "moon.mod"), content="0.3.4")
+  inspect(manifest_version(source, "unicode/moon.mod"), content="0.3.4")
   inspect(
-    replace_manifest_version(source, "moon.mod", "0.4.0"),
+    replace_manifest_version(source, "unicode/moon.mod", "0.4.0"),
     content=(
       #|name = "moonbit-community/example"
       #|
@@ -93,9 +93,9 @@ test "manifest version is read and replaced without reformatting" {
 ///|
 test "manifest version accepts CRLF line endings" {
   let source = "name = \"moonbit-community/example\"\r\n\r\nversion = \"0.3.4\"\r\n"
-  inspect(manifest_version(source, "moon.mod"), content="0.3.4")
+  inspect(manifest_version(source, "unicode/moon.mod"), content="0.3.4")
   inspect(
-    replace_manifest_version(source, "moon.mod", "0.4.0"),
+    replace_manifest_version(source, "unicode/moon.mod", "0.4.0"),
     content="name = \"moonbit-community/example\"\r\n\r\nversion = \"0.4.0\"\r\n",
   )
 }
@@ -139,6 +139,8 @@ test "publish resume points follow dependency order" {
   assert_true(normalization.requires_published_dependencies)
   assert_true(idna.requires_published_dependencies)
   assert_true(unicode.requires_published_dependencies)
+  inspect(unicode.directory, content="unicode")
+  inspect(unicode.manifest_path(), content="unicode/moon.mod")
   inspect(publish_start_index("ucd"), content="0")
   inspect(publish_start_index("normalization"), content="3")
   inspect(publish_start_index("unicode"), content="5")

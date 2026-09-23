@@ -10,8 +10,6 @@ readme = "README.md"
 
 description = "Unicode in MoonBit"
 
-source = "unicode"
-
 import {
   "moonbit-community/ucd@0.5.0",
   "moonbit-community/normalization@0.5.0",
@@ -30,28 +28,3 @@ keywords = [
   "nfkd",
   "punycode",
 ]
-
-options(
-  exclude: [
-    "/.DS_Store",
-    "/.claude",
-    "/.git",
-    "/.gitignore",
-    "/.mooncakes",
-    "/.vscode",
-    "/_build",
-    "/AGENTS.md",
-    "/CLAUDE.md",
-    "/docs",
-    "/tools",
-    "/conformance",
-    "/tests",
-    "/ucd",
-    "/normalization",
-    "/punycode",
-    "/bidi",
-    "/idna",
-    "/internal",
-    "/moon.work",
-  ],
-)

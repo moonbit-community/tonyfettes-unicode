@@ -29,16 +29,16 @@ let published_modules : Array[ReleaseModule] = [
     requires_published_dependencies: true,
   },
   { name: "idna", directory: "idna", requires_published_dependencies: true, },
-  { name: "unicode", directory: ".", requires_published_dependencies: true, },
+  {
+    name: "unicode",
+    directory: "unicode",
+    requires_published_dependencies: true,
+  },
 ]
 
 ///|
 fn ReleaseModule::manifest_path(self : ReleaseModule) -> String {
-  if self.directory == "." {
-    "moon.mod"
-  } else {
-    "\{self.directory}/moon.mod"
-  }
+  "\{self.directory}/moon.mod"
 }
 
 ///|
@@ -77,22 +77,26 @@ fn release_version_from_manifests(
   let mut root_version : String? = None
   for manifest in versions {
     let (path, version) = manifest
-    if path == "moon.mod" {
+    if path == "unicode/moon.mod" {
       guard root_version is None else {
-        raise ReleaseError("Published manifests contain more than one moon.mod")
+        raise ReleaseError(
+          "Published manifests contain more than one umbrella manifest (unicode/moon.mod)",
+        )
       }
       root_version = Some(version)
     }
   }
   guard root_version is Some(expected_version) else {
-    raise ReleaseError("Published manifests do not contain the root moon.mod")
+    raise ReleaseError(
+      "Published manifests do not contain the umbrella manifest unicode/moon.mod",
+    )
   }
   validate_release_version(expected_version)
   for manifest in versions {
     let (path, actual_version) = manifest
     guard actual_version == expected_version else {
       raise ReleaseError(
-        "Published module versions are inconsistent: \{path} has \{actual_version}, expected \{expected_version} from moon.mod",
+        "Published module versions are inconsistent: \{path} has \{actual_version}, expected \{expected_version} from unicode/moon.mod",
       )
     }
   }

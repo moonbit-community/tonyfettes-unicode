@@ -1,5 +1,5 @@
 members = [
-  ".",
+  "unicode",
   "ucd",
   "normalization",
   "punycode",
