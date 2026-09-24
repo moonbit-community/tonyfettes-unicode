@@ -150,15 +150,56 @@ test "emit XID table" {
       #|0041..005A ; XID_Start
       #|0041..005A ; XID_Continue
       #|005F ; XID_Continue
+      #|E0100..E01EF ; XID_Continue
     ),
   )
   let source = emit_xid(properties)
   inspect(
-    source.contains("let xid_start_starts : ReadOnlyArray[Int] = ["),
+    source.contains("let xid_start_trie_leaf : Bytes = ["),
     content="true",
   )
   inspect(
     source.contains("pub fn is_xid_continue(c : Char) -> Bool"),
+    content="true",
+  )
+  inspect(source.contains("    return false\n"), content="true")
+  inspect(
+    source.contains("    return (cp >= 0xE0100 && cp <= 0xE01EF)\n"),
+    content="true",
+  )
+}
+
+///|
+test "binary property trie shares identical blocks" {
+  let out = @emitter.Emitter::new()
+  write_binary_property_trie(out, property="Test", prefix="test", [
+    { start: 0x41, end: 0x5A, },
+  ])
+  let source = out.finish()
+  // One leaf block holds A-Z; every other block is the shared empty block.
+  inspect(
+    source.contains(
+      (
+        #|let test_trie_mid : Bytes = [
+        #|  0,
+        #|  1,
+        #|  1,
+        #|  1,
+        #|  1,
+        #|  1,
+        #|  1,
+        #|  1,
+        #|  1,
+        #|  1,
+        #|  1,
+        #|  1,
+        #|  1,
+        #|  1,
+        #|  1,
+        #|  1,
+        #|]
+      ),
+    ),
     content="true",
   )
 }

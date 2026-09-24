@@ -22,7 +22,7 @@ pub fn emit_decomposition(UnicodeData) -> String
 
 pub fn emit_general_category(Array[GeneralCategoryRange]) -> String raise
 
-pub fn emit_xid(XidProperties) -> String
+pub fn emit_xid(XidProperties) -> String raise
 
 pub fn parse_composition_exclusions(String) -> Array[Int] raise
 
