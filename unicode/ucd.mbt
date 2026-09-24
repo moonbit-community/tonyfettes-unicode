@@ -1,5 +1,9 @@
 ///|
 pub using @impl {
+  is_alphabetic,
+  is_lowercase,
+  is_uppercase,
+  is_white_space,
   is_xid_continue,
   is_xid_start,
   to_lowercase,

@@ -6,6 +6,10 @@ test "legacy UCD package surface" {
   inspect(@unicode.general_category('A'), content="Lu")
   inspect(@unicode.is_xid_start('A'), content="true")
   inspect(@unicode.is_xid_continue('0'), content="true")
+  inspect(@unicode.is_white_space(' '), content="true")
+  inspect(@unicode.is_alphabetic('A'), content="true")
+  inspect(@unicode.is_lowercase('a'), content="true")
+  inspect(@unicode.is_uppercase('A'), content="true")
 }
 
 ///|

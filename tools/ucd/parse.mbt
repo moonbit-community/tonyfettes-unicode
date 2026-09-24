@@ -273,25 +273,41 @@ pub fn parse_special_casing(content : String) -> SpecialCasingData raise {
 }
 
 ///|
-pub fn parse_derived_core_properties(content : String) -> XidProperties raise {
-  let xid_start : Array[CodePointRange] = []
-  let xid_continue : Array[CodePointRange] = []
+/// Collect the ranges listed for one binary property in a UCD property file
+/// such as `PropList.txt` or `DerivedCoreProperties.txt`.
+fn parse_property_ranges(
+  content : String,
+  property : String,
+) -> Array[CodePointRange] raise {
+  let ranges : Array[CodePointRange] = []
   for raw_line in content.split("\n") {
     let line = strip_comment(raw_line)
-    if line.length() == 0 {
-      continue
-    }
-    if line.split_once(";") is Some((range_text, property_text)) {
-      let property = property_text.trim()
-      if property == "XID_Start" {
-        xid_start.push(parse_code_point_range(range_text))
-      } else if property == "XID_Continue" {
-        xid_continue.push(parse_code_point_range(range_text))
-      }
+    if line.split_once(";") is Some((range_text, property_text)) &&
+      property_text.trim() == property.view() {
+      ranges.push(parse_code_point_range(range_text))
     }
   }
-  validate_property_ranges("XID_Start", xid_start)
-  validate_property_ranges("XID_Continue", xid_continue)
+  validate_property_ranges(property, ranges)
+  ranges
+}
+
+///|
+pub fn parse_derived_core_properties(
+  content : String,
+) -> DerivedCoreProperties raise {
+  let xid_start = parse_property_ranges(content, "XID_Start")
+  let xid_continue = parse_property_ranges(content, "XID_Continue")
   validate_xid_subset(xid_start, xid_continue)
-  { xid_start, xid_continue, }
+  {
+    alphabetic: parse_property_ranges(content, "Alphabetic"),
+    lowercase: parse_property_ranges(content, "Lowercase"),
+    uppercase: parse_property_ranges(content, "Uppercase"),
+    xid_start,
+    xid_continue,
+  }
+}
+
+///|
+pub fn parse_prop_list(content : String) -> PropList raise {
+  { white_space: parse_property_ranges(content, "White_Space"), }
 }

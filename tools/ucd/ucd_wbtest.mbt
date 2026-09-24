@@ -72,12 +72,46 @@ test "parse XID properties" {
     #|2118 ; XID_Start # Other_ID_Start
     #|2118 ; XID_Continue # Other_ID_Start
     #|212E ; ID_Start # ignored
+    #|0041..005A ; Alphabetic # Lu
+    #|0061..007A ; Alphabetic # Ll
+    #|0061..007A ; Lowercase # Ll
+    #|00AA ; Lowercase # Lo
+    #|0041..005A ; Uppercase # Lu
   let properties = parse_derived_core_properties(input)
   inspect(properties.xid_start.length(), content="2")
   inspect(properties.xid_start[0].start, content="65")
   inspect(properties.xid_start[0].end, content="90")
   inspect(properties.xid_continue.length(), content="5")
   inspect(properties.xid_continue[3].start, content="183")
+  inspect(properties.alphabetic.length(), content="2")
+  inspect(properties.lowercase.length(), content="2")
+  inspect(properties.lowercase[1].start, content="170")
+  inspect(properties.uppercase.length(), content="1")
+}
+
+///|
+test "parse White_Space from PropList" {
+  let input =
+    #|0009..000D    ; White_Space # Cc   [5] <control-0009>..<control-000D>
+    #|0020          ; White_Space # Zs       SPACE
+    #|002D          ; Dash # Pd       HYPHEN-MINUS
+    #|3000          ; White_Space # Zs       IDEOGRAPHIC SPACE
+  let properties = parse_prop_list(input)
+  inspect(properties.white_space.length(), content="3")
+  inspect(properties.white_space[0].start, content="9")
+  inspect(properties.white_space[0].end, content="13")
+  inspect(properties.white_space[2].start, content="12288")
+}
+
+///|
+test "reject missing White_Space" {
+  try parse_prop_list("0020 ; Dash") catch {
+    Failure::Failure(message) =>
+      assert_true(message.contains("Missing White_Space ranges"))
+    error => raise error
+  } noraise {
+    _ => fail("expected PropList without White_Space to fail")
+  }
 }
 
 ///|
@@ -85,6 +119,9 @@ test "reject XID_Start outside XID_Continue" {
   let input =
     #|0041 ; XID_Start
     #|0042 ; XID_Continue
+    #|0041..0042 ; Alphabetic
+    #|0061 ; Lowercase
+    #|0041 ; Uppercase
   try parse_derived_core_properties(input) catch {
     Failure::Failure(message) =>
       assert_true(
@@ -151,6 +188,9 @@ test "emit XID table" {
       #|0041..005A ; XID_Continue
       #|005F ; XID_Continue
       #|E0100..E01EF ; XID_Continue
+      #|0041..005A ; Alphabetic
+      #|0061..007A ; Lowercase
+      #|0041..005A ; Uppercase
     ),
   )
   let source = emit_xid(properties)
@@ -172,9 +212,7 @@ test "emit XID table" {
 ///|
 test "binary property trie shares identical blocks" {
   let out = @emitter.Emitter::new()
-  write_binary_property_trie(out, property="Test", prefix="test", [
-    { start: 0x41, end: 0x5A, },
-  ])
+  write_binary_property_trie(out, property="Test", [{ start: 0x41, end: 0x5A, }])
   let source = out.finish()
   // One leaf block holds A-Z; every other block is the shared empty block.
   inspect(
@@ -218,6 +256,28 @@ test "emit decomposition and case mapping arrays" {
     emit_case_mapping(data, special).contains(
       "let full_upper_cps : ReadOnlyArray[Int]",
     ),
+    content="true",
+  )
+}
+
+///|
+test "emit White_Space table" {
+  let source = emit_white_space(
+    parse_prop_list(
+      (
+        #|0009..000D ; White_Space
+        #|0020 ; White_Space
+      ),
+    ),
+  )
+  inspect(source.contains("/// White_Space lookup data\n"), content="true")
+  inspect(source.contains("/// Generated from PropList.txt\n"), content="true")
+  inspect(
+    source.contains("let white_space_trie_top : Bytes = ["),
+    content="true",
+  )
+  inspect(
+    source.contains("pub fn is_white_space(c : Char) -> Bool"),
     content="true",
   )
 }

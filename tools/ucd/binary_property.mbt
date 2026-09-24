@@ -19,7 +19,8 @@ fn hex_literal(value : Int) -> String {
 ///|
 /// Write a binary property as a three-level bitset trie for planes 0-3
 /// named `<prefix>_trie_top`, `<prefix>_trie_mid`, and `<prefix>_trie_leaf`,
-/// followed by the lookup function `is_<prefix>`.
+/// followed by the lookup function `is_<prefix>`, where `<prefix>` is the
+/// property name in lowercase (`White_Space` becomes `white_space`).
 ///
 /// The top level maps `cp >> 10` to a mid block, the mid level maps the next
 /// three bits to a leaf block, and each leaf block holds one bit per code
@@ -27,9 +28,9 @@ fn hex_literal(value : Int) -> String {
 fn write_binary_property_trie(
   out : @emitter.Emitter,
   property~ : String,
-  prefix~ : String,
   ranges : Array[CodePointRange],
 ) -> Unit raise {
+  let prefix = property.to_lower()
   let bits = Array::make(BinaryTrieLimit / 8, 0)
   let high_ranges : Array[CodePointRange] = []
   for range in ranges {
@@ -99,5 +100,55 @@ fn write_binary_property_trie(
       $|}
       $|
     ),
+  )
+}
+
+///|
+/// Emit a data file holding the trie and lookup function for one binary
+/// property read from `source`.
+fn emit_binary_property(
+  property~ : String,
+  source~ : String,
+  ranges : Array[CodePointRange],
+) -> String raise {
+  let out = @emitter.Emitter::new()
+  out.write_file_header("\{property} lookup data", source)
+  write_binary_property_trie(out, property~, ranges)
+  out.finish()
+}
+
+///|
+pub fn emit_alphabetic(properties : DerivedCoreProperties) -> String raise {
+  emit_binary_property(
+    property="Alphabetic",
+    source="DerivedCoreProperties.txt",
+    properties.alphabetic,
+  )
+}
+
+///|
+pub fn emit_lowercase(properties : DerivedCoreProperties) -> String raise {
+  emit_binary_property(
+    property="Lowercase",
+    source="DerivedCoreProperties.txt",
+    properties.lowercase,
+  )
+}
+
+///|
+pub fn emit_uppercase(properties : DerivedCoreProperties) -> String raise {
+  emit_binary_property(
+    property="Uppercase",
+    source="DerivedCoreProperties.txt",
+    properties.uppercase,
+  )
+}
+
+///|
+pub fn emit_white_space(properties : PropList) -> String raise {
+  emit_binary_property(
+    property="White_Space",
+    source="PropList.txt",
+    properties.white_space,
   )
 }
