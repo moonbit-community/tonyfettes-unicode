@@ -48,9 +48,17 @@ struct SpecialCasingData {
 }
 
 ///|
-struct XidProperties {
+struct DerivedCoreProperties {
+  alphabetic : Array[CodePointRange]
+  lowercase : Array[CodePointRange]
+  uppercase : Array[CodePointRange]
   xid_start : Array[CodePointRange]
   xid_continue : Array[CodePointRange]
+}
+
+///|
+struct PropList {
+  white_space : Array[CodePointRange]
 }
 
 ///|

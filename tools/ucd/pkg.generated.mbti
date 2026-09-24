@@ -12,6 +12,8 @@ pub fn compress_general_category_ranges(UnicodeData) -> Array[GeneralCategoryRan
 
 pub fn compress_mark_ranges(UnicodeData) -> Array[CodePointRange]
 
+pub fn emit_alphabetic(DerivedCoreProperties) -> String raise
+
 pub fn emit_case_mapping(UnicodeData, SpecialCasingData) -> String
 
 pub fn emit_ccc(Array[CccRange], Array[CodePointRange]) -> String
@@ -22,11 +24,19 @@ pub fn emit_decomposition(UnicodeData) -> String
 
 pub fn emit_general_category(Array[GeneralCategoryRange]) -> String raise
 
-pub fn emit_xid(XidProperties) -> String raise
+pub fn emit_lowercase(DerivedCoreProperties) -> String raise
+
+pub fn emit_uppercase(DerivedCoreProperties) -> String raise
+
+pub fn emit_white_space(PropList) -> String raise
+
+pub fn emit_xid(DerivedCoreProperties) -> String raise
 
 pub fn parse_composition_exclusions(String) -> Array[Int] raise
 
-pub fn parse_derived_core_properties(String) -> XidProperties raise
+pub fn parse_derived_core_properties(String) -> DerivedCoreProperties raise
+
+pub fn parse_prop_list(String) -> PropList raise
 
 pub fn parse_special_casing(String) -> SpecialCasingData raise
 
@@ -41,13 +51,15 @@ type CodePointRange
 
 type CompositionEntry
 
+type DerivedCoreProperties
+
 type GeneralCategoryRange
+
+type PropList
 
 type SpecialCasingData
 
 type UnicodeData
-
-type XidProperties
 
 // Type aliases
 

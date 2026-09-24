@@ -1,7 +1,8 @@
 # ucd
 
-Unicode Character Database lookup, general categories, identifier properties,
-and case mapping for MoonBit. This module uses Unicode 16.0.0 data.
+Unicode Character Database lookup, general categories, binary properties
+(White_Space, Alphabetic, Lowercase, Uppercase, XID_Start, XID_Continue), and
+case mapping for MoonBit. This module uses Unicode 16.0.0 data.
 
 ```bash
 moon add moonbit-community/ucd

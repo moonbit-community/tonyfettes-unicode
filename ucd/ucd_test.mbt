@@ -112,6 +112,65 @@ test "XID_Start and XID_Continue" {
 }
 
 ///|
+test "White_Space" {
+  inspect(@ucd.is_white_space(' '), content="true")
+  inspect(@ucd.is_white_space('\t'), content="true")
+  inspect(@ucd.is_white_space('\n'), content="true")
+  inspect(@ucd.is_white_space('\u{0B}'), content="true") // LINE TABULATION
+  inspect(@ucd.is_white_space('\r'), content="true")
+  inspect(@ucd.is_white_space('\u{85}'), content="true") // NEXT LINE
+  inspect(@ucd.is_white_space('\u{A0}'), content="true") // NO-BREAK SPACE
+  inspect(@ucd.is_white_space('\u{2028}'), content="true") // LINE SEPARATOR
+  inspect(@ucd.is_white_space('\u{3000}'), content="true") // IDEOGRAPHIC SPACE
+  inspect(@ucd.is_white_space('a'), content="false")
+  inspect(@ucd.is_white_space('\u{1C}'), content="false") // FILE SEPARATOR
+  inspect(@ucd.is_white_space('\u{200B}'), content="false") // ZERO WIDTH SPACE
+  inspect(@ucd.is_white_space('\u{FEFF}'), content="false") // ZERO WIDTH NO-BREAK SPACE
+}
+
+///|
+test "Alphabetic" {
+  inspect(@ucd.is_alphabetic('A'), content="true")
+  inspect(@ucd.is_alphabetic('z'), content="true")
+  inspect(@ucd.is_alphabetic('中'), content="true")
+  inspect(@ucd.is_alphabetic('\u{01C5}'), content="true") // Lt
+  inspect(@ucd.is_alphabetic('\u{2160}'), content="true") // ROMAN NUMERAL ONE (Nl)
+  inspect(@ucd.is_alphabetic('\u{093E}'), content="true") // DEVANAGARI VOWEL SIGN AA (Mc)
+  inspect(@ucd.is_alphabetic('\u{20001}'), content="true") // CJK Extension B
+  inspect(@ucd.is_alphabetic('0'), content="false")
+  inspect(@ucd.is_alphabetic('_'), content="false")
+  inspect(@ucd.is_alphabetic('\u{0301}'), content="false") // COMBINING ACUTE ACCENT
+  inspect(@ucd.is_alphabetic('\u{1F600}'), content="false")
+  inspect(@ucd.is_alphabetic('\u{E0100}'), content="false")
+}
+
+///|
+test "Lowercase and Uppercase" {
+  inspect(@ucd.is_lowercase('a'), content="true")
+  inspect(@ucd.is_lowercase('A'), content="false")
+  inspect(@ucd.is_uppercase('A'), content="true")
+  inspect(@ucd.is_uppercase('a'), content="false")
+  inspect(@ucd.is_lowercase('\u{00DF}'), content="true") // LATIN SMALL LETTER SHARP S
+  // Other_Lowercase characters outside General_Category Ll
+  inspect(@ucd.is_lowercase('\u{00AA}'), content="true") // FEMININE ORDINAL INDICATOR (Lo)
+  inspect(@ucd.is_lowercase('\u{02B0}'), content="true") // MODIFIER LETTER SMALL H (Lm)
+  inspect(@ucd.is_lowercase('\u{2170}'), content="true") // SMALL ROMAN NUMERAL ONE (Nl)
+  inspect(@ucd.is_lowercase('\u{24D0}'), content="true") // CIRCLED LATIN SMALL LETTER A (So)
+  // Other_Uppercase characters outside General_Category Lu
+  inspect(@ucd.is_uppercase('\u{2160}'), content="true") // ROMAN NUMERAL ONE (Nl)
+  inspect(@ucd.is_uppercase('\u{24B6}'), content="true") // CIRCLED LATIN CAPITAL LETTER A (So)
+  inspect(@ucd.is_uppercase('\u{1F130}'), content="true") // SQUARED LATIN CAPITAL LETTER A
+  // Titlecase letters are neither
+  inspect(@ucd.is_lowercase('\u{01C5}'), content="false")
+  inspect(@ucd.is_uppercase('\u{01C5}'), content="false")
+  // Caseless characters
+  inspect(@ucd.is_lowercase('中'), content="false")
+  inspect(@ucd.is_uppercase('中'), content="false")
+  inspect(@ucd.is_lowercase('0'), content="false")
+  inspect(@ucd.is_uppercase('0'), content="false")
+}
+
+///|
 test "to_simple_uppercase: basic" {
   inspect(@ucd.to_simple_uppercase('a'), content="A")
   inspect(@ucd.to_simple_uppercase('z'), content="Z")

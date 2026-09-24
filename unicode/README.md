@@ -10,7 +10,7 @@ The generated tables target Unicode 16.0.0.
 
 | Package | Contents |
 | --- | --- |
-| `moonbit-community/unicode` | General_Category, XID_Start/XID_Continue, and case mapping |
+| `moonbit-community/unicode` | General_Category, binary properties (White_Space, Alphabetic, Lowercase, Uppercase, XID_Start, XID_Continue), and case mapping |
 | `moonbit-community/unicode/normalization` | Normalization Forms from UAX #15 |
 | `moonbit-community/unicode/punycode` | Punycode from RFC 3492 |
 | `moonbit-community/unicode/bidi` | Bidirectional algorithm from UAX #9 |

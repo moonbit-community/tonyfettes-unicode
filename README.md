@@ -13,8 +13,9 @@ generated tables target Unicode 16.0.0.
 - IDNA processing from UTS #46, including mapping, validation, Bidi checks,
   joiner checks, and DNS length checks
 - Unicode Bidirectional Algorithm support from UAX #9
-- General_Category, XID_Start, and XID_Continue lookup plus simple/full case
-  mapping from the Unicode Character Database
+- General_Category lookup, binary property predicates (White_Space,
+  Alphabetic, Lowercase, Uppercase, XID_Start, XID_Continue), and simple/full
+  case mapping from the Unicode Character Database
 
 ## Installation
 
@@ -129,6 +130,10 @@ let category = @ucd.general_category('A') // Lu
 let group = category.group() // L
 let can_start = @ucd.is_xid_start('A') // true
 let can_continue = @ucd.is_xid_continue('0') // true
+let is_space = @ucd.is_white_space('\u{3000}') // true
+let is_letter = @ucd.is_alphabetic('\u{093E}') // true (Other_Alphabetic)
+let is_lower = @ucd.is_lowercase('\u{00AA}') // true, although gc is Lo
+let is_upper = @ucd.is_uppercase('\u{2160}') // true, although gc is Nl
 
 let simple = @ucd.to_simple_uppercase('a') // 'A'
 let full = @ucd.to_uppercase('\u{00DF}') // "SS"
@@ -145,6 +150,10 @@ Root package for Unicode Character Database helpers.
 | --- | --- |
 | `general_category(Char) -> GeneralCategory` | Return the two-letter Unicode General_Category value. |
 | `GeneralCategory::group() -> GeneralCategoryGroup` | Return the one-letter category group. |
+| `is_white_space(Char) -> Bool` | Test the Unicode White_Space property. |
+| `is_alphabetic(Char) -> Bool` | Test the Unicode Alphabetic property. |
+| `is_lowercase(Char) -> Bool` | Test the Unicode Lowercase property (broader than General_Category Ll). |
+| `is_uppercase(Char) -> Bool` | Test the Unicode Uppercase property (broader than General_Category Lu). |
 | `is_xid_start(Char) -> Bool` | Test the Unicode XID_Start identifier property. |
 | `is_xid_continue(Char) -> Bool` | Test the Unicode XID_Continue identifier property. |
 | `to_simple_uppercase(Char) -> Char` | Simple uppercase mapping. |

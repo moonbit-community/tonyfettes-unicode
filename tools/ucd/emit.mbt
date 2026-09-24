@@ -97,21 +97,15 @@ pub fn emit_ccc(
 }
 
 ///|
-pub fn emit_xid(properties : XidProperties) -> String raise {
+pub fn emit_xid(properties : DerivedCoreProperties) -> String raise {
   let out = @emitter.Emitter::new()
   out.write_file_header(
     "XID_Start and XID_Continue lookup data", "DerivedCoreProperties.txt",
   )
-  write_binary_property_trie(
-    out,
-    property="XID_Start",
-    prefix="xid_start",
-    properties.xid_start,
-  )
+  write_binary_property_trie(out, property="XID_Start", properties.xid_start)
   write_binary_property_trie(
     out,
     property="XID_Continue",
-    prefix="xid_continue",
     properties.xid_continue,
   )
   out.finish()
