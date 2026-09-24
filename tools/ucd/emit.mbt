@@ -97,67 +97,6 @@ pub fn emit_ccc(
 }
 
 ///|
-pub fn emit_general_category(ranges : Array[GeneralCategoryRange]) -> String {
-  let out = @emitter.Emitter::new()
-  out.write_file_header("General_Category lookup data", "UnicodeData.txt")
-  out.write_int_array(
-    "General_Category range start code points",
-    "gc_range_starts",
-    ranges.map(range => range.start),
-    hex=true,
-  )
-  out.write_int_array(
-    "General_Category range end code points (inclusive)",
-    "gc_range_ends",
-    ranges.map(range => range.end),
-    hex=true,
-  )
-  out.write_int_array(
-    "General_Category values for each range (enum ordinal)",
-    "gc_values",
-    ranges.map(range => range.value),
-    hex=false,
-  )
-  out.write(
-    (
-      #|///|
-      #|/// Look up General_Category ordinal for a character
-      #|/// Returns ordinal value (0-29) corresponding to GeneralCategory enum
-      #|/// Default is 29 (Cn = Unassigned) for characters beyond data range
-      #|pub fn lookup_general_category(c : Char) -> Int {
-      #|  let cp = c.to_int()
-      #|  // Handle code points beyond our data range
-      #|  if cp < 0 || cp > gc_range_ends[gc_range_ends.length() - 1] {
-      #|    return 29 // Cn (Unassigned)
-      #|  }
-      #|
-      #|  // Binary search through ranges
-      #|  let mut left = 0
-      #|  let mut right = gc_range_starts.length() - 1
-      #|
-      #|  while left <= right {
-      #|    let mid = (left + right) / 2
-      #|    let start = gc_range_starts[mid]
-      #|    let end = gc_range_ends[mid]
-      #|
-      #|    if cp < start {
-      #|      right = mid - 1
-      #|    } else if cp > end {
-      #|      left = mid + 1
-      #|    } else {
-      #|      return gc_values[mid]
-      #|    }
-      #|  }
-      #|
-      #|  29 // Cn (Unassigned)
-      #|}
-      #|
-    ),
-  )
-  out.finish()
-}
-
-///|
 pub fn emit_xid(properties : XidProperties) -> String {
   let out = @emitter.Emitter::new()
   out.write_file_header(
