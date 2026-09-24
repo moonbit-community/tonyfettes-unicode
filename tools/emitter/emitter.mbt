@@ -112,3 +112,21 @@ pub fn Emitter::write_int_array(
   }
   self.write("]\n\n")
 }
+
+///|
+pub fn Emitter::write_byte_array(
+  self : Emitter,
+  doc : String,
+  name : String,
+  values : Array[Int],
+) -> Unit {
+  self.write("///|\n")
+  self.write("/// " + doc + "\n")
+  self.write("let " + name + " : Bytes = [\n")
+  for value in values {
+    self.write("  ")
+    self.write(value.to_string())
+    self.write(",\n")
+  }
+  self.write("]\n\n")
+}

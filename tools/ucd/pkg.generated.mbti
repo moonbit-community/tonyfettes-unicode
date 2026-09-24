@@ -20,7 +20,7 @@ pub fn emit_composition(Array[CompositionEntry], Array[Int]) -> String
 
 pub fn emit_decomposition(UnicodeData) -> String
 
-pub fn emit_general_category(Array[GeneralCategoryRange]) -> String
+pub fn emit_general_category(Array[GeneralCategoryRange]) -> String raise
 
 pub fn emit_xid(XidProperties) -> String
 
