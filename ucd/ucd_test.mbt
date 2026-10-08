@@ -72,6 +72,20 @@ test "general_category: private use" {
 }
 
 ///|
+test "general_category: format characters (Cf)" {
+  // Format (Cf) characters embedded in ordinary text (joiners, direction
+  // marks, the BOM) must resolve to Cf without panicking.
+  inspect(@ucd.general_category('\u{00AD}'), content="Cf") // SOFT HYPHEN
+  inspect(@ucd.general_category('\u{0600}'), content="Cf") // ARABIC NUMBER SIGN
+  inspect(@ucd.general_category('\u{200B}'), content="Cf") // ZERO WIDTH SPACE
+  inspect(@ucd.general_category('\u{200C}'), content="Cf") // ZERO WIDTH NON-JOINER
+  inspect(@ucd.general_category('\u{200D}'), content="Cf") // ZERO WIDTH JOINER
+  inspect(@ucd.general_category('\u{200E}'), content="Cf") // LEFT-TO-RIGHT MARK
+  inspect(@ucd.general_category('\u{2060}'), content="Cf") // WORD JOINER
+  inspect(@ucd.general_category('\u{FEFF}'), content="Cf") // ZERO WIDTH NO-BREAK SPACE (BOM)
+}
+
+///|
 test "GeneralCategory::group" {
   // Letters
   assert_eq(@ucd.general_category('A').group(), L)
