@@ -1,47 +1,7 @@
 ///|
-fn strip_comment(line : StringView) -> StringView {
-  match line.split_once("#") {
-    Some((before, _)) => before.trim()
-    None => line.trim()
-  }
-}
-
-///|
-fn parse_hex_int(text : StringView) -> Int raise {
-  @string.parse_int(text.trim(), base=16)
-}
-
-///|
-fn parse_decimal_int(text : StringView) -> Int raise {
-  @string.parse_int(text.trim(), base=10)
-}
-
-///|
-fn parse_code_point_sequence(text : StringView) -> Array[Int] raise {
-  let result : Array[Int] = []
-  for part in text.trim().split(" ") {
-    let part = part.trim()
-    if part.length() > 0 {
-      result.push(parse_hex_int(part))
-    }
-  }
-  result
-}
-
-///|
-fn parse_code_point_range(text : StringView) -> CodePointRange raise {
-  if text.split_once("..") is Some((start_text, end_text)) {
-    { start: parse_hex_int(start_text), end: parse_hex_int(end_text), }
-  } else {
-    let code_point = parse_hex_int(text)
-    { start: code_point, end: code_point, }
-  }
-}
-
-///|
 fn validate_property_ranges(
   name : StringView,
-  ranges : Array[CodePointRange],
+  ranges : Array[@parsing.CodePointRange],
 ) -> Unit raise {
   if ranges.length() == 0 {
     fail("Missing \{name} ranges")
@@ -60,8 +20,8 @@ fn validate_property_ranges(
 
 ///|
 fn validate_xid_subset(
-  xid_start : Array[CodePointRange],
-  xid_continue : Array[CodePointRange],
+  xid_start : Array[@parsing.CodePointRange],
+  xid_continue : Array[@parsing.CodePointRange],
 ) -> Unit raise {
   let mut continue_index = 0
   for start_range in xid_start {
@@ -124,7 +84,7 @@ pub fn parse_unicode_data(content : String) -> UnicodeData raise {
     if fields.length() < 15 {
       continue
     }
-    let cp = parse_hex_int(fields[0])
+    let cp = @parsing.parse_hex_int(fields[0])
     let name = fields[1].trim()
     let general_category = fields[2].trim().to_owned()
     if name.has_suffix(", First>") {
@@ -153,7 +113,7 @@ pub fn parse_unicode_data(content : String) -> UnicodeData raise {
     )
     let ccc_text = fields[3].trim()
     let ccc = if ccc_text.length() > 0 {
-      parse_decimal_int(ccc_text)
+      @parsing.parse_decimal_int(ccc_text)
     } else {
       0
     }
@@ -165,7 +125,7 @@ pub fn parse_unicode_data(content : String) -> UnicodeData raise {
       if decomp.strip_prefix("<") is Some(_) {
         match decomp.split_once(">") {
           Some((_, rest)) => {
-            let code_points = parse_code_point_sequence(rest)
+            let code_points = @parsing.parse_code_point_sequence(rest)
             if code_points.length() > 0 {
               compatibility_decompositions.push({ code_point: cp, code_points, })
             }
@@ -173,7 +133,7 @@ pub fn parse_unicode_data(content : String) -> UnicodeData raise {
           None => ()
         }
       } else {
-        let code_points = parse_code_point_sequence(decomp)
+        let code_points = @parsing.parse_code_point_sequence(decomp)
         if code_points.length() > 0 {
           canonical_decompositions.push({ code_point: cp, code_points, })
         }
@@ -181,21 +141,21 @@ pub fn parse_unicode_data(content : String) -> UnicodeData raise {
     }
     let upper = fields[12].trim()
     if upper.length() > 0 {
-      let target = parse_hex_int(upper)
+      let target = @parsing.parse_hex_int(upper)
       if target != cp {
         simple_uppercase.push({ code_point: cp, target, })
       }
     }
     let lower = fields[13].trim()
     if lower.length() > 0 {
-      let target = parse_hex_int(lower)
+      let target = @parsing.parse_hex_int(lower)
       if target != cp {
         simple_lowercase.push({ code_point: cp, target, })
       }
     }
     let title = fields[14].trim()
     if title.length() > 0 {
-      let target = parse_hex_int(title)
+      let target = @parsing.parse_hex_int(title)
       if target != cp {
         simple_titlecase.push({ code_point: cp, target, })
       }
@@ -220,19 +180,13 @@ pub fn parse_unicode_data(content : String) -> UnicodeData raise {
 pub fn parse_composition_exclusions(content : String) -> Array[Int] raise {
   let exclusions : Array[Int] = []
   for raw_line in content.split("\n") {
-    let line = strip_comment(raw_line)
+    let line = @parsing.strip_comment(raw_line)
     if line.length() == 0 {
       continue
     }
-    match line.split_once("..") {
-      Some((start_text, end_text)) => {
-        let start = parse_hex_int(start_text)
-        let end = parse_hex_int(end_text)
-        for cp in start..<=end {
-          exclusions.push(cp)
-        }
-      }
-      None => exclusions.push(parse_hex_int(line))
+    let range = @parsing.parse_code_point_range(line)
+    for cp in range.start..<=range.end {
+      exclusions.push(cp)
     }
   }
   exclusions
@@ -244,7 +198,7 @@ pub fn parse_special_casing(content : String) -> SpecialCasingData raise {
   let title_mapping : Array[FullMappingEntry] = []
   let upper_mapping : Array[FullMappingEntry] = []
   for raw_line in content.split("\n") {
-    let line = strip_comment(raw_line)
+    let line = @parsing.strip_comment(raw_line)
     if line.length() == 0 {
       continue
     }
@@ -255,10 +209,10 @@ pub fn parse_special_casing(content : String) -> SpecialCasingData raise {
     if fields.length() > 4 && fields[4].trim().length() > 0 {
       continue
     }
-    let cp = parse_hex_int(fields[0])
-    let lower = parse_code_point_sequence(fields[1])
-    let title = parse_code_point_sequence(fields[2])
-    let upper = parse_code_point_sequence(fields[3])
+    let cp = @parsing.parse_hex_int(fields[0])
+    let lower = @parsing.parse_code_point_sequence(fields[1])
+    let title = @parsing.parse_code_point_sequence(fields[2])
+    let upper = @parsing.parse_code_point_sequence(fields[3])
     if !is_identity_or_empty(cp, lower) {
       lower_mapping.push({ code_point: cp, targets: lower, })
     }
@@ -278,13 +232,13 @@ pub fn parse_special_casing(content : String) -> SpecialCasingData raise {
 fn parse_property_ranges(
   content : String,
   property : String,
-) -> Array[CodePointRange] raise {
-  let ranges : Array[CodePointRange] = []
+) -> Array[@parsing.CodePointRange] raise {
+  let ranges : Array[@parsing.CodePointRange] = []
   for raw_line in content.split("\n") {
-    let line = strip_comment(raw_line)
+    let line = @parsing.strip_comment(raw_line)
     if line.split_once(";") is Some((range_text, property_text)) &&
       property_text.trim() == property.view() {
-      ranges.push(parse_code_point_range(range_text))
+      ranges.push(@parsing.parse_code_point_range(range_text))
     }
   }
   validate_property_ranges(property, ranges)

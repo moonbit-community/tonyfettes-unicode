@@ -80,9 +80,11 @@ pub fn compress_ccc_ranges(data : UnicodeData) -> Array[CccRange] {
 }
 
 ///|
-pub fn compress_mark_ranges(data : UnicodeData) -> Array[CodePointRange] {
+pub fn compress_mark_ranges(
+  data : UnicodeData,
+) -> Array[@parsing.CodePointRange] {
   let cps = sorted_ints(data.mark_code_points)
-  let ranges : Array[CodePointRange] = []
+  let ranges : Array[@parsing.CodePointRange] = []
   if cps.length() == 0 {
     return ranges
   }

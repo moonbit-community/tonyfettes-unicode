@@ -2,6 +2,7 @@
 package "moonbit-community/unicode-tools/emitter"
 
 // Values
+pub fn hex_upper(Int, min_width? : Int) -> String
 
 // Errors
 

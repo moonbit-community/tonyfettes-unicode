@@ -35,7 +35,7 @@ fn normalize_bidi_class(name : StringView) -> String {
 ///|
 fn fill_class_range(
   classes : FixedArray[String],
-  range : @support.CodePointRange,
+  range : @parsing.CodePointRange,
   bidi_class : String,
 ) -> Unit {
   for code_point in range.start..<=range.end {
@@ -52,12 +52,12 @@ fn parse_bidi_ranges(content : String) -> Array[BidiRange] raise {
     if stripped.strip_prefix("# @missing:") is Some(declaration) {
       let fields = declaration.trim().split(";").collect()
       if fields.length() >= 2 {
-        let range = @support.parse_code_point_range(fields[0])
+        let range = @parsing.parse_code_point_range(fields[0])
         fill_class_range(classes, range, normalize_bidi_class(fields[1].trim()))
       }
       continue
     }
-    let line = @support.strip_comment(raw_line)
+    let line = @parsing.strip_comment(raw_line)
     if line.is_empty() {
       continue
     }
@@ -65,7 +65,7 @@ fn parse_bidi_ranges(content : String) -> Array[BidiRange] raise {
     if fields.length() < 2 {
       continue
     }
-    let range = @support.parse_code_point_range(fields[0])
+    let range = @parsing.parse_code_point_range(fields[0])
     explicit.push({
       start: range.start,
       end: range.end,
@@ -98,15 +98,15 @@ fn parse_bidi_ranges(content : String) -> Array[BidiRange] raise {
 fn parse_mirroring(content : String) -> Array[MirrorEntry] raise {
   let entries : Array[MirrorEntry] = []
   for raw_line in content.split("\n") {
-    let line = @support.strip_comment(raw_line)
+    let line = @parsing.strip_comment(raw_line)
     if line.is_empty() {
       continue
     }
     let fields = line.split(";").collect()
     if fields.length() >= 2 {
       entries.push({
-        code_point: @support.parse_hex_int(fields[0]),
-        mirrored: @support.parse_hex_int(fields[1]),
+        code_point: @parsing.parse_hex_int(fields[0]),
+        mirrored: @parsing.parse_hex_int(fields[1]),
       })
     }
   }
@@ -118,15 +118,15 @@ fn parse_mirroring(content : String) -> Array[MirrorEntry] raise {
 fn parse_brackets(content : String) -> Array[BracketEntry] raise {
   let entries : Array[BracketEntry] = []
   for raw_line in content.split("\n") {
-    let line = @support.strip_comment(raw_line)
+    let line = @parsing.strip_comment(raw_line)
     if line.is_empty() {
       continue
     }
     let fields = line.split(";").collect()
     if fields.length() >= 3 {
       entries.push({
-        code_point: @support.parse_hex_int(fields[0]),
-        paired: @support.parse_hex_int(fields[1]),
+        code_point: @parsing.parse_hex_int(fields[0]),
+        paired: @parsing.parse_hex_int(fields[1]),
         bracket_type: fields[2].trim().to_owned().to_lower(),
       })
     }

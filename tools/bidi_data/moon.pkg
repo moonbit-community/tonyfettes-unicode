@@ -1,4 +1,4 @@
 import {
   "moonbit-community/unicode-tools/emitter",
-  "moonbit-community/unicode-tools/support",
+  "moonbit-community/unicode-tools/internal/parsing",
 }

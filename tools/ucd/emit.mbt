@@ -1,7 +1,7 @@
 ///|
 pub fn emit_ccc(
   ccc_ranges : Array[CccRange],
-  mark_ranges : Array[CodePointRange],
+  mark_ranges : Array[@parsing.CodePointRange],
 ) -> String {
   let out = @emitter.Emitter::new()
   out.write_file_header(

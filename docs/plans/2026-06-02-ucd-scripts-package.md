@@ -19,7 +19,7 @@ Status: completed on 2026-07-15.
 ## Packages
 
 - `moonbit-community/unicode-tools/emitter`
-- `moonbit-community/unicode-tools/support`
+- `moonbit-community/unicode-tools/internal/parsing`
 - `moonbit-community/unicode-tools/ucd`
 - `moonbit-community/unicode-tools/idna_data`
 - `moonbit-community/unicode-tools/bidi_data`

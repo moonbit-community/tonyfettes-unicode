@@ -1,6 +1,10 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "moonbit-community/unicode-tools/ucd"
 
+import {
+  "moonbit-community/unicode-tools/internal/parsing",
+}
+
 // Values
 pub fn build_composition_table(UnicodeData, Array[Int]) -> Array[CompositionEntry]
 
@@ -10,13 +14,13 @@ pub fn compress_ccc_ranges(UnicodeData) -> Array[CccRange]
 
 pub fn compress_general_category_ranges(UnicodeData) -> Array[GeneralCategoryRange]
 
-pub fn compress_mark_ranges(UnicodeData) -> Array[CodePointRange]
+pub fn compress_mark_ranges(UnicodeData) -> Array[@parsing.CodePointRange]
 
 pub fn emit_alphabetic(DerivedCoreProperties) -> String raise
 
 pub fn emit_case_mapping(UnicodeData, SpecialCasingData) -> String
 
-pub fn emit_ccc(Array[CccRange], Array[CodePointRange]) -> String
+pub fn emit_ccc(Array[CccRange], Array[@parsing.CodePointRange]) -> String
 
 pub fn emit_composition(Array[CompositionEntry], Array[Int]) -> String
 
@@ -46,8 +50,6 @@ pub fn parse_unicode_data(String) -> UnicodeData raise
 
 // Types and methods
 type CccRange
-
-type CodePointRange
 
 type CompositionEntry
 

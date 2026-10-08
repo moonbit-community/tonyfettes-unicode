@@ -77,38 +77,8 @@ pub fn parse_code_point_sequence(text : StringView) -> Array[Int] raise {
 }
 
 ///|
-fn hex_digit(value : Int) -> Char {
-  if value < 10 {
-    (value + '0'.to_int()).unsafe_to_char()
-  } else {
-    (value - 10 + 'A'.to_int()).unsafe_to_char()
-  }
-}
-
-///|
-pub fn hex_upper(value : Int, min_width? : Int = 0) -> String {
-  let out = @emitter.Emitter::new()
-  let digits : Array[Char] = []
-  let mut remaining = value
-  if remaining == 0 {
-    digits.push('0')
-  }
-  while remaining > 0 {
-    digits.push(hex_digit(remaining % 16))
-    remaining = remaining / 16
-  }
-  while digits.length() < min_width {
-    digits.push('0')
-  }
-  for digit in digits.rev_iter() {
-    out.write_char(digit)
-  }
-  out.finish()
-}
-
-///|
 pub fn moonbit_code_point_escape(code_point : Int) -> String {
-  "\\u{\{hex_upper(code_point, min_width=4)}}"
+  "\\u{\{@emitter.hex_upper(code_point, min_width=4)}}"
 }
 
 ///|
@@ -171,11 +141,11 @@ pub fn escape_moonbit_string(text : StringView) -> String {
       _ if code_point >= 0x20 && code_point <= 0x7E => out.write_char(character)
       _ if code_point <= 0xFFFF => {
         out.write("\\u")
-        out.write(hex_upper(code_point, min_width=4))
+        out.write(@emitter.hex_upper(code_point, min_width=4))
       }
       _ => {
         out.write("\\u{")
-        out.write(hex_upper(code_point))
+        out.write(@emitter.hex_upper(code_point))
         out.write("}")
       }
     }

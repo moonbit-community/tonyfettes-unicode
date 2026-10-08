@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "moonbit-community/unicode-tools/support"
+package "moonbit-community/unicode-tools/internal/parsing"
 
 import {
   "moonbitlang/core/debug",
@@ -11,8 +11,6 @@ pub fn bool_literal(Bool) -> String
 pub fn code_points_to_moonbit_string(ArrayView[Int]) -> String
 
 pub fn escape_moonbit_string(StringView) -> String
-
-pub fn hex_upper(Int, min_width? : Int) -> String
 
 pub fn int_array_literal(ArrayView[Int]) -> String
 

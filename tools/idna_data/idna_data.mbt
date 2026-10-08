@@ -17,7 +17,7 @@ priv struct JoiningEntry {
 fn parse_mapping_table(content : String) -> Array[MappingEntry] raise {
   let entries : Array[MappingEntry] = []
   for raw_line in content.split("\n") {
-    let line = @support.strip_comment(raw_line)
+    let line = @parsing.strip_comment(raw_line)
     if line.is_empty() {
       continue
     }
@@ -25,14 +25,14 @@ fn parse_mapping_table(content : String) -> Array[MappingEntry] raise {
     if fields.length() < 2 {
       continue
     }
-    let range = @support.parse_code_point_range(fields[0])
+    let range = @parsing.parse_code_point_range(fields[0])
     let status = fields[1]
       .trim()
       .to_owned()
       .to_lower()
       .replace_all(old=" ", new="_")
     let mapping = if fields.length() > 2 {
-      @support.parse_code_point_sequence(fields[2])
+      @parsing.parse_code_point_sequence(fields[2])
     } else {
       []
     }
@@ -45,7 +45,7 @@ fn parse_mapping_table(content : String) -> Array[MappingEntry] raise {
 fn parse_joining_table(content : String) -> Array[JoiningEntry] raise {
   let entries : Array[JoiningEntry] = []
   for raw_line in content.split("\n") {
-    let line = @support.strip_comment(raw_line)
+    let line = @parsing.strip_comment(raw_line)
     if line.is_empty() {
       continue
     }
@@ -53,7 +53,7 @@ fn parse_joining_table(content : String) -> Array[JoiningEntry] raise {
     if fields.length() < 2 {
       continue
     }
-    let range = @support.parse_code_point_range(fields[0])
+    let range = @parsing.parse_code_point_range(fields[0])
     entries.push({
       start: range.start,
       end: range.end,

@@ -13,7 +13,7 @@ const BinaryTrieLeafShift : Int = 7
 
 ///|
 fn hex_literal(value : Int) -> String {
-  "0x\{value.to_string(radix=16).to_upper()}"
+  "0x\{@emitter.hex_upper(value)}"
 }
 
 ///|
@@ -28,11 +28,11 @@ fn hex_literal(value : Int) -> String {
 fn write_binary_property_trie(
   out : @emitter.Emitter,
   property~ : String,
-  ranges : Array[CodePointRange],
+  ranges : Array[@parsing.CodePointRange],
 ) -> Unit raise {
   let prefix = property.to_lower()
   let bits = Array::make(BinaryTrieLimit / 8, 0)
-  let high_ranges : Array[CodePointRange] = []
+  let high_ranges : Array[@parsing.CodePointRange] = []
   for range in ranges {
     for cp in range.start..<=Int::min(range.end, BinaryTrieLimit - 1) {
       bits[cp >> 3] = bits[cp >> 3] | (1 << (cp & 7))
@@ -109,7 +109,7 @@ fn write_binary_property_trie(
 fn emit_binary_property(
   property~ : String,
   source~ : String,
-  ranges : Array[CodePointRange],
+  ranges : Array[@parsing.CodePointRange],
 ) -> String raise {
   let out = @emitter.Emitter::new()
   out.write_file_header("\{property} lookup data", source)
