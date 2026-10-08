@@ -1,5 +1,7 @@
 import {
-  "moonbit-community/ucd/data" @ucd,
+  "moonbit-community/ucd/ccc",
+  "moonbit-community/ucd/composition",
+  "moonbit-community/ucd/decomposition",
 }
 
 import {

@@ -1,0 +1,15 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbit-community/ucd/composition"
+
+// Values
+pub fn is_composition_excluded(Char) -> Bool
+
+pub fn lookup_composition(Char, Char) -> Char?
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits

@@ -13,7 +13,7 @@ fn try_compose(first : Char, second : Char) -> Char? {
   }
 
   // Look up in composition table
-  @ucd.lookup_composition(first, second)
+  @composition.lookup_composition(first, second)
 }
 
 ///|
@@ -28,14 +28,14 @@ fn canonical_compose(chars : Array[Char]) -> Array[Char] {
   result.push(chars[0])
 
   // Track the last starter position in result (-1 if no starter yet)
-  let mut last_starter_idx = if @ucd.lookup_ccc(chars[0]) == 0 { 0 } else { -1 }
+  let mut last_starter_idx = if @ccc.lookup_ccc(chars[0]) == 0 { 0 } else { -1 }
 
   // Track CCC of the last character we processed
   // Used to detect "blocked" combining marks
-  let mut last_ccc = @ucd.lookup_ccc(chars[0])
+  let mut last_ccc = @ccc.lookup_ccc(chars[0])
   for i = 1; i < len; i = i + 1 {
     let c = chars[i]
-    let ccc = @ucd.lookup_ccc(c)
+    let ccc = @ccc.lookup_ccc(c)
 
     // A combining mark is "blocked" from composing with a starter if
     // there's an intervening combining mark with the same or higher CCC

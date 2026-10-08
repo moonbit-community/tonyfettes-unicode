@@ -1,0 +1,13 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbit-community/ucd/lowercase"
+
+// Values
+pub fn is_lowercase(Char) -> Bool
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits

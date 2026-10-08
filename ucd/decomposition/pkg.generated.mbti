@@ -1,0 +1,15 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbit-community/ucd/decomposition"
+
+// Values
+pub fn get_canonical_decomposition(Char) -> Array[Char]?
+
+pub fn get_compat_decomposition(Char) -> Array[Char]?
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits

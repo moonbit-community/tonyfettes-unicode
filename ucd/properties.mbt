@@ -6,7 +6,7 @@
 /// and paragraph separators U+2028 and U+2029. It does not include
 /// U+200B ZERO WIDTH SPACE or U+FEFF ZERO WIDTH NO-BREAK SPACE.
 pub fn is_white_space(c : Char) -> Bool {
-  @ucd_data.is_white_space(c)
+  @white_space.is_white_space(c)
 }
 
 ///|
@@ -16,7 +16,7 @@ pub fn is_white_space(c : Char) -> Bool {
 /// and Other_Alphabetic characters such as the vowel signs of Indic scripts.
 /// Decimal digits are not Alphabetic.
 pub fn is_alphabetic(c : Char) -> Bool {
-  @ucd_data.is_alphabetic(c)
+  @alphabetic.is_alphabetic(c)
 }
 
 ///|
@@ -27,7 +27,7 @@ pub fn is_alphabetic(c : Char) -> Bool {
 /// modifier letters like U+02B0, and the small Roman numerals.
 /// Titlecase letters (Lt) are neither Lowercase nor Uppercase.
 pub fn is_lowercase(c : Char) -> Bool {
-  @ucd_data.is_lowercase(c)
+  @lowercase.is_lowercase(c)
 }
 
 ///|
@@ -38,5 +38,5 @@ pub fn is_lowercase(c : Char) -> Bool {
 /// circled capital Latin letters. Titlecase letters (Lt) are neither
 /// Lowercase nor Uppercase.
 pub fn is_uppercase(c : Char) -> Bool {
-  @ucd_data.is_uppercase(c)
+  @uppercase.is_uppercase(c)
 }

@@ -14,12 +14,12 @@ fn decompose_char(c : Char, compatibility~ : Bool) -> Array[Char] {
   // Look up decomposition mapping
   let mapping : Array[Char]? = if compatibility {
     // For compatibility, first try compat decomposition, then canonical
-    match @ucd.get_compat_decomposition(c) {
+    match @decomposition.get_compat_decomposition(c) {
       Some(d) => Some(d)
-      None => @ucd.get_canonical_decomposition(c)
+      None => @decomposition.get_canonical_decomposition(c)
     }
   } else {
-    @ucd.get_canonical_decomposition(c)
+    @decomposition.get_canonical_decomposition(c)
   }
   match mapping {
     None => [c] // No decomposition, return as-is

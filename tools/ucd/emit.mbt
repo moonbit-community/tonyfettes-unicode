@@ -1,8 +1,5 @@
 ///|
-pub fn emit_ccc(
-  ccc_ranges : Array[CccRange],
-  mark_ranges : Array[@parsing.CodePointRange],
-) -> String {
+pub fn emit_ccc(ccc_ranges : Array[CccRange]) -> String {
   let out = @emitter.Emitter::new()
   out.write_file_header(
     "Canonical Combining Class (CCC) lookup data", "UnicodeData.txt",
@@ -24,18 +21,6 @@ pub fn emit_ccc(
     "ccc_values",
     ccc_ranges.map(range => range.value),
     hex=false,
-  )
-  out.write_int_array(
-    "Mark character range start code points (General_Category = M)",
-    "mark_starts",
-    mark_ranges.map(range => range.start),
-    hex=true,
-  )
-  out.write_int_array(
-    "Mark character range end code points (inclusive)",
-    "mark_ends",
-    mark_ranges.map(range => range.end),
-    hex=true,
   )
   out.write(
     (
@@ -63,32 +48,6 @@ pub fn emit_ccc(
       #|  }
       #|
       #|  0 // Not found, default CCC is 0 (starter)
-      #|}
-      #|
-      #|///|
-      #|/// Check if a character is a Mark character (General_Category = Mn, Mc, or Me)
-      #|/// This is used for the IDNA "no leading combining mark" validation (V5/V6)
-      #|pub fn is_mark(c : Char) -> Bool {
-      #|  let cp = c.to_int()
-      #|  // Binary search through mark ranges
-      #|  let mut left = 0
-      #|  let mut right = mark_starts.length() - 1
-      #|
-      #|  while left <= right {
-      #|    let mid = (left + right) / 2
-      #|    let start = mark_starts[mid]
-      #|    let end = mark_ends[mid]
-      #|
-      #|    if cp < start {
-      #|      right = mid - 1
-      #|    } else if cp > end {
-      #|      left = mid + 1
-      #|    } else {
-      #|      return true
-      #|    }
-      #|  }
-      #|
-      #|  false
       #|}
       #|
     ),
@@ -355,71 +314,35 @@ pub fn emit_case_mapping(
 
 ///|
 pub fn emit_decomposition(data : UnicodeData) -> String {
-  let entries : Array[DecompositionEntry] = []
+  // The low bit distinguishes canonical (0) from compatibility (1).
+  let entries : Array[(Int, Array[Int])] = []
   for entry in data.canonical_decompositions {
-    entries.push(entry)
+    entries.push((entry.code_point << 1, entry.code_points))
   }
-  for compat in data.compatibility_decompositions {
-    if entries.search_by(entry => entry.code_point == compat.code_point) is None {
-      entries.push({ code_point: compat.code_point, code_points: [], })
-    }
+  for entry in data.compatibility_decompositions {
+    entries.push(((entry.code_point << 1) | 1, entry.code_points))
   }
-  entries.sort_by((left, right) => left.code_point - right.code_point)
-  let cps : Array[Int] = []
-  let starts : Array[Int] = []
-  let canonical_lens : Array[Int] = []
-  let compat_lens : Array[Int] = []
+  entries.sort_by((left, right) => left.0 - right.0)
+  let keys : Array[Int] = []
+  let offsets : Array[Int] = [0]
   let flattened : Array[Int] = []
-  for entry in entries {
-    cps.push(entry.code_point)
-    starts.push(flattened.length())
-    match
-      data.canonical_decompositions.search_by(item => {
-        item.code_point == entry.code_point
-      }) {
-      Some(index) => {
-        let canonical = data.canonical_decompositions[index].code_points
-        canonical_lens.push(canonical.length())
-        flattened.append(canonical)
-      }
-      None => canonical_lens.push(0)
-    }
-    match
-      data.compatibility_decompositions.search_by(item => {
-        item.code_point == entry.code_point
-      }) {
-      Some(index) => {
-        let compat = data.compatibility_decompositions[index].code_points
-        compat_lens.push(compat.length())
-        flattened.append(compat)
-      }
-      None => compat_lens.push(0)
-    }
+  for (key, code_points) in entries {
+    keys.push(key)
+    flattened.append(code_points)
+    offsets.push(flattened.length())
   }
   let out = @emitter.Emitter::new()
   out.write_file_header("Decomposition mapping data", "UnicodeData.txt")
   out.write_int_array(
-    "Code points with decomposition mappings (sorted for binary search)",
-    "decomp_cps",
-    cps,
+    "Sorted keys: `code_point << 1 | kind` (canonical = 0, compatibility = 1)",
+    "decomp_keys",
+    keys,
     hex=true,
   )
   out.write_int_array(
-    "Data start index for each code point",
-    "decomp_data_starts",
-    starts,
-    hex=false,
-  )
-  out.write_int_array(
-    "Canonical decomposition length (0 if none)",
-    "decomp_canonical_lens",
-    canonical_lens,
-    hex=false,
-  )
-  out.write_int_array(
-    "Compatibility decomposition length (0 if none)",
-    "decomp_compat_lens",
-    compat_lens,
+    "Data offsets, including a final sentinel; mapping i is offsets[i]..<offsets[i + 1]",
+    "decomp_offsets",
+    offsets,
     hex=false,
   )
   out.write_int_array(
@@ -431,75 +354,42 @@ pub fn emit_decomposition(data : UnicodeData) -> String {
   out.write(
     (
       #|///|
-      #|/// Binary search for character index, returns -1 if not found
-      #|fn find_decomp_index(c : Char) -> Int {
-      #|  let cp = c.to_int()
+      #|/// Look up an exact (code point, decomposition kind) key.
+      #|fn get_decomposition(key : Int) -> Array[Char]? {
       #|  let mut left = 0
-      #|  let mut right = decomp_cps.length() - 1
-      #|
+      #|  let mut right = decomp_keys.length() - 1
       #|  while left <= right {
       #|    let mid = (left + right) / 2
-      #|    let mid_cp = decomp_cps[mid]
-      #|
-      #|    if cp < mid_cp {
+      #|    let mid_key = decomp_keys[mid]
+      #|    if key < mid_key {
       #|      right = mid - 1
-      #|    } else if cp > mid_cp {
+      #|    } else if key > mid_key {
       #|      left = mid + 1
       #|    } else {
-      #|      return mid
+      #|      let start = decomp_offsets[mid]
+      #|      let end = decomp_offsets[mid + 1]
+      #|      let result : Array[Char] = []
+      #|      for code_point in decomp_data.exact_view(start=start, end=end) {
+      #|        result.push(code_point.unsafe_to_char())
+      #|      }
+      #|      return Some(result)
       #|    }
       #|  }
-      #|
-      #|  -1
+      #|  None
       #|}
       #|
       #|///|
       #|/// Get canonical decomposition for a character
       #|/// Returns None if no decomposition exists
       #|pub fn get_canonical_decomposition(c : Char) -> Array[Char]? {
-      #|  let idx = find_decomp_index(c)
-      #|  if idx < 0 {
-      #|    return None
-      #|  }
-      #|
-      #|  let len = decomp_canonical_lens[idx]
-      #|  if len == 0 {
-      #|    return None
-      #|  }
-      #|
-      #|  let start = decomp_data_starts[idx]
-      #|  let result : Array[Char] = []
-      #|  for code_point in decomp_data.exact_view(start=start, end=start + len) {
-      #|    result.push(code_point.unsafe_to_char())
-      #|  }
-      #|  Some(result)
+      #|  get_decomposition(c.to_int() << 1)
       #|}
       #|
       #|///|
       #|/// Get compatibility decomposition for a character
       #|/// Returns None if no decomposition exists
       #|pub fn get_compat_decomposition(c : Char) -> Array[Char]? {
-      #|  let idx = find_decomp_index(c)
-      #|  if idx < 0 {
-      #|    return None
-      #|  }
-      #|
-      #|  let compat_len = decomp_compat_lens[idx]
-      #|  if compat_len == 0 {
-      #|    return None
-      #|  }
-      #|
-      #|  // Compat data comes after canonical data
-      #|  let canonical_len = decomp_canonical_lens[idx]
-      #|  let start = decomp_data_starts[idx] + canonical_len
-      #|  let result : Array[Char] = []
-      #|  for code_point in decomp_data.exact_view(
-      #|    start=start,
-      #|    end=start + compat_len,
-      #|  ) {
-      #|    result.push(code_point.unsafe_to_char())
-      #|  }
-      #|  Some(result)
+      #|  get_decomposition((c.to_int() << 1) | 1)
       #|}
       #|
     ),

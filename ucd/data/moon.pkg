@@ -1,1 +1,12 @@
-
+import {
+  "moonbit-community/ucd/decomposition",
+  "moonbit-community/ucd/composition",
+  "moonbit-community/ucd/ccc",
+  "moonbit-community/ucd/general_category",
+  "moonbit-community/ucd/case_mapping",
+  "moonbit-community/ucd/xid",
+  "moonbit-community/ucd/alphabetic",
+  "moonbit-community/ucd/lowercase",
+  "moonbit-community/ucd/uppercase",
+  "moonbit-community/ucd/white_space",
+}
