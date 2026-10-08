@@ -1,3 +1,9 @@
 import {
-  "moonbit-community/ucd/data" @ucd_data,
+  "moonbit-community/ucd/alphabetic",
+  "moonbit-community/ucd/case_mapping",
+  "moonbit-community/ucd/general_category",
+  "moonbit-community/ucd/lowercase",
+  "moonbit-community/ucd/uppercase",
+  "moonbit-community/ucd/white_space",
+  "moonbit-community/ucd/xid",
 }

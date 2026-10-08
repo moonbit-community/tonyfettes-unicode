@@ -13,7 +13,7 @@ fn canonical_order(chars : Array[Char]) -> Unit {
   }
   let mut i = 0
   while i < len {
-    let ccc = @ucd.lookup_ccc(chars[i])
+    let ccc = @ccc.lookup_ccc(chars[i])
 
     // Skip starters
     if ccc == 0 {
@@ -26,7 +26,7 @@ fn canonical_order(chars : Array[Char]) -> Unit {
     let start = i
 
     // Find the end of the combining mark sequence
-    while i < len && @ucd.lookup_ccc(chars[i]) != 0 {
+    while i < len && @ccc.lookup_ccc(chars[i]) != 0 {
       i = i + 1
     }
 
@@ -47,11 +47,11 @@ fn stable_sort_by_ccc(arr : Array[Char], start : Int, end : Int) -> Unit {
   let mut i = start + 1
   while i < end {
     let key = arr[i]
-    let key_ccc = @ucd.lookup_ccc(key)
+    let key_ccc = @ccc.lookup_ccc(key)
     let mut j = i - 1
 
     // Move elements with greater CCC to the right
-    while j >= start && @ucd.lookup_ccc(arr[j]) > key_ccc {
+    while j >= start && @ccc.lookup_ccc(arr[j]) > key_ccc {
       arr[j + 1] = arr[j]
       j = j - 1
     }

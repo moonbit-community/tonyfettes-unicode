@@ -1,0 +1,15 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbit-community/ucd/xid"
+
+// Values
+pub fn is_xid_continue(Char) -> Bool
+
+pub fn is_xid_start(Char) -> Bool
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits

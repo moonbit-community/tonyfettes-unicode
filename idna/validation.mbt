@@ -91,7 +91,7 @@ fn validate_hyphens(
 /// Check if a character is a combining mark (General_Category = Mn, Mc, or Me)
 /// This is used for the IDNA "no leading combining mark" validation (V5/V6)
 fn is_combining_mark(c : Char) -> Bool {
-  @ucd.is_mark(c)
+  @general_category.is_mark(c)
 }
 
 ///|
@@ -190,7 +190,7 @@ fn is_valid_zwj_context(chars : Array[Char], pos : Int) -> Bool {
 ///|
 /// Check if a character is a Virama (combining class 9)
 fn is_virama(c : Char) -> Bool {
-  @ucd.lookup_ccc(c) == 9
+  @ccc.lookup_ccc(c) == 9
 }
 
 ///|

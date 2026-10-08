@@ -169,9 +169,7 @@ test "build full composition exclusions" {
 
 ///|
 test "emit small CCC table" {
-  let source = emit_ccc([{ start: 0x0300, end: 0x0301, value: 230, }], [
-    { start: 0x0300, end: 0x0301, },
-  ])
+  let source = emit_ccc([{ start: 0x0300, end: 0x0301, value: 230, }])
   inspect(
     source.contains("let ccc_starts : ReadOnlyArray[Int] = ["),
     content="true",
@@ -249,7 +247,7 @@ test "emit decomposition and case mapping arrays" {
     #|00DF; 0073 0073; 0053 0073; 0053 0053; # LATIN SMALL LETTER SHARP S
   let special = parse_special_casing(input)
   inspect(
-    emit_decomposition(data).contains("let decomp_cps : ReadOnlyArray[Int]"),
+    emit_decomposition(data).contains("let decomp_keys : ReadOnlyArray[Int]"),
     content="true",
   )
   inspect(

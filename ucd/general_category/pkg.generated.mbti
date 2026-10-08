@@ -1,0 +1,15 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbit-community/ucd/general_category"
+
+// Values
+pub fn is_mark(Char) -> Bool
+
+pub fn lookup_general_category(Char) -> Int
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits

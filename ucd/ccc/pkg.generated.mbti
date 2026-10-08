@@ -1,0 +1,13 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbit-community/ucd/ccc"
+
+// Values
+pub fn lookup_ccc(Char) -> Int
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits

@@ -3,7 +3,8 @@ import {
   "moonbit-community/normalization",
   "moonbit-community/bidi",
   "moonbit-community/idna/internal/idna" @idna_data,
-  "moonbit-community/ucd/data" @ucd,
+  "moonbit-community/ucd/ccc",
+  "moonbit-community/ucd/general_category",
 }
 
 import {

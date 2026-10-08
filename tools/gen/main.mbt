@@ -111,58 +111,63 @@ async fn generate_ucd(root : StringView) -> Unit {
   let full_exclusions = @ucd.build_full_composition_exclusions(
     unicode_data, exclusions,
   )
-  write_source(root, "ucd/data/ccc.mbt", @ucd.emit_ccc(ccc_ranges, mark_ranges))
+  write_source(root, "ucd/ccc/ccc.mbt", @ucd.emit_ccc(ccc_ranges))
   write_source(
     root,
-    "ucd/data/decomposition.mbt",
+    "ucd/general_category/mark.mbt",
+    @ucd.emit_marks(mark_ranges),
+  )
+  write_source(
+    root,
+    "ucd/decomposition/decomposition.mbt",
     @ucd.emit_decomposition(unicode_data),
   )
   write_source(
     root,
-    "ucd/data/composition.mbt",
+    "ucd/composition/composition.mbt",
     @ucd.emit_composition(compositions, full_exclusions),
   )
   write_source(
     root,
-    "ucd/data/general_category.mbt",
+    "ucd/general_category/general_category.mbt",
     @ucd.emit_general_category(general_category_ranges),
   )
   write_source(
     root,
-    "ucd/data/case_mapping.mbt",
+    "ucd/case_mapping/case_mapping.mbt",
     @ucd.emit_case_mapping(unicode_data, special_casing),
   )
-  write_source(root, "ucd/data/xid.mbt", @ucd.emit_xid(core_properties))
+  write_source(root, "ucd/xid/xid.mbt", @ucd.emit_xid(core_properties))
   write_source(
     root,
-    "ucd/data/alphabetic.mbt",
+    "ucd/alphabetic/alphabetic.mbt",
     @ucd.emit_alphabetic(core_properties),
   )
   write_source(
     root,
-    "ucd/data/lowercase.mbt",
+    "ucd/lowercase/lowercase.mbt",
     @ucd.emit_lowercase(core_properties),
   )
   write_source(
     root,
-    "ucd/data/uppercase.mbt",
+    "ucd/uppercase/uppercase.mbt",
     @ucd.emit_uppercase(core_properties),
   )
   write_source(
     root,
-    "ucd/data/white_space.mbt",
+    "ucd/white_space/white_space.mbt",
     @ucd.emit_white_space(prop_list),
   )
   let generated_files = [
-    "ucd/data/ccc.mbt", "ucd/data/decomposition.mbt", "ucd/data/composition.mbt",
-    "ucd/data/general_category.mbt", "ucd/data/case_mapping.mbt", "ucd/data/xid.mbt",
-    "ucd/data/alphabetic.mbt", "ucd/data/lowercase.mbt", "ucd/data/uppercase.mbt",
-    "ucd/data/white_space.mbt",
+    "ucd/general_category/mark.mbt", "ucd/ccc/ccc.mbt", "ucd/decomposition/decomposition.mbt",
+    "ucd/composition/composition.mbt", "ucd/general_category/general_category.mbt",
+    "ucd/case_mapping/case_mapping.mbt", "ucd/xid/xid.mbt", "ucd/alphabetic/alphabetic.mbt",
+    "ucd/lowercase/lowercase.mbt", "ucd/uppercase/uppercase.mbt", "ucd/white_space/white_space.mbt",
   ]
   for file in generated_files {
     format_file(root, file)
   }
-  generate_interfaces(root, "ucd/data")
+  generate_interfaces(root, "ucd")
 }
 
 ///|

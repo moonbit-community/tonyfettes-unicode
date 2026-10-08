@@ -17,7 +17,7 @@ pub fn ccc_is_sorted(s : String) -> Bool {
   let chars = string_to_chars(s)
   for i = 0, last_ccc = 0, in_combining = false; i < chars.length(); {
     let c = chars[i]
-    let ccc = @ucd.lookup_ccc(c)
+    let ccc = @ccc.lookup_ccc(c)
     if ccc == 0 {
       // Starter - reset
       continue i + 1, 0, false

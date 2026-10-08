@@ -2,42 +2,61 @@
 package "moonbit-community/ucd/data"
 
 // Values
+#deprecated
 pub fn get_canonical_decomposition(Char) -> Array[Char]?
 
+#deprecated
 pub fn get_compat_decomposition(Char) -> Array[Char]?
 
+#deprecated
 pub fn is_alphabetic(Char) -> Bool
 
+#deprecated
 pub fn is_composition_excluded(Char) -> Bool
 
+#deprecated
 pub fn is_lowercase(Char) -> Bool
 
+#deprecated
 pub fn is_mark(Char) -> Bool
 
+#deprecated
 pub fn is_uppercase(Char) -> Bool
 
+#deprecated
 pub fn is_white_space(Char) -> Bool
 
+#deprecated
 pub fn is_xid_continue(Char) -> Bool
 
+#deprecated
 pub fn is_xid_start(Char) -> Bool
 
+#deprecated
 pub fn lookup_ccc(Char) -> Int
 
+#deprecated
 pub fn lookup_composition(Char, Char) -> Char?
 
+#deprecated
 pub fn lookup_full_lowercase(Char) -> Array[Char]?
 
+#deprecated
 pub fn lookup_full_titlecase(Char) -> Array[Char]?
 
+#deprecated
 pub fn lookup_full_uppercase(Char) -> Array[Char]?
 
+#deprecated
 pub fn lookup_general_category(Char) -> Int
 
+#deprecated
 pub fn lookup_simple_lowercase(Char) -> Char
 
+#deprecated
 pub fn lookup_simple_titlecase(Char) -> Char
 
+#deprecated
 pub fn lookup_simple_uppercase(Char) -> Char
 
 // Errors
