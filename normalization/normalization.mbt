@@ -84,13 +84,13 @@ pub fn normalize(s : String, form : NormalizationForm) -> String {
 ///|
 /// Check if a string is in the specified normalization form
 pub fn is_normalized(s : String, form : NormalizationForm) -> Bool {
-  let (shift, mask) = match form {
-    NFC => (8, 3)
-    NFKC => (10, 3)
-    NFD => (12, 1)
-    NFKD => (13, 1)
+  let check = match form {
+    NFC => quick_check(s, 8, 3)
+    NFKC => quick_check(s, 10, 3)
+    NFD => quick_check(s, 12, 1)
+    NFKD => quick_check(s, 13, 1)
   }
-  match quick_check(s, shift, mask) {
+  match check {
     Yes => true
     No => false
     Maybe => normalize(s, form) == s
