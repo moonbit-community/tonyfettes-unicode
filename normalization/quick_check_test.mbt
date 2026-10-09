@@ -87,7 +87,7 @@ test "Unicode 16 composite Maybe characters keep their preceding context" {
 }
 
 ///|
-test "suspect spans coalesce across short gaps and preserve long copied runs" {
+test "local segments preserve short and long copied runs" {
   for gap_length in [0, 1, 15, 16, 17, 40] {
     let gap = "-".repeat(gap_length)
     let prefix = "😀prefix".repeat(8)
@@ -100,5 +100,48 @@ test "suspect spans coalesce across short gaps and preserve long copied runs" {
     for form in [@normalization.NFD, @normalization.NFKD] {
       assert_eq(@normalization.normalize(composed, form), decomposed)
     }
+  }
+}
+
+///|
+test "local checking continues after unchanged Maybe segments" {
+  let prefix = "x\u{0301}😀".repeat(32)
+  for form in [@normalization.NFC, @normalization.NFKC] {
+    assert_true(@normalization.is_normalized(prefix, form))
+    for
+      (tail, expected) in [
+        ("e\u{0301}", "é"),
+        ("ă\u{0328}", "ą\u{0306}"),
+        ("\u{0315}\u{0316}", "\u{0316}\u{0315}"),
+        ("각", "각"),
+        ("\u{16D63}\u{16D68}", "\u{16D6A}"),
+      ] {
+      let input = prefix + tail
+      assert_false(@normalization.is_normalized(input, form))
+      assert_eq(@normalization.normalize(input, form), prefix + expected)
+      // Also exercise a changed segment followed by unchanged Maybe segments.
+      assert_eq(
+        @normalization.normalize(tail + prefix, form),
+        expected + prefix,
+      )
+    }
+  }
+}
+
+///|
+test "scratch reuse after expansion composition and long combining runs" {
+  let marks = "\u{0315}".repeat(64) + "\u{0316}".repeat(64)
+  let ordered = "\u{0316}".repeat(64) + "\u{0315}".repeat(64)
+  let input = "ﬃ|\{marks}|e\u{0301}|x\u{0301}|😀Ａ\u{030A}"
+  for
+    (form, expected) in [
+      (@normalization.NFC, "ﬃ|\{ordered}|é|x\u{0301}|😀Ａ\u{030A}"),
+      (@normalization.NFKC, "ffi|\{ordered}|é|x\u{0301}|😀Å"),
+      (@normalization.NFD, "ﬃ|\{ordered}|e\u{0301}|x\u{0301}|😀Ａ\u{030A}"),
+      (@normalization.NFKD, "ffi|\{ordered}|e\u{0301}|x\u{0301}|😀A\u{030A}"),
+    ] {
+    assert_eq(@normalization.normalize(input, form), expected)
+    assert_false(@normalization.is_normalized(input, form))
+    assert_true(@normalization.is_normalized(expected, form))
   }
 }

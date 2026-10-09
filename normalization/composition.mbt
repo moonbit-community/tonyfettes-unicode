@@ -18,22 +18,23 @@ fn try_compose(first : Char, second : Char) -> Char? {
 
 ///|
 /// Compose a sequence of canonically ordered characters
-/// This is the final step for NFC and NFKC
-fn canonical_compose(chars : Array[Char]) -> Array[Char] {
+/// Compact in place, reusing the decomposition buffer for NFC and NFKC.
+fn canonical_compose(chars : Array[Char]) -> Unit {
   let len = chars.length()
   if len == 0 {
-    return []
+    return
   }
-  let result : Array[Char] = []
-  result.push(chars[0])
+  let mut written = 1
 
-  // Track the last starter position in result (-1 if no starter yet)
-  let mut last_starter_idx = if @ccc.lookup_ccc(chars[0]) == 0 { 0 } else { -1 }
+  // Track the last starter position in the compacted prefix (-1 if no starter yet)
+  let first_ccc = @ccc.lookup_ccc(chars[0])
+  let mut last_starter_idx = if first_ccc == 0 { 0 } else { -1 }
 
   // Track CCC of the last character we processed
   // Used to detect "blocked" combining marks
-  let mut last_ccc = @ccc.lookup_ccc(chars[0])
-  for i = 1; i < len; i = i + 1 {
+  let mut last_ccc = first_ccc
+  // written never exceeds i: compaction cannot overwrite unread input.
+  for i in 1..<len {
     let c = chars[i]
     let ccc = @ccc.lookup_ccc(c)
 
@@ -47,29 +48,30 @@ fn canonical_compose(chars : Array[Char]) -> Array[Char] {
     //    OR this mark's CCC is greater than the previous mark's CCC
     let not_blocked = last_ccc == 0 || (ccc != 0 && last_ccc < ccc)
     if last_starter_idx >= 0 && not_blocked {
-      let starter = result[last_starter_idx]
+      let starter = chars[last_starter_idx]
       match try_compose(starter, c) {
         Some(composed) => {
-          // Successfully composed - update the starter in result
-          result[last_starter_idx] = composed
+          // Successfully composed - update the starter in the compacted prefix
+          chars[last_starter_idx] = composed
           // The composed character is still a starter, don't update last_ccc
           // This allows further composition with subsequent marks
-          continue i + 1
+          continue
         }
         None => ()
       }
     }
 
-    // Could not compose, add to result
-    result.push(c)
+    // Could not compose, keep the character in the compacted prefix
+    chars[written] = c
+    written += 1
     if ccc == 0 {
       // This is a new starter
-      last_starter_idx = result.length() - 1
+      last_starter_idx = written - 1
       last_ccc = 0
     } else {
       // This is a combining mark, update last_ccc
       last_ccc = ccc
     }
   }
-  result
+  chars.truncate(written)
 }
