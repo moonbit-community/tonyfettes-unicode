@@ -155,3 +155,36 @@ async test "NormalizationTest.txt - NFKD" {
     )
   }
 }
+
+///|
+async test "NormalizationTest.txt - quick check and copied span boundaries" {
+  for case in parse_cases(@support.read_data_file("NormalizationTest.txt")) {
+    let inputs = [case.c1, case.c2, case.c3, case.c4, case.c5]
+    for
+      form in [
+        @normalization.NFC,
+        @normalization.NFD,
+        @normalization.NFKC,
+        @normalization.NFKD,
+      ] {
+      for i, input in inputs {
+        let expected = match form {
+          NFC => if i < 3 { case.c2 } else { case.c4 }
+          NFD => if i < 3 { case.c3 } else { case.c5 }
+          NFKC => case.c4
+          NFKD => case.c5
+        }
+        @debug.assert_eq(
+          @normalization.is_normalized(input, form),
+          input == expected,
+          msg="NormalizationTest.txt line \{case.line_number}: is_normalized",
+        )
+        @debug.assert_eq(
+          @normalization.normalize("😀prefix|\{input}|suffix😀", form),
+          "😀prefix|\{expected}|suffix😀",
+          msg="NormalizationTest.txt line \{case.line_number}: copied boundaries",
+        )
+      }
+    }
+  }
+}
