@@ -102,7 +102,11 @@ async fn generate_ucd(root : StringView) -> Unit {
   let prop_list = @ucd.parse_prop_list(
     read_source(root, "PropList.txt", "\{base}/PropList.txt"),
   )
-  let ccc_ranges = @ucd.compress_ccc_ranges(unicode_data)
+  let normalization_properties = read_source(
+    root,
+    "DerivedNormalizationProps.txt",
+    "\{base}/DerivedNormalizationProps.txt",
+  )
   let mark_ranges = @ucd.compress_mark_ranges(unicode_data)
   let general_category_ranges = @ucd.compress_general_category_ranges(
     unicode_data,
@@ -111,7 +115,14 @@ async fn generate_ucd(root : StringView) -> Unit {
   let full_exclusions = @ucd.build_full_composition_exclusions(
     unicode_data, exclusions,
   )
-  write_source(root, "ucd/ccc/ccc.mbt", @ucd.emit_ccc(ccc_ranges))
+  write_source(root, "ucd/ccc/ccc.mbt", @ucd.emit_ccc())
+  write_source(
+    root,
+    "ucd/internal/normalization/normalization.mbt",
+    @ucd.emit_normalization(
+      unicode_data, compositions, normalization_properties,
+    ),
+  )
   write_source(
     root,
     "ucd/general_category/mark.mbt",
@@ -159,10 +170,11 @@ async fn generate_ucd(root : StringView) -> Unit {
     @ucd.emit_white_space(prop_list),
   )
   let generated_files = [
-    "ucd/general_category/mark.mbt", "ucd/ccc/ccc.mbt", "ucd/decomposition/decomposition.mbt",
-    "ucd/composition/composition.mbt", "ucd/general_category/general_category.mbt",
-    "ucd/case_mapping/case_mapping.mbt", "ucd/xid/xid.mbt", "ucd/alphabetic/alphabetic.mbt",
-    "ucd/lowercase/lowercase.mbt", "ucd/uppercase/uppercase.mbt", "ucd/white_space/white_space.mbt",
+    "ucd/internal/normalization/normalization.mbt", "ucd/general_category/mark.mbt",
+    "ucd/ccc/ccc.mbt", "ucd/decomposition/decomposition.mbt", "ucd/composition/composition.mbt",
+    "ucd/general_category/general_category.mbt", "ucd/case_mapping/case_mapping.mbt",
+    "ucd/xid/xid.mbt", "ucd/alphabetic/alphabetic.mbt", "ucd/lowercase/lowercase.mbt",
+    "ucd/uppercase/uppercase.mbt", "ucd/white_space/white_space.mbt",
   ]
   for file in generated_files {
     format_file(root, file)

@@ -44,3 +44,6 @@ pub using @uppercase {is_uppercase}
 ///|
 #deprecated("Import moonbit-community/ucd/white_space instead")
 pub using @white_space {is_white_space}
+
+///|
+pub using @ccc {lookup_normalization_properties}

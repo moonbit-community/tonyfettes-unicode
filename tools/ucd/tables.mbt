@@ -192,3 +192,36 @@ pub fn build_full_composition_exclusions(
   exclusions.sort()
   exclusions
 }
+
+///|
+/// Shared row order for the decomposition arrays and norm16 record indices.
+fn decomposition_entries(data : UnicodeData) -> Array[DecompositionEntry] {
+  let entries : Array[DecompositionEntry] = []
+  for entry in data.canonical_decompositions {
+    entries.push(entry)
+  }
+  for compat in data.compatibility_decompositions {
+    if entries.search_by(entry => entry.code_point == compat.code_point) is None {
+      entries.push({ code_point: compat.code_point, code_points: [], })
+    }
+  }
+  entries.sort_by((left, right) => left.code_point - right.code_point)
+  entries
+}
+
+///|
+/// Shared group order for norm16 records and the composition candidate table.
+fn composition_group_offsets(
+  compositions : Array[CompositionEntry],
+) -> Array[Int] {
+  let offsets : Array[Int] = []
+  let mut previous = -1
+  for index, entry in compositions {
+    if entry.first != previous {
+      offsets.push(index)
+      previous = entry.first
+    }
+  }
+  offsets.push(compositions.length())
+  offsets
+}

@@ -41,21 +41,24 @@ test "hangul LV syllable detection" {
 ///|
 test "hangul decomposition LV" {
   // 가 (U+AC00) = ᄀ (U+1100) + ᅡ (U+1161)
-  let result = decompose_hangul('\u{AC00}')
+  let result : Array[Char] = []
+  decompose_hangul('\u{AC00}', result)
   @debug.debug_inspect(result, content="['ᄀ', 'ᅡ']")
 }
 
 ///|
 test "hangul decomposition LVT" {
   // 각 (U+AC01) = ᄀ (U+1100) + ᅡ (U+1161) + ᆨ (U+11A8)
-  let result = decompose_hangul('\u{AC01}')
+  let result : Array[Char] = []
+  decompose_hangul('\u{AC01}', result)
   @debug.debug_inspect(result, content="['ᄀ', 'ᅡ', 'ᆨ']")
 }
 
 ///|
 test "hangul decomposition various" {
   // 한 (U+D55C) = ᄒ (U+1112) + ᅡ (U+1161) + ᆫ (U+11AB)
-  let result = decompose_hangul('\u{D55C}')
+  let result : Array[Char] = []
+  decompose_hangul('\u{D55C}', result)
   @debug.debug_inspect(result, content="['ᄒ', 'ᅡ', 'ᆫ']")
 }
 
@@ -90,7 +93,8 @@ test "hangul composition invalid" {
 test "hangul roundtrip" {
   // Decompose and recompose should give same result
   let original = '\u{AC01}' // 각
-  let decomposed = decompose_hangul(original)
+  let decomposed : Array[Char] = []
+  decompose_hangul(original, decomposed)
   // Compose L + V first
   let lv = try_compose_hangul(decomposed[0], decomposed[1])
   guard lv is Some(lv_val) else { fail("L+V should compose") }
