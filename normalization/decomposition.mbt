@@ -3,34 +3,32 @@
 /// Implements recursive decomposition for NFD/NFKD
 
 ///|
-/// Recursively decompose a single character
-/// Returns array of characters in fully decomposed form
-fn decompose_char(c : Char, compatibility~ : Bool) -> Array[Char] {
+/// Append a character's full recursive decomposition to the destination.
+fn decompose_char(c : Char, dest : Array[Char], compatibility~ : Bool) -> Unit {
   // Handle Hangul syllables algorithmically
   if is_hangul_syllable(c) {
-    return decompose_hangul(c)
+    decompose_hangul(c, dest)
+    return
   }
 
   // Look up decomposition mapping
   let mapping : Array[Char]? = if compatibility {
     // For compatibility, first try compat decomposition, then canonical
-    match @decomposition.get_compat_decomposition(c) {
-      Some(d) => Some(d)
-      None => @decomposition.get_canonical_decomposition(c)
+    let compat = @decomposition.get_compat_decomposition(c)
+    if compat is None {
+      @decomposition.get_canonical_decomposition(c)
+    } else {
+      compat
     }
   } else {
     @decomposition.get_canonical_decomposition(c)
   }
-  match mapping {
-    None => [c] // No decomposition, return as-is
-    Some(decomposed) => {
-      // Recursively decompose each component
-      let result : Array[Char] = []
-      for d in decomposed {
-        result.append(decompose_char(d, compatibility~))
-      }
-      result
+  if mapping is Some(decomposed) {
+    for d in decomposed {
+      decompose_char(d, dest, compatibility~)
     }
+  } else {
+    dest.push(c)
   }
 }
 
@@ -40,7 +38,7 @@ fn decompose_char(c : Char, compatibility~ : Bool) -> Array[Char] {
 fn decompose_string(s : String, compatibility~ : Bool) -> Array[Char] {
   let result : Array[Char] = []
   for c in s {
-    result.append(decompose_char(c, compatibility~))
+    decompose_char(c, result, compatibility~)
   }
   result
 }

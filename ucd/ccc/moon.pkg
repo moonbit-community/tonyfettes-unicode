@@ -1,1 +1,8 @@
+import {
+  "moonbit-community/ucd/internal/normalization" @normalization_data,
+}
 
+import {
+  "moonbit-community/ucd/decomposition",
+  "moonbit-community/ucd/composition",
+} for "test"

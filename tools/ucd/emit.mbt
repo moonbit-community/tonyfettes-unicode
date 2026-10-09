@@ -1,53 +1,18 @@
 ///|
-pub fn emit_ccc(ccc_ranges : Array[CccRange]) -> String {
+pub fn emit_ccc() -> String {
   let out = @emitter.Emitter::new()
   out.write_file_header(
-    "Canonical Combining Class (CCC) lookup data", "UnicodeData.txt",
-  )
-  out.write_int_array(
-    "CCC range start code points",
-    "ccc_starts",
-    ccc_ranges.map(range => range.start),
-    hex=true,
-  )
-  out.write_int_array(
-    "CCC range end code points (inclusive)",
-    "ccc_ends",
-    ccc_ranges.map(range => range.end),
-    hex=true,
-  )
-  out.write_int_array(
-    "CCC values for each range",
-    "ccc_values",
-    ccc_ranges.map(range => range.value),
-    hex=false,
+    "Canonical Combining Class (CCC) lookup", "UnicodeData.txt",
   )
   out.write(
     (
       #|///|
-      #|/// Look up Canonical Combining Class for a character
-      #|/// Returns 0 (starter) for most characters
+      #|pub using @normalization_data {lookup_normalization_properties}
+      #|
+      #|///|
+      #|/// Look up Canonical Combining Class; 0 denotes a starter.
       #|pub fn lookup_ccc(c : Char) -> Int {
-      #|  let cp = c.to_int()
-      #|  // Binary search through ranges
-      #|  let mut left = 0
-      #|  let mut right = ccc_starts.length() - 1
-      #|
-      #|  while left <= right {
-      #|    let mid = (left + right) / 2
-      #|    let start = ccc_starts[mid]
-      #|    let end = ccc_ends[mid]
-      #|
-      #|    if cp < start {
-      #|      right = mid - 1
-      #|    } else if cp > end {
-      #|      left = mid + 1
-      #|    } else {
-      #|      return ccc_values[mid]
-      #|    }
-      #|  }
-      #|
-      #|  0 // Not found, default CCC is 0 (starter)
+      #|  @normalization_data.lookup_normalization_properties(c) & 255
       #|}
       #|
     ),
@@ -313,37 +278,54 @@ pub fn emit_case_mapping(
 }
 
 ///|
-pub fn emit_decomposition(data : UnicodeData) -> String {
-  // The low bit distinguishes canonical (0) from compatibility (1).
-  let entries : Array[(Int, Array[Int])] = []
-  for entry in data.canonical_decompositions {
-    entries.push((entry.code_point << 1, entry.code_points))
-  }
-  for entry in data.compatibility_decompositions {
-    entries.push(((entry.code_point << 1) | 1, entry.code_points))
-  }
-  entries.sort_by((left, right) => left.0 - right.0)
-  let keys : Array[Int] = []
-  let offsets : Array[Int] = [0]
+pub fn emit_decomposition(data : UnicodeData) -> String raise {
+  let entries = decomposition_entries(data)
+  let starts : Array[Int] = []
+  let canonical_lens : Array[Int] = []
+  let compat_lens : Array[Int] = []
   let flattened : Array[Int] = []
-  for (key, code_points) in entries {
-    keys.push(key)
-    flattened.append(code_points)
-    offsets.push(flattened.length())
+  for entry in entries {
+    starts.push(flattened.length())
+    match
+      data.canonical_decompositions.search_by(item => {
+        item.code_point == entry.code_point
+      }) {
+      Some(index) => {
+        let canonical = data.canonical_decompositions[index].code_points
+        canonical_lens.push(canonical.length())
+        flattened.append(canonical)
+      }
+      None => canonical_lens.push(0)
+    }
+    match
+      data.compatibility_decompositions.search_by(item => {
+        item.code_point == entry.code_point
+      }) {
+      Some(index) => {
+        let compat = data.compatibility_decompositions[index].code_points
+        compat_lens.push(compat.length())
+        flattened.append(compat)
+      }
+      None => compat_lens.push(0)
+    }
+  }
+  guard canonical_lens.iter().all(len => len <= 255) &&
+    compat_lens.iter().all(len => len <= 255) else {
+    fail("Decomposition length exceeds its encoded byte width")
   }
   let out = @emitter.Emitter::new()
   out.write_file_header("Decomposition mapping data", "UnicodeData.txt")
   out.write_int_array(
-    "Sorted keys: `code_point << 1 | kind` (canonical = 0, compatibility = 1)",
-    "decomp_keys",
-    keys,
-    hex=true,
-  )
-  out.write_int_array(
-    "Data offsets, including a final sentinel; mapping i is offsets[i]..<offsets[i + 1]",
-    "decomp_offsets",
-    offsets,
+    "Data start index for each code point",
+    "decomp_data_starts",
+    starts,
     hex=false,
+  )
+  out.write_byte_array(
+    "Canonical decomposition length (0 if none)", "decomp_canonical_lens", canonical_lens,
+  )
+  out.write_byte_array(
+    "Compatibility decomposition length (0 if none)", "decomp_compat_lens", compat_lens,
   )
   out.write_int_array(
     "Decomposition data (flattened code points)",
@@ -354,42 +336,52 @@ pub fn emit_decomposition(data : UnicodeData) -> String {
   out.write(
     (
       #|///|
-      #|/// Look up an exact (code point, decomposition kind) key.
-      #|fn get_decomposition(key : Int) -> Array[Char]? {
-      #|  let mut left = 0
-      #|  let mut right = decomp_keys.length() - 1
-      #|  while left <= right {
-      #|    let mid = (left + right) / 2
-      #|    let mid_key = decomp_keys[mid]
-      #|    if key < mid_key {
-      #|      right = mid - 1
-      #|    } else if key > mid_key {
-      #|      left = mid + 1
-      #|    } else {
-      #|      let start = decomp_offsets[mid]
-      #|      let end = decomp_offsets[mid + 1]
-      #|      let result : Array[Char] = []
-      #|      for code_point in decomp_data.exact_view(start=start, end=end) {
-      #|        result.push(code_point.unsafe_to_char())
-      #|      }
-      #|      return Some(result)
-      #|    }
-      #|  }
-      #|  None
-      #|}
-      #|
-      #|///|
       #|/// Get canonical decomposition for a character
       #|/// Returns None if no decomposition exists
       #|pub fn get_canonical_decomposition(c : Char) -> Array[Char]? {
-      #|  get_decomposition(c.to_int() << 1)
+      #|  let idx = @normalization_data.normalization_decomposition_index(c)
+      #|  if idx < 0 {
+      #|    return None
+      #|  }
+      #|
+      #|  let len = decomp_canonical_lens[idx].to_int()
+      #|  if len == 0 {
+      #|    return None
+      #|  }
+      #|
+      #|  let start = decomp_data_starts[idx]
+      #|  let result : Array[Char] = []
+      #|  for code_point in decomp_data.exact_view(start=start, end=start + len) {
+      #|    result.push(code_point.unsafe_to_char())
+      #|  }
+      #|  Some(result)
       #|}
       #|
       #|///|
       #|/// Get compatibility decomposition for a character
       #|/// Returns None if no decomposition exists
       #|pub fn get_compat_decomposition(c : Char) -> Array[Char]? {
-      #|  get_decomposition((c.to_int() << 1) | 1)
+      #|  let idx = @normalization_data.normalization_decomposition_index(c)
+      #|  if idx < 0 {
+      #|    return None
+      #|  }
+      #|
+      #|  let compat_len = decomp_compat_lens[idx].to_int()
+      #|  if compat_len == 0 {
+      #|    return None
+      #|  }
+      #|
+      #|  // Compat data comes after canonical data
+      #|  let canonical_len = decomp_canonical_lens[idx].to_int()
+      #|  let start = decomp_data_starts[idx] + canonical_len
+      #|  let result : Array[Char] = []
+      #|  for code_point in decomp_data.exact_view(
+      #|    start=start,
+      #|    end=start + compat_len,
+      #|  ) {
+      #|    result.push(code_point.unsafe_to_char())
+      #|  }
+      #|  Some(result)
       #|}
       #|
     ),
@@ -407,10 +399,10 @@ pub fn emit_composition(
     "Composition lookup data", "UnicodeData.txt and CompositionExclusions.txt",
   )
   out.write_int_array(
-    "First code points of composition pairs (sorted)",
-    "comp_firsts",
-    compositions.map(entry => entry.first),
-    hex=true,
+    "Composition candidate group offsets, with an end sentinel",
+    "comp_group_offsets",
+    composition_group_offsets(compositions),
+    hex=false,
   )
   out.write_int_array(
     "Second code points of composition pairs",
@@ -436,22 +428,22 @@ pub fn emit_composition(
       #|/// Look up composition for a pair of characters
       #|/// Returns Some(composed) if composition exists, None otherwise
       #|pub fn lookup_composition(starter : Char, combining : Char) -> Char? {
-      #|  let starter_cp = starter.to_int()
+      #|  let group = @normalization_data.normalization_composition_group(starter)
+      #|  if group < 0 {
+      #|    return None
+      #|  }
       #|  let combining_cp = combining.to_int()
-      #|  // Binary search for the pair
-      #|  let mut left = 0
-      #|  let mut right = comp_firsts.length() - 1
+      #|  // Search only this starter's candidates, not the global pair table.
+      #|  let mut left = comp_group_offsets[group]
+      #|  let mut right = comp_group_offsets[group + 1] - 1
       #|
       #|  while left <= right {
       #|    let mid = (left + right) / 2
-      #|    let mid_first = comp_firsts[mid]
       #|    let mid_second = comp_seconds[mid]
       #|
-      #|    if starter_cp < mid_first ||
-      #|      (starter_cp == mid_first && combining_cp < mid_second) {
+      #|    if combining_cp < mid_second {
       #|      right = mid - 1
-      #|    } else if starter_cp > mid_first ||
-      #|      (starter_cp == mid_first && combining_cp > mid_second) {
+      #|    } else if combining_cp > mid_second {
       #|      left = mid + 1
       #|    } else {
       #|      return Some(comp_results[mid].unsafe_to_char())

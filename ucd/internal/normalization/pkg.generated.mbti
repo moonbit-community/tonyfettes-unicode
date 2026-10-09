@@ -1,10 +1,12 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "moonbit-community/ucd/ccc"
+package "moonbit-community/ucd/internal/normalization"
 
 // Values
-pub fn lookup_ccc(Char) -> Int
-
 pub fn lookup_normalization_properties(Char) -> Int
+
+pub fn normalization_composition_group(Char) -> Int
+
+pub fn normalization_decomposition_index(Char) -> Int
 
 // Errors
 
