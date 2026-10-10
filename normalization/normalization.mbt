@@ -33,24 +33,12 @@ pub impl Show for NormalizationForm with fn output(self, logger) {
 }
 
 ///|
-/// Convert array of characters to string
-fn chars_to_string(chars : Array[Char]) -> String {
-  let sb = StringBuilder()
-  for c in chars {
-    sb.write_char(c)
-  }
-  sb.to_string()
-}
-
-///|
 /// Normalize a string to NFD (Canonical Decomposition)
 ///
 /// Characters are decomposed to their canonical equivalents and
 /// combining marks are reordered by Canonical Combining Class.
 pub fn nfd(s : String) -> String {
-  let chars = decompose_string(s, compatibility=false)
-  canonical_order(chars)
-  chars_to_string(chars)
+  normalize_spans(s, 12, 1, compatibility=false, compose=false)
 }
 
 ///|
@@ -60,10 +48,7 @@ pub fn nfd(s : String) -> String {
 /// recomposed using canonical composition rules.
 /// This is the most commonly used normalization form.
 pub fn nfc(s : String) -> String {
-  let chars = decompose_string(s, compatibility=false)
-  canonical_order(chars)
-  let composed = canonical_compose(chars)
-  chars_to_string(composed)
+  normalize_spans(s, 8, 3, compatibility=false, compose=true)
 }
 
 ///|
@@ -73,9 +58,7 @@ pub fn nfc(s : String) -> String {
 /// (including formatting variants like superscripts, fractions, etc.)
 /// and combining marks are reordered.
 pub fn nfkd(s : String) -> String {
-  let chars = decompose_string(s, compatibility=true)
-  canonical_order(chars)
-  chars_to_string(chars)
+  normalize_spans(s, 13, 1, compatibility=true, compose=false)
 }
 
 ///|
@@ -84,10 +67,7 @@ pub fn nfkd(s : String) -> String {
 /// Characters are decomposed to compatibility equivalents, reordered,
 /// then recomposed. Often used for identifier comparison.
 pub fn nfkc(s : String) -> String {
-  let chars = decompose_string(s, compatibility=true)
-  canonical_order(chars)
-  let composed = canonical_compose(chars)
-  chars_to_string(composed)
+  normalize_spans(s, 10, 3, compatibility=true, compose=true)
 }
 
 ///|
@@ -104,5 +84,29 @@ pub fn normalize(s : String, form : NormalizationForm) -> String {
 ///|
 /// Check if a string is in the specified normalization form
 pub fn is_normalized(s : String, form : NormalizationForm) -> Bool {
-  normalize(s, form) == s
+  let result = match form {
+    NFC =>
+      process_spans(s, 8, 3, compatibility=false, compose=true, check_only=true)
+    NFKC =>
+      process_spans(s, 10, 3, compatibility=true, compose=true, check_only=true)
+    NFD =>
+      process_spans(
+        s,
+        12,
+        1,
+        compatibility=false,
+        compose=false,
+        check_only=true,
+      )
+    NFKD =>
+      process_spans(
+        s,
+        13,
+        1,
+        compatibility=true,
+        compose=false,
+        check_only=true,
+      )
+  }
+  result is Some(_)
 }

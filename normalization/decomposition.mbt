@@ -31,14 +31,3 @@ fn decompose_char(c : Char, dest : Array[Char], compatibility~ : Bool) -> Unit {
     dest.push(c)
   }
 }
-
-///|
-/// Decompose a string to array of characters
-/// This is the first step for all normalization forms
-fn decompose_string(s : String, compatibility~ : Bool) -> Array[Char] {
-  let result : Array[Char] = []
-  for c in s {
-    decompose_char(c, result, compatibility~)
-  }
-  result
-}

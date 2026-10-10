@@ -8,6 +8,7 @@ import {
   "moonbit-community/normalization/internal/base_fuzz" @fuzz,
   "moonbit-community/normalization/internal/fuzz" @normalization_fuzz,
   "moonbitlang/core/random",
+  "moonbitlang/core/bench",
 } for "test"
 
 import {
