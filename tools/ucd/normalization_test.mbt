@@ -78,3 +78,17 @@ test "normalization generator accepts explicit defaults and unrelated properties
   // An all-default table has a BMP block and an implicit supplementary tail.
   assert_true(source.contains("if cp >= 65536"))
 }
+
+///|
+test "normalization generator validates the full supplementary range" {
+  // Force a stored value at both supplementary endpoints, including the last
+  // slot of the last leaf. emit_normalization validates every intervening index.
+  let input =
+    #|10000 ; NFC_QC ; N
+    #|10FFFF ; NFC_QC ; N
+    #|10FFFF ; NFKC_QC ; N
+    #|10FFFF ; NFD_QC ; N
+    #|10FFFF ; NFKD_QC ; N
+  let source = @ucd.emit_normalization(@ucd.parse_unicode_data(""), [], input)
+  assert_true(source.contains("if cp >= 1114112"))
+}

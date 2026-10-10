@@ -2622,6 +2622,16 @@ let normalization_extra : Bytes = [
 ]
 
 ///|
+// Ordinary Wasm benefits from omitting the validated supplementary checks.
+// Keep the existing Native/JS shape; Wasm-GC array.get is bounds-checked.
+#cfg(target="wasm")
+const UncheckedSupplementaryLookup : Bool = true
+
+///|
+#cfg(not(target="wasm"))
+const UncheckedSupplementaryLookup : Bool = false
+
+///|
 /// Bit 15 tags an extra-record index; otherwise the value is packed properties.
 fn lookup_norm16(c : Char) -> Int {
   let cp = c.to_int()
@@ -2643,10 +2653,22 @@ fn lookup_supplementary_norm16(cp : Int) -> Int {
   if cp >= 195200 {
     return 0
   }
-  let mid = (normalization_trie_top[(cp - 65536) >> 7].to_int() << 5) |
-    ((cp >> 2) & 31)
-  let leaf = normalization_trie_mid[mid]
-  normalization_trie_leaf[(leaf << 2) | (cp & 3)]
+  if UncheckedSupplementaryLookup {
+    // SAFETY: callers ensure cp >= 65536; the guard above bounds cp.
+    // The generator validates all three indices for every cp in this range.
+    // These tables are immutable.
+    let mid = (
+        normalization_trie_top.unsafe_get((cp - 65536) >> 7).to_int() << 5
+      ) |
+      ((cp >> 2) & 31)
+    let leaf = normalization_trie_mid.unsafe_get(mid)
+    normalization_trie_leaf.unsafe_get((leaf << 2) | (cp & 3))
+  } else {
+    let mid = (normalization_trie_top[(cp - 65536) >> 7].to_int() << 5) |
+      ((cp >> 2) & 31)
+    let leaf = normalization_trie_mid[mid]
+    normalization_trie_leaf[(leaf << 2) | (cp & 3)]
+  }
 }
 
 ///|

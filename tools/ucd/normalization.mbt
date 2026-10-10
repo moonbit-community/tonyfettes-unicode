@@ -141,14 +141,15 @@ pub fn emit_normalization(
     leaf.ids,
     1 << (NormalizationTopShift - NormalizationLeafShift),
   )
-  guard mid.ids.iter().all(id => id < 256) else {
+  guard mid.ids.iter().all(id => id >= 0 && id < 256) else {
     fail("Normalization trie top indices exceed their encoded width")
   }
   let mid_shift = NormalizationTopShift - NormalizationLeafShift
   let mid_mask = (1 << mid_shift) - 1
   let leaf_mask = (1 << NormalizationLeafShift) - 1
   // Check the encoded representation, including the implicit default tail,
-  // before emitting source. This also guards changes to the block layout.
+  // before emitting source. Validate every derived supplementary index before
+  // its access: emitted unsafe_get calls rely on these immutable tables.
   for cp in 0..<=MaxCodePoint {
     let actual = if cp < NormalizationBmpLimit {
       bmp.blocks[bmp_offsets[cp >> NormalizationBmpShift] +
@@ -156,13 +157,27 @@ pub fn emit_normalization(
     } else if cp >= limit {
       0
     } else {
-      let mid_index = (
-          mid.ids[(cp - NormalizationBmpLimit) >> NormalizationTopShift] <<
-          mid_shift
-        ) |
+      let top_index = (cp - NormalizationBmpLimit) >> NormalizationTopShift
+      guard top_index >= 0 && top_index < mid.ids.length() else {
+        fail(
+          "Normalization top index \{top_index} out of bounds at code point \{cp}",
+        )
+      }
+      let mid_index = (mid.ids[top_index] << mid_shift) |
         ((cp >> NormalizationLeafShift) & mid_mask)
-      let leaf_index = mid.blocks[mid_index]
-      leaf.blocks[(leaf_index << NormalizationLeafShift) | (cp & leaf_mask)]
+      guard mid_index >= 0 && mid_index < mid.blocks.length() else {
+        fail(
+          "Normalization mid index \{mid_index} out of bounds at code point \{cp}",
+        )
+      }
+      let leaf_index = (mid.blocks[mid_index] << NormalizationLeafShift) |
+        (cp & leaf_mask)
+      guard leaf_index >= 0 && leaf_index < leaf.blocks.length() else {
+        fail(
+          "Normalization leaf index \{leaf_index} out of bounds at code point \{cp}",
+        )
+      }
+      leaf.blocks[leaf_index]
     }
     guard actual == values[cp] else {
       fail("Normalization trie mismatch at code point \{cp}")
@@ -210,6 +225,16 @@ pub fn emit_normalization(
   out.write(
     (
       $|///|
+      $|// Ordinary Wasm benefits from omitting the validated supplementary checks.
+      $|// Keep the existing Native/JS shape; Wasm-GC array.get is bounds-checked.
+      $|#cfg(target="wasm")
+      $|const UncheckedSupplementaryLookup : Bool = true
+      $|
+      $|///|
+      $|#cfg(not(target="wasm"))
+      $|const UncheckedSupplementaryLookup : Bool = false
+      $|
+      $|///|
       $|/// Bit 15 tags an extra-record index; otherwise the value is packed properties.
       $|fn lookup_norm16(c : Char) -> Int {
       $|  let cp = c.to_int()
@@ -231,10 +256,20 @@ pub fn emit_normalization(
       $|  if cp >= \{limit} {
       $|    return 0
       $|  }
-      $|  let mid = (normalization_trie_top[(cp - \{NormalizationBmpLimit}) >> \{NormalizationTopShift}].to_int() << \{mid_shift}) |
-      $|    ((cp >> \{NormalizationLeafShift}) & \{mid_mask})
-      $|  let leaf = normalization_trie_mid[mid]
-      $|  normalization_trie_leaf[(leaf << \{NormalizationLeafShift}) | (cp & \{leaf_mask})]
+      $|  if UncheckedSupplementaryLookup {
+      $|    // SAFETY: callers ensure cp >= \{NormalizationBmpLimit}; the guard above bounds cp.
+      $|    // The generator validates all three indices for every cp in this range.
+      $|    // These tables are immutable.
+      $|    let mid = (normalization_trie_top.unsafe_get((cp - \{NormalizationBmpLimit}) >> \{NormalizationTopShift}).to_int() << \{mid_shift}) |
+      $|      ((cp >> \{NormalizationLeafShift}) & \{mid_mask})
+      $|    let leaf = normalization_trie_mid.unsafe_get(mid)
+      $|    normalization_trie_leaf.unsafe_get((leaf << \{NormalizationLeafShift}) | (cp & \{leaf_mask}))
+      $|  } else {
+      $|    let mid = (normalization_trie_top[(cp - \{NormalizationBmpLimit}) >> \{NormalizationTopShift}].to_int() << \{mid_shift}) |
+      $|      ((cp >> \{NormalizationLeafShift}) & \{mid_mask})
+      $|    let leaf = normalization_trie_mid[mid]
+      $|    normalization_trie_leaf[(leaf << \{NormalizationLeafShift}) | (cp & \{leaf_mask})]
+      $|  }
       $|}
       $|
       $|///|

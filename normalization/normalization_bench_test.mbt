@@ -29,3 +29,16 @@ test "normalization spans" (b : @bench.T) {
     })
   }
 }
+
+///|
+// Exercise supplementary lookups after the BMP path becomes hot in the same VM.
+test "supplementary after BMP warmup" (b : @bench.T) {
+  let bmp = "中文日本語".repeat(256)
+  for _ in 0..<2000 {
+    b.keep(@normalization.nfc(bmp))
+  }
+  let input = "😀𠀀𝄞".repeat(4096)
+  b.bench(name="NFC/supplementary after BMP warmup", fn() {
+    b.keep(@normalization.nfc(input))
+  })
+}
