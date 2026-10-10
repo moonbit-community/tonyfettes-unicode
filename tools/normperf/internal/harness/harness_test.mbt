@@ -75,7 +75,7 @@ async test "reject nonempty result directory before preparation and preserve eve
       put(directory, name, "previous result")
     }
     let error = try {
-      @normperf.run(
+      @harness.run(
         root="/nonexistent-normperf-root",
         icu_prefix="/unused",
         output=directory,
@@ -102,7 +102,7 @@ async test "prepare-only bypasses result directory and leaves it untouched even 
   with_directory(directory => {
     put(directory, "environment.json", "previous result")
     let error = try {
-      @normperf.run(
+      @harness.run(
         root="\{directory}/missing-root",
         icu_prefix="/unused",
         output=directory,
@@ -127,7 +127,7 @@ async test "prepare-only bypasses result directory and leaves it untouched even 
 async test "fastest sample, mean of medians, ratios and selected backend report" {
   with_directory(directory => {
     samples(directory)
-    @normperf.summarize(directory)
+    @harness.summarize(directory)
     let csv = @fs.read_file("\{directory}/comparison.csv").text()
     inspect(csv.split("\n").count(), content="6")
     inspect(csv.contains("wasm"), content="false")
@@ -203,7 +203,7 @@ async test "reject missing runs, incomplete matrix, duplicate cases and malforme
           )
       }
       let error = try {
-        @normperf.summarize(directory)
+        @harness.summarize(directory)
         ""
       } catch {
         error => error.to_string()

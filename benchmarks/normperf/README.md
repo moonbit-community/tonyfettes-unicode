@@ -8,8 +8,8 @@ The data comes from that same pinned revision's
 Upstream data is covered by [ICU's license](https://github.com/unicode-org/icu/blob/457157a92aa053e632cc7fcfd0e12f8a943b2d11/LICENSE).
 
 ```sh
-moon run --target native tools/normperf/main -- run --icu-prefix /opt/homebrew/opt/icu4c@77
-moon run --target native tools/normperf/main -- summarize benchmarks/normperf/.work/results
+moon run --target native tools/normperf -- run --icu-prefix /opt/homebrew/opt/icu4c@77
+moon run --target native tools/normperf -- summarize benchmarks/normperf/.work/results
 ```
 
 Requires MoonBit, a C++17 compiler, pkg-config, and an installed ICU
@@ -52,7 +52,9 @@ process medians in CSV. Results recorded on a busy machine are explicitly marked
 small differences should be rechecked on an idle machine.
 
 The runner, checksum verification, fixture generation, statistics and reports are
-implemented in MoonBit under `tools/normperf/`. The only C++ code is `icu.cpp`,
+implemented in MoonBit. `tools/normperf` is the executable entry point; its
+testable implementation lives in `tools/normperf/internal/harness`.
+The only C++ code is `icu.cpp`,
 which generates ICU reference outputs and measures ICU APIs. SHA-256 comes from
 `moonbitlang/x/crypto`; this dependency belongs to the internal `tools/` module,
 not the published libraries.
@@ -60,5 +62,5 @@ not the published libraries.
 Run the harness regression tests without installing ICU or downloading corpora:
 
 ```sh
-moon test --target native tools/normperf
+moon test --target native tools/normperf/internal/harness
 ```

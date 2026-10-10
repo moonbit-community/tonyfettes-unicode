@@ -1,15 +1,11 @@
 supported_targets = "native"
 
 import {
-  "moonbitlang/x/crypto",
-  "moonbitlang/core/json",
-  "moonbitlang/core/encoding/utf8",
-  "moonbitlang/core/encoding/utf16",
-  "moonbitlang/core/env",
-  "moonbitlang/core/math",
+  "moonbit-community/unicode-tools/normperf/internal/harness",
+  "moonbitlang/core/argparse",
+  "moonbitlang/core/string",
   "moonbitlang/async",
   "moonbitlang/async/fs",
-  "moonbitlang/async/http",
-  "moonbitlang/async/os_error",
-  "moonbitlang/async/process",
 }
+
+pkgtype(kind: "executable")

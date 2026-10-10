@@ -41,7 +41,7 @@ async fn main {
       guard @fs.exists("benchmarks/normperf/corpus.json") else {
         fail("Run from the repository root")
       }
-      @normperf.run(
+      @harness.run(
         root=".",
         icu_prefix=value(options, "icu-prefix"),
         output=value(options, "output"),
@@ -54,7 +54,7 @@ async fn main {
       )
     }
     Some(("summarize", options)) =>
-      @normperf.summarize(value(options, "directory"))
+      @harness.summarize(value(options, "directory"))
     _ => fail("Expected run or summarize")
   }
 }

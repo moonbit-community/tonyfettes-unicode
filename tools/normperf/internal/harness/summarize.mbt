@@ -331,7 +331,7 @@ pub async fn summarize(directory : String) -> Unit {
     "- Only NFC/NFD are included, the shared forms in the original normperf matrix. This is a standalone harness reusing its full corpora and bulk input matrix, not the upstream executable or its five-second/ten-pass timing configuration.",
     "- The fastest-sample convention follows [ICU perf methodology](https://github.com/unicode-org/icu-perf#performance-test-methodology); timing duration differs. Mean-of-median columns expose how much loaded-machine timings diverged.",
     "- Raw samples: `*-1.jsonl` through `*-\{environment.repeats}.jsonl`; every case: [comparison.csv](comparison.csv). Toolchain details: [environment.json](environment.json). Input lengths and hashes: [inputs.json](inputs.json).",
-    "- Reproduce from repository root: `moon run --target native tools/normperf/main -- run --icu-prefix /path/to/icu77 --output /tmp/normperf-results`, then `moon run --target native tools/normperf/main -- summarize /tmp/normperf-results`.",
+    "- Reproduce from repository root: `moon run --target native tools/normperf -- run --icu-prefix /path/to/icu77 --output /tmp/normperf-results`, then `moon run --target native tools/normperf -- summarize /tmp/normperf-results`.",
     "",
   ])
   // Validate all inputs before replacing any report.
