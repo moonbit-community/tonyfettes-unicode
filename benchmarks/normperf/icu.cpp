@@ -46,13 +46,42 @@ static void measure(const std::string &name, const std::function<void()> &f) {
     std::cout << "]}" << std::endl;
 }
 int main(int argc, char **argv) try {
-    if (argc != 2) throw std::runtime_error("Usage: icu <fixture-directory>");
-    std::string dir = argv[1];
+    bool prepare = argc == 3 && std::string(argv[1]) == "prepare";
+    if (argc != 2 && !prepare) throw std::runtime_error("Usage: icu [prepare] <fixture-directory>");
+    std::string dir = argv[prepare ? 2 : 1];
     std::ifstream names(dir + "/names.txt");
     if (!names) throw std::runtime_error("Missing names.txt");
     UVersionInfo unicode;
     u_getUnicodeVersion(unicode);
     std::cerr << "ICU " << U_ICU_VERSION << ", Unicode " << int(unicode[0]) << '.' << int(unicode[1]) << '\n';
+    if (unicode[0] != 16 || std::string(U_ICU_VERSION) != "77.1")
+        throw std::runtime_error("Use ICU 77.1 with Unicode 16");
+    if (prepare) {
+        std::string name;
+        while (std::getline(names, name)) {
+            auto input = read(dir + "/" + name + ".orig.bin");
+            icu::UnicodeString source(false, input.data(), static_cast<int32_t>(input.size()));
+            for (bool decompose : {false, true}) {
+                UErrorCode error = U_ZERO_ERROR;
+                auto normalizer = decompose ? icu::Normalizer2::getNFDInstance(error) : icu::Normalizer2::getNFCInstance(error);
+                checked(error);
+                icu::UnicodeString result;
+                normalizer->normalize(source, result, error);
+                checked(error);
+                std::ofstream output(dir + "/" + name + (decompose ? ".nfd.bin" : ".nfc.bin"), std::ios::binary);
+                for (int32_t i = 0; i < result.length(); ++i) {
+                    auto unit = result.charAt(i);
+                    output.put(static_cast<char>(unit & 0xff));
+                    output.put(static_cast<char>(unit >> 8));
+                }
+                output.close();
+                if (!output) throw std::runtime_error("Cannot write normalized fixture");
+            }
+        }
+        std::cout << "{\"icu\":\"" << U_ICU_VERSION << "\",\"unicode\":\""
+                  << int(unicode[0]) << '.' << int(unicode[1]) << '.' << int(unicode[2]) << '.' << int(unicode[3]) << "\"}\n";
+        return 0;
+    }
     std::string name;
     while (std::getline(names, name)) {
         auto original = read(dir + "/" + name + ".orig.bin");

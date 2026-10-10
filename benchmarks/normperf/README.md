@@ -8,16 +8,17 @@ The data comes from that same pinned revision's
 Upstream data is covered by [ICU's license](https://github.com/unicode-org/icu/blob/457157a92aa053e632cc7fcfd0e12f8a943b2d11/LICENSE).
 
 ```sh
-python3 benchmarks/normperf/run.py --icu-prefix /opt/homebrew/opt/icu4c@77
-python3 benchmarks/normperf/summarize.py benchmarks/normperf/.work/results
+moon run --target native tools/normperf/main -- run --icu-prefix /opt/homebrew/opt/icu4c@77
+moon run --target native tools/normperf/main -- summarize benchmarks/normperf/.work/results
 ```
 
-Requires Python 3, MoonBit, a C++17 compiler, pkg-config, and an installed ICU
-using Unicode 16. On Linux or other macOS installations supply its installation prefix explicitly.
+Requires MoonBit, a C++17 compiler, pkg-config, and an installed ICU
+version 77.1 using Unicode 16. On Linux or other macOS installations supply its installation prefix explicitly.
 Downloads are cached in `.cache/` and checked against the committed SHA-256
 manifest. Generated fixtures and binaries live in `.work/`; neither is published
 with the library. `--prepare-only` downloads/builds fixtures; `--targets native`
 restricts the MoonBit backends, and `--repeats` controls independent executions.
+Use a comma-separated list to select several backends, e.g. `--targets wasm,wasm-gc`.
 The defaults are native, wasm, wasm-gc and three executions.
 Each measurement run requires an empty output directory; use a new `--output`
 path when rerunning, including when selecting fewer backends. Existing results
@@ -49,3 +50,14 @@ The harness records the current checkout's source revision with each run.
 The summary reports the fastest sample (as in ICU perf) and retains the mean of
 process medians in CSV. Results recorded on a busy machine are explicitly marked;
 small differences should be rechecked on an idle machine.
+
+The runner, checksum verification, fixture generation, statistics and reports are
+implemented in MoonBit under `tools/normperf/`. The only C++ code is `icu.cpp`,
+which generates ICU reference outputs and measures ICU APIs. The SHA-256
+dependency belongs to the internal `tools/` module, not the published libraries.
+
+Run the harness regression tests without installing ICU or downloading corpora:
+
+```sh
+moon test --target native tools/normperf
+```

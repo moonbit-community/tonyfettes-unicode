@@ -1,0 +1,11 @@
+supported_targets = "native"
+
+import {
+  "moonbit-community/unicode-tools/normperf",
+  "moonbitlang/core/argparse",
+  "moonbitlang/core/string",
+  "moonbitlang/async",
+  "moonbitlang/async/fs",
+}
+
+pkgtype(kind: "executable")

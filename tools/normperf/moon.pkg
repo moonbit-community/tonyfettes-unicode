@@ -1,0 +1,16 @@
+supported_targets = "native"
+
+import {
+  "mizchi/experimental_crypto/hash",
+  "moonbitlang/core/encoding/hex",
+  "moonbitlang/core/json",
+  "moonbitlang/core/encoding/utf8",
+  "moonbitlang/core/encoding/utf16",
+  "moonbitlang/core/env",
+  "moonbitlang/core/math",
+  "moonbitlang/async",
+  "moonbitlang/async/fs",
+  "moonbitlang/async/http",
+  "moonbitlang/async/os_error",
+  "moonbitlang/async/process",
+}
