@@ -53,8 +53,9 @@ small differences should be rechecked on an idle machine.
 
 The runner, checksum verification, fixture generation, statistics and reports are
 implemented in MoonBit under `tools/normperf/`. The only C++ code is `icu.cpp`,
-which generates ICU reference outputs and measures ICU APIs. The SHA-256
-dependency belongs to the internal `tools/` module, not the published libraries.
+which generates ICU reference outputs and measures ICU APIs. SHA-256 comes from
+`moonbitlang/x/crypto`; this dependency belongs to the internal `tools/` module,
+not the published libraries.
 
 Run the harness regression tests without installing ICU or downloading corpora:
 

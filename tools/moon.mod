@@ -8,5 +8,5 @@ description = "Code generation tools for moonbit-community/unicode"
 
 import {
   "moonbitlang/async@0.20.2",
-  "mizchi/experimental_crypto@0.0.2",
+  "moonbitlang/x@0.4.43",
 }

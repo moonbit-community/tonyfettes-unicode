@@ -57,7 +57,7 @@ async fn capture(
 
 ///|
 fn digest(bytes : Bytes) -> String {
-  @hex.encode(@hash.sha256(bytes))
+  @crypto.bytes_to_hex_string(@crypto.sha256(bytes))
 }
 
 ///|
