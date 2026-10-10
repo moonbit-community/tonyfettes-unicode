@@ -1,5 +1,12 @@
 ///|
-/// A top block covers 128 code points; a leaf block holds four packed values.
+/// BMP lookups use one block-offset load and one norm16 value load.
+const NormalizationBmpShift : Int = 5
+
+///|
+const NormalizationBmpLimit : Int = 0x10000
+
+///|
+/// Supplementary top blocks cover 128 code points; leaves hold four values.
 const NormalizationTopShift : Int = 7
 
 ///|
@@ -117,45 +124,60 @@ pub fn emit_normalization(
     last -= 1
   }
   let top_size = 1 << NormalizationTopShift
-  let limit = (last + top_size) / top_size * top_size
+  let limit = Int::max(
+    NormalizationBmpLimit,
+    (last + top_size) / top_size * top_size,
+  )
+  let bmp = deduplicate_blocks(
+    values[:NormalizationBmpLimit].to_owned(),
+    1 << NormalizationBmpShift,
+  )
+  let bmp_offsets = bmp.ids.map(id => id << NormalizationBmpShift)
   let leaf = deduplicate_blocks(
-    values[:limit].to_owned(),
+    values[NormalizationBmpLimit:limit].to_owned(),
     1 << NormalizationLeafShift,
   )
   let mid = deduplicate_blocks(
     leaf.ids,
     1 << (NormalizationTopShift - NormalizationLeafShift),
   )
-  guard mid.ids.iter().all(id => id < 256) &&
-    mid.blocks.iter().all(id => id < 65536) else {
-    fail("Normalization trie block indices exceed their encoded width")
-  }
-  let mid_bytes : Array[Int] = []
-  for value in mid.blocks {
-    mid_bytes.push(value & 255)
-    mid_bytes.push(value >> 8)
-  }
-  let leaf_bytes : Array[Int] = []
-  for value in leaf.blocks {
-    leaf_bytes.push(value & 255)
-    leaf_bytes.push(value >> 8)
+  guard mid.ids.iter().all(id => id >= 0 && id < 256) else {
+    fail("Normalization trie top indices exceed their encoded width")
   }
   let mid_shift = NormalizationTopShift - NormalizationLeafShift
   let mid_mask = (1 << mid_shift) - 1
   let leaf_mask = (1 << NormalizationLeafShift) - 1
   // Check the encoded representation, including the implicit default tail,
-  // before emitting source. This also guards changes to the block layout.
+  // before emitting source. Validate every derived supplementary index before
+  // its access: emitted unsafe_get calls rely on these immutable tables.
   for cp in 0..<=MaxCodePoint {
-    let actual = if cp >= limit {
+    let actual = if cp < NormalizationBmpLimit {
+      bmp.blocks[bmp_offsets[cp >> NormalizationBmpShift] +
+      (cp & ((1 << NormalizationBmpShift) - 1))]
+    } else if cp >= limit {
       0
     } else {
-      let mid_index = (mid.ids[cp >> NormalizationTopShift] << mid_shift) |
+      let top_index = (cp - NormalizationBmpLimit) >> NormalizationTopShift
+      guard top_index >= 0 && top_index < mid.ids.length() else {
+        fail(
+          "Normalization top index \{top_index} out of bounds at code point \{cp}",
+        )
+      }
+      let mid_index = (mid.ids[top_index] << mid_shift) |
         ((cp >> NormalizationLeafShift) & mid_mask)
-      let leaf_index = mid_bytes[mid_index * 2] |
-        (mid_bytes[mid_index * 2 + 1] << 8)
-      let offset = ((leaf_index << NormalizationLeafShift) | (cp & leaf_mask)) *
-        2
-      leaf_bytes[offset] | (leaf_bytes[offset + 1] << 8)
+      guard mid_index >= 0 && mid_index < mid.blocks.length() else {
+        fail(
+          "Normalization mid index \{mid_index} out of bounds at code point \{cp}",
+        )
+      }
+      let leaf_index = (mid.blocks[mid_index] << NormalizationLeafShift) |
+        (cp & leaf_mask)
+      guard leaf_index >= 0 && leaf_index < leaf.blocks.length() else {
+        fail(
+          "Normalization leaf index \{leaf_index} out of bounds at code point \{cp}",
+        )
+      }
+      leaf.blocks[leaf_index]
     }
     guard actual == values[cp] else {
       fail("Normalization trie mismatch at code point \{cp}")
@@ -165,19 +187,36 @@ pub fn emit_normalization(
   out.write_file_header(
     "Normalization descriptors (Unicode 16.0.0)", "UnicodeData.txt, CompositionExclusions.txt and DerivedNormalizationProps.txt",
   )
+  // Int constants are emitted as compact static data on every backend.
+  // UInt16 array literals currently expand to per-element initialization in Wasm-GC.
+  out.write_int_array(
+    "BMP block offsets (\{1 << NormalizationBmpShift} code points per block)",
+    "normalization_bmp_index",
+    bmp_offsets,
+    hex=false,
+  )
+  out.write_int_array(
+    "BMP norm16 values: direct properties or tagged extra-record indices",
+    "normalization_bmp_data",
+    bmp.blocks,
+    hex=false,
+  )
   out.write_byte_array(
-    "Top-level block indices (\{top_size} code points per block)",
+    "Supplementary top-level block indices (\{top_size} code points per block)",
     "normalization_trie_top",
     mid.ids,
   )
-  out.write_byte_array(
-    "Little-endian 16-bit leaf block indices (\{1 << NormalizationLeafShift} code points per block)",
+  out.write_int_array(
+    "Supplementary leaf block indices (\{1 << NormalizationLeafShift} code points per block)",
     "normalization_trie_mid",
-    mid_bytes,
+    mid.blocks,
+    hex=false,
   )
-  out.write_byte_array(
-    "Little-endian norm16 values: direct properties or tagged extra-record indices",
-    "normalization_trie_leaf", leaf_bytes,
+  out.write_int_array(
+    "Supplementary norm16 values: direct properties or tagged extra-record indices",
+    "normalization_trie_leaf",
+    leaf.blocks,
+    hex=false,
   )
   out.write_byte_array(
     "Six-byte records: packed properties, decomposition row + 1, composition group + 1 (all u16 LE)",
@@ -186,27 +225,64 @@ pub fn emit_normalization(
   out.write(
     (
       $|///|
+      $|// Ordinary Wasm benefits from omitting the validated supplementary checks.
+      $|// Keep the existing Native/JS shape; Wasm-GC array.get is bounds-checked.
+      $|#cfg(target="wasm")
+      $|const UncheckedSupplementaryLookup : Bool = true
+      $|
+      $|///|
+      $|#cfg(not(target="wasm"))
+      $|const UncheckedSupplementaryLookup : Bool = false
+      $|
+      $|///|
       $|/// Bit 15 tags an extra-record index; otherwise the value is packed properties.
       $|fn lookup_norm16(c : Char) -> Int {
       $|  let cp = c.to_int()
+      $|  if cp < \{NormalizationBmpLimit} {
+      $|    return lookup_bmp_norm16(cp)
+      $|  }
+      $|  lookup_supplementary_norm16(cp)
+      $|}
+      $|
+      $|///|
+      $|/// Two indexed loads for BMP normalization descriptors.
+      $|fn lookup_bmp_norm16(cp : Int) -> Int {
+      $|  normalization_bmp_data[normalization_bmp_index[cp >> \{NormalizationBmpShift}] + (cp & \{(1 << NormalizationBmpShift) - 1})]
+      $|}
+      $|
+      $|///|
+      $|/// Keep the compressed supplementary path out of the BMP lookup.
+      $|fn lookup_supplementary_norm16(cp : Int) -> Int {
       $|  if cp >= \{limit} {
       $|    return 0
       $|  }
-      $|  let mid = (normalization_trie_top[cp >> \{NormalizationTopShift}].to_int() << \{mid_shift}) |
-      $|    ((cp >> \{NormalizationLeafShift}) & \{mid_mask})
-      $|  let leaf = normalization_trie_mid[mid * 2].to_int() |
-      $|    (normalization_trie_mid[mid * 2 + 1].to_int() << 8)
-      $|  let offset = ((leaf << \{NormalizationLeafShift}) |
-      $|    (cp & \{leaf_mask})) * 2
-      $|  normalization_trie_leaf[offset].to_int() |
-      $|    (normalization_trie_leaf[offset + 1].to_int() << 8)
+      $|  if UncheckedSupplementaryLookup {
+      $|    // SAFETY: callers ensure cp >= \{NormalizationBmpLimit}; the guard above bounds cp.
+      $|    // The generator validates all three indices for every cp in this range.
+      $|    // These tables are immutable.
+      $|    let mid = (normalization_trie_top.unsafe_get((cp - \{NormalizationBmpLimit}) >> \{NormalizationTopShift}).to_int() << \{mid_shift}) |
+      $|      ((cp >> \{NormalizationLeafShift}) & \{mid_mask})
+      $|    let leaf = normalization_trie_mid.unsafe_get(mid)
+      $|    normalization_trie_leaf.unsafe_get((leaf << \{NormalizationLeafShift}) | (cp & \{leaf_mask}))
+      $|  } else {
+      $|    let mid = (normalization_trie_top[(cp - \{NormalizationBmpLimit}) >> \{NormalizationTopShift}].to_int() << \{mid_shift}) |
+      $|      ((cp >> \{NormalizationLeafShift}) & \{mid_mask})
+      $|    let leaf = normalization_trie_mid[mid]
+      $|    normalization_trie_leaf[(leaf << \{NormalizationLeafShift}) | (cp & \{leaf_mask})]
+      $|  }
       $|}
       $|
       $|///|
       $|/// Packed properties. Bits 0..7: CCC; 8..9: NFC_QC; 10..11: NFKC_QC;
       $|/// bit 12: NFD_QC; bit 13: NFKD_QC. Yes=0, No=1, Maybe=2 (NFC/NFKC).
       $|pub fn lookup_normalization_properties(c : Char) -> Int {
-      $|  let norm16 = lookup_norm16(c)
+      $|  // Dispatch here so the full-scan property path has no extra lookup wrapper.
+      $|  let cp = c.to_int()
+      $|  let norm16 = if cp < \{NormalizationBmpLimit} {
+      $|    lookup_bmp_norm16(cp)
+      $|  } else {
+      $|    lookup_supplementary_norm16(cp)
+      $|  }
       $|  if norm16 < 0x8000 {
       $|    return norm16
       $|  }
