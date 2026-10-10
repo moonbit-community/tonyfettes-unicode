@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "local/normperf-bench"
+package "local/unicode-bench/normperf"
 
 // Values
 

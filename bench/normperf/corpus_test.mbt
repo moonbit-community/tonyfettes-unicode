@@ -26,7 +26,7 @@ fn corpus_directory() -> String raise {
       return path
     }
   }
-  fail("Cannot find corpus.json; run moon -C bench/normperf bench")
+  fail("Cannot find corpus.json; run moon bench ./bench/normperf")
 }
 
 ///|

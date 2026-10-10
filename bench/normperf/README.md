@@ -3,9 +3,9 @@
 Run from the repository root:
 
 ```sh
-moon -C bench/normperf bench
-moon -C bench/normperf bench --target wasm
-moon -C bench/normperf bench --target wasm-gc
+moon bench ./bench/normperf
+moon bench ./bench/normperf --target wasm
+moon bench ./bench/normperf --target wasm-gc
 ```
 
 Native is the default. The benchmark reads the committed files in `data/`
@@ -21,8 +21,9 @@ NFC/NFD target × normalize/is_normalized. NFC and NFD inputs are produced with
 the library under test before timing. File IO, decoding, hashing, input
 preparation and consistency checks are outside the `b.bench` closures. All cases
 run sequentially in one benchmark block, using the standard `moon bench`
-sampling and statistics. The local workspace uses normalization and UCD from
-this checkout.
+sampling and statistics. The bench module belongs to the root workspace, which
+uses normalization and UCD from this checkout. The explicit package path selects
+only normperf; root workspace checks and tests also cover this module.
 
 Already-normalized input may take the unchanged-string path. False checks may
 exit near the beginning, so they do not represent whole-input throughput.
@@ -33,9 +34,9 @@ official Unicode test data. This benchmark measures MoonBit only.
 To validate the corpus and input matrix without running timers:
 
 ```sh
-moon -C bench/normperf test --target native
-moon -C bench/normperf test --target wasm
-moon -C bench/normperf test --target wasm-gc
+moon test ./bench/normperf --target native
+moon test ./bench/normperf --target wasm
+moon test ./bench/normperf --target wasm-gc
 ```
 
 The 14 source files are those named by ICU's
