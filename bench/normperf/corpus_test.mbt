@@ -21,12 +21,12 @@ priv struct Fixture {
 
 ///|
 fn corpus_directory() -> String raise {
-  for path in [".", "normperf", "benchmarks/normperf"] {
+  for path in [".", "normperf", "bench/normperf"] {
     if @fs.path_exists("\{path}/corpus.json") {
       return path
     }
   }
-  fail("Cannot find corpus.json; run moon -C benchmarks/normperf bench")
+  fail("Cannot find corpus.json; run moon -C bench/normperf bench")
 }
 
 ///|

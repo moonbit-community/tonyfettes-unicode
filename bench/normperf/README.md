@@ -3,9 +3,9 @@
 Run from the repository root:
 
 ```sh
-moon -C benchmarks/normperf bench
-moon -C benchmarks/normperf bench --target wasm
-moon -C benchmarks/normperf bench --target wasm-gc
+moon -C bench/normperf bench
+moon -C bench/normperf bench --target wasm
+moon -C bench/normperf bench --target wasm-gc
 ```
 
 Native is the default. The benchmark reads the committed files in `data/`
@@ -33,9 +33,9 @@ official Unicode test data. This benchmark measures MoonBit only.
 To validate the corpus and input matrix without running timers:
 
 ```sh
-moon -C benchmarks/normperf test --target native
-moon -C benchmarks/normperf test --target wasm
-moon -C benchmarks/normperf test --target wasm-gc
+moon -C bench/normperf test --target native
+moon -C bench/normperf test --target wasm
+moon -C bench/normperf test --target wasm-gc
 ```
 
 The 14 source files are those named by ICU's
