@@ -75,6 +75,6 @@ test "normalization generator accepts explicit defaults and unrelated properties
     #|0041 ; NFKD_QC ; Y
     #|0042 ; Full_Composition_Exclusion
   let source = @ucd.emit_normalization(@ucd.parse_unicode_data(""), [], input)
-  // An all-default table still has a valid first block and an implicit tail.
-  assert_true(source.contains("if cp >= 128"))
+  // An all-default table has a BMP block and an implicit supplementary tail.
+  assert_true(source.contains("if cp >= 65536"))
 }
