@@ -1,0 +1,62 @@
+///|
+fn elapsed(iterations : Int, f : () -> Unit) -> Double {
+  let clock = @bench.monotonic_clock_start()
+  for _ in 0..<iterations {
+    f()
+  }
+  @bench.monotonic_clock_end(clock)
+}
+
+///|
+fn measure(name : String, f : () -> Unit) -> Unit {
+  let mut trial = 1
+  let mut duration = elapsed(trial, f)
+  while duration < 10000.0 {
+    trial *= 2
+    duration = elapsed(trial, f)
+  }
+  let iterations = (trial.to_double() * 20000.0 / duration).to_int().max(1)
+  let samples = Array::makei(5, _ => {
+    elapsed(iterations, f) / iterations.to_double()
+  })
+  println(
+    "{\"name\":\"\{name}\",\"iterations\":\{iterations},\"samples_us\":\{samples.to_json().stringify()}}",
+  )
+}
+
+///|
+priv struct Fixture {
+  name : String
+  original : String
+  nfc : String
+  nfd : String
+}
+
+///|
+fn main raise {
+  let b = @bench.Bench()
+  for fixture in fixtures() {
+    for
+      (form_name, form, expected) in [
+        ("NFC", @normalization.NFC, fixture.nfc),
+        ("NFD", @normalization.NFD, fixture.nfd),
+      ] {
+      for
+        (state, input) in [
+          ("orig", fixture.original),
+          ("nfc", fixture.nfc),
+          ("nfd", fixture.nfd),
+        ] {
+        assert_eq(@normalization.normalize(input, form), expected)
+        assert_eq(@normalization.is_normalized(input, form), input == expected)
+        let name = "\{fixture.name}/\{state}/\{form_name}"
+        measure("\{name}/normalize", fn() {
+          b.keep(@normalization.normalize(input, form))
+        })
+        measure("\{name}/check", fn() {
+          b.keep(@normalization.is_normalized(input, form))
+        })
+      }
+    }
+  }
+}

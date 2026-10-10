@@ -257,6 +257,12 @@ moon -C unicode package --list  # the compatibility umbrella
 moon -C bidi package --list     # an individual feature module
 ```
 
+### Normalization benchmarks
+
+The [ICU normperf comparison](benchmarks/normperf/README.md) runs the full
+14-corpus bulk matrix against ICU 77.1 and MoonBit native/Wasm/Wasm-GC, with
+reproducible inputs, correctness checks, and local performance reports.
+
 ### Releasing
 
 The native release tool keeps the six published module versions aligned,
