@@ -80,3 +80,25 @@ test "composition searches stay within each starter group" {
     Some('\u{1109A}'),
   )
 }
+
+///|
+test "normalization BMP blocks and plane boundaries" {
+  for
+    (cp, expected) in [
+      (0x001F, 0),
+      (0x0020, 0),
+      (0x00BF, 0),
+      (0x00C0, 12288),
+      (0x031F, 220),
+      (0x0320, 220),
+      (0xD7FF, 0),
+      (0xE000, 0),
+      (0xFFFF, 0),
+      (0x10000, 0),
+    ] {
+    assert_eq(
+      @ccc.lookup_normalization_properties(cp.unsafe_to_char()),
+      expected,
+    )
+  }
+}
