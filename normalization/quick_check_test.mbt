@@ -177,3 +177,56 @@ test "fast runs retain boundaries across ordered marks and surrogate pairs" {
     }
   }
 }
+
+///|
+test "resume fast runs between suspect segments and at the end" {
+  for
+    gap in [
+      "",
+      "A",
+      "AA",
+      "AAA",
+      "Hello world! ".repeat(256),
+      "世界😀".repeat(64),
+    ] {
+    for
+      (form, input_part, normalized_part) in [
+        (@normalization.NFC, "e\u{0301}", "é"),
+        (@normalization.NFC, "x\u{0301}", "x\u{0301}"),
+        (@normalization.NFC, "각", "각"),
+        (@normalization.NFC, "\u{16D63}\u{16D68}", "\u{16D6A}"),
+        (@normalization.NFD, "é", "e\u{0301}"),
+        (@normalization.NFKC, "ﬃＡ\u{030A}", "ffiÅ"),
+        (@normalization.NFKD, "ﬃÅ", "ffiA\u{030A}"),
+      ] {
+      for tail in ["", "\u{0315}\u{0316}", "😀\u{0315}\u{0316}"] {
+        let ordered_tail = if tail == "" {
+          ""
+        } else if tail == "\u{0315}\u{0316}" {
+          "\u{0316}\u{0315}"
+        } else {
+          "😀\u{0316}\u{0315}"
+        }
+        // Separators prevent the expected pieces from interacting; the final
+        // gap + marks also checks recovery of the last skipped starter.
+        let input = input_part + "|" + gap + "|" + input_part + "|" + gap + tail
+        let expected = normalized_part +
+          "|" +
+          gap +
+          "|" +
+          normalized_part +
+          "|" +
+          gap +
+          ordered_tail
+        assert_eq(@normalization.normalize(input, form), expected)
+        assert_eq(@normalization.is_normalized(input, form), input == expected)
+        assert_true(@normalization.is_normalized(expected, form))
+      }
+    }
+  }
+  // After an unchanged Maybe segment, recover A as the next composing starter.
+  assert_eq(@normalization.nfc("x\u{0301}AAA\u{0301}"), "x\u{0301}AAÁ")
+  assert_false(
+    @normalization.is_normalized("x\u{0301}AAA\u{0301}", @normalization.NFC),
+  )
+}

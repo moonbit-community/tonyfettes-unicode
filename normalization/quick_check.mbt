@@ -105,10 +105,10 @@ fn NormalizationBuffer::finish(
 }
 
 ///|
-/// Once a suspect character is found, consume and decompose its segment in
-/// the same loop. Do not first scan the remainder and then normalize it again.
-/// A character with Quick_Check=Yes and CCC=0 starts a new safe segment.
+/// Process suspect segments with reusable scratch storage until a clean run.
+/// Return its next unconsumed boundary, or -1 if checking fails.
 fn process_suspect_spans(
+  buffer : NormalizationBuffer,
   s : String,
   start : Int,
   problem_offset : Int,
@@ -117,14 +117,7 @@ fn process_suspect_spans(
   compatibility~ : Bool,
   compose~ : Bool,
   check_only~ : Bool,
-) -> String? {
-  let buffer : NormalizationBuffer = {
-    chars: [],
-    output: None,
-    copied_until: 0,
-    previous_ccc: 0,
-    needs_order: false,
-  }
+) -> Int {
   // Retain the starter and any preceding marks in the first suspect segment.
   for c in s[start:problem_offset] {
     buffer.append(c, normalization_properties(c), compatibility~)
@@ -133,20 +126,30 @@ fn process_suspect_spans(
   let mut offset = problem_offset
   let mut previous_ccc = 0
   let mut suspect = true
+  let mut clean_start = problem_offset
   for c in s[problem_offset:] {
     let properties = normalization_properties(c)
     let ccc = properties & 255
     let check = (properties >> shift) & mask
     if ccc == 0 && check == 0 {
-      if suspect && !buffer.finish(s, span_start, offset, compose~, check_only~) {
-        return None
+      // Amortize the handoff over a clean run: consume up to two UTF-16 units
+      // here before resuming the tight scanner. Dense one/two-starter gaps
+      // stay in this loop, reusing their already loaded properties.
+      if !suspect && previous_ccc == 0 && offset - clean_start >= 2 {
+        return offset
+      }
+      if suspect {
+        if !buffer.finish(s, span_start, offset, compose~, check_only~) {
+          return -1
+        }
+        clean_start = offset
       }
       span_start = offset
       suspect = false
     }
     let out_of_order = ccc != 0 && previous_ccc > ccc
     if check_only && (check == 1 || out_of_order) {
-      return None
+      return -1
     }
     if !suspect && (check != 0 || out_of_order) {
       for preceding in s[span_start:offset] {
@@ -165,16 +168,43 @@ fn process_suspect_spans(
     offset += if c.to_int() > 0xFFFF { 2 } else { 1 }
   }
   if suspect && !buffer.finish(s, span_start, offset, compose~, check_only~) {
-    return None
+    return -1
   }
-  if buffer.output is Some(out) {
-    if buffer.copied_until < s.length() {
-      out.write_view(s[buffer.copied_until:])
+  offset
+}
+
+///|
+/// Keep the clean-run loop independent of scratch/output state.
+fn scan_clean_run(s : String, start : Int, slow_mask : Int) -> Int {
+  let length = s.length()
+  let mut offset = start
+  let mut properties = 0
+  let mut width = 1
+  while offset < length {
+    // SAFETY: offset starts at a nonnegative boundary and the loop guarantees offset < length.
+    // It advances by two only after checking that a second unit exists.
+    let first = s.unsafe_get(offset)
+    if first.to_int() < 0x80 {
+      offset += 1
+      continue
     }
-    Some(out.to_string())
-  } else {
-    Some(s)
+    let mut cp = first.to_int()
+    width = 1
+    if first.is_leading_surrogate() && offset + 1 < length {
+      // SAFETY: offset + 1 < length is checked above.
+      let second = s.unsafe_get(offset + 1)
+      if second.is_trailing_surrogate() {
+        cp = 0x10000 + ((cp - 0xD800) << 10) + second.to_int() - 0xDC00
+        width = 2
+      }
+    }
+    properties = @ccc.lookup_normalization_properties(cp.unsafe_to_char())
+    if (properties & slow_mask) != 0 {
+      break
+    }
+    offset += width
   }
+  offset
 }
 
 ///|
@@ -244,7 +274,7 @@ fn process_spans(
       return None
     }
     if check != 0 || out_of_order {
-      return process_suspect_spans(
+      return process_remaining_spans(
         s,
         span_start,
         offset,
@@ -261,6 +291,72 @@ fn process_spans(
     offset += width
   }
   Some(s)
+}
+
+///|
+/// Continue after the first suspect character, reusing one scratch buffer.
+/// Normal runs resume the tight scanner; the allocation-free entry path above
+/// keeps this scratch/output state out of its hot loop.
+fn process_remaining_spans(
+  s : String,
+  start : Int,
+  problem_offset : Int,
+  shift : Int,
+  mask : Int,
+  compatibility~ : Bool,
+  compose~ : Bool,
+  check_only~ : Bool,
+) -> String? {
+  let buffer : NormalizationBuffer = {
+    chars: [],
+    output: None,
+    copied_until: 0,
+    previous_ccc: 0,
+    needs_order: false,
+  }
+  let length = s.length()
+  let slow_mask = 255 | (mask << shift)
+  let mut offset = problem_offset
+  let mut span_start = start
+  while offset < length {
+    offset = process_suspect_spans(
+      buffer,
+      s,
+      span_start,
+      offset,
+      shift,
+      mask,
+      compatibility~,
+      compose~,
+      check_only~,
+    )
+    if offset < 0 {
+      return None
+    }
+    // The helper stopped before a clean starter (or at the end). Scan the
+    // following run without carrying scratch/output state through its loop.
+    let run_start = offset
+    offset = scan_clean_run(s, offset, slow_mask)
+    if offset == length {
+      break
+    }
+    // At least one clean starter was skipped. Retain its last code point for
+    // the next segment, including the leading half of a surrogate pair.
+    span_start = offset - 1
+    if s[span_start].is_trailing_surrogate() &&
+      span_start > run_start &&
+      s[span_start - 1].is_leading_surrogate() {
+      span_start -= 1
+    }
+  }
+  if buffer.output is Some(out) {
+    if buffer.copied_until < length {
+      out.write_view(s[buffer.copied_until:])
+    }
+    Some(out.to_string())
+  } else {
+    Some(s)
+  }
 }
 
 ///|

@@ -5,6 +5,12 @@
 test "normalization spans" (b : @bench.T) {
   for
     (name, input) in [
+      ("changed prefix ASCII tail", "e\u{0301}" + "Hello world! ".repeat(256)),
+      ("Maybe prefix ASCII tail", "x\u{0301}" + "Hello world! ".repeat(256)),
+      (
+        "separated changes",
+        ("e\u{0301}" + "Hello world! ".repeat(64)).repeat(4),
+      ),
       ("ASCII", "Hello world! ".repeat(256)),
       ("normalized mixed", "Café 世界 😀 한글 ".repeat(128)),
       ("decomposed mixed", "Cafe\u{0301} 世界 😀 한글 ".repeat(128)),
