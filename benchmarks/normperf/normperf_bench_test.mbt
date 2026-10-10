@@ -1,12 +1,4 @@
 ///|
-priv struct Fixture {
-  name : String
-  original : String
-  nfc : String
-  nfd : String
-}
-
-///|
 // Keep the matrix in one block so bare moon bench runs every case sequentially.
 test "ICU normperf full corpus matrix" (b : @bench.T) {
   for fixture in fixtures() {
