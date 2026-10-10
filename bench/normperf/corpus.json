@@ -1,0 +1,103 @@
+{
+  "revision": "457157a92aa053e632cc7fcfd0e12f8a943b2d11",
+  "files": [
+    {
+      "name": "TestNames_Asian",
+      "url": "https://raw.githubusercontent.com/unicode-org/icu/457157a92aa053e632cc7fcfd0e12f8a943b2d11/icu4j/perf-tests/data/collation/TestNames_Asian.txt",
+      "bytes": 183611,
+      "sha256": "b7291b2ed483ba92ff5a487a7aee6782015476609f4ff96ba5f3a859505cb075",
+      "encoding": "utf-8-sig"
+    },
+    {
+      "name": "TestNames_Chinese",
+      "url": "https://raw.githubusercontent.com/unicode-org/icu/457157a92aa053e632cc7fcfd0e12f8a943b2d11/icu4j/perf-tests/data/collation/TestNames_Chinese.txt",
+      "bytes": 108852,
+      "sha256": "0c13ffe2c30ca445b93ddd5b99ade25a06ea014a4674d50919dc06592c989d58",
+      "encoding": "utf-8-sig"
+    },
+    {
+      "name": "TestNames_Japanese",
+      "url": "https://raw.githubusercontent.com/unicode-org/icu/457157a92aa053e632cc7fcfd0e12f8a943b2d11/icu4j/perf-tests/data/collation/TestNames_Japanese.txt",
+      "bytes": 506882,
+      "sha256": "611685acc5319f91cd73a1f1f945d0ef78e85012a05c61469c2f4a16298e91e4",
+      "encoding": "utf-8-sig"
+    },
+    {
+      "name": "TestNames_Japanese_h",
+      "url": "https://raw.githubusercontent.com/unicode-org/icu/457157a92aa053e632cc7fcfd0e12f8a943b2d11/icu4j/perf-tests/data/collation/TestNames_Japanese_h.txt",
+      "bytes": 512522,
+      "sha256": "ce35f036f7145a0af3f38a57640b3b8d3674d16e52572eb34d2d175057f3e358",
+      "encoding": "utf-8-sig"
+    },
+    {
+      "name": "TestNames_Japanese_k",
+      "url": "https://raw.githubusercontent.com/unicode-org/icu/457157a92aa053e632cc7fcfd0e12f8a943b2d11/icu4j/perf-tests/data/collation/TestNames_Japanese_k.txt",
+      "bytes": 512522,
+      "sha256": "bc8a04db00fc07fd7c3145e83aa9e6833ae9ad6268a018e24e665b4eeb0bcddc",
+      "encoding": "utf-8-sig"
+    },
+    {
+      "name": "TestNames_Korean",
+      "url": "https://raw.githubusercontent.com/unicode-org/icu/457157a92aa053e632cc7fcfd0e12f8a943b2d11/icu4j/perf-tests/data/collation/TestNames_Korean.txt",
+      "bytes": 497812,
+      "sha256": "eb99e79a2daa05d46a62fd6cd4a3a2d73c33843124bd4d3357c4dd35b123f290",
+      "encoding": "utf-8-sig"
+    },
+    {
+      "name": "TestNames_Latin",
+      "url": "https://raw.githubusercontent.com/unicode-org/icu/457157a92aa053e632cc7fcfd0e12f8a943b2d11/icu4j/perf-tests/data/collation/TestNames_Latin.txt",
+      "bytes": 135346,
+      "sha256": "e5d0693efece6e834e14dbc7a0d222483eb9ff1ba9d45a008dda514ea9fdbf6d",
+      "encoding": "utf-8-sig"
+    },
+    {
+      "name": "TestNames_SerbianSH",
+      "url": "https://raw.githubusercontent.com/unicode-org/icu/457157a92aa053e632cc7fcfd0e12f8a943b2d11/icu4j/perf-tests/data/collation/TestNames_SerbianSH.txt",
+      "bytes": 1005183,
+      "sha256": "bc6cd6611c9c15846cca75574a1c6a6439f5ee112e6fcc7175fe0570104c1fef",
+      "encoding": "utf-8-sig"
+    },
+    {
+      "name": "TestNames_SerbianSR",
+      "url": "https://raw.githubusercontent.com/unicode-org/icu/457157a92aa053e632cc7fcfd0e12f8a943b2d11/icu4j/perf-tests/data/collation/TestNames_SerbianSR.txt",
+      "bytes": 1733099,
+      "sha256": "85f6e8b165fe27adc19de8e8a6fe84f8b413bd751c79f43f3272b082d0d9c00a",
+      "encoding": "utf-8-sig"
+    },
+    {
+      "name": "TestNames_Thai",
+      "url": "https://raw.githubusercontent.com/unicode-org/icu/457157a92aa053e632cc7fcfd0e12f8a943b2d11/icu4j/perf-tests/data/collation/TestNames_Thai.txt",
+      "bytes": 528207,
+      "sha256": "14c6ca455c356775b2bac273249e57d3f0d11bde65ff9667e9244b0542bbb7d7",
+      "encoding": "utf-8-sig"
+    },
+    {
+      "name": "TestNames_Russian",
+      "url": "https://raw.githubusercontent.com/unicode-org/icu/457157a92aa053e632cc7fcfd0e12f8a943b2d11/icu4j/perf-tests/data/collation/TestNames_Russian.txt",
+      "bytes": 68645,
+      "sha256": "946c776d8c31d0f81aebfc08250d48b198e0ac4ba61f35f578b6b430a2844235",
+      "encoding": "utf-8-sig"
+    },
+    {
+      "name": "th18057",
+      "url": "https://raw.githubusercontent.com/unicode-org/icu/457157a92aa053e632cc7fcfd0e12f8a943b2d11/icu4j/perf-tests/data/collation/th18057.txt",
+      "bytes": 316228,
+      "sha256": "255c70b92ca8d647c82c7717b51bdab0bcfddf3e2dc9bb8ecd951d9115c0b52f",
+      "encoding": "utf-8-sig"
+    },
+    {
+      "name": "thesis",
+      "url": "https://raw.githubusercontent.com/unicode-org/icu/457157a92aa053e632cc7fcfd0e12f8a943b2d11/icu4j/perf-tests/data/collation/thesis.txt",
+      "bytes": 380135,
+      "sha256": "189194de982543eda60a4caddabff9addf03fbe14ac808ae22cbaaa6a14ff846",
+      "encoding": "utf-8-sig"
+    },
+    {
+      "name": "vfear11a",
+      "url": "https://raw.githubusercontent.com/unicode-org/icu/457157a92aa053e632cc7fcfd0e12f8a943b2d11/icu4j/perf-tests/data/collation/vfear11a.txt",
+      "bytes": 328009,
+      "sha256": "aa4d36cdd80abc8de68a9844f2ede33ccd4a0047fc58e9f3258808416c8f2633",
+      "encoding": "utf-8-sig"
+    }
+  ]
+}

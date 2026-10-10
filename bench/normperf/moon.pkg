@@ -1,0 +1,8 @@
+import {
+  "moonbit-community/normalization",
+  "moonbitlang/core/bench",
+  "moonbitlang/core/json",
+  "moonbitlang/core/encoding/utf8",
+  "moonbitlang/x/fs",
+  "moonbitlang/x/crypto",
+} for "test"

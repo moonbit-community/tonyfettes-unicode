@@ -1,0 +1,2 @@
+# Preserve the pinned corpus bytes, including BOMs and original line endings.
+data/*.txt -text -diff

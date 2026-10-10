@@ -257,6 +257,12 @@ moon -C unicode package --list  # the compatibility umbrella
 moon -C bidi package --list     # an individual feature module
 ```
 
+### Normalization benchmarks
+
+Run `moon bench ./bench/normperf` to measure normalization using the
+[14 full ICU normperf corpora](bench/normperf/README.md). The benchmark
+reads committed data directly and supports Native, Wasm and Wasm-GC.
+
 ### Releasing
 
 The native release tool keeps the six published module versions aligned,
