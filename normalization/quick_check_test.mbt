@@ -145,3 +145,35 @@ test "scratch reuse after expansion composition and long combining runs" {
     assert_true(@normalization.is_normalized(expected, form))
   }
 }
+
+///|
+test "fast runs retain boundaries across ordered marks and surrogate pairs" {
+  for
+    prefix in [
+      "",
+      "ASCII",
+      "世界",
+      "😀",
+      "\u{10000}",
+      "\u{10FFFF}",
+      "世界😀".repeat(16),
+    ] {
+    for
+      (tail, expected) in [
+        ("A\u{0316}\u{0301}", "Á\u{0316}"),
+        ("\u{0316}\u{0315}", "\u{0316}\u{0315}"),
+        ("\u{0315}\u{0316}", "\u{0316}\u{0315}"),
+        ("\u{0315}😀\u{0316}", "\u{0315}😀\u{0316}"),
+        ("\u{0315}A\u{0301}", "\u{0315}Á"),
+        ("\u{16D63}\u{16D68}", "\u{16D6A}"),
+      ] {
+      let input = prefix + tail
+      let normalized = prefix + expected
+      assert_eq(@normalization.nfc(input), normalized)
+      assert_eq(
+        @normalization.is_normalized(input, @normalization.NFC),
+        input == normalized,
+      )
+    }
+  }
+}

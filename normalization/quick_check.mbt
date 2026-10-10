@@ -178,10 +178,10 @@ fn process_suspect_spans(
 }
 
 ///|
-/// Scan the known-normalized prefix without allocating. On the first suspect
-/// character switch to local processing, keeping the preceding safe boundary.
+/// Scan UTF-16 with one cursor. The inner loop only skips Quick_Check=Yes,
+/// CCC=0 characters; CCC ordering and boundary recovery live outside that loop.
+/// When it stops, the last skipped code point is the preceding safe boundary.
 /// None means the checking mode found a difference; normalization returns Some.
-/// Offsets are UTF-16 units and are advanced only by whole code points.
 fn process_spans(
   s : String,
   shift : Int,
@@ -190,17 +190,53 @@ fn process_spans(
   compose~ : Bool,
   check_only~ : Bool,
 ) -> String? {
-  let mut span_start = 0
+  let length = s.length()
+  let slow_mask = 255 | (mask << shift)
   let mut offset = 0
+  let mut span_start = 0
   let mut previous_ccc = 0
-  for c in s {
-    if c.to_int() < 0x80 {
-      span_start = offset
-      offset += 1
-      previous_ccc = 0
-      continue
+  while offset < length {
+    let run_start = offset
+    let mut properties = 0
+    let mut width = 1
+    while offset < length {
+      // SAFETY: offset starts at zero and the loop guarantees offset < length.
+      // It advances by two only after checking that a second unit exists.
+      let first = s.unsafe_get(offset)
+      if first.to_int() < 0x80 {
+        offset += 1
+        continue
+      }
+      let mut cp = first.to_int()
+      width = 1
+      if first.is_leading_surrogate() && offset + 1 < length {
+        // SAFETY: offset + 1 < length is checked above.
+        let second = s.unsafe_get(offset + 1)
+        if second.is_trailing_surrogate() {
+          cp = 0x10000 + ((cp - 0xD800) << 10) + second.to_int() - 0xDC00
+          width = 2
+        }
+      }
+      properties = @ccc.lookup_normalization_properties(cp.unsafe_to_char())
+      if (properties & slow_mask) != 0 {
+        break
+      }
+      offset += width
     }
-    let properties = @ccc.lookup_normalization_properties(c)
+    if offset == length {
+      return Some(s)
+    }
+    if offset > run_start {
+      // All skipped characters are CCC=0 and Quick_Check=Yes. Recover only
+      // the last one's start, including its leading surrogate when present.
+      span_start = offset - 1
+      if s[span_start].is_trailing_surrogate() &&
+        span_start > run_start &&
+        s[span_start - 1].is_leading_surrogate() {
+        span_start -= 1
+      }
+      previous_ccc = 0
+    }
     let ccc = properties & 255
     let check = (properties >> shift) & mask
     let out_of_order = ccc != 0 && previous_ccc > ccc
@@ -219,11 +255,10 @@ fn process_spans(
         check_only~,
       )
     }
-    if ccc == 0 {
-      span_start = offset
-    }
+    // Quick_Check=Yes marks still require ordering checks. Keep their starter
+    // boundary until the next run of CCC=0 characters or a suspect character.
     previous_ccc = ccc
-    offset += if c.to_int() > 0xFFFF { 2 } else { 1 }
+    offset += width
   }
   Some(s)
 }
