@@ -1,0 +1,23 @@
+import {
+  "moonbit-community/normalization",
+  "moonbitlang/core/bench",
+} for "test"
+
+rule(
+  name: "fixtures",
+  command: "moon -C ../.. run --target native tools/normperf -- prepare-bench",
+)
+
+dev_build(
+  rule: "fixtures",
+  input: [
+    "corpus.json",
+    "icu.cpp",
+    "moon_main.mbt.in",
+    "../../tools/moon.mod",
+    "../../tools/normperf/main.mbt",
+    "../../tools/normperf/internal/harness/moon.pkg",
+    "../../tools/normperf/internal/harness/run.mbt",
+  ],
+  output: "fixtures_generated_test.mbt",
+)

@@ -7,6 +7,28 @@ The data comes from that same pinned revision's
 [collation corpus directory](https://github.com/unicode-org/icu/tree/457157a92aa053e632cc7fcfd0e12f8a943b2d11/icu4j/perf-tests/data/collation).
 Upstream data is covered by [ICU's license](https://github.com/unicode-org/icu/blob/457157a92aa053e632cc7fcfd0e12f8a943b2d11/LICENSE).
 
+Run the MoonBit corpus benchmarks directly from the repository root:
+
+```sh
+moon -C benchmarks/normperf bench
+moon -C benchmarks/normperf bench --target wasm
+moon -C benchmarks/normperf bench --target wasm-gc
+```
+
+The default backend is Native. The first build automatically downloads and
+verifies the corpus, compiles the ICU adapter, and embeds ICU-generated reference
+outputs. No separate preparation command is needed. Subsequent builds reuse the
+prepared inputs. On installations other than the default Homebrew ICU 77 prefix,
+set `NORMPERF_ICU_PREFIX=/path/to/icu77` when running the command. C++17 and
+pkg-config are still required for preparation.
+
+This entry point measures all 168 MoonBit cases with the standard `moon bench`
+statistics and prints its timing table. Inputs and complete output/predicate
+checks are prepared outside the timed closures. Its local workspace resolves
+normalization and UCD to this checkout. Generated source is ignored by Git.
+
+For the full comparison with ICU, including raw samples and CSV/Markdown reports:
+
 ```sh
 moon run --target native tools/normperf -- run --icu-prefix /opt/homebrew/opt/icu4c@77
 moon run --target native tools/normperf -- summarize benchmarks/normperf/.work/results
@@ -37,10 +59,13 @@ Read both ICU columns with that ownership difference in mind. Only native
 MoonBit versus native ICU is a same-backend comparison; Wasm/GC numbers include
 runtime differences. Fast false checks are reported separately from full scans.
 
-The harness uses monotonic timers, 10 ms calibration and five 20 ms samples per
-case; it does not reproduce the upstream driver's longer timing settings. Input
+The full-comparison harness uses monotonic timers, 10 ms calibration and five
+20 ms samples per case; it does not reproduce the upstream driver's longer timing settings. Input
 construction, IO, transcoding and correctness validation are outside timing.
 Engines run sequentially, with their order rotated across executions.
+The direct `moon bench` entry uses the standard library's default ten samples
+and outlier treatment instead; its timings should not be mixed into these raw
+comparison reports.
 
 Raw samples, environment metadata and generated reports are local output, not
 repository content. By default they are written under the ignored

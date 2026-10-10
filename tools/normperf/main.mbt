@@ -28,6 +28,14 @@ async fn main {
         @argparse.OptionArg("repeats", long="repeats", default_values=["3"]),
       ],
     ),
+    @argparse.Command("prepare-bench", options=[
+      @argparse.OptionArg(
+        "icu-prefix",
+        long="icu-prefix",
+        env="NORMPERF_ICU_PREFIX",
+        default_values=["/opt/homebrew/opt/icu4c@77"],
+      ),
+    ]),
     @argparse.Command("summarize", positionals=[
       @argparse.PositionArg(
         "directory",
@@ -53,8 +61,10 @@ async fn main {
         prepare_only=options.flags.get("prepare-only").unwrap_or(false),
       )
     }
+    Some(("prepare-bench", options)) =>
+      @harness.prepare_bench(root=".", icu_prefix=value(options, "icu-prefix"))
     Some(("summarize", options)) =>
       @harness.summarize(value(options, "directory"))
-    _ => fail("Expected run or summarize")
+    _ => fail("Expected run, prepare-bench or summarize")
   }
 }

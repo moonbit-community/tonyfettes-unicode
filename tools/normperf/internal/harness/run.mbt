@@ -342,3 +342,25 @@ pub async fn run(
   }
   println("Raw measurements saved in \{output}")
 }
+
+///|
+/// Prepare the embedded, ICU-validated inputs used by the standalone moon bench package.
+pub async fn prepare_bench(root~ : String, icu_prefix~ : String) -> Unit {
+  let root = @fs.realpath(root)
+  let (work, _) = prepare(root, icu_prefix)
+  let corpus : Corpus = @json.from_json(
+    @fs.read_file("\{root}/benchmarks/normperf/corpus.json").json(),
+  )
+  let source = StringBuilder()
+  for index in 0..<corpus.files.length() {
+    source.write_string(
+      @fs.read_file("\{work}/runner/fixture_\{index}.mbt").text(),
+    )
+    source.write_char('\n')
+  }
+  source.write_string(@fs.read_file("\{work}/runner/fixtures.mbt").text())
+  write(
+    "\{root}/benchmarks/normperf/fixtures_generated_test.mbt",
+    source.to_string(),
+  )
+}
