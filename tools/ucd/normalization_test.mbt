@@ -130,3 +130,47 @@ test "normalization scan generator covers empty and full supplementary tables" {
   let source = @ucd.emit_normalization_scan(@ucd.parse_unicode_data(""), full)
   assert_true(source.contains("NormalizationTailLeadIndex : Int = 1024"))
 }
+
+///|
+test "normalization scan generator reduces properties to one byte" {
+  let quick_check =
+    #|0041 ; NFC_QC ; M
+    #|0041 ; NFKC_QC ; Y
+    #|0041 ; NFD_QC ; Y
+    #|0041 ; NFKD_QC ; N
+  let source = @ucd.emit_normalization_scan(
+    @ucd.parse_unicode_data("0300;COMBINING GRAVE ACCENT;Mn;230;NSM;;;;;N;;;;;"),
+    quick_check,
+  )
+  // NFC_QC=Maybe is bit 9 and NFKD_QC=No is bit 13 of the packed properties;
+  // both move down seven bits, leaving bit 0 for a nonzero CCC.
+  assert_true(source.contains("  0,\n  68,\n  0,\n"))
+  assert_true(source.contains("  0,\n  1,\n  0,\n"))
+  // Leading surrogates fill whole blocks with their marker.
+  assert_true(source.contains("  128,\n".repeat(32)))
+  assert_true(
+    source.contains("const NormalizationScanLeadSurrogate : Int = 128"),
+  )
+}
+
+///|
+test "normalization scan generator gives flagged supplementary groups a slot" {
+  let quick_check =
+    #|0041 ; NFC_QC ; Y
+    #|0041 ; NFKC_QC ; Y
+    #|0041 ; NFD_QC ; Y
+    #|10401 ; NFKD_QC ; N
+  let source = @ucd.emit_normalization_scan(
+    @ucd.parse_unicode_data(""),
+    quick_check,
+  )
+  // Lead index 0 is clear and shares slot 0; lead index 1 gets slot 1.
+  assert_true(
+    source.contains("let normalization_lead_slots : Bytes = [\n  0,\n  1,\n]"),
+  )
+  // Two slots of 64 blocks; U+10401 is the second code point of slot 1.
+  assert_true(
+    source.contains("  0,\n".repeat(64) + "  1,\n" + "  0,\n".repeat(63) + "]"),
+  )
+  assert_true(source.contains("  0,\n".repeat(16) + "  0,\n  64,\n"))
+}
