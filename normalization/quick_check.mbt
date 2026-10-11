@@ -1,18 +1,4 @@
 ///|
-// Skip clean surrogate pairs from their group summaries on both Wasm
-// backends. Without it, supplementary text on Wasm-GC is slower than before
-// the BMP trie; with it, only Japanese NFC gets a few percent slower there.
-// Keep the original loop shape on Native, where the extra loop state is
-// spilled around every property lookup and slows long BMP corpora, and on
-// JS, which has not been measured.
-#cfg(any(target="wasm", target="wasm-gc"))
-const ScanSurrogatePairs : Bool = true
-
-///|
-#cfg(not(any(target="wasm", target="wasm-gc")))
-const ScanSurrogatePairs : Bool = false
-
-///|
 /// ASCII has CCC=0 and Quick_Check=Yes for every normalization form.
 fn normalization_properties(c : Char) -> Int {
   if c.to_int() < 0x80 {
@@ -194,56 +180,93 @@ fn process_suspect_spans(
 }
 
 ///|
-/// Keep the clean-run loop independent of scratch/output state.
+/// Skip Quick_Check=Yes, CCC=0 characters from `start` and return the offset
+/// of the first other character, or the length. `slow_mask` selects CCC and
+/// one form's Quick_Check bits of the packed properties; shifted right by
+/// seven it selects the same bits of the generated scan flags.
+///
+/// The loop reads the generated one-byte flags and makes no calls. Looking
+/// properties up through `@ccc` instead costs a call per character, because
+/// functions are not inlined across packages. Even one call on a rare path
+/// would make every entry to this function save and restore registers, which
+/// shows on text with many short runs.
 fn scan_clean_run(s : String, start : Int, slow_mask : Int) -> Int {
   let length = s.length()
+  let scan_mask = slow_mask >> 7
+  let unit_mask = scan_mask | NormalizationScanLeadSurrogate
   let mut offset = start
-  let mut properties = 0
-  let mut width = 1
   while offset < length {
     // SAFETY: offset starts at a nonnegative boundary and the loop guarantees offset < length.
     // It advances by two only after checking that a second unit exists.
-    let first = s.unsafe_get(offset)
-    if first.to_int() < 0x80 {
+    let first = s.unsafe_get(offset).to_int()
+    if first < 0x80 {
       offset += 1
       continue
     }
-    let mut cp = first.to_int()
-    width = 1
-    if first.is_leading_surrogate() && offset + 1 < length {
-      // SAFETY: offset + 1 < length is checked above.
-      let second = s.unsafe_get(offset + 1)
-      if second.is_trailing_surrogate() {
-        let lead = cp - 0xD800
-        // Compare the default-tail boundary before decoding or reading a table.
-        // SAFETY: a valid pair outside that tail has a generated lead index.
-        if ScanSurrogatePairs &&
-          (
-            lead > NormalizationTailLeadIndex ||
-            (
-              lead == NormalizationTailLeadIndex &&
-              second.to_int() >= NormalizationTailTrail
-            ) ||
-            (normalization_lead_flags.unsafe_get(lead) & slow_mask) == 0
-          ) {
-          offset += 2
-          continue
-        }
-        cp = 0x10000 + ((cp - 0xD800) << 10) + second.to_int() - 0xDC00
-        width = 2
-      }
+    // SAFETY: first is a UTF-16 code unit, so first >> NormalizationScanShift
+    // indexes one of the 2048 blocks; the generator checks every flags index.
+    let block = normalization_scan_index
+      .unsafe_get(first >> NormalizationScanShift)
+      .to_int()
+    let flags = normalization_scan_flags
+      .unsafe_get(
+        (block << NormalizationScanShift) | (first & NormalizationScanBlockMask),
+      )
+      .to_int()
+    if (flags & unit_mask) == 0 {
+      offset += 1
+      continue
     }
-    properties = @ccc.lookup_normalization_properties(cp.unsafe_to_char())
-    if (properties & slow_mask) != 0 {
+    if flags != NormalizationScanLeadSurrogate {
       break
     }
-    offset += width
+    // An unpaired surrogate has default properties.
+    if offset + 1 >= length {
+      offset += 1
+      continue
+    }
+    // SAFETY: offset + 1 < length is checked above.
+    let second = s.unsafe_get(offset + 1).to_int()
+    if second < 0xDC00 || second > 0xDFFF {
+      offset += 1
+      continue
+    }
+    let lead = first - 0xD800
+    // Compare the default-tail boundary before reading the group summary.
+    // SAFETY: a valid pair outside that tail has a generated lead index.
+    if lead > NormalizationTailLeadIndex ||
+      (lead == NormalizationTailLeadIndex && second >= NormalizationTailTrail) ||
+      (normalization_lead_flags.unsafe_get(lead).to_int() & scan_mask) == 0 {
+      offset += 2
+      continue
+    }
+    // Some character in this group of 1024 has flags: read this pair's own.
+    // SAFETY: lead is below the tail as above and trail is a 10-bit value;
+    // the generator checks both indices for every such pair.
+    let trail = second - 0xDC00
+    let slot = normalization_lead_slots.unsafe_get(lead).to_int()
+    let pair_block = normalization_pair_index
+      .unsafe_get(
+        (slot << (10 - NormalizationPairShift)) |
+        (trail >> NormalizationPairShift),
+      )
+      .to_int()
+    let pair_flags = normalization_pair_flags
+      .unsafe_get(
+        (pair_block << NormalizationPairShift) |
+        (trail & NormalizationPairBlockMask),
+      )
+      .to_int()
+    if (pair_flags & scan_mask) != 0 {
+      break
+    }
+    offset += 2
   }
   offset
 }
 
 ///|
-/// Scan UTF-16 with one cursor. The inner loop only skips Quick_Check=Yes,
+/// Scan UTF-16 with one cursor. The clean-run scan only skips Quick_Check=Yes,
 /// CCC=0 characters; CCC ordering and boundary recovery live outside that loop.
 /// When it stops, the last skipped code point is the preceding safe boundary.
 /// None means the checking mode found a difference; normalization returns Some.
@@ -262,50 +285,19 @@ fn process_spans(
   let mut previous_ccc = 0
   while offset < length {
     let run_start = offset
-    let mut properties = 0
-    let mut width = 1
-    while offset < length {
-      // SAFETY: offset starts at zero and the loop guarantees offset < length.
-      // It advances by two only after checking that a second unit exists.
-      let first = s.unsafe_get(offset)
-      if first.to_int() < 0x80 {
-        offset += 1
-        continue
-      }
-      let mut cp = first.to_int()
-      width = 1
-      if first.is_leading_surrogate() && offset + 1 < length {
-        // SAFETY: offset + 1 < length is checked above.
-        let second = s.unsafe_get(offset + 1)
-        if second.is_trailing_surrogate() {
-          let lead = cp - 0xD800
-          // Compare the default-tail boundary before decoding or reading a table.
-          // SAFETY: a valid pair outside that tail has a generated lead index.
-          if ScanSurrogatePairs &&
-            (
-              lead > NormalizationTailLeadIndex ||
-              (
-                lead == NormalizationTailLeadIndex &&
-                second.to_int() >= NormalizationTailTrail
-              ) ||
-              (normalization_lead_flags.unsafe_get(lead) & slow_mask) == 0
-            ) {
-            offset += 2
-            continue
-          }
-          cp = 0x10000 + ((cp - 0xD800) << 10) + second.to_int() - 0xDC00
-          width = 2
-        }
-      }
-      properties = @ccc.lookup_normalization_properties(cp.unsafe_to_char())
-      if (properties & slow_mask) != 0 {
-        break
-      }
-      offset += width
-    }
+    offset = scan_clean_run(s, offset, slow_mask)
     if offset == length {
       return Some(s)
     }
+    // SAFETY: offset < length is checked above.
+    let mut cp = s.unsafe_get(offset).to_int()
+    let mut width = 1
+    if cp >= 0xD800 && cp <= 0xDBFF {
+      // The scan stops on a leading surrogate only when a trailing one follows.
+      cp = 0x10000 + ((cp - 0xD800) << 10) + s[offset + 1].to_int() - 0xDC00
+      width = 2
+    }
+    let properties = @ccc.lookup_normalization_properties(cp.unsafe_to_char())
     if offset > run_start {
       // All skipped characters are CCC=0 and Quick_Check=Yes. Recover only
       // the last one's start, including its leading surrogate when present.

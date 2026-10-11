@@ -12,6 +12,10 @@ test "normalization spans" (b : @bench.T) {
         ("e\u{0301}" + "Hello world! ".repeat(64)).repeat(4),
       ),
       ("ASCII", "Hello world! ".repeat(256)),
+      // Per-call overhead dominates: one short clean run, then the end.
+      ("short ASCII", "Hello"),
+      ("short BMP", "世界"),
+      ("short accented Latin", "Café"),
       ("BMP starters", "中文日本語".repeat(256)),
       ("supplementary starters", "😀𠀀𝄞".repeat(256)),
       ("default supplementary tail", "\u{10FFFD}".repeat(256)),

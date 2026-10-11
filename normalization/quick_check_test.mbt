@@ -301,3 +301,60 @@ test "surrogate summaries keep isolated code units unchanged" {
     }
   }
 }
+
+///|
+test "unpaired surrogates stay clean next to suspect characters" {
+  // U+D835 leads a group of 1024 code points that has flagged characters.
+  let lead = String::from_array([(0xD835).unsafe_to_char()])
+  let trail = String::from_array([(0xDC00).unsafe_to_char()])
+  for
+    (input, expected) in [
+      (lead + "e\u{0301}", lead + "é"),
+      ("e\u{0301}" + lead, "é" + lead),
+      (trail + lead + "e\u{0301}", trail + lead + "é"),
+      (lead + "\u{0301}", lead + "\u{0301}"),
+      (lead + "\u{0315}\u{0316}", lead + "\u{0316}\u{0315}"),
+      // The second unit pairs with the trailing one; the first stays alone.
+      (
+        lead + lead + trail + "\u{0315}\u{0316}",
+        lead + lead + trail + "\u{0316}\u{0315}",
+      ),
+      (
+        "e\u{0301}|" + lead + lead + trail + lead,
+        "é|" + lead + lead + trail + lead,
+      ),
+    ] {
+    assert_eq(@normalization.nfc(input), expected)
+    assert_eq(
+      @normalization.is_normalized(input, @normalization.NFC),
+      input == expected,
+    )
+    assert_true(@normalization.is_normalized(expected, @normalization.NFC))
+  }
+}
+
+///|
+test "clean pairs in flagged groups become the safe boundary" {
+  // U+1D400 is clean for NFC and NFD, but shares its group with U+1D15E.
+  let pair = "\u{1D400}"
+  for prefix in ["", "世界", "e\u{0301}|"] {
+    let fixed = if prefix == "e\u{0301}|" { "é|" } else { prefix }
+    for count in [1, 2, 64] {
+      let run = pair.repeat(count)
+      // Marks attach to the last pair, so only they are reordered.
+      assert_eq(
+        @normalization.nfc(prefix + run + "\u{0315}\u{0316}"),
+        fixed + run + "\u{0316}\u{0315}",
+      )
+      // A starter after the run composes without disturbing it.
+      assert_eq(
+        @normalization.nfc(prefix + run + "e\u{0301}"),
+        fixed + run + "é",
+      )
+      assert_eq(
+        @normalization.is_normalized(prefix + run, @normalization.NFC),
+        prefix == fixed,
+      )
+    }
+  }
+}
