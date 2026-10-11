@@ -24,6 +24,8 @@ pub fn parse_code_point_sequence(StringView) -> Array[Int] raise
 
 pub fn parse_decimal_int(StringView) -> Int raise
 
+pub fn parse_enumerated_property(StringView, default~ : String) -> FixedArray[String] raise
+
 pub fn parse_escaped_text(StringView) -> ParsedText
 
 pub fn parse_hex_int(StringView) -> Int raise

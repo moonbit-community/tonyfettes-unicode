@@ -17,6 +17,7 @@ pub fn Emitter::write_file_header(Self, String, String) -> Unit
 pub fn Emitter::write_int(Self, Int) -> Unit
 pub fn Emitter::write_int_array(Self, String, String, Array[Int], hex~ : Bool) -> Unit
 pub fn Emitter::write_line(Self, String) -> Unit
+pub fn Emitter::write_value_trie(Self, property~ : String, prefix~ : String, lookup~ : String, lookup_doc~ : Array[String], value_bits~ : Int, FixedArray[Int]) -> Unit raise
 
 // Type aliases
 

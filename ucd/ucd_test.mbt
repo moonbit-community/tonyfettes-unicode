@@ -293,3 +293,54 @@ test "full case: no mapping returns identity" {
   inspect(@ucd.to_lowercase('0'), content="0")
   inspect(@ucd.to_titlecase('!'), content="!")
 }
+
+///|
+test "east_asian_width: each value" {
+  inspect(@ucd.east_asian_width('\u{00A1}'), content="A") // INVERTED EXCLAMATION MARK
+  inspect(@ucd.east_asian_width('\u{FF21}'), content="F") // FULLWIDTH LATIN CAPITAL LETTER A
+  inspect(@ucd.east_asian_width('\u{FF71}'), content="H") // HALFWIDTH KATAKANA LETTER A
+  inspect(@ucd.east_asian_width('\u{05D0}'), content="N") // HEBREW LETTER ALEF
+  inspect(@ucd.east_asian_width('a'), content="Na")
+  inspect(@ucd.east_asian_width('\u{4E2D}'), content="W") // CJK UNIFIED IDEOGRAPH-4E2D
+}
+
+///|
+test "east_asian_width: ASCII is Narrow except controls" {
+  inspect(@ucd.east_asian_width(' '), content="Na")
+  inspect(@ucd.east_asian_width('~'), content="Na")
+  inspect(@ucd.east_asian_width('\n'), content="N")
+  inspect(@ucd.east_asian_width('\u{7F}'), content="N")
+}
+
+///|
+test "east_asian_width: East Asian scripts" {
+  inspect(@ucd.east_asian_width('\u{3042}'), content="W") // HIRAGANA LETTER A
+  inspect(@ucd.east_asian_width('\u{AC00}'), content="W") // HANGUL SYLLABLE GA
+  inspect(@ucd.east_asian_width('\u{3000}'), content="F") // IDEOGRAPHIC SPACE
+  inspect(@ucd.east_asian_width('\u{20A9}'), content="H") // WON SIGN
+  inspect(@ucd.east_asian_width('\u{1F600}'), content="W") // GRINNING FACE
+}
+
+///|
+test "east_asian_width: a mark keeps its own value" {
+  // East_Asian_Width is not a column count: a combining mark is Ambiguous
+  // even though it occupies no column of its own.
+  inspect(@ucd.east_asian_width('\u{0300}'), content="A") // COMBINING GRAVE ACCENT
+}
+
+///|
+test "east_asian_width: unassigned code points" {
+  inspect(@ucd.east_asian_width('\u{0378}'), content="N") // reserved
+  inspect(@ucd.east_asian_width('\u{2FFFD}'), content="W") // reserved, plane 2
+  inspect(@ucd.east_asian_width('\u{3FFFD}'), content="W") // reserved, plane 3
+}
+
+///|
+test "east_asian_width: planes above the trie" {
+  inspect(@ucd.east_asian_width('\u{40000}'), content="N") // reserved, plane 4
+  inspect(@ucd.east_asian_width('\u{E0001}'), content="N") // LANGUAGE TAG
+  inspect(@ucd.east_asian_width('\u{E0100}'), content="A") // VARIATION SELECTOR-17
+  inspect(@ucd.east_asian_width('\u{F0000}'), content="A") // private use, plane 15
+  inspect(@ucd.east_asian_width('\u{10FFFD}'), content="A") // private use, plane 16
+  inspect(@ucd.east_asian_width('\u{10FFFF}'), content="N") // noncharacter
+}

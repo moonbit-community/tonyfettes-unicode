@@ -14,9 +14,9 @@ segmentation. The generated tables target Unicode 16.0.0.
   joiner checks, and DNS length checks
 - Unicode Bidirectional Algorithm support from UAX #9
 - Extended grapheme cluster segmentation from UAX #29
-- General_Category lookup, binary property predicates (White_Space,
-  Alphabetic, Lowercase, Uppercase, XID_Start, XID_Continue), and simple/full
-  case mapping from the Unicode Character Database
+- General_Category and East_Asian_Width lookup, binary property predicates
+  (White_Space, Alphabetic, Lowercase, Uppercase, XID_Start, XID_Continue), and
+  simple/full case mapping from the Unicode Character Database
 
 ## Installation
 
@@ -146,6 +146,7 @@ for cluster in @segmentation.graphemes("e\u{0301}x") {
 ```moonbit
 let category = @ucd.general_category('A') // Lu
 let group = category.group() // L
+let width = @ucd.east_asian_width('世') // W
 let can_start = @ucd.is_xid_start('A') // true
 let can_continue = @ucd.is_xid_continue('0') // true
 let is_space = @ucd.is_white_space('\u{3000}') // true
@@ -168,6 +169,7 @@ Root package for Unicode Character Database helpers.
 | --- | --- |
 | `general_category(Char) -> GeneralCategory` | Return the two-letter Unicode General_Category value. |
 | `GeneralCategory::group() -> GeneralCategoryGroup` | Return the one-letter category group. |
+| `east_asian_width(Char) -> EastAsianWidth` | Return the UAX #11 East_Asian_Width value: `A`, `F`, `H`, `N`, `Na`, or `W`. |
 | `is_white_space(Char) -> Bool` | Test the Unicode White_Space property. |
 | `is_alphabetic(Char) -> Bool` | Test the Unicode Alphabetic property. |
 | `is_lowercase(Char) -> Bool` | Test the Unicode Lowercase property (broader than General_Category Ll). |

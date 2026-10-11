@@ -169,12 +169,19 @@ async fn generate_ucd(root : StringView) -> Unit {
     "ucd/white_space/white_space.mbt",
     @ucd.emit_white_space(prop_list),
   )
+  write_source(
+    root,
+    "ucd/east_asian_width/east_asian_width.mbt",
+    @ucd.emit_east_asian_width(
+      read_source(root, "EastAsianWidth.txt", "\{base}/EastAsianWidth.txt"),
+    ),
+  )
   let generated_files = [
     "ucd/internal/normalization/normalization.mbt", "ucd/general_category/mark.mbt",
     "ucd/ccc/ccc.mbt", "ucd/decomposition/decomposition.mbt", "ucd/composition/composition.mbt",
     "ucd/general_category/general_category.mbt", "ucd/case_mapping/case_mapping.mbt",
     "ucd/xid/xid.mbt", "ucd/alphabetic/alphabetic.mbt", "ucd/lowercase/lowercase.mbt",
-    "ucd/uppercase/uppercase.mbt", "ucd/white_space/white_space.mbt",
+    "ucd/uppercase/uppercase.mbt", "ucd/white_space/white_space.mbt", "ucd/east_asian_width/east_asian_width.mbt",
   ]
   for file in generated_files {
     format_file(root, file)

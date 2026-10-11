@@ -315,3 +315,40 @@ test "emit White_Space table" {
     content="true",
   )
 }
+
+///|
+test "emit East_Asian_Width table" {
+  let source = emit_east_asian_width(
+    (
+      #|# @missing: 0000..10FFFF; N
+      #|0041 ; Na
+      #|4E00 ; W
+      #|E0100 ; A
+      #|
+    ),
+  )
+  for
+    expected in [
+      "/// East_Asian_Width lookup data\n/// Generated from EastAsianWidth.txt\n",
+      "let eaw_trie_top : Bytes = [", "let eaw_trie_mid : Bytes = [", "let eaw_trie_leaf : Bytes = [",
+      // Planes 4 and up: N from U+40000, A at U+E0100, N again from U+E0101.
+       "  0x200003,\n  0x700800,\n  0x70080B,\n]", "pub fn lookup_east_asian_width(c : Char) -> Int {",
+    ] {
+    guard source.contains(expected) else {
+      fail("Generated source is missing: \{expected}")
+    }
+  }
+}
+
+///|
+test "unknown East_Asian_Width is rejected" {
+  try emit_east_asian_width("0041 ; X\n") catch {
+    error =>
+      inspect(
+        error.to_string().contains("Unknown East_Asian_Width: X"),
+        content="true",
+      )
+  } noraise {
+    _ => fail("expected an unknown East_Asian_Width to be rejected")
+  }
+}

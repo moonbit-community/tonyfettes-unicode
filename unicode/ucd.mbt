@@ -1,5 +1,7 @@
 ///|
 pub using @impl {
+  type EastAsianWidth,
+  east_asian_width,
   is_alphabetic,
   is_lowercase,
   is_uppercase,
