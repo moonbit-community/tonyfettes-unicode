@@ -43,6 +43,7 @@ async test "GraphemeBreakTest.txt conformance" {
     guard parse_clusters(line) is Some(expected) else { continue }
     let input = expected.join("")
     let actual = @segmentation.graphemes(input)
+      .iter()
       .map(cluster => cluster.to_owned())
       .collect()
     @debug.assert_eq(

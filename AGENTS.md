@@ -30,7 +30,8 @@ moon info           # Regenerate pkg.generated.mbti files
   - `decode(String) -> String raise PunycodeError`
 - **bidi/** (`moonbit-community/unicode-bidi`): UAX #9 bidirectional text processing
 - **segmentation/** (`moonbit-community/unicode-segmentation`): UAX #29 text segmentation
-  - `graphemes(StringView) -> Iter[StringView]` - extended grapheme clusters
+  - `graphemes(StringView) -> Graphemes` - cursor over extended grapheme clusters
+    (`iter()` for `for .. in`, `next()` returning an empty view at the end)
 - **idna/** (`moonbit-community/unicode-idna`): UTS #46 IDNA processing
   - `to_ascii()` - convert domain to ASCII (Punycode)
   - `to_unicode()` - convert domain from Punycode

@@ -132,12 +132,18 @@ let forced = @bidi.process(
 
 ```moonbit
 // "é" (e + combining acute), a flag, and a family emoji are one cluster each.
-let clusters = @segmentation.graphemes("e\u{0301}🇺🇳👨‍👩‍👧")
-let count = clusters.count() // 3
+let count = @segmentation.graphemes("e\u{0301}🇺🇳👨‍👩‍👧").iter().count() // 3
 
 for cluster in @segmentation.graphemes("e\u{0301}x") {
   // Each cluster is a view into the input.
   println("\{cluster.start_offset()}: \{cluster}")
+}
+
+// `next` returns an empty view at the end instead of an `Option`, which
+// avoids an allocation per cluster in hot loops.
+let clusters = @segmentation.graphemes("e\u{0301}x")
+while clusters.next() is cluster && !cluster.is_empty() {
+  println(cluster)
 }
 ```
 
@@ -243,7 +249,9 @@ deprecated compatibility wrappers.
 
 | API | Description |
 | --- | --- |
-| `graphemes(StringView) -> Iter[StringView]` | Split text into extended grapheme clusters, each a view into the input. |
+| `graphemes(StringView) -> Graphemes` | Create a single-pass cursor over the extended grapheme clusters of a text. |
+| `Graphemes::iter() -> Iter[StringView]` | Iterate over the remaining clusters, each a view into the input; enables `for .. in`. |
+| `Graphemes::next() -> StringView` | Return the next cluster, or an empty view at the end. |
 
 ## Development
 
