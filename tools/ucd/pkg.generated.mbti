@@ -18,7 +18,7 @@ pub fn compress_mark_ranges(UnicodeData) -> Array[@parsing.CodePointRange]
 
 pub fn emit_alphabetic(DerivedCoreProperties) -> String raise
 
-pub fn emit_case_mapping(UnicodeData, SpecialCasingData) -> String
+pub fn emit_case_mapping(UnicodeData, SpecialCasingData) -> String raise
 
 pub fn emit_ccc() -> String
 

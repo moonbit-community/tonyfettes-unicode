@@ -240,23 +240,58 @@ test "binary property trie shares identical blocks" {
 }
 
 ///|
-test "emit decomposition and case mapping arrays" {
+test "emit decomposition arrays" {
   let data = parse_unicode_data(sample_unicode_data)
-  let input =
-    #|00DF; 0073 0073; 0053 0073; 0053 0053; # LATIN SMALL LETTER SHARP S
-  let special = parse_special_casing(input)
   inspect(
     emit_decomposition(data).contains(
       "let decomp_data_starts : ReadOnlyArray[Int]",
     ),
     content="true",
   )
-  inspect(
-    emit_case_mapping(data, special).contains(
-      "let full_upper_cps : ReadOnlyArray[Int]",
+}
+
+///|
+test "emit case mapping records and special mappings" {
+  let data = parse_unicode_data(sample_unicode_data)
+  let special = parse_special_casing(
+    (
+      #|00DF; 00DF; 0053 0073; 0053 0053; # LATIN SMALL LETTER SHARP S
+      #|0061; 0061; 0041; 0041; # agrees with the simple mappings
     ),
-    content="true",
   )
+  let source = emit_case_mapping(data, special)
+  for
+    expected in [
+      "let case_trie_top : Bytes", "let case_trie_mid : Bytes", "let case_trie_leaf : Bytes",
+      // Records in order of first use: no mapping, U+0041 (shared with
+      // U+00C0), U+0061, and U+00DF with special upper and title mappings.
+       "let case_upper_deltas : ReadOnlyArray[Int] = [\n  0,\n  0,\n  -32,\n  0,\n]",
+      "let case_lower_deltas : ReadOnlyArray[Int] = [\n  0,\n  32,\n  0,\n  0,\n]",
+      "let case_title_deltas : ReadOnlyArray[Int] = [\n  0,\n  0,\n  -32,\n  0,\n]",
+      "let case_special_flags : Bytes = [\n  0,\n  0,\n  0,\n  5,\n]", "let special_upper_cps : ReadOnlyArray[Int] = [\n  0x00DF,\n]",
+      "let special_upper_strings : ReadOnlyArray[String] = [\n  \"\\u{0053}\\u{0053}\",\n]",
+      "let special_lower_cps : ReadOnlyArray[Int] = [\n]", "let special_title_strings : ReadOnlyArray[String] = [\n  \"\\u{0053}\\u{0073}\",\n]",
+      "let ascii_strings : ReadOnlyArray[String] = [\n  \"\\u{0000}\",\n", "pub fn lookup_simple_uppercase(c : Char) -> Char",
+      "pub fn full_lowercase(c : Char) -> String", "pub fn lookup_full_titlecase(c : Char) -> Array[Char]?",
+    ] {
+    guard source.contains(expected) else {
+      fail("Generated source is missing: \{expected}")
+    }
+  }
+}
+
+///|
+test "case mappings above the trie are rejected" {
+  let data = parse_unicode_data(
+    "20000;TEST CAPITAL LETTER;Lu;0;L;;;;;N;;;;20001;\n",
+  )
+  try emit_case_mapping(data, parse_special_casing("")) catch {
+    Failure::Failure(message) =>
+      assert_true(message.contains("needs trie coverage"))
+    error => raise error
+  } noraise {
+    _ => fail("expected a case mapping above the trie to be rejected")
+  }
 }
 
 ///|
