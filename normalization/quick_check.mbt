@@ -1,11 +1,15 @@
 ///|
-// Keep the original loop shape outside ordinary Wasm. Expanding the loop
-// regresses some long BMP corpora on Native and Wasm-GC.
-#cfg(target="wasm")
+// Skip clean surrogate pairs from their group summaries on both Wasm
+// backends. Without it, supplementary text on Wasm-GC is slower than before
+// the BMP trie; with it, only Japanese NFC gets a few percent slower there.
+// Keep the original loop shape on Native, where the extra loop state is
+// spilled around every property lookup and slows long BMP corpora, and on
+// JS, which has not been measured.
+#cfg(any(target="wasm", target="wasm-gc"))
 const ScanSurrogatePairs : Bool = true
 
 ///|
-#cfg(not(target="wasm"))
+#cfg(not(any(target="wasm", target="wasm-gc")))
 const ScanSurrogatePairs : Bool = false
 
 ///|
