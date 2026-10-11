@@ -17,8 +17,6 @@ fn validate_label(
   if label.length() == 0 {
     raise EmptyLabel
   }
-  let chars = label_to_chars(label)
-
   // Check 1: Must be NFC normalized
   if !@normalization.is_normalized(label, @normalization.NFC) {
     raise InvalidLabel(label)
@@ -26,32 +24,29 @@ fn validate_label(
 
   // Check 2 & 3: Hyphen restrictions (when check_hyphens)
   if check_hyphens {
-    validate_hyphens(label, chars)
+    validate_hyphens(label)
   }
 
   // Check 4: No U+002E (full stop) within label - handled by label splitting
 
-  // Check 5: No leading combining marks
-  if chars.length() > 0 {
-    let first_c = chars[0]
-    if is_combining_mark(first_c) {
-      raise LeadingCombiningMark
-    }
+  // Check 5: No leading combining marks. An unpaired surrogate is not a mark.
+  if label.get_char(0) is Some(first) && is_combining_mark(first) {
+    raise LeadingCombiningMark
   }
 
   // Check 6: All characters must have valid status
-  for c in chars {
+  for c in label {
     validate_char_status(c, use_std3_ascii_rules)
   }
 
   // Check 7: ContextJ rules (when check_joiners)
   if check_joiners {
-    validate_contextj(chars)
+    validate_contextj(label)
   }
 
   // Check 8: Bidi rules (when check_bidi)
   if check_bidi {
-    validate_bidi(chars)
+    validate_bidi(label)
   }
 }
 
@@ -66,24 +61,24 @@ fn label_to_chars(label : String) -> Array[Char] {
 }
 
 ///|
-/// Validate hyphen restrictions
-fn validate_hyphens(
-  _label : String,
-  chars : Array[Char],
-) -> Unit raise IdnaError {
-  // Cannot start or end with hyphen
-  if chars.length() > 0 {
-    if chars[0] == '-' || chars[chars.length() - 1] == '-' {
-      raise InvalidHyphen
-    }
+/// Validate hyphen restrictions on a non-empty label
+fn validate_hyphens(label : String) -> Unit raise IdnaError {
+  // Cannot start or end with hyphen. A hyphen is one UTF-16 code unit.
+  if label[0] == '-' || label[label.length() - 1] == '-' {
+    raise InvalidHyphen
   }
 
   // Cannot have hyphens at positions 3 and 4 (third and fourth characters)
   // This catches things like "xn--" in non-ACE context
-  if chars.length() >= 4 {
-    if chars[2] == '-' && chars[3] == '-' {
+  let mut position = 0
+  for c in label {
+    if position >= 2 && c != '-' {
+      break
+    }
+    if position == 3 {
       raise InvalidHyphen
     }
+    position += 1
   }
 }
 
@@ -120,21 +115,21 @@ fn validate_char_status(
   if use_std3_ascii_rules && c.to_int() < 0x80 && !is_ldh_ascii(c) {
     raise DisallowedCodePoint(cp=c.to_int())
   }
-  match @idna_data.lookup_idna_mapping(c) {
-    @idna_data.Valid | @idna_data.Deviation(_) =>
+  match @idna_data.lookup_idna_entry(c).status() {
+    Valid | Deviation =>
       // OK
       ()
-    @idna_data.Mapped(_) | @idna_data.Ignored =>
+    Mapped | Ignored =>
       // These should have been processed in the mapping step
       // If we see them here, something went wrong
       raise DisallowedCodePoint(cp=c.to_int())
-    @idna_data.Disallowed => raise DisallowedCodePoint(cp=c.to_int())
-    @idna_data.DisallowedSTD3Valid =>
+    Disallowed => raise DisallowedCodePoint(cp=c.to_int())
+    DisallowedSTD3Valid =>
       if use_std3_ascii_rules {
         raise DisallowedCodePoint(cp=c.to_int())
       }
     // Otherwise OK
-    @idna_data.DisallowedSTD3Mapped(_) =>
+    DisallowedSTD3Mapped =>
       if use_std3_ascii_rules {
         raise DisallowedCodePoint(cp=c.to_int())
       }
@@ -144,7 +139,19 @@ fn validate_char_status(
 
 ///|
 /// Validate ContextJ rules for ZWNJ (U+200C) and ZWJ (U+200D)
-fn validate_contextj(chars : Array[Char]) -> Unit raise IdnaError {
+fn validate_contextj(label : String) -> Unit raise IdnaError {
+  // Joiners are rare; only a label containing one needs random access.
+  let mut has_joiner = false
+  for c in label {
+    if c is ('\u{200C}' | '\u{200D}') {
+      has_joiner = true
+      break
+    }
+  }
+  if !has_joiner {
+    return
+  }
+  let chars = label_to_chars(label)
   for i, c in chars {
     if c == '\u{200C}' {
       // ZWNJ: Zero Width Non-Joiner
@@ -224,17 +231,17 @@ fn has_right_joining_after(chars : Array[Char], pos : Int) -> Bool {
 ///|
 /// Validate Bidi rules (RFC 5893) for a single label
 /// Note: For proper RFC 5893 compliance, use validate_domain_bidi() at domain level
-fn validate_bidi(chars : Array[Char]) -> Unit raise IdnaError {
-  if chars.length() == 0 {
+fn validate_bidi(label : String) -> Unit raise IdnaError {
+  if label.length() == 0 {
     return
   }
 
   // Determine if this is an RTL label
-  let is_rtl_label = is_rtl_label_check(chars)
+  let is_rtl_label = is_rtl_label_check(label)
   if is_rtl_label {
-    validate_rtl_label(chars)
+    validate_rtl_label(label)
   } else {
-    validate_ltr_label(chars)
+    validate_ltr_label(label)
   }
 }
 
@@ -242,16 +249,13 @@ fn validate_bidi(chars : Array[Char]) -> Unit raise IdnaError {
 /// Validate Bidi rules (RFC 5893) for an entire domain
 /// RFC 5893 requires domain-level checking: when ANY label is RTL,
 /// all labels must follow stricter rules.
-fn validate_domain_bidi(labels : Array[String]) -> Unit raise IdnaError {
+fn validate_domain_bidi(labels : ArrayView[String]) -> Unit raise IdnaError {
   // Check if domain contains any RTL labels
   let mut has_rtl_label = false
   for label in labels {
-    if label.length() > 0 {
-      let chars = label_to_chars(label)
-      if is_rtl_label_check(chars) {
-        has_rtl_label = true
-        break
-      }
+    if is_rtl_label_check(label) {
+      has_rtl_label = true
+      break
     }
   }
   if !has_rtl_label {
@@ -265,13 +269,11 @@ fn validate_domain_bidi(labels : Array[String]) -> Unit raise IdnaError {
     if label.length() == 0 {
       continue
     }
-    let chars = label_to_chars(label)
-    let is_rtl = is_rtl_label_check(chars)
-    if is_rtl {
-      validate_rtl_label(chars)
+    if is_rtl_label_check(label) {
+      validate_rtl_label(label)
     } else {
       // LTR label in RTL domain - must start with L (stricter rule)
-      validate_ltr_label_in_rtl_domain(chars)
+      validate_ltr_label_in_rtl_domain(label)
     }
   }
 }
@@ -279,27 +281,21 @@ fn validate_domain_bidi(labels : Array[String]) -> Unit raise IdnaError {
 ///|
 /// Validate LTR label that appears in an RTL domain
 /// Stricter than regular LTR validation: first char must be L (not EN/ON/etc.)
-fn validate_ltr_label_in_rtl_domain(
-  chars : Array[Char],
-) -> Unit raise IdnaError {
-  if chars.length() == 0 {
-    return
-  }
-
-  // In RTL domain, LTR labels must start with L (not EN, ES, etc.)
-  // This is stricter than pure LTR domain rules
-  let first_bc = @bidi.bidi_class(chars[0])
-  match first_bc {
-    @bidi.L => ()
-    _ => raise InvalidBidi // B1 - first char must be L in RTL domain context
-  }
-
-  // Track last non-NSM for ending check
-  let mut last_non_nsm_bc = first_bc
+fn validate_ltr_label_in_rtl_domain(label : String) -> Unit raise IdnaError {
+  // Track last non-NSM for ending check; starts as the first character's class.
+  let mut last_non_nsm_bc = @bidi.L
+  let mut is_first = true
 
   // Same allowed classes as regular LTR, but no R/AL/AN
-  for c in chars {
+  for c in label {
     let bc = @bidi.bidi_class(c)
+    if is_first {
+      // In RTL domain, LTR labels must start with L (not EN, ES, etc.)
+      // This is stricter than pure LTR domain rules
+      guard bc is @bidi.L else { raise InvalidBidi } // B1 - first char must be L in RTL domain context
+      last_non_nsm_bc = bc
+      is_first = false
+    }
     match bc {
       @bidi.L
       | @bidi.EN
@@ -323,8 +319,8 @@ fn validate_ltr_label_in_rtl_domain(
 
 ///|
 /// Check if label is RTL (contains R, AL, or AN characters)
-fn is_rtl_label_check(chars : Array[Char]) -> Bool {
-  for c in chars {
+fn is_rtl_label_check(label : String) -> Bool {
+  for c in label {
     let bc = @bidi.bidi_class(c)
     match bc {
       @bidi.R | @bidi.AL | @bidi.AN => return true
@@ -336,21 +332,21 @@ fn is_rtl_label_check(chars : Array[Char]) -> Bool {
 
 ///|
 /// Validate an RTL label according to RFC 5893
-fn validate_rtl_label(chars : Array[Char]) -> Unit raise IdnaError {
-  // Rule 1 (B1): First character must be R or AL
-  let first_bc = @bidi.bidi_class(chars[0])
-  match first_bc {
-    @bidi.R | @bidi.AL => ()
-    _ => raise InvalidBidi
-  }
-
-  // Track last non-NSM character for ending check (B3)
-  // and whether EN/AN appear (B4)
-  let mut last_non_nsm_bc : @bidi.BidiClass = first_bc
+fn validate_rtl_label(label : String) -> Unit raise IdnaError {
+  // Track last non-NSM character for ending check (B3), starting as the
+  // first character's class, and whether EN/AN appear (B4)
+  let mut last_non_nsm_bc : @bidi.BidiClass = @bidi.L
+  let mut is_first = true
   let mut has_en = false
   let mut has_an = false
-  for c in chars {
+  for c in label {
     let bc = @bidi.bidi_class(c)
+    if is_first {
+      // Rule 1 (B1): First character must be R or AL
+      guard bc is (@bidi.R | @bidi.AL) else { raise InvalidBidi }
+      last_non_nsm_bc = bc
+      is_first = false
+    }
     match bc {
       @bidi.R
       | @bidi.AL
@@ -392,33 +388,32 @@ fn validate_rtl_label(chars : Array[Char]) -> Unit raise IdnaError {
 
 ///|
 /// Validate an LTR label according to RFC 5893
-fn validate_ltr_label(chars : Array[Char]) -> Unit raise IdnaError {
-  if chars.length() == 0 {
-    return
-  }
-
-  // Rule 5 (B5): First character must be L
-  // (Relaxed for pure ASCII/neutral labels in pure LTR domains)
-  let first_bc = @bidi.bidi_class(chars[0])
-  match first_bc {
-    @bidi.L => ()
-    // Allow pure ASCII/neutral labels (existing behavior for pure LTR domains)
-    @bidi.EN
-    | @bidi.ES
-    | @bidi.CS
-    | @bidi.ET
-    | @bidi.ON
-    | @bidi.BN
-    | @bidi.NSM => ()
-    _ => raise InvalidBidi
-  }
-
-  // Track last non-NSM character for ending check (B6)
-  let mut last_non_nsm_bc = first_bc
+fn validate_ltr_label(label : String) -> Unit raise IdnaError {
+  // Track last non-NSM character for ending check (B6), starting as the
+  // first character's class
+  let mut last_non_nsm_bc = @bidi.L
+  let mut is_first = true
 
   // Rule 5: Only certain Bidi classes allowed in LTR label
-  for c in chars {
+  for c in label {
     let bc = @bidi.bidi_class(c)
+    if is_first {
+      // Rule 5 (B5): First character must be L
+      // (Relaxed for pure ASCII/neutral labels in pure LTR domains)
+      guard bc
+        is (@bidi.L
+        | @bidi.EN
+        | @bidi.ES
+        | @bidi.CS
+        | @bidi.ET
+        | @bidi.ON
+        | @bidi.BN
+        | @bidi.NSM) else {
+        raise InvalidBidi
+      }
+      last_non_nsm_bc = bc
+      is_first = false
+    }
     match bc {
       @bidi.L
       | @bidi.EN

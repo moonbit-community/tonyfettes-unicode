@@ -10,6 +10,7 @@ test "domain conversion" (b : @bench.T) {
       ("mixed-case ASCII", "WWW.Example.COM"),
       ("ASCII underscore", "_dmarc.example.com"),
       ("Latin", "bücher.münchen.example"),
+      ("mixed-case Latin", "Bücher.München.Example"),
       ("CJK", "例え.テスト.日本語"),
       ("Arabic", "مثال.إختبار"),
       ("A-labels", "xn--bcher-kva.xn--mnchen-3ya.example"),

@@ -2,21 +2,25 @@
 package "moonbit-community/idna/internal/idna"
 
 // Values
-pub fn lookup_idna_mapping(Char) -> IdnaStatus
+pub fn lookup_idna_entry(Char) -> IdnaEntry
 
 pub fn lookup_joining_type(Char) -> JoiningType
 
 // Errors
 
 // Types and methods
+type IdnaEntry
+pub fn IdnaEntry::status(Self) -> IdnaStatus
+pub fn IdnaEntry::write_mapping(Self, StringBuilder) -> Unit
+
 pub(all) enum IdnaStatus {
   Valid
   Ignored
-  Mapped(Array[Char])
-  Deviation(Array[Char])
+  Mapped
+  Deviation
   Disallowed
   DisallowedSTD3Valid
-  DisallowedSTD3Mapped(Array[Char])
+  DisallowedSTD3Mapped
 } derive(Eq)
 pub fn IdnaStatus::equal(Self, Self) -> Bool
 pub fn IdnaStatus::not_equal(Self, Self) -> Bool

@@ -128,12 +128,12 @@ fn to_ascii_general(
 
   // Domain-level bidi validation on Unicode labels
   if check_bidi {
-    let labels_for_bidi = if has_trailing_dot {
-      unicode_labels.iter().take(label_count - 1).collect()
+    let bidi_label_count = if has_trailing_dot {
+      label_count - 1
     } else {
-      unicode_labels
+      label_count
     }
-    validate_domain_bidi(labels_for_bidi)
+    validate_domain_bidi(unicode_labels[:bidi_label_count])
   }
   let result = ascii_labels.join(".")
 
@@ -179,10 +179,11 @@ fn process_label_for_ascii(
     let re_encoded = encode_label_to_ascii(normalized)
 
     // Roundtrip check (V7 error on mismatch)
-    if re_encoded != label.to_lower() {
+    let lowercase_label = label.to_lower()
+    if re_encoded != lowercase_label {
       raise InvalidAcePrefix
     }
-    return (normalized, label.to_lower())
+    return (normalized, lowercase_label)
   }
 
   // Validate non-ACE labels here. Raw A-labels must not be subjected to the
@@ -262,12 +263,12 @@ fn to_unicode_general(
     unicode_labels.push(unicode_label)
   }
   if check_bidi {
-    let labels_for_bidi = if has_trailing_dot {
-      unicode_labels.iter().take(label_count - 1).collect()
+    let bidi_label_count = if has_trailing_dot {
+      label_count - 1
     } else {
-      unicode_labels
+      label_count
     }
-    validate_domain_bidi(labels_for_bidi)
+    validate_domain_bidi(unicode_labels[:bidi_label_count])
   }
   unicode_labels.join(".")
 }
@@ -283,7 +284,7 @@ fn encode_label_to_ascii(label : String) -> String raise IdnaError {
     let encoded = @punycode.encode(label.to_lower()) catch {
       error => raise PunycodeError(error)
     }
-    "\{ace_prefix}\{encoded}"
+    ace_prefix + encoded
   }
 }
 
@@ -320,8 +321,8 @@ fn label_to_unicode(
 /// Decode an A-label and enforce the UTS #46 requirement that its decoded
 /// form is non-empty and contains at least one non-ASCII code point.
 fn decode_ace_label(label : String) -> String raise IdnaError {
-  let punycode_part = get_substring_after_prefix(label, 4)
-  let decoded = @punycode.decode(punycode_part) catch {
+  // The prefix is four ASCII characters, so four UTF-16 code units.
+  let decoded = @punycode.decode(label[ace_prefix.length():].to_owned()) catch {
     error => raise PunycodeError(error)
   }
   if is_all_ascii(decoded) {
@@ -332,27 +333,22 @@ fn decode_ace_label(label : String) -> String raise IdnaError {
 
 ///|
 fn is_all_ascii(label : String) -> Bool {
-  label.all(c => c.to_int() < 0x80)
-}
-
-///|
-/// Check if a label has the ACE prefix "xn--"
-fn has_ace_prefix(label : String) -> Bool {
-  label.to_lower().has_prefix("xn--")
-}
-
-///|
-/// Get substring after a given prefix length (safe version)
-fn get_substring_after_prefix(s : String, prefix_len : Int) -> String {
-  let result = StringBuilder()
-  let mut i = 0
-  for c in s {
-    if i >= prefix_len {
-      result.write_char(c)
+  for i in 0..<label.length() {
+    if label[i] >= 0x80 {
+      return false
     }
-    i = i + 1
   }
-  result.to_string()
+  true
+}
+
+///|
+/// Check if a label has the ACE prefix "xn--", ignoring ASCII case
+fn has_ace_prefix(label : String) -> Bool {
+  label.length() >= 4 &&
+  label[0] is ('x' | 'X') &&
+  label[1] is ('n' | 'N') &&
+  label[2] == '-' &&
+  label[3] == '-'
 }
 
 ///|
