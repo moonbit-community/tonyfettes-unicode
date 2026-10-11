@@ -275,3 +275,29 @@ test "conformance: combining sequence" {
   inspect(@normalization.nfc("D\u{0307}"), content="\u{1E0A}")
   inspect(@normalization.nfd("\u{1E0A}"), content="D\u{0307}")
 }
+
+///|
+test "NFD: marks around a Hangul syllable keep their ordering rules" {
+  // U+0315 (class 232) before U+0300 (class 230) is reordered after the jamo.
+  assert_eq(
+    @normalization.nfd("\u{D55C}\u{0315}\u{0300}"),
+    "\u{1112}\u{1161}\u{11AB}\u{0300}\u{0315}",
+  )
+  // The jamo are starters, so a mark before the syllable stays where it is.
+  assert_eq(
+    @normalization.nfd("a\u{0315}\u{AC00}\u{0300}"),
+    "a\u{0315}\u{1100}\u{1161}\u{0300}",
+  )
+  assert_eq(@normalization.nfkd("\u{AC01}"), "\u{1100}\u{1161}\u{11A8}")
+}
+
+///|
+test "NFD and NFKD: recursive and compatibility decompositions" {
+  // U+1EC7 decomposes in two steps.
+  assert_eq(@normalization.nfd("\u{1EC7}"), "e\u{0323}\u{0302}")
+  // U+01C4 has only a compatibility mapping, whose second character
+  // decomposes canonically.
+  assert_eq(@normalization.nfd("\u{01C4}"), "\u{01C4}")
+  assert_eq(@normalization.nfkd("\u{01C4}"), "DZ\u{030C}")
+  assert_eq(@normalization.nfkd("\u{FB03}\u{00E9}"), "ffie\u{0301}")
+}

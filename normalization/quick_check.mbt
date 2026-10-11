@@ -50,9 +50,14 @@ fn NormalizationBuffer::append(
     }
     self.previous_ccc = ccc
     self.chars.push(c)
+  } else if is_hangul_syllable(c) {
+    // Hangul syllables decompose algorithmically into conjoining jamo, which
+    // are all starters, so there is no combining class to look up.
+    decompose_hangul(c, self.chars)
+    self.previous_ccc = 0
   } else {
     let start = self.chars.length()
-    decompose_char(c, self.chars, compatibility~)
+    @decomposition.append_decomposition(c, self.chars, compatibility~)
     for i in start..<self.chars.length() {
       let ccc = @ccc.lookup_ccc(self.chars[i])
       if ccc != 0 && self.previous_ccc > ccc {
