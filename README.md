@@ -3,8 +3,8 @@
 Unicode support for MoonBit.
 
 This library implements selected Unicode standards for normalization, case and
-category lookup, Punycode, IDNA domain processing, and bidirectional text. The
-generated tables target Unicode 16.0.0.
+category lookup, Punycode, IDNA domain processing, bidirectional text, and text
+segmentation. The generated tables target Unicode 16.0.0.
 
 ## Features
 
@@ -13,6 +13,7 @@ generated tables target Unicode 16.0.0.
 - IDNA processing from UTS #46, including mapping, validation, Bidi checks,
   joiner checks, and DNS length checks
 - Unicode Bidirectional Algorithm support from UAX #9
+- Extended grapheme cluster segmentation from UAX #29
 - General_Category lookup, binary property predicates (White_Space,
   Alphabetic, Lowercase, Uppercase, XID_Start, XID_Continue), and simple/full
   case mapping from the Unicode Character Database
@@ -26,6 +27,7 @@ moon add moonbit-community/ucd
 moon add moonbit-community/normalization
 moon add moonbit-community/punycode
 moon add moonbit-community/bidi
+moon add moonbit-community/segmentation
 moon add moonbit-community/idna
 ```
 
@@ -38,13 +40,15 @@ import {
   "moonbit-community/punycode"
   "moonbit-community/idna"
   "moonbit-community/bidi"
+  "moonbit-community/segmentation"
 }
 ```
 
 MoonBit uses the last package path segment as the default alias, so these
-imports are used as `@ucd`, `@normalization`, `@punycode`, `@idna`, and
-`@bidi`. Existing users may continue depending on `moonbit-community/unicode`; it is
-an umbrella compatibility module that preserves the old package paths.
+imports are used as `@ucd`, `@normalization`, `@punycode`, `@idna`, `@bidi`,
+and `@segmentation`. Existing users may continue depending on
+`moonbit-community/unicode`; it is an umbrella compatibility module that
+preserves the old package paths.
 
 ## Usage
 
@@ -121,6 +125,19 @@ let forced = @bidi.process(
   "\u{05D0}\u{05D1}\u{05D2}",
   direction=@bidi.Direction::LTR,
 )
+```
+
+### Segmentation
+
+```moonbit
+// "é" (e + combining acute), a flag, and a family emoji are one cluster each.
+let clusters = @segmentation.graphemes("e\u{0301}🇺🇳👨‍👩‍👧")
+let count = clusters.count() // 3
+
+for cluster in @segmentation.graphemes("e\u{0301}x") {
+  // Each cluster is a view into the input.
+  println("\{cluster.start_offset()}: \{cluster}")
+}
 ```
 
 ### Case And Category Data
@@ -219,6 +236,12 @@ default to `true`.
 `process_with_direction` and `process_with_base_level` remain available as
 deprecated compatibility wrappers.
 
+### `moonbit-community/segmentation`
+
+| API | Description |
+| --- | --- |
+| `graphemes(StringView) -> Iter[StringView]` | Split text into extended grapheme clusters, each a view into the input. |
+
 ## Development
 
 Common commands:
@@ -243,8 +266,8 @@ moon run --target native tools/gen data
 moon run --target native tools/gen all
 ```
 
-Individual commands are `ucd`, `idna`, and `bidi`. Downloaded Unicode source
-files are cached in `tools/.cache/`.
+Individual commands are `ucd`, `idna`, `bidi`, and `segmentation`. Downloaded
+Unicode source files are cached in `tools/.cache/`.
 
 Conformance tests live in the workspace-only `moonbit-community/unicode-tests`
 module (`tests/`). They read the official Unicode test data files committed
@@ -265,9 +288,9 @@ reads committed data directly and supports Native, Wasm and Wasm-GC.
 
 ### Releasing
 
-The native release tool keeps the six published module versions aligned,
+The native release tool keeps the seven published module versions aligned,
 validates the workspace, and checks every package archive. During preparation it
-dry-runs the independent `ucd`, `punycode`, and `bidi` modules:
+dry-runs the independent `ucd`, `punycode`, `bidi`, and `segmentation` modules:
 
 ```bash
 moon run --target native tools/release -- prepare --version 0.4.0
@@ -283,10 +306,10 @@ moon run --target native tools/release -- publish \
   --execute
 ```
 
-The tool publishes `ucd`, `punycode`, `bidi`, `normalization`, `idna`, and the
-`unicode` compatibility umbrella in dependency order. It reads the release
-version from the umbrella manifest `unicode/moon.mod` and verifies that all six
-published modules use that version. Modules that depend on same-release packages
+The tool publishes `ucd`, `punycode`, `bidi`, `segmentation`, `normalization`,
+`idna`, and the `unicode` compatibility umbrella in dependency order. It reads
+the release version from the umbrella manifest `unicode/moon.mod` and verifies
+that all seven published modules use that version. Modules that depend on same-release packages
 are dry-run immediately before their real publication, after the tool refreshes
 the registry and their dependencies are available. It never publishes the
 workspace-only `tests` or `tools` modules. If publication stops partway
@@ -303,6 +326,7 @@ moon run --target native tools/release -- publish \
 
 - [UAX #9: Unicode Bidirectional Algorithm](https://unicode.org/reports/tr9/)
 - [UAX #15: Unicode Normalization Forms](https://unicode.org/reports/tr15/)
+- [UAX #29: Unicode Text Segmentation](https://unicode.org/reports/tr29/)
 - [UAX #44: Unicode Character Database](https://unicode.org/reports/tr44/)
 - [RFC 3492: Punycode](https://datatracker.ietf.org/doc/html/rfc3492)
 - [UTS #46: Unicode IDNA Compatibility Processing](https://unicode.org/reports/tr46/)

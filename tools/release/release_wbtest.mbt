@@ -130,25 +130,27 @@ test "manifest version declarations must be unique" {
 
 ///|
 test "publish resume points follow dependency order" {
-  guard published_modules is [ucd, punycode, bidi, normalization, idna, unicode] else {
-    fail("expected six published modules")
+  guard published_modules
+    is [ucd, punycode, bidi, segmentation, normalization, idna, unicode] else {
+    fail("expected seven published modules")
   }
   assert_false(ucd.requires_published_dependencies)
   assert_false(punycode.requires_published_dependencies)
   assert_false(bidi.requires_published_dependencies)
+  assert_false(segmentation.requires_published_dependencies)
   assert_true(normalization.requires_published_dependencies)
   assert_true(idna.requires_published_dependencies)
   assert_true(unicode.requires_published_dependencies)
   inspect(unicode.directory, content="unicode")
   inspect(unicode.manifest_path(), content="unicode/moon.mod")
   inspect(publish_start_index("ucd"), content="0")
-  inspect(publish_start_index("normalization"), content="3")
-  inspect(publish_start_index("unicode"), content="5")
+  inspect(publish_start_index("normalization"), content="4")
+  inspect(publish_start_index("unicode"), content="6")
   try publish_start_index("tools") catch {
     ReleaseError(message) =>
       inspect(
         message,
-        content="Unknown --from module 'tools'; expected one of ucd, punycode, bidi, normalization, idna, unicode",
+        content="Unknown --from module 'tools'; expected one of ucd, punycode, bidi, segmentation, normalization, idna, unicode",
       )
   } noraise {
     _ => fail("expected unknown resume module to fail")
