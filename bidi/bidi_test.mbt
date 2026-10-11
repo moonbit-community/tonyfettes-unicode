@@ -268,3 +268,66 @@ test "process: force RTL" {
   let result = @bidi.process("ABC", direction=@bidi.Direction::RTL)
   inspect(result.base_level, content="1")
 }
+
+///|
+/// Resolved classes of a paragraph, as text.
+fn resolved(text : String, direction : @bidi.Direction) -> String {
+  let classes = @bidi.process(text, direction~).resolved_classes
+  classes.map(bc => bc.to_string()).join(" ")
+}
+
+///|
+test "weak types: European terminators around European numbers" {
+  // W5: terminators before and after a number join it; W7 then makes the
+  // whole run L after an L.
+  inspect(resolved("a$$1$", LTR), content="L L L L L")
+  // After an R the run stays EN.
+  inspect(resolved("\u{05D0}$$1$", RTL), content="R EN EN EN EN")
+  // W6: terminators that touch no number become ON, which N1 resolves.
+  inspect(resolved("\u{05D0}$$\u{05D1}", RTL), content="R R R R")
+}
+
+///|
+test "weak types: separators between numbers" {
+  // W4: one separator between two numbers of the same kind joins them.
+  inspect(resolved("\u{05D0}1,2+3", RTL), content="R EN EN EN EN EN")
+  // Two separators in a row do not.
+  inspect(resolved("\u{05D0}1,,2", RTL), content="R EN R R EN")
+  // W2 and W4: after AL the digits are AN, and only a CS joins two ANs.
+  inspect(resolved("\u{0627}1,2+3", RTL), content="R AN AN AN R AN")
+}
+
+///|
+test "weak types: NSM takes the type before it" {
+  inspect(resolved("\u{0627}\u{0300}1\u{0300}", RTL), content="R R AN AN")
+  // After an isolate initiator it becomes ON, which N1 then resolves.
+  inspect(resolved("a\u{2066}\u{0300}b\u{2069}", LTR), content="L L L L L")
+}
+
+///|
+test "bracket pairs: strong types of nested pairs count for the outer pair" {
+  // The only strong type inside the outer pair is inside the inner one.
+  inspect(resolved("\u{05D0}([a])", RTL), content="R R R L R R")
+  inspect(resolved("a([\u{05D0}])\u{05D1}", LTR), content="L L L R L L R")
+  // An unmatched opening bracket inside a pair is ignored.
+  inspect(resolved("\u{05D0}(a[)", RTL), content="R R L R R")
+}
+
+///|
+test "bracket pairs: marks after a resolved bracket follow it" {
+  inspect(
+    resolved("\u{05D0}(a)\u{0300}\u{0300}b", RTL),
+    content="R R L R R R L",
+  )
+  inspect(resolved("\u{05D0}(\u{0300}a)", RTL), content="R R R L R")
+}
+
+///|
+test "explicit formatting: a lone PDF or PDI still takes the general path" {
+  inspect(resolved("a\u{202C}\u{05D0}", LTR), content="L BN R")
+  inspect(resolved("a\u{2069}\u{05D0}", LTR), content="L L R")
+  @debug.debug_inspect(
+    @bidi.process("a\u{202C}\u{05D0}", direction=LTR).levels,
+    content="[0, 0, 1]",
+  )
+}

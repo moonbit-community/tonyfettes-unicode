@@ -28,9 +28,9 @@ fn process_explicit(
       isolate_status: false,
     },
   ]
-  let overflow_isolate_count : Ref[Int] = { val: 0, }
-  let overflow_embedding_count : Ref[Int] = { val: 0, }
-  let valid_isolate_count : Ref[Int] = { val: 0, }
+  let mut overflow_isolate_count = 0
+  let mut overflow_embedding_count = 0
+  let mut valid_isolate_count = 0
 
   // Track isolate pairs for later run sequence computation
   let isolate_pairs : Array[(Int, Int)] = []
@@ -42,15 +42,15 @@ fn process_explicit(
       RLE => {
         let new_level = next_odd_level(stack[stack.length() - 1].level)
         if new_level <= max_depth &&
-          overflow_isolate_count.val == 0 &&
-          overflow_embedding_count.val == 0 {
+          overflow_isolate_count == 0 &&
+          overflow_embedding_count == 0 {
           stack.push({
             level: new_level,
             override_status: BidiClass::ON,
             isolate_status: false,
           })
-        } else if overflow_isolate_count.val == 0 {
-          overflow_embedding_count.val += 1
+        } else if overflow_isolate_count == 0 {
+          overflow_embedding_count += 1
         }
         // X9: Remove from output (set level, keep type for X9 removal)
         levels[i] = stack[stack.length() - 1].level
@@ -61,15 +61,15 @@ fn process_explicit(
       LRE => {
         let new_level = next_even_level(stack[stack.length() - 1].level)
         if new_level <= max_depth &&
-          overflow_isolate_count.val == 0 &&
-          overflow_embedding_count.val == 0 {
+          overflow_isolate_count == 0 &&
+          overflow_embedding_count == 0 {
           stack.push({
             level: new_level,
             override_status: BidiClass::ON,
             isolate_status: false,
           })
-        } else if overflow_isolate_count.val == 0 {
-          overflow_embedding_count.val += 1
+        } else if overflow_isolate_count == 0 {
+          overflow_embedding_count += 1
         }
         levels[i] = stack[stack.length() - 1].level
         types[i] = BidiClass::BN
@@ -79,15 +79,15 @@ fn process_explicit(
       RLO => {
         let new_level = next_odd_level(stack[stack.length() - 1].level)
         if new_level <= max_depth &&
-          overflow_isolate_count.val == 0 &&
-          overflow_embedding_count.val == 0 {
+          overflow_isolate_count == 0 &&
+          overflow_embedding_count == 0 {
           stack.push({
             level: new_level,
             override_status: BidiClass::R,
             isolate_status: false,
           })
-        } else if overflow_isolate_count.val == 0 {
-          overflow_embedding_count.val += 1
+        } else if overflow_isolate_count == 0 {
+          overflow_embedding_count += 1
         }
         levels[i] = stack[stack.length() - 1].level
         types[i] = BidiClass::BN
@@ -97,15 +97,15 @@ fn process_explicit(
       LRO => {
         let new_level = next_even_level(stack[stack.length() - 1].level)
         if new_level <= max_depth &&
-          overflow_isolate_count.val == 0 &&
-          overflow_embedding_count.val == 0 {
+          overflow_isolate_count == 0 &&
+          overflow_embedding_count == 0 {
           stack.push({
             level: new_level,
             override_status: BidiClass::L,
             isolate_status: false,
           })
-        } else if overflow_isolate_count.val == 0 {
-          overflow_embedding_count.val += 1
+        } else if overflow_isolate_count == 0 {
+          overflow_embedding_count += 1
         }
         levels[i] = stack[stack.length() - 1].level
         types[i] = BidiClass::BN
@@ -120,9 +120,9 @@ fn process_explicit(
         }
         let new_level = next_odd_level(stack[stack.length() - 1].level)
         if new_level <= max_depth &&
-          overflow_isolate_count.val == 0 &&
-          overflow_embedding_count.val == 0 {
-          valid_isolate_count.val += 1
+          overflow_isolate_count == 0 &&
+          overflow_embedding_count == 0 {
+          valid_isolate_count += 1
           isolate_stack.push(i)
           stack.push({
             level: new_level,
@@ -130,7 +130,7 @@ fn process_explicit(
             isolate_status: true,
           })
         } else {
-          overflow_isolate_count.val += 1
+          overflow_isolate_count += 1
         }
       }
 
@@ -143,9 +143,9 @@ fn process_explicit(
         }
         let new_level = next_even_level(stack[stack.length() - 1].level)
         if new_level <= max_depth &&
-          overflow_isolate_count.val == 0 &&
-          overflow_embedding_count.val == 0 {
-          valid_isolate_count.val += 1
+          overflow_isolate_count == 0 &&
+          overflow_embedding_count == 0 {
+          valid_isolate_count += 1
           isolate_stack.push(i)
           stack.push({
             level: new_level,
@@ -153,7 +153,7 @@ fn process_explicit(
             isolate_status: true,
           })
         } else {
-          overflow_isolate_count.val += 1
+          overflow_isolate_count += 1
         }
       }
 
@@ -172,9 +172,9 @@ fn process_explicit(
           next_even_level(stack[stack.length() - 1].level)
         }
         if new_level <= max_depth &&
-          overflow_isolate_count.val == 0 &&
-          overflow_embedding_count.val == 0 {
-          valid_isolate_count.val += 1
+          overflow_isolate_count == 0 &&
+          overflow_embedding_count == 0 {
+          valid_isolate_count += 1
           isolate_stack.push(i)
           stack.push({
             level: new_level,
@@ -182,16 +182,16 @@ fn process_explicit(
             isolate_status: true,
           })
         } else {
-          overflow_isolate_count.val += 1
+          overflow_isolate_count += 1
         }
       }
 
       // X6a: PDI - Pop Directional Isolate
       PDI => {
-        if overflow_isolate_count.val > 0 {
-          overflow_isolate_count.val -= 1
-        } else if valid_isolate_count.val > 0 {
-          overflow_embedding_count.val = 0
+        if overflow_isolate_count > 0 {
+          overflow_isolate_count -= 1
+        } else if valid_isolate_count > 0 {
+          overflow_embedding_count = 0
           // Pop until isolate
           while stack.length() > 1 && !stack[stack.length() - 1].isolate_status {
             let _ = stack.pop()
@@ -200,7 +200,7 @@ fn process_explicit(
           if stack.length() > 1 {
             let _ = stack.pop()
           }
-          valid_isolate_count.val -= 1
+          valid_isolate_count -= 1
           // Record isolate pair
           if isolate_stack.length() > 0 {
             match isolate_stack.pop() {
@@ -218,10 +218,10 @@ fn process_explicit(
 
       // X7: PDF - Pop Directional Formatting
       PDF => {
-        if overflow_isolate_count.val > 0 {
+        if overflow_isolate_count > 0 {
           // Do nothing
-        } else if overflow_embedding_count.val > 0 {
-          overflow_embedding_count.val -= 1
+        } else if overflow_embedding_count > 0 {
+          overflow_embedding_count -= 1
         } else if stack.length() >= 2 &&
           !stack[stack.length() - 1].isolate_status {
           let _ = stack.pop()
@@ -339,9 +339,9 @@ fn compute_isolating_run_sequences(
   }
 
   // Build a map from isolate initiator to PDI
-  let isolate_to_pdi : Map[Int, Int] = Map([])
+  let pdi_of_isolate : Array[Int] = Array::make(len, -1)
   for pair in isolate_pairs {
-    isolate_to_pdi[pair.0] = pair.1
+    pdi_of_isolate[pair.0] = pair.1
   }
   let sequences : Array[IsolatingRunSequence] = []
   let processed : Array[Bool] = Array::make(len, false)
@@ -388,12 +388,12 @@ fn compute_isolating_run_sequences(
       // Check if last added character is an isolate initiator
       if indices.length() > 0 {
         let last = indices[indices.length() - 1]
-        match isolate_to_pdi.get(last) {
-          Some(pdi_idx) =>
-            // Continue sequence at the matching PDI run (include the PDI).
-            current = pdi_idx
-          None => break
+        let pdi_idx = pdi_of_isolate[last]
+        if pdi_idx < 0 {
+          break
         }
+        // Continue sequence at the matching PDI run (include the PDI).
+        current = pdi_idx
       } else {
         break
       }
@@ -444,9 +444,11 @@ fn compute_isolating_run_sequences(
       // Check if this is an isolate initiator - look for matching PDI
       let last_type = types[last_idx]
       if last_type.is_isolate_initiator() {
-        match isolate_to_pdi.get(last_idx) {
-          Some(pdi_idx) => levels[pdi_idx]
-          None => paragraph_level
+        let pdi_idx = pdi_of_isolate[last_idx]
+        if pdi_idx < 0 {
+          paragraph_level
+        } else {
+          levels[pdi_idx]
         }
       } else if next >= len {
         paragraph_level
@@ -465,4 +467,29 @@ fn compute_isolating_run_sequences(
     sequences.push({ indices, sos, eos, level: seq_level, })
   }
   sequences
+}
+
+///|
+/// The isolating run sequences of a paragraph without explicit formatting
+/// characters: one sequence at the paragraph level holding every character
+/// that X9 keeps, with sos and eos given by that level.
+fn paragraph_run_sequence(
+  types : Array[BidiClass],
+  paragraph_level : Int,
+) -> Array[IsolatingRunSequence] {
+  let indices : Array[Int] = Array(capacity=types.length())
+  for i, bc in types {
+    if !(bc is BN) {
+      indices.push(i)
+    }
+  }
+  if indices.length() == 0 {
+    return []
+  }
+  let direction : BidiClass = if paragraph_level % 2 == 0 {
+    BidiClass::L
+  } else {
+    BidiClass::R
+  }
+  [{ indices, sos: direction, eos: direction, level: paragraph_level, }]
 }

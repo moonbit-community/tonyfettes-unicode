@@ -11,7 +11,17 @@ priv struct BracketPair {
   close_index : Int
   open_position : Int
   close_position : Int
+  /// Strong types between the brackets: `StrongLtr`, `StrongRtl`, or both.
+  strong : Int
 }
+
+///|
+/// An L between a bracket pair.
+const StrongLtr : Int = 1
+
+///|
+/// An R, EN or AN between a bracket pair.
+const StrongRtl : Int = 2
 
 ///|
 priv struct BracketStackEntry {
@@ -21,11 +31,29 @@ priv struct BracketStackEntry {
 }
 
 ///|
+/// Working storage for bracket pairing, reused across the isolating run
+/// sequences of a paragraph.
+priv struct BracketScratch {
+  /// The pairs found in the current sequence.
+  pairs : Array[BracketPair]
+  /// Open brackets not yet closed.
+  stack : Array[BracketStackEntry]
+  /// Strong types seen directly inside each open bracket on the stack.
+  strong : Array[Int]
+}
+
+///|
+fn BracketScratch::new() -> BracketScratch {
+  { pairs: [], stack: [], strong: [], }
+}
+
+///|
 /// Resolve bracket pairs within an isolating run sequence
 fn resolve_bracket_pairs(
+  scratch : BracketScratch,
   chars : Array[Char],
   types : Array[BidiClass],
-  _levels : Array[Int],
+  original_classes : Array[BidiClass],
   seq : IsolatingRunSequence,
 ) -> Unit {
   let indices = seq.indices
@@ -34,7 +62,8 @@ fn resolve_bracket_pairs(
   }
 
   // Find bracket pairs in the sequence
-  let pairs = find_bracket_pairs(chars, types, indices)
+  find_bracket_pairs(scratch, chars, types, indices)
+  let pairs = scratch.pairs
   if pairs.length() == 0 {
     return
   }
@@ -51,22 +80,8 @@ fn resolve_bracket_pairs(
   } else {
     BidiClass::L
   }
-
-  // Prefix counts let each pair query the strong types in its contents in O(1).
-  // Earlier pairs cannot be strictly inside a later pair because pairs are
-  // processed in opening-position order, so their resolved brackets do not
-  // invalidate these counts.
-  let ltr_prefix = Array::make(indices.length() + 1, 0)
-  let rtl_prefix = Array::make(indices.length() + 1, 0)
-  for position, idx in indices {
-    ltr_prefix[position + 1] = ltr_prefix[position]
-    rtl_prefix[position + 1] = rtl_prefix[position]
-    match types[idx] {
-      L => ltr_prefix[position + 1] += 1
-      R | EN | AN => rtl_prefix[position + 1] += 1
-      _ => ()
-    }
-  }
+  let embedding_strong = if embedding_is_ltr { StrongLtr } else { StrongRtl }
+  let opposite_strong = if embedding_is_ltr { StrongRtl } else { StrongLtr }
 
   // Scan context monotonically as opening positions increase. Reading from
   // types includes brackets resolved by earlier N0 pairs.
@@ -82,64 +97,108 @@ fn resolve_bracket_pairs(
       context_position += 1
     }
 
-    // N0b: Inspect types inside the bracket pair
-    let content_start = pair.open_position + 1
-    let found_ltr = ltr_prefix[pair.close_position] > ltr_prefix[content_start]
-    let found_rtl = rtl_prefix[pair.close_position] > rtl_prefix[content_start]
-    let found_embedding = if embedding_is_ltr { found_ltr } else { found_rtl }
-    let found_opposite = if embedding_is_ltr { found_rtl } else { found_ltr }
-
-    // N0c: Determine bracket type
-    if found_embedding {
-      // Set both brackets to embedding direction
-      types[pair.open_index] = embedding_direction
-      types[pair.close_index] = embedding_direction
-    } else if found_opposite {
+    // N0b, N0c: Determine bracket type from the strong types inside the pair
+    let resolved = if (pair.strong & embedding_strong) != 0 {
+      embedding_direction
+    } else if (pair.strong & opposite_strong) != 0 {
       let context_matches_embedding = if embedding_is_ltr {
         context_type is L
       } else {
         context_type is R
       }
       if context_matches_embedding {
-        // Set brackets to embedding direction
-        types[pair.open_index] = embedding_direction
-        types[pair.close_index] = embedding_direction
+        embedding_direction
       } else {
         // N0c2: Set brackets to opposite direction
-        types[pair.open_index] = opposite_direction
-        types[pair.close_index] = opposite_direction
+        opposite_direction
       }
+    } else {
+      // With no strong type inside, leave brackets as ON
+      continue
     }
-    // If neither found_embedding nor found_opposite, leave brackets as ON
+    types[pair.open_index] = resolved
+    types[pair.close_index] = resolved
+    retype_following_marks(
+      types,
+      original_classes,
+      indices,
+      pair.open_position,
+      resolved,
+    )
+    retype_following_marks(
+      types,
+      original_classes,
+      indices,
+      pair.close_position,
+      resolved,
+    )
+  }
+}
+
+///|
+/// N0: characters that were NSM before W1 and follow a bracket that N0
+/// changed take the bracket's new type. They are still ON here, the type W1
+/// gave them from the bracket.
+fn retype_following_marks(
+  types : Array[BidiClass],
+  original_classes : Array[BidiClass],
+  indices : Array[Int],
+  bracket_position : Int,
+  resolved : BidiClass,
+) -> Unit {
+  for position in (bracket_position + 1)..<indices.length() {
+    let idx = indices[position]
+    guard original_classes[idx] is NSM && types[idx] is ON else { break }
+    types[idx] = resolved
   }
 }
 
 ///|
 /// Find all bracket pairs in an isolating run sequence
-/// Returns pairs sorted by opening position in the isolating run sequence.
+/// Leaves them in `scratch.pairs`, sorted by opening position in the sequence.
+///
+/// The same pass records which strong types lie between each pair. An open
+/// bracket collects the strong types seen while it is the innermost one, and
+/// hands them to the bracket enclosing it when it is closed or discarded.
+/// Brackets resolved for other pairs never count: a pair is resolved before
+/// any pair inside it, so the types read here are the ones N0 starts from.
 fn find_bracket_pairs(
+  scratch : BracketScratch,
   chars : Array[Char],
   types : Array[BidiClass],
   indices : Array[Int],
-) -> Array[BracketPair] {
-  let pairs : Array[BracketPair] = []
-
-  let stack : Array[BracketStackEntry] = []
+) -> Unit {
+  let { pairs, stack, strong, } = scratch
+  pairs.clear()
+  stack.clear()
+  strong.clear()
   let mut overflow = false
   for sequence_position, idx in indices {
-    let c = chars[idx]
-
     // Only consider brackets that are ON type (after weak resolution)
-    let bc = types[idx]
-    if !(bc is ON) {
-      continue
+    match types[idx] {
+      ON => ()
+      L => {
+        if strong.length() > 0 {
+          strong[strong.length() - 1] = strong[strong.length() - 1] | StrongLtr
+        }
+        continue
+      }
+      R | EN | AN => {
+        if strong.length() > 0 {
+          strong[strong.length() - 1] = strong[strong.length() - 1] | StrongRtl
+        }
+        continue
+      }
+      _ => continue
     }
+    let c = chars[idx]
     let bracket_type = @bidi_data.bracket_type(c)
     match bracket_type {
       Open =>
         // Push to stack
         if stack.length() < 63 { // BD16 limit
           stack.push({ bracket: c, char_index: idx, sequence_position, })
+          strong.push(0)
         } else {
           overflow = true
           break
@@ -158,15 +217,23 @@ fn find_bracket_pairs(
           }
           if found >= 0 {
             let open_entry = stack[found]
+            // Everything above the match lies inside the pair too.
+            let mut inside = 0
+            for j in found..<strong.length() {
+              inside = inside | strong[j]
+            }
             pairs.push({
               open_index: open_entry.char_index,
               close_index: idx,
               open_position: open_entry.sequence_position,
               close_position: sequence_position,
+              strong: inside,
             })
             // Remove found entry and everything above it
-            while stack.length() > found {
-              let _ = stack.pop()
+            stack.truncate(found)
+            strong.truncate(found)
+            if found > 0 {
+              strong[found - 1] = strong[found - 1] | inside
             }
           }
         }
@@ -175,12 +242,12 @@ fn find_bracket_pairs(
   }
 
   if overflow {
-    return []
+    pairs.clear()
+    return
   }
 
   // Sort pairs by opening position
   pairs.sort_by(fn(a, b) { a.open_position - b.open_position })
-  pairs
 }
 
 ///|

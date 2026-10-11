@@ -121,37 +121,49 @@ pub fn process_with_base_level(
 ///|
 fn process_at_base_level(text : String, base_level : Int) -> BidiParagraph {
   // Convert to char array and get original classes
-  let chars : Array[Char] = []
+  let chars : Array[Char] = Array(capacity=text.length())
+  let original_classes : Array[BidiClass] = Array(capacity=text.length())
+  let mut has_explicit = false
   for c in text {
+    let bc = lookup_bidi_class(c)
+    if bc.is_explicit() {
+      has_explicit = true
+    }
     chars.push(c)
+    original_classes.push(bc)
   }
-  let original_classes : Array[BidiClass] = chars.map(lookup_bidi_class)
 
   // Make a copy for resolution
   let resolved_classes = original_classes.copy()
 
   // Allocate levels array
   let levels : Array[Int] = Array::make(chars.length(), base_level)
+  let sequences = if has_explicit {
+    // X1-X10: Process explicit formatting characters
+    let isolate_pairs = process_explicit(resolved_classes, levels, base_level)
 
-  // X1-X10: Process explicit formatting characters
-  let isolate_pairs = process_explicit(resolved_classes, levels, base_level)
+    // Align NSM levels with the previous non-X9 character.
+    adjust_nsm_levels(original_classes, levels)
 
-  // Align NSM levels with the previous non-X9 character.
-  adjust_nsm_levels(original_classes, levels)
-
-  // Compute isolating run sequences and process each
-  let sequences = compute_isolating_run_sequences(
-    resolved_classes, levels, original_classes, base_level, isolate_pairs,
-  )
+    // Compute isolating run sequences
+    compute_isolating_run_sequences(
+      resolved_classes, levels, original_classes, base_level, isolate_pairs,
+    )
+  } else {
+    // Without embeddings, overrides or isolates, X1-X8 leave every type as
+    // it is and every character at the paragraph level, so the paragraph is
+    // one level run.
+    paragraph_run_sequence(resolved_classes, base_level)
+  }
+  let bracket_scratch = BracketScratch::new()
   for seq in sequences {
     // W1-W7: Resolve weak types
     resolve_weak_types(resolved_classes, levels, seq)
 
-    // N0: Resolve bracket pairs
-    resolve_bracket_pairs(chars, resolved_classes, levels, seq)
-
-    // Adjust NSM after bracket resolution (N0)
-    resolve_nsm_after_brackets(resolved_classes, original_classes, seq)
+    // N0: Resolve bracket pairs, and the NSMs that follow a changed bracket
+    resolve_bracket_pairs(
+      bracket_scratch, chars, resolved_classes, original_classes, seq,
+    )
 
     // N1-N2: Resolve neutral types
     resolve_neutral_types(resolved_classes, levels, seq)
