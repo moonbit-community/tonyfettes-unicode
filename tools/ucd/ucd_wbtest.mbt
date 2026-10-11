@@ -242,12 +242,25 @@ test "binary property trie shares identical blocks" {
 ///|
 test "emit decomposition arrays" {
   let data = parse_unicode_data(sample_unicode_data)
-  inspect(
-    emit_decomposition(data).contains(
-      "let decomp_data_starts : ReadOnlyArray[Int]",
-    ),
-    content="true",
-  )
+  let source = emit_decomposition(data)
+  for
+    expected in [
+      "let decomp_data_starts : ReadOnlyArray[Int]", "pub fn get_canonical_decomposition(c : Char) -> Array[Char]?",
+      "pub fn append_decomposition(",
+      // U+00A0 is the first character with a mapping in the sample data.
+       "  if c.to_int() < 0xA0 {",
+    ] {
+    guard source.contains(expected) else {
+      fail("Generated source is missing: \{expected}")
+    }
+  }
+}
+
+///|
+test "emit decomposition without any mapping" {
+  let source = emit_decomposition(parse_unicode_data(""))
+  // Every character is below the first one with a mapping.
+  inspect(source.contains("  if c.to_int() < 0x110000 {"), content="true")
 }
 
 ///|

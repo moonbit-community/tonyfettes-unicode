@@ -1816,3 +1816,44 @@ pub fn get_compat_decomposition(c : Char) -> Array[Char]? {
   }
   Some(result)
 }
+
+///|
+/// Append the full decomposition of a character: its canonical mapping,
+/// or its compatibility mapping when asked for and present, applied
+/// recursively. A character without a mapping is appended as it is.
+///
+/// Hangul syllables decompose algorithmically and have no mapping
+/// here, so they are appended unchanged.
+pub fn append_decomposition(
+  c : Char,
+  dest : Array[Char],
+  compatibility~ : Bool,
+) -> Unit {
+  // No character below this one has a decomposition.
+  if c.to_int() < 0xA0 {
+    dest.push(c)
+    return
+  }
+  let idx = @normalization_data.normalization_decomposition_index(c)
+  if idx < 0 {
+    dest.push(c)
+    return
+  }
+  let canonical_len = decomp_canonical_lens[idx].to_int()
+  let compat_len = decomp_compat_lens[idx].to_int()
+  let use_compat = compatibility && compat_len != 0
+  // Compat data comes after canonical data
+  let start = if use_compat {
+    decomp_data_starts[idx] + canonical_len
+  } else {
+    decomp_data_starts[idx]
+  }
+  let len = if use_compat { compat_len } else { canonical_len }
+  if len == 0 {
+    dest.push(c)
+    return
+  }
+  for i in start..<(start + len) {
+    append_decomposition(decomp_data[i].unsafe_to_char(), dest, compatibility~)
+  }
+}

@@ -2,6 +2,8 @@
 package "moonbit-community/unicode-data/decomposition"
 
 // Values
+pub fn append_decomposition(Char, Array[Char], compatibility~ : Bool) -> Unit
+
 pub fn get_canonical_decomposition(Char) -> Array[Char]?
 
 pub fn get_compat_decomposition(Char) -> Array[Char]?
