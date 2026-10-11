@@ -76,7 +76,8 @@ pub fn detect_direction(text : String) -> Direction {
 /// Returns false for pure LTR text (optimization)
 pub fn requires_bidi(text : String) -> Bool {
   for c in text {
-    if is_strong_rtl(c) || is_explicit_formatting(c) {
+    let bc = lookup_bidi_class(c)
+    if bc.is_strong_rtl() || bc.is_explicit() {
       return true
     }
   }
