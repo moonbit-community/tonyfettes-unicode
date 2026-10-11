@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "moonbit-community/ucd/internal/normalization"
+package "moonbit-community/unicode-data/internal/normalization"
 
 // Values
 pub fn lookup_normalization_properties(Char) -> Int

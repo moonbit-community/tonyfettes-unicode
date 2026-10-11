@@ -21,16 +21,17 @@ moon info           # Regenerate pkg.generated.mbti files
 
 ### Public Modules
 
-- **ucd/** (`moonbit-community/ucd`): Unicode Character Database lookup, case mapping,
-  and general category APIs
-- **normalization/** (`moonbit-community/normalization`): UAX #15 Unicode normalization
+- **ucd/** (`moonbit-community/unicode-data`): Unicode Character Database lookup,
+  case mapping, and general category APIs
+- **normalization/** (`moonbit-community/unicode-normalization`): UAX #15 Unicode
+  normalization
 - **punycode/** (`moonbit-community/punycode`): RFC 3492 Punycode encoding/decoding
   - `encode(String) -> String raise PunycodeError`
   - `decode(String) -> String raise PunycodeError`
-- **bidi/** (`moonbit-community/bidi`): UAX #9 bidirectional text processing
+- **bidi/** (`moonbit-community/unicode-bidi`): UAX #9 bidirectional text processing
 - **segmentation/** (`moonbit-community/segmentation`): UAX #29 text segmentation
   - `graphemes(StringView) -> Iter[StringView]` - extended grapheme clusters
-- **idna/** (`moonbit-community/idna`): UTS #46 IDNA processing
+- **idna/** (`moonbit-community/unicode-idna`): UTS #46 IDNA processing
   - `to_ascii()` - convert domain to ASCII (Punycode)
   - `to_unicode()` - convert domain from Punycode
 - **unicode/** (`moonbit-community/unicode`): compatibility umbrella preserving the old
@@ -49,11 +50,11 @@ moon info           # Regenerate pkg.generated.mbti files
 ### Dependencies
 
 ```
-normalization -> ucd
-idna -> ucd
-idna -> normalization
-idna -> punycode
-idna -> bidi
+unicode-normalization -> unicode-data
+unicode-idna -> unicode-data
+unicode-idna -> unicode-normalization
+unicode-idna -> punycode
+unicode-idna -> unicode-bidi
 ```
 
 ## Code Generation

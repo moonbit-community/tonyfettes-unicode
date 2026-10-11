@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "moonbit-community/idna/internal/base_fuzz"
+package "moonbit-community/unicode-idna/internal/base_fuzz"
 
 import {
   "moonbitlang/core/random",

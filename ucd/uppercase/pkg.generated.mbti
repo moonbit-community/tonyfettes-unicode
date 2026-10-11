@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "moonbit-community/ucd/uppercase"
+package "moonbit-community/unicode-data/uppercase"
 
 // Values
 pub fn is_uppercase(Char) -> Bool

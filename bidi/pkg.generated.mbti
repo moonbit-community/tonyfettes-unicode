@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "moonbit-community/bidi"
+package "moonbit-community/unicode-bidi"
 
 // Values
 pub fn bidi_class(Char) -> BidiClass

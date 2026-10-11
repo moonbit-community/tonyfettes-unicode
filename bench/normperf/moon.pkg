@@ -1,5 +1,5 @@
 import {
-  "moonbit-community/normalization",
+  "moonbit-community/unicode-normalization" @normalization,
   "moonbitlang/core/bench",
   "moonbitlang/core/json",
   "moonbitlang/core/encoding/utf8",
