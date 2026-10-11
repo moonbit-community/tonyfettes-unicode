@@ -149,6 +149,25 @@ test "Indic conjuncts stay together across a linker" {
 }
 
 ///|
+test "a linker joins the next consonant without a leading consonant" {
+  // Since Unicode 18, GB9c no longer requires a consonant before the linker.
+  debug_inspect(
+    cluster_code_points("a\u{094D}\u{0924}"),
+    content=(
+      #|[["U+61", "U+94D", "U+924"]]
+    ),
+  )
+  // VEDIC SIGN JIHVAMULIYA is a linker that is not Extend, so it starts the
+  // cluster itself.
+  debug_inspect(
+    cluster_code_points("a\u{1CF5}\u{0915}\u{1CF5}a"),
+    content=(
+      #|[["U+61"], ["U+1CF5", "U+915"], ["U+1CF5"], ["U+61"]]
+    ),
+  )
+}
+
+///|
 test "clusters are views into the input" {
   let text = "xe\u{301}🇺🇳y"
   let offsets = @segmentation.graphemes(text[1:])

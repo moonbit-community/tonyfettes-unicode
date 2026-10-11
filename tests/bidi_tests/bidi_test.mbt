@@ -1,7 +1,7 @@
 ///|
 /// Unicode Bidirectional Algorithm conformance tests, read directly from
-/// BidiTest.txt (Unicode 16.0.0).
-/// Source: https://www.unicode.org/Public/16.0.0/ucd/BidiTest.txt
+/// BidiTest.txt (Unicode 18.0.0).
+/// Source: https://www.unicode.org/Public/18.0.0/ucd/BidiTest.txt
 ///
 /// Each test case declares a sequence of bidi classes and a bitset of
 /// paragraph levels; the implementation must resolve embedding levels and

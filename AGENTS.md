@@ -4,7 +4,7 @@ This file provides guidance to code agents (Claude Code, Codex, etc.) when worki
 
 ## Project Overview
 
-A MoonBit library implementing Unicode standards: text normalization (UAX #15), Punycode (RFC 3492), IDNA (UTS #46), bidirectional text (UAX #9), and text segmentation (UAX #29). Targets Unicode 16.0.0.
+A MoonBit library implementing Unicode standards: text normalization (UAX #15), Punycode (RFC 3492), IDNA (UTS #46), bidirectional text (UAX #9), and text segmentation (UAX #29). Targets Unicode 18.0.0.
 
 ## Build Commands
 
@@ -68,7 +68,7 @@ moon run --target native tools/gen all    # Alias for `data`
 ```
 
 Individual commands are `ucd`, `idna`, `bidi`, and `segmentation`. Downloaded
-Unicode data is cached in `tools/.cache/`.
+Unicode data is cached per version in `tools/.cache/<version>/`.
 
 ## Conformance Tests
 

@@ -163,7 +163,7 @@ pub fn emit_normalization(
   }
   let out = @emitter.Emitter::new()
   out.write_file_header(
-    "Normalization descriptors (Unicode 16.0.0)", "UnicodeData.txt, CompositionExclusions.txt and DerivedNormalizationProps.txt",
+    "Normalization descriptors", "UnicodeData.txt, CompositionExclusions.txt and DerivedNormalizationProps.txt",
   )
   out.write_byte_array(
     "Top-level block indices (\{top_size} code points per block)",
