@@ -1,6 +1,7 @@
 import {
   "moonbit-community/unicode-data/alphabetic",
   "moonbit-community/unicode-data/case_mapping",
+  "moonbit-community/unicode-data/east_asian_width",
   "moonbit-community/unicode-data/general_category",
   "moonbit-community/unicode-data/lowercase",
   "moonbit-community/unicode-data/uppercase",

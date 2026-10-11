@@ -2,10 +2,13 @@
 package "moonbit-community/unicode"
 
 import {
+  "moonbit-community/unicode-data",
   "moonbitlang/core/debug",
 }
 
 // Values
+pub fn east_asian_width(Char) -> @unicode-data.EastAsianWidth
+
 pub fn general_category(Char) -> GeneralCategory
 
 pub fn is_alphabetic(Char) -> Bool
@@ -91,5 +94,6 @@ pub fn GeneralCategoryGroup::to_string(Self) -> String
 pub impl Show for GeneralCategoryGroup
 
 // Type aliases
+pub using @unicode-data {type EastAsianWidth}
 
 // Traits

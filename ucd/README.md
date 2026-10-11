@@ -1,8 +1,8 @@
 # unicode-data
 
-Unicode Character Database lookup, general categories, binary properties
-(White_Space, Alphabetic, Lowercase, Uppercase, XID_Start, XID_Continue), and
-case mapping for MoonBit. This module uses Unicode 16.0.0 data.
+Unicode Character Database lookup, general categories, East Asian width,
+binary properties (White_Space, Alphabetic, Lowercase, Uppercase, XID_Start,
+XID_Continue), and case mapping for MoonBit. This module uses Unicode 16.0.0 data.
 
 ```bash
 moon add moonbit-community/unicode-data
@@ -21,6 +21,7 @@ tables and exposes lookup functions; the tables themselves remain private.
 | `composition` | Composition pairs and composition exclusions |
 | `ccc` | Canonical Combining Class |
 | `general_category` | General Category ordinal and `is_mark` |
+| `east_asian_width` | East_Asian_Width ordinal |
 | `case_mapping` | Simple and full uppercase, lowercase, and titlecase mappings |
 | `xid` | XID_Start and XID_Continue |
 | `alphabetic` | Alphabetic |

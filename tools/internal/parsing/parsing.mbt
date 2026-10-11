@@ -65,6 +65,46 @@ pub fn parse_code_point_range(text : StringView) -> CodePointRange raise {
 }
 
 ///|
+const MaxCodePoint : Int = 0x10FFFF
+
+///|
+/// Read a UCD file for one enumerated property, whose data lines are
+/// `range ; value`, and return the value of every code point.
+///
+/// Code points the file does not list take the value of the last
+/// `# @missing: range; value` line covering them, or `default` when there is
+/// none. Values are returned as written, so a `@missing` line that spells out
+/// a long alias such as `Neutral` yields that alias.
+pub fn parse_enumerated_property(
+  content : StringView,
+  default~ : String,
+) -> FixedArray[String] raise {
+  let values = FixedArray::make(MaxCodePoint + 1, default)
+  let fill = (fields : StringView) => {
+    guard fields.split_once(";") is Some((range_text, value_text)) else {
+      return
+    }
+    let range = parse_code_point_range(range_text)
+    let value = value_text.trim().to_owned()
+    for code_point in range.start..<=range.end {
+      values[code_point] = value
+    }
+  }
+  for raw_line in content.split("\n") {
+    if raw_line.trim().strip_prefix("# @missing:") is Some(declaration) {
+      fill(declaration)
+    }
+  }
+  for raw_line in content.split("\n") {
+    let line = strip_comment(raw_line)
+    if !line.is_empty() {
+      fill(line)
+    }
+  }
+  values
+}
+
+///|
 pub fn parse_code_point_sequence(text : StringView) -> Array[Int] raise {
   let result : Array[Int] = []
   for part in text.trim().split(" ") {
