@@ -13,5 +13,5 @@ import {
   "moonbit-community/normalization@0.5.2",
   "moonbit-community/bidi@0.5.2",
   "moonbit-community/idna@0.5.2",
-  "moonbitlang/async@0.20.2",
+  "moonbitlang/async@0.22.4",
 }

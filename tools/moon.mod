@@ -7,5 +7,5 @@ license = "Apache-2.0"
 description = "Code generation tools for moonbit-community/unicode"
 
 import {
-  "moonbitlang/async@0.20.2",
+  "moonbitlang/async@0.22.4",
 }
