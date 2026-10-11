@@ -57,6 +57,35 @@ pub fn to_ascii(
   check_joiners? : Bool = true,
   verify_dns_length? : Bool = true,
 ) -> String raise IdnaError {
+  if ascii_fast_path(
+      domain,
+      use_std3_ascii_rules~,
+      check_hyphens~,
+      verify_dns_length~,
+    )
+    is Some(ascii) {
+    return ascii
+  }
+  to_ascii_general(
+    domain,
+    use_std3_ascii_rules~,
+    check_hyphens~,
+    check_bidi~,
+    check_joiners~,
+    verify_dns_length~,
+  )
+}
+
+///|
+/// ToASCII for any domain: map, normalize, then validate and encode each label.
+fn to_ascii_general(
+  domain : String,
+  use_std3_ascii_rules~ : Bool,
+  check_hyphens~ : Bool,
+  check_bidi~ : Bool,
+  check_joiners~ : Bool,
+  verify_dns_length~ : Bool,
+) -> String raise IdnaError {
   // Map and normalize before splitting. Labels are validated below, after
   // existing A-labels have been decoded to their Unicode form.
   let mapped = map_domain(domain, use_std3_ascii_rules~)
@@ -178,6 +207,34 @@ pub fn to_unicode(
   check_hyphens? : Bool = true,
   check_bidi? : Bool = true,
   check_joiners? : Bool = true,
+) -> String raise IdnaError {
+  // ToUnicode does not verify DNS lengths.
+  if ascii_fast_path(
+      domain,
+      use_std3_ascii_rules~,
+      check_hyphens~,
+      verify_dns_length=false,
+    )
+    is Some(unicode) {
+    return unicode
+  }
+  to_unicode_general(
+    domain,
+    use_std3_ascii_rules~,
+    check_hyphens~,
+    check_bidi~,
+    check_joiners~,
+  )
+}
+
+///|
+/// ToUnicode for any domain: decode, map, normalize and validate each label.
+fn to_unicode_general(
+  domain : String,
+  use_std3_ascii_rules~ : Bool,
+  check_hyphens~ : Bool,
+  check_bidi~ : Bool,
+  check_joiners~ : Bool,
 ) -> String raise IdnaError {
   // Split into labels first (before mapping, to handle Punycode)
   let labels = split_labels(domain)

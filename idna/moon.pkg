@@ -12,4 +12,5 @@ import {
   "moonbit-community/idna/internal/fuzz" @idna_fuzz,
   "moonbitlang/core/random",
   "moonbitlang/core/test",
+  "moonbitlang/core/bench",
 } for "test"
