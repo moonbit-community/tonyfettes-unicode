@@ -45,9 +45,9 @@ fn write_binary_property_trie(
     }
   }
   // Leaf level: bitset blocks; `leaf.ids` has one entry per leaf block.
-  let leaf = deduplicate_blocks(bits, 1 << (BinaryTrieLeafShift - 3))
+  let leaf = @trie.deduplicate_blocks(bits, 1 << (BinaryTrieLeafShift - 3))
   // Mid level: blocks of leaf block indices; `mid.ids` is the top level.
-  let mid = deduplicate_blocks(
+  let mid = @trie.deduplicate_blocks(
     leaf.ids,
     1 << (BinaryTrieTopShift - BinaryTrieLeafShift),
   )

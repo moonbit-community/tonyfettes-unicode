@@ -158,6 +158,24 @@ test "bidi_class: unassigned code points use block defaults" {
 }
 
 ///|
+test "bidi_class: supplementary planes" {
+  inspect(@bidi.bidi_class('\u{10800}'), content="R")
+  inspect(@bidi.bidi_class('\u{1E900}'), content="R")
+  inspect(@bidi.bidi_class('\u{1F600}'), content="ON")
+  inspect(@bidi.bidi_class('\u{20000}'), content="L")
+  // The last code points looked up in the trie, then the packed ranges.
+  inspect(@bidi.bidi_class('\u{3FFFD}'), content="L")
+  inspect(@bidi.bidi_class('\u{3FFFF}'), content="BN")
+  inspect(@bidi.bidi_class('\u{40000}'), content="L")
+  inspect(@bidi.bidi_class('\u{E0001}'), content="BN")
+  inspect(@bidi.bidi_class('\u{E0100}'), content="NSM")
+  inspect(@bidi.bidi_class('\u{E01F0}'), content="BN")
+  inspect(@bidi.bidi_class('\u{E1000}'), content="L")
+  inspect(@bidi.bidi_class('\u{10FFFD}'), content="L")
+  inspect(@bidi.bidi_class('\u{10FFFF}'), content="BN")
+}
+
+///|
 test "bidi_class: European numbers" {
   inspect(@bidi.bidi_class('0'), content="EN")
   inspect(@bidi.bidi_class('9'), content="EN")

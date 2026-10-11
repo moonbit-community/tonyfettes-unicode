@@ -1,0 +1,17 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbit-community/unicode-tools/internal/trie"
+
+// Values
+pub fn deduplicate_blocks(Array[Int], Int) -> DedupedBlocks
+
+// Errors
+
+// Types and methods
+pub struct DedupedBlocks {
+  ids : Array[Int]
+  blocks : Array[Int]
+}
+
+// Type aliases
+
+// Traits
