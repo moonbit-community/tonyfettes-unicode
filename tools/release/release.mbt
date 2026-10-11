@@ -24,6 +24,11 @@ let published_modules : Array[ReleaseModule] = [
   },
   { name: "bidi", directory: "bidi", requires_published_dependencies: false, },
   {
+    name: "segmentation",
+    directory: "segmentation",
+    requires_published_dependencies: false,
+  },
+  {
     name: "normalization",
     directory: "normalization",
     requires_published_dependencies: true,
@@ -156,6 +161,6 @@ fn publish_start_index(name : String) -> Int raise ReleaseError {
     }
   }
   raise ReleaseError(
-    "Unknown --from module '\{name}'; expected one of ucd, punycode, bidi, normalization, idna, unicode",
+    "Unknown --from module '\{name}'; expected one of ucd, punycode, bidi, segmentation, normalization, idna, unicode",
   )
 }

@@ -4,7 +4,7 @@ This file provides guidance to code agents (Claude Code, Codex, etc.) when worki
 
 ## Project Overview
 
-A MoonBit library implementing Unicode standards: text normalization (UAX #15), Punycode (RFC 3492), and IDNA (UTS #46). Targets Unicode 16.0.0.
+A MoonBit library implementing Unicode standards: text normalization (UAX #15), Punycode (RFC 3492), IDNA (UTS #46), bidirectional text (UAX #9), and text segmentation (UAX #29). Targets Unicode 16.0.0.
 
 ## Build Commands
 
@@ -28,6 +28,8 @@ moon info           # Regenerate pkg.generated.mbti files
   - `encode(String) -> String raise PunycodeError`
   - `decode(String) -> String raise PunycodeError`
 - **bidi/** (`moonbit-community/bidi`): UAX #9 bidirectional text processing
+- **segmentation/** (`moonbit-community/segmentation`): UAX #29 text segmentation
+  - `graphemes(StringView) -> Iter[StringView]` - extended grapheme clusters
 - **idna/** (`moonbit-community/idna`): UTS #46 IDNA processing
   - `to_ascii()` - convert domain to ASCII (Punycode)
   - `to_unicode()` - convert domain from Punycode
@@ -42,6 +44,7 @@ moon info           # Regenerate pkg.generated.mbti files
 - **ucd/data/**: Unicode Character Database lookup tables
 - **idna/internal/idna/**: IDNA mapping and joining tables
 - **bidi/internal/bidi/**: Bidi mirroring and bracket tables
+- **segmentation/grapheme_break_property.mbt**: grapheme cluster break properties
 
 ### Dependencies
 
@@ -62,14 +65,15 @@ moon run --target native tools/gen data   # Generate all Unicode lookup tables
 moon run --target native tools/gen all    # Alias for `data`
 ```
 
-Individual commands are `ucd`, `idna`, and `bidi`. Downloaded Unicode data is
-cached in `tools/.cache/`.
+Individual commands are `ucd`, `idna`, `bidi`, and `segmentation`. Downloaded
+Unicode data is cached in `tools/.cache/`.
 
 ## Conformance Tests
 
 Conformance tests live in the workspace-only `tests/` module and read the
 official Unicode test files (`BidiTest.txt`, `BidiCharacterTest.txt`,
-`NormalizationTest.txt`, `IdnaTestV2.txt`) directly at test time via
+`NormalizationTest.txt`, `IdnaTestV2.txt`, `GraphemeBreakTest.txt`) directly at
+test time via
 `moonbitlang/async`. The data files are committed under `tests/data/`, so the
 test module keeps its `moonbitlang/async` dependency separate from the
 published modules.

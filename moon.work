@@ -4,6 +4,7 @@ members = [
   "normalization",
   "punycode",
   "bidi",
+  "segmentation",
   "idna",
   "tests",
   "tools",

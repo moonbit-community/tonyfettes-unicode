@@ -250,10 +250,40 @@ async fn generate_bidi_data(root : StringView) -> Unit {
 }
 
 ///|
+async fn generate_segmentation_data(root : StringView) -> Unit {
+  let base = "https://www.unicode.org/Public/\{UnicodeVersion}/ucd"
+  let grapheme_break_property = read_source(
+    root,
+    "GraphemeBreakProperty.txt",
+    "\{base}/auxiliary/GraphemeBreakProperty.txt",
+  )
+  let emoji_data = read_source(
+    root,
+    "emoji-data.txt",
+    "\{base}/emoji/emoji-data.txt",
+  )
+  let core_properties = read_source(
+    root,
+    "DerivedCoreProperties.txt",
+    "\{base}/DerivedCoreProperties.txt",
+  )
+  write_source(
+    root,
+    "segmentation/grapheme_break_property.mbt",
+    @segmentation_data.generate_grapheme_break_source(
+      grapheme_break_property, emoji_data, core_properties,
+    ),
+  )
+  format_file(root, "segmentation/grapheme_break_property.mbt")
+  generate_interfaces(root, "segmentation")
+}
+
+///|
 async fn generate_data(root : StringView) -> Unit {
   generate_ucd(root)
   generate_idna_data(root)
   generate_bidi_data(root)
+  generate_segmentation_data(root)
 }
 
 ///|
@@ -265,6 +295,7 @@ async fn main {
       @argparse.Command("ucd"),
       @argparse.Command("idna"),
       @argparse.Command("bidi"),
+      @argparse.Command("segmentation"),
       @argparse.Command("data"),
       @argparse.Command("all"),
     ],
@@ -276,6 +307,7 @@ async fn main {
     Some(("ucd", _)) => generate_ucd(root)
     Some(("idna", _)) => generate_idna_data(root)
     Some(("bidi", _)) => generate_bidi_data(root)
+    Some(("segmentation", _)) => generate_segmentation_data(root)
     Some(_) => fail("unreachable subcommand")
   }
 }
