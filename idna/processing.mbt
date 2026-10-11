@@ -38,7 +38,8 @@ fn map_domain(
         entry.write_mapping(output)
       }
     } else if !keep {
-      let builder = StringBuilder(size_hint=domain.length())
+      // The size hint counts bytes, two per UTF-16 code unit.
+      let builder = StringBuilder(size_hint=2 * domain.length())
       builder.write_view(domain[:offset])
       entry.write_mapping(builder)
       output = Some(builder)
