@@ -111,45 +111,52 @@ fn decode_digit(cp : Int) -> Int {
 }
 
 ///|
-/// Check if a character is a basic ASCII character (0-127)
-fn is_basic(c : Char) -> Bool {
-  c.to_int() < 0x80
-}
-
-///|
 /// Encode a Unicode string to Punycode
 pub fn encode(input : String) -> String raise PunycodeError {
-  let output = StringBuilder()
-
-  // Convert input to array of characters
-  let chars : Array[Char] = []
+  // The UTF-16 length bounds the number of code points.
+  let code_points : FixedArray[Int] = FixedArray::make(input.length(), 0)
+  let mut count = 0
+  let mut basic_count = 0
   for c in input {
-    chars.push(c)
+    let cp = c.to_int()
+    code_points[count] = cp
+    count = count + 1
+    if cp < InitialN {
+      basic_count = basic_count + 1
+    }
+  }
+  if basic_count == count {
+    // Only basic code points: they are copied, followed by the delimiter.
+    return if basic_count == 0 { "" } else { input + "-" }
   }
 
+  // Reserve the basic code points, the delimiter and a few digits for each
+  // other code point; the size hint counts bytes, two per UTF-16 code unit.
+  let output = StringBuilder(
+    size_hint=2 * (basic_count + 1 + 4 * (count - basic_count)),
+  )
+
   // Copy all basic code points to output
-  let mut basic_count = 0
-  for c in chars {
-    if is_basic(c) {
-      output.write_char(c)
-      basic_count = basic_count + 1
+  for i in 0..<count {
+    let cp = code_points[i]
+    if cp < InitialN {
+      output.write_char(cp.unsafe_to_char())
     }
   }
 
   // Add delimiter if there were basic characters
-  let handled = basic_count
   if basic_count > 0 {
     output.write_char(Delimiter)
   }
   let mut n = InitialN
   let mut delta = 0
   let mut bias = InitialBias
-  let mut handled = handled
-  while handled < chars.length() {
+  let mut handled = basic_count
+  while handled < count {
     // Find the minimum code point >= n
     let mut m = 0x10FFFF + 1
-    for c in chars {
-      let cp = c.to_int()
+    for i in 0..<count {
+      let cp = code_points[i]
       if cp >= n && cp < m {
         m = cp
       }
@@ -163,8 +170,8 @@ pub fn encode(input : String) -> String raise PunycodeError {
     }
     delta = delta + code_point_step * point_count
     n = m
-    for c in chars {
-      let cp = c.to_int()
+    for i in 0..<count {
+      let cp = code_points[i]
       if cp < n {
         if delta == MaxInt {
           raise Overflow
@@ -207,31 +214,32 @@ pub fn encode(input : String) -> String raise PunycodeError {
 ///|
 /// Decode a Punycode string to Unicode
 pub fn decode(input : String) -> String raise PunycodeError {
-  let output : Array[Char] = []
+  // Valid input is ASCII, so it is read as UTF-16 code units; any other
+  // unit is rejected where it is reached.
+  let length = input.length()
 
   // Find the last delimiter
   let mut basic_end = -1
-  let mut i = 0
-  for c in input {
-    if c == Delimiter {
+  for i = length - 1; i >= 0; i = i - 1 {
+    if input[i].to_int() == Delimiter.to_int() {
       basic_end = i
+      break
     }
-    i = i + 1
   }
 
+  // Code points of the output. Each one consumes at least one code unit of
+  // input, so the input length bounds their number.
+  let output : FixedArray[Int] = FixedArray::make(length, 0)
+  let mut output_length = 0
+
   // Copy basic code points before the last delimiter
-  if basic_end > 0 {
-    let mut j = 0
-    for c in input {
-      if j >= basic_end {
-        break
-      }
-      if !is_basic(c) {
-        raise BadInput
-      }
-      output.push(c)
-      j = j + 1
+  for i in 0..<basic_end {
+    let unit = input[i].to_int()
+    if unit >= InitialN {
+      raise BadInput
     }
+    output[i] = unit
+    output_length = i + 1
   }
 
   // Main decoding loop
@@ -239,21 +247,17 @@ pub fn decode(input : String) -> String raise PunycodeError {
   let mut i_val = 0
   let mut bias = InitialBias
   let mut in_pos = if basic_end >= 0 { basic_end + 1 } else { 0 }
-
-  // Convert input to array for easier indexing
-  let input_chars : Array[Char] = []
-  for c in input {
-    input_chars.push(c)
-  }
-  while in_pos < input_chars.length() {
+  // UTF-16 length of the output
+  let mut output_units = output_length
+  while in_pos < length {
     let oldi = i_val
     let mut w = 1
     let mut k = Base
     while true {
-      if in_pos >= input_chars.length() {
+      if in_pos >= length {
         raise BadInput
       }
-      let digit = decode_digit(input_chars[in_pos].to_int())
+      let digit = decode_digit(input[in_pos].to_int())
       in_pos = in_pos + 1
       if digit >= Base {
         raise BadInput
@@ -278,7 +282,7 @@ pub fn decode(input : String) -> String raise PunycodeError {
       w = w * (Base - t)
       k = k + Base
     }
-    let out_len = output.length() + 1
+    let out_len = output_length + 1
     bias = adapt(i_val - oldi, out_len, oldi == 0)
     if i_val / out_len > MaxInt - n {
       raise Overflow
@@ -288,21 +292,24 @@ pub fn decode(input : String) -> String raise PunycodeError {
 
     // Reject values that are not valid Unicode scalar values before building
     // the output string. Int::to_char also rejects surrogate code points.
-    guard n.to_char() is Some(decoded_char) else { raise BadInput }
-    output.insert(i_val, decoded_char)
+    guard n.to_char() is Some(_) else { raise BadInput }
+    // Insert n at position i_val.
+    output.blit_to(
+      output,
+      len=output_length - i_val,
+      src_offset=i_val,
+      dst_offset=i_val + 1,
+    )
+    output[i_val] = n
+    output_length = out_len
+    output_units += if n > 0xFFFF { 2 } else { 1 }
     i_val = i_val + 1
   }
 
-  // Convert characters to string
-  chars_to_string(output)
-}
-
-///|
-/// Convert array of characters to string
-fn chars_to_string(chars : Array[Char]) -> String {
-  let sb = StringBuilder()
-  for c in chars {
-    sb.write_char(c)
+  // The size hint counts bytes, so the builder is filled exactly.
+  let result = StringBuilder(size_hint=2 * output_units)
+  for i in 0..<output_length {
+    result.write_char(output[i].unsafe_to_char())
   }
-  sb.to_string()
+  result.to_string()
 }
