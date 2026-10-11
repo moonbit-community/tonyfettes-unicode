@@ -2,6 +2,12 @@
 package "moonbit-community/ucd/case_mapping"
 
 // Values
+pub fn full_lowercase(Char) -> String
+
+pub fn full_titlecase(Char) -> String
+
+pub fn full_uppercase(Char) -> String
+
 pub fn lookup_full_lowercase(Char) -> Array[Char]?
 
 pub fn lookup_full_titlecase(Char) -> Array[Char]?
