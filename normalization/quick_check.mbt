@@ -86,7 +86,8 @@ fn NormalizationBuffer::finish(
     let out = if self.output is Some(out) {
       out
     } else {
-      let out = StringBuilder(size_hint=s.length())
+      // The size hint counts bytes, two per UTF-16 code unit.
+      let out = StringBuilder(size_hint=2 * s.length())
       self.output = Some(out)
       out
     }
