@@ -26,6 +26,12 @@ const ConjunctConsonant : Int = 1
 const ConjunctLinker : Int = 2
 
 ///|
+/// Code points below this limit are CR, LF, Control, or Other, and none has
+/// an Indic_Conjunct_Break value, so only GB3, GB4, GB5, and GB999 apply
+/// between two of them. Combining marks start at U+0300.
+const SimpleLimit : Int = 0x300
+
+///|
 /// Decode the code point starting at `index`. An unpaired surrogate is
 /// returned as is; like any code point GraphemeBreakProperty.txt does not
 /// list, its Grapheme_Cluster_Break value is Other.
@@ -50,6 +56,24 @@ fn code_point_at(text : StringView, index : Int, length : Int) -> Int {
 /// following the boundary rules of UAX #29. Requires `start < text.length()`.
 fn next_grapheme_boundary(text : StringView, start : Int) -> Int {
   let length = text.length()
+  // Fast path: two adjacent code points below `SimpleLimit` always break,
+  // except CR LF (GB3).
+  // SAFETY: the caller guarantees start < length.
+  let first_unit = text.unsafe_get(start).to_int()
+  if first_unit < SimpleLimit {
+    if start + 1 == length {
+      return length
+    }
+    // SAFETY: start + 1 < length is checked above.
+    let second_unit = text.unsafe_get(start + 1).to_int()
+    if second_unit < SimpleLimit {
+      return if first_unit == '\r' && second_unit == '\n' {
+        start + 2
+      } else {
+        start + 1
+      }
+    }
+  }
   let first = code_point_at(text, start, length)
   let mut index = start + (if first >= 0x10000 { 2 } else { 1 })
   let mut previous = grapheme_break_value(first)
