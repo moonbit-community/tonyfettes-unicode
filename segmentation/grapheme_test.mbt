@@ -3,6 +3,7 @@
 /// stays readable for combining marks, controls, and emoji sequences.
 fn cluster_code_points(text : StringView) -> Array[Array[String]] {
   @segmentation.graphemes(text)
+  .iter()
   .map(cluster => {
     cluster
     .iter()
@@ -151,6 +152,7 @@ test "Indic conjuncts stay together across a linker" {
 test "clusters are views into the input" {
   let text = "xe\u{301}🇺🇳y"
   let offsets = @segmentation.graphemes(text[1:])
+    .iter()
     .map(cluster => (cluster.start_offset(), cluster.length()))
     .collect()
   debug_inspect(
@@ -168,6 +170,7 @@ test "unpaired surrogates behave like ordinary characters" {
   let text = "a😀\u{301}"
   debug_inspect(
     @segmentation.graphemes(text.view(start_offset=0, end_offset=2))
+    .iter()
     .map(cluster => cluster.length())
     .collect(),
     content=(
@@ -176,6 +179,7 @@ test "unpaired surrogates behave like ordinary characters" {
   )
   debug_inspect(
     @segmentation.graphemes(text.view(start_offset=2))
+    .iter()
     .map(cluster => cluster.length())
     .collect(),
     content=(
@@ -185,18 +189,91 @@ test "unpaired surrogates behave like ordinary characters" {
 }
 
 ///|
-test "iteration is lazy" {
-  let clusters = @segmentation.graphemes("e\u{301}abc")
+test "next returns an empty view at the end" {
+  let text = "xe\u{301}y"
+  let clusters = @segmentation.graphemes(text[1:])
+  let first = clusters.next()
   debug_inspect(
-    clusters.next().map(cluster => cluster.to_owned()),
+    (first.to_owned(), first.start_offset()),
     content=(
-      #|Some("é")
+      #|("é", 1)
+    ),
+  )
+  let second = clusters.next()
+  debug_inspect(
+    (second.to_owned(), second.start_offset()),
+    content=(
+      #|("y", 3)
+    ),
+  )
+  // The empty view sits at the end of the text, and `next` keeps returning it.
+  let end = clusters.next()
+  debug_inspect(
+    (end.is_empty(), end.start_offset()),
+    content=(
+      #|(true, 4)
     ),
   )
   debug_inspect(
-    clusters.next().map(cluster => cluster.to_owned()),
+    clusters.next().is_empty(),
     content=(
-      #|Some("a")
+      #|true
+    ),
+  )
+  inspect(
+    @segmentation.graphemes("").next().is_empty(),
+    content=(
+      #|true
+    ),
+  )
+}
+
+///|
+test "iter and next share the cursor" {
+  let clusters = @segmentation.graphemes("abcd")
+  inspect(
+    clusters.next(),
+    content=(
+      #|a
+    ),
+  )
+  let iter = clusters.iter()
+  debug_inspect(
+    iter.next().map(cluster => cluster.to_owned()),
+    content=(
+      #|Some("b")
+    ),
+  )
+  inspect(
+    clusters.next(),
+    content=(
+      #|c
+    ),
+  )
+  debug_inspect(
+    iter.map(cluster => cluster.to_owned()).collect(),
+    content=(
+      #|["d"]
+    ),
+  )
+  inspect(
+    clusters.next().is_empty(),
+    content=(
+      #|true
+    ),
+  )
+}
+
+///|
+test "for .. in iterates the clusters" {
+  let lengths = []
+  for cluster in @segmentation.graphemes("e\u{301}🇺🇳x") {
+    lengths.push(cluster.length())
+  }
+  debug_inspect(
+    lengths,
+    content=(
+      #|[2, 4, 1]
     ),
   )
 }

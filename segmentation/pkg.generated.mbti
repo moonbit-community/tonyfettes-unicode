@@ -2,11 +2,14 @@
 package "moonbit-community/unicode-segmentation"
 
 // Values
-pub fn graphemes(StringView) -> Iter[StringView]
+pub fn graphemes(StringView) -> Graphemes
 
 // Errors
 
 // Types and methods
+type Graphemes
+pub fn Graphemes::iter(Self) -> Iter[StringView]
+pub fn Graphemes::next(Self) -> StringView
 
 // Type aliases
 

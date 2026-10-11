@@ -127,18 +127,31 @@ fn next_grapheme_boundary(text : StringView, start : Int) -> Int {
 }
 
 ///|
-/// Split `text` into extended grapheme clusters, the user-perceived characters
-/// defined by Unicode Text Segmentation (UAX #29).
+/// A single-pass cursor over the extended grapheme clusters of a text, the
+/// user-perceived characters defined by Unicode Text Segmentation (UAX #29).
+///
+/// Create one with `graphemes`. Use it in a `for .. in` loop, or call `next`
+/// directly to avoid allocating an `Option` per cluster.
+struct Graphemes {
+  text : StringView
+  /// Offset in `text` of the next cluster to return.
+  mut offset : Int
+}
+
+///|
+/// Split `text` into extended grapheme clusters.
 ///
 /// Each cluster is a view into `text`, so `StringView::start_offset` gives its
 /// position in the underlying string. The clusters are contiguous and cover
-/// `text` exactly; an empty `text` yields no clusters.
+/// `text` exactly. `text` is segmented on its own: its start is a boundary
+/// even if the underlying string continues before it.
 ///
 /// ```mbt check
 /// test {
-///   let clusters = @segmentation.graphemes("e\u{301}🇺🇳x")
-///     .map(cluster => cluster.to_owned())
-///     .collect()
+///   let clusters = []
+///   for cluster in @segmentation.graphemes("e\u{301}🇺🇳x") {
+///     clusters.push(cluster.to_owned())
+///   }
 ///   debug_inspect(
 ///     clusters,
 ///     content=(
@@ -147,16 +160,60 @@ fn next_grapheme_boundary(text : StringView, start : Int) -> Int {
 ///   )
 /// }
 /// ```
-pub fn graphemes(text : StringView) -> Iter[StringView] {
-  let mut start = 0
+pub fn graphemes(text : StringView) -> Graphemes {
+  { text, offset: 0, }
+}
+
+///|
+/// Return the next cluster and advance past it, or return an empty view once
+/// the text is exhausted. A cluster is never empty, so an empty result always
+/// means the end.
+///
+/// ```mbt check
+/// test {
+///   let clusters = @segmentation.graphemes("e\u{301}x")
+///   inspect(
+///     clusters.next(),
+///     content=(
+///       #|é
+///     ),
+///   )
+///   inspect(
+///     clusters.next(),
+///     content=(
+///       #|x
+///     ),
+///   )
+///   inspect(
+///     clusters.next().is_empty(),
+///     content=(
+///       #|true
+///     ),
+///   )
+/// }
+/// ```
+pub fn Graphemes::next(self : Graphemes) -> StringView {
+  let text = self.text
+  let start = self.offset
+  let end = if start < text.length() {
+    next_grapheme_boundary(text, start)
+  } else {
+    start
+  }
+  self.offset = end
+  text.view(start_offset=start, end_offset=end)
+}
+
+///|
+/// Iterate over the remaining clusters. The iterator advances this cursor, so
+/// clusters it yields are not returned by `next` again.
+pub fn Graphemes::iter(self : Graphemes) -> Iter[StringView] {
   Iter::new(() => {
-    if start < text.length() {
-      let end = next_grapheme_boundary(text, start)
-      let cluster = text.view(start_offset=start, end_offset=end)
-      start = end
-      Some(cluster)
-    } else {
+    let cluster = self.next()
+    if cluster.is_empty() {
       None
+    } else {
+      Some(cluster)
     }
   })
 }
