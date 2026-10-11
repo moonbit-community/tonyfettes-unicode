@@ -32,7 +32,7 @@ let published_modules : Array[ReleaseModule] = [
     requires_published_dependencies: false,
   },
   {
-    name: "segmentation",
+    name: "unicode-segmentation",
     directory: "segmentation",
     requires_published_dependencies: false,
   },
@@ -173,6 +173,6 @@ fn publish_start_index(name : String) -> Int raise ReleaseError {
     }
   }
   raise ReleaseError(
-    "Unknown --from module '\{name}'; expected one of unicode-data, punycode, unicode-bidi, segmentation, unicode-normalization, unicode-idna, unicode",
+    "Unknown --from module '\{name}'; expected one of unicode-data, punycode, unicode-bidi, unicode-segmentation, unicode-normalization, unicode-idna, unicode",
   )
 }

@@ -161,7 +161,7 @@ test "publish resume points follow dependency order" {
     ReleaseError(message) =>
       inspect(
         message,
-        content="Unknown --from module 'tools'; expected one of unicode-data, punycode, unicode-bidi, segmentation, unicode-normalization, unicode-idna, unicode",
+        content="Unknown --from module 'tools'; expected one of unicode-data, punycode, unicode-bidi, unicode-segmentation, unicode-normalization, unicode-idna, unicode",
       )
   } noraise {
     _ => fail("expected unknown resume module to fail")

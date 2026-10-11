@@ -27,7 +27,7 @@ moon add moonbit-community/unicode-data
 moon add moonbit-community/unicode-normalization
 moon add moonbit-community/punycode
 moon add moonbit-community/unicode-bidi
-moon add moonbit-community/segmentation
+moon add moonbit-community/unicode-segmentation
 moon add moonbit-community/unicode-idna
 ```
 
@@ -40,7 +40,7 @@ import {
   "moonbit-community/punycode",
   "moonbit-community/unicode-idna" @idna,
   "moonbit-community/unicode-bidi" @bidi,
-  "moonbit-community/segmentation",
+  "moonbit-community/unicode-segmentation" @segmentation,
 }
 ```
 
@@ -237,7 +237,7 @@ default to `true`.
 `process_with_direction` and `process_with_base_level` remain available as
 deprecated compatibility wrappers.
 
-### `moonbit-community/segmentation`
+### `moonbit-community/unicode-segmentation`
 
 | API | Description |
 | --- | --- |
@@ -292,7 +292,7 @@ reads committed data directly and supports Native, Wasm and Wasm-GC.
 The native release tool keeps the seven published module versions aligned,
 validates the workspace, and checks every package archive. During preparation it
 dry-runs the independent `unicode-data`, `punycode`, `unicode-bidi`, and
-`segmentation` modules:
+`unicode-segmentation` modules:
 
 ```bash
 moon run --target native tools/release -- prepare --version 0.4.0
@@ -308,9 +308,9 @@ moon run --target native tools/release -- publish \
   --execute
 ```
 
-The tool publishes `unicode-data`, `punycode`, `unicode-bidi`, `segmentation`,
-`unicode-normalization`, `unicode-idna`, and the `unicode` compatibility
-umbrella in dependency order. It reads
+The tool publishes `unicode-data`, `punycode`, `unicode-bidi`,
+`unicode-segmentation`, `unicode-normalization`, `unicode-idna`, and the
+`unicode` compatibility umbrella in dependency order. It reads
 the release version from the umbrella manifest `unicode/moon.mod` and verifies
 that all seven published modules use that version. Modules that depend on same-release packages
 are dry-run immediately before their real publication, after the tool refreshes
