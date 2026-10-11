@@ -118,11 +118,11 @@ pub fn emit_normalization(
   }
   let top_size = 1 << NormalizationTopShift
   let limit = (last + top_size) / top_size * top_size
-  let leaf = deduplicate_blocks(
+  let leaf = @trie.deduplicate_blocks(
     values[:limit].to_owned(),
     1 << NormalizationLeafShift,
   )
-  let mid = deduplicate_blocks(
+  let mid = @trie.deduplicate_blocks(
     leaf.ids,
     1 << (NormalizationTopShift - NormalizationLeafShift),
   )

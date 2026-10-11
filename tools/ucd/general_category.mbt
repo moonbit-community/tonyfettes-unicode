@@ -68,9 +68,9 @@ pub fn emit_general_category(
     }
   }
   // Leaf level: blocks of code point ordinals.
-  let leaf = deduplicate_blocks(values, 1 << GcTrieLeafShift)
+  let leaf = @trie.deduplicate_blocks(values, 1 << GcTrieLeafShift)
   // Mid level: blocks of leaf block indices; `mid.ids` is the top level.
-  let mid = deduplicate_blocks(
+  let mid = @trie.deduplicate_blocks(
     leaf.ids,
     1 << (GcTrieTopShift - GcTrieLeafShift),
   )
