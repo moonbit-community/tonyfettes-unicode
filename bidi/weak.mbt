@@ -6,150 +6,127 @@
 
 ///|
 /// Resolve weak types within an isolating run sequence
+///
+/// The rules apply one after another over the whole sequence, each seeing
+/// the types the previous rule left. Two passes reproduce that: the first
+/// applies W1-W3, the second W4-W7, and each keeps the earlier-rule types it
+/// still needs in locals instead of re-reading them.
 fn resolve_weak_types(
   types : Array[BidiClass],
   _levels : Array[Int],
   seq : IsolatingRunSequence,
 ) -> Unit {
   let indices = seq.indices
-  if indices.length() == 0 {
+  let count = indices.length()
+  if count == 0 {
     return
   }
 
-  // W1: NSM - Non-Spacing Mark
-  // Examine each character that is not an isolate initiator or PDI.
-  // If the previous character is an isolate initiator or PDI, change NSM to ON.
-  // Otherwise, change NSM to the type of the previous character (or sos).
-  let mut prev_type = seq.sos
-  for idx in indices {
-    let bc = types[idx]
-    if bc is NSM {
-      // Check if previous character was isolate initiator or PDI
-      // In resolved types, isolate initiators keep their type
-      if prev_type.is_isolate_initiator() || prev_type is PDI {
-        types[idx] = BidiClass::ON
-      } else {
-        types[idx] = prev_type
-      }
-    }
-    // Update prev_type (don't follow BN)
-    if !(types[idx] is BN) {
-      prev_type = types[idx]
-    }
-  }
-
-  // W2: EN - European Number after AL
-  // Track the most recent strong type instead of rescanning for every EN.
+  // W1: NSM takes the type of the previous character (or sos), or ON after
+  //     an isolate initiator or PDI.
+  // W2: EN becomes AN when the most recent strong type is AL.
+  // W3: AL becomes R.
+  // The type after W1 of the previous character, which W1 reads.
+  let mut previous_w1 = seq.sos
+  // The most recent L, R or AL after W1, which W2 reads.
   let mut last_strong = seq.sos
   for idx in indices {
-    match types[idx] {
+    let mut bc = types[idx]
+    if bc is NSM {
+      bc = if previous_w1.is_isolate_initiator() || previous_w1 is PDI {
+        BidiClass::ON
+      } else {
+        previous_w1
+      }
+    }
+    if !(bc is BN) {
+      previous_w1 = bc
+    }
+    match bc {
       L => last_strong = BidiClass::L
       R => last_strong = BidiClass::R
-      AL => last_strong = BidiClass::AL
-      EN => if last_strong is AL { types[idx] = BidiClass::AN }
+      AL => {
+        last_strong = BidiClass::AL
+        bc = BidiClass::R
+      }
+      EN => if last_strong is AL { bc = BidiClass::AN }
       _ => ()
     }
+    types[idx] = bc
   }
 
-  // W3: AL - Arabic Letter becomes R
-  for idx in indices {
-    if types[idx] is AL {
-      types[idx] = BidiClass::R
-    }
-  }
-
-  // W4: ES/CS between EN/AN
-  // A single ES between two ENs becomes EN.
-  // A single CS between two ENs becomes EN.
-  // A single CS between two ANs becomes AN.
-  for i = 1; i < indices.length() - 1; i = i + 1 {
+  // W4: A single ES between two ENs becomes EN; a single CS between two
+  //     ENs becomes EN, and between two ANs becomes AN.
+  // W5: A sequence of ETs adjacent to EN becomes EN.
+  // W6: Remaining ES, ET and CS become ON.
+  // W7: EN becomes L when the most recent strong type is L.
+  // The type after W4 of the previous character, which W4 reads.
+  let mut previous_w4 = BidiClass::ON
+  // Whether the previous character is EN after W5.
+  let mut previous_is_en = false
+  // Start of a run of ETs that no EN precedes; an EN right after the run
+  // still turns it into EN.
+  let mut et_run_start = -1
+  // The most recent L or R, which W7 reads. W3 has removed AL.
+  last_strong = seq.sos
+  for i in 0..<count {
     let idx = indices[i]
-    let bc = types[idx]
-    if bc is ES || bc is CS {
-      let prev_idx = indices[i - 1]
-      let next_idx = indices[i + 1]
-      let prev_bc = types[prev_idx]
-      let next_bc = types[next_idx]
-      if bc is ES && prev_bc is EN && next_bc is EN {
-        types[idx] = BidiClass::EN
-      } else if bc is CS {
-        if prev_bc is EN && next_bc is EN {
-          types[idx] = BidiClass::EN
-        } else if prev_bc is AN && next_bc is AN {
-          types[idx] = BidiClass::AN
+    let mut bc = types[idx]
+    if (bc is ES || bc is CS) && i > 0 && i < count - 1 {
+      // The next character has not been through W4 yet, as in a W4-only pass.
+      let next_bc = types[indices[i + 1]]
+      if previous_w4 is EN && next_bc is EN {
+        bc = BidiClass::EN
+      } else if bc is CS && previous_w4 is AN && next_bc is AN {
+        bc = BidiClass::AN
+      }
+    }
+    previous_w4 = bc
+    types[idx] = match bc {
+      ET =>
+        if previous_is_en {
+          if last_strong is L {
+            BidiClass::L
+          } else {
+            BidiClass::EN
+          }
+        } else {
+          if et_run_start < 0 {
+            et_run_start = i
+          }
+          BidiClass::ON
+        }
+      EN => {
+        let resolved = if last_strong is L {
+          BidiClass::L
+        } else {
+          BidiClass::EN
+        }
+        if et_run_start >= 0 {
+          for j in et_run_start..<i {
+            types[indices[j]] = resolved
+          }
+          et_run_start = -1
+        }
+        previous_is_en = true
+        resolved
+      }
+      _ => {
+        previous_is_en = false
+        et_run_start = -1
+        match bc {
+          ES | CS => BidiClass::ON
+          L => {
+            last_strong = BidiClass::L
+            bc
+          }
+          R => {
+            last_strong = BidiClass::R
+            bc
+          }
+          _ => bc
         }
       }
-    }
-  }
-
-  // W5: ET adjacent to EN becomes EN
-  // A sequence of ETs adjacent to EN becomes EN.
-  // First, find all ENs and expand to adjacent ETs
-  for i = 0; i < indices.length(); i = i + 1 {
-    let idx = indices[i]
-    if types[idx] is EN {
-      // Look backward for ETs
-      let mut j = i - 1
-      while j >= 0 && types[indices[j]] is ET {
-        types[indices[j]] = BidiClass::EN
-        j -= 1
-      }
-      // Look forward for ETs
-      j = i + 1
-      while j < indices.length() && types[indices[j]] is ET {
-        types[indices[j]] = BidiClass::EN
-        j += 1
-      }
-    }
-  }
-
-  // W6: ES, ET, CS become ON
-  // All remaining ES, ET, and CS characters become ON.
-  for idx in indices {
-    let bc = types[idx]
-    if bc is ES || bc is ET || bc is CS {
-      types[idx] = BidiClass::ON
-    }
-  }
-
-  // W7: EN becomes L when sos is L or after L
-  // W3 has already changed AL to R, so only L and R need tracking here.
-  last_strong = seq.sos
-  for idx in indices {
-    match types[idx] {
-      L => last_strong = BidiClass::L
-      R => last_strong = BidiClass::R
-      EN => if last_strong is L { types[idx] = BidiClass::L }
-      _ => ()
-    }
-  }
-}
-
-///|
-/// Re-resolve NSM after bracket pairing so combining marks follow
-/// brackets that were retyped by N0.
-fn resolve_nsm_after_brackets(
-  types : Array[BidiClass],
-  original_classes : Array[BidiClass],
-  seq : IsolatingRunSequence,
-) -> Unit {
-  let indices = seq.indices
-  if indices.length() == 0 {
-    return
-  }
-
-  let mut prev_type = seq.sos
-  for idx in indices {
-    if original_classes[idx] is NSM && types[idx] is ON {
-      if prev_type.is_isolate_initiator() || prev_type is PDI {
-        types[idx] = BidiClass::ON
-      } else {
-        types[idx] = prev_type
-      }
-    }
-
-    if !(types[idx] is BN) {
-      prev_type = types[idx]
     }
   }
 }
