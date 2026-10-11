@@ -230,3 +230,74 @@ test "resume fast runs between suspect segments and at the end" {
     @normalization.is_normalized("x\u{0301}AAA\u{0301}", @normalization.NFC),
   )
 }
+
+///|
+test "surrogate summaries respect form masks and recover complete boundaries" {
+  for gap in ["😀", "\u{10FFFD}", "\u{10000}", "\u{1D400}"] {
+    for
+      (form, changed, fixed, normalized_gap) in [
+        (@normalization.NFC, "e\u{0301}", "é", gap),
+        (@normalization.NFD, "é", "e\u{0301}", gap),
+        (
+          @normalization.NFKC,
+          "e\u{0301}",
+          "é",
+          if gap == "\u{1D400}" {
+            "A"
+          } else {
+            gap
+          },
+        ),
+        (
+          @normalization.NFKD,
+          "é",
+          "e\u{0301}",
+          if gap == "\u{1D400}" {
+            "A"
+          } else {
+            gap
+          },
+        ),
+      ] {
+      // No separator before the marks: recovery must retain the full pair,
+      // including when a changed prefix has already allocated scratch storage.
+      for prefix in ["", changed + "|"] {
+        let fixed_prefix = if prefix == "" { "" } else { fixed + "|" }
+        let input = prefix + gap.repeat(8) + "\u{0315}\u{0316}|" + changed
+        let expected = fixed_prefix +
+          normalized_gap.repeat(8) +
+          "\u{0316}\u{0315}|" +
+          fixed
+        assert_eq(@normalization.normalize(input, form), expected)
+        assert_false(@normalization.is_normalized(input, form))
+        assert_true(@normalization.is_normalized(expected, form))
+      }
+    }
+  }
+  // Active groups still decode mappings, combining marks and backward composition.
+  assert_eq(@normalization.nfd("\u{1D15E}"), "\u{1D157}\u{1D165}")
+  assert_eq(@normalization.nfc("\u{11099}\u{110BA}"), "\u{1109A}")
+  assert_eq(
+    @normalization.nfc("😀\u{1D165}\u{1D167}"),
+    "😀\u{1D167}\u{1D165}",
+  )
+}
+
+///|
+test "surrogate summaries keep isolated code units unchanged" {
+  for cp in [0xD800, 0xD835, 0xDBFF, 0xDC00, 0xDFFF] {
+    let lone = String::from_array([cp.unsafe_to_char()])
+    for input in [lone, lone + "A", "A" + lone] {
+      for
+        form in [
+          @normalization.NFC,
+          @normalization.NFD,
+          @normalization.NFKC,
+          @normalization.NFKD,
+        ] {
+        assert_eq(@normalization.normalize(input, form), input)
+        assert_true(@normalization.is_normalized(input, form))
+      }
+    }
+  }
+}

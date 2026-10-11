@@ -115,6 +115,12 @@ async fn generate_ucd(root : StringView) -> Unit {
   let full_exclusions = @ucd.build_full_composition_exclusions(
     unicode_data, exclusions,
   )
+  write_source(
+    root,
+    "normalization/normalization_data.mbt",
+    @ucd.emit_normalization_scan(unicode_data, normalization_properties),
+  )
+  format_file(root, "normalization/normalization_data.mbt")
   write_source(root, "ucd/ccc/ccc.mbt", @ucd.emit_ccc())
   write_source(
     root,

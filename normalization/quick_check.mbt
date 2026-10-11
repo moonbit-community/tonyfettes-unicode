@@ -1,4 +1,18 @@
 ///|
+// Skip clean surrogate pairs from their group summaries on both Wasm
+// backends. Without it, supplementary text on Wasm-GC is slower than before
+// the BMP trie; with it, only Japanese NFC gets a few percent slower there.
+// Keep the original loop shape on Native, where the extra loop state is
+// spilled around every property lookup and slows long BMP corpora, and on
+// JS, which has not been measured.
+#cfg(any(target="wasm", target="wasm-gc"))
+const ScanSurrogatePairs : Bool = true
+
+///|
+#cfg(not(any(target="wasm", target="wasm-gc")))
+const ScanSurrogatePairs : Bool = false
+
+///|
 /// ASCII has CCC=0 and Quick_Check=Yes for every normalization form.
 fn normalization_properties(c : Char) -> Int {
   if c.to_int() < 0x80 {
@@ -195,6 +209,21 @@ fn scan_clean_run(s : String, start : Int, slow_mask : Int) -> Int {
       // SAFETY: offset + 1 < length is checked above.
       let second = s.unsafe_get(offset + 1)
       if second.is_trailing_surrogate() {
+        let lead = cp - 0xD800
+        // Compare the default-tail boundary before decoding or reading a table.
+        // SAFETY: a valid pair outside that tail has a generated lead index.
+        if ScanSurrogatePairs &&
+          (
+            lead > NormalizationTailLeadIndex ||
+            (
+              lead == NormalizationTailLeadIndex &&
+              second.to_int() >= NormalizationTailTrail
+            ) ||
+            (normalization_lead_flags.unsafe_get(lead) & slow_mask) == 0
+          ) {
+          offset += 2
+          continue
+        }
         cp = 0x10000 + ((cp - 0xD800) << 10) + second.to_int() - 0xDC00
         width = 2
       }
@@ -244,6 +273,21 @@ fn process_spans(
         // SAFETY: offset + 1 < length is checked above.
         let second = s.unsafe_get(offset + 1)
         if second.is_trailing_surrogate() {
+          let lead = cp - 0xD800
+          // Compare the default-tail boundary before decoding or reading a table.
+          // SAFETY: a valid pair outside that tail has a generated lead index.
+          if ScanSurrogatePairs &&
+            (
+              lead > NormalizationTailLeadIndex ||
+              (
+                lead == NormalizationTailLeadIndex &&
+                second.to_int() >= NormalizationTailTrail
+              ) ||
+              (normalization_lead_flags.unsafe_get(lead) & slow_mask) == 0
+            ) {
+            offset += 2
+            continue
+          }
           cp = 0x10000 + ((cp - 0xD800) << 10) + second.to_int() - 0xDC00
           width = 2
         }

@@ -12,6 +12,9 @@ test "normalization spans" (b : @bench.T) {
         ("e\u{0301}" + "Hello world! ".repeat(64)).repeat(4),
       ),
       ("ASCII", "Hello world! ".repeat(256)),
+      ("BMP starters", "中文日本語".repeat(256)),
+      ("supplementary starters", "😀𠀀𝄞".repeat(256)),
+      ("default supplementary tail", "\u{10FFFD}".repeat(256)),
       ("normalized mixed", "Café 世界 😀 한글 ".repeat(128)),
       ("decomposed mixed", "Cafe\u{0301} 世界 😀 한글 ".repeat(128)),
       ("dense composition", "e\u{0301}".repeat(256)),
@@ -24,5 +27,48 @@ test "normalization spans" (b : @bench.T) {
     b.bench(name="is_normalized/\{name}", fn() {
       b.keep(@normalization.is_normalized(input, @normalization.NFC))
     })
+  }
+}
+
+///|
+// Exercise supplementary lookups after the BMP path becomes hot in the same VM.
+test "supplementary after BMP warmup" (b : @bench.T) {
+  let bmp = "中文日本語".repeat(256)
+  for _ in 0..<2000 {
+    b.keep(@normalization.nfc(bmp))
+  }
+  let input = "😀𠀀𝄞".repeat(4096)
+  b.bench(name="NFC/supplementary after BMP warmup", fn() {
+    b.keep(@normalization.nfc(input))
+  })
+}
+
+///|
+test "supplementary clean and suspect groups" (b : @bench.T) {
+  for
+    (name, input) in [
+      ("default tail in active group", "\u{2FA80}".repeat(256)),
+      ("inert surrogate group", "😀".repeat(256)),
+      ("active surrogate group", "\u{1D400}".repeat(256)),
+      ("changed prefix default tail", "e\u{0301}" + "\u{10FFFD}".repeat(256)),
+      (
+        "default tail between changes",
+        "e\u{0301}" + "\u{10FFFD}".repeat(256) + "A\u{030A}",
+      ),
+    ] {
+    for
+      form in [
+        @normalization.NFC,
+        @normalization.NFD,
+        @normalization.NFKC,
+        @normalization.NFKD,
+      ] {
+      b.bench(name="\{form}/\{name}/normalize", fn() {
+        b.keep(@normalization.normalize(input, form))
+      })
+      b.bench(name="\{form}/\{name}/check", fn() {
+        b.keep(@normalization.is_normalized(input, form))
+      })
+    }
   }
 }

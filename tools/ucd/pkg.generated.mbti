@@ -36,6 +36,8 @@ pub fn emit_marks(Array[@parsing.CodePointRange]) -> String
 
 pub fn emit_normalization(UnicodeData, Array[CompositionEntry], String) -> String raise
 
+pub fn emit_normalization_scan(UnicodeData, String) -> String raise
+
 pub fn emit_uppercase(DerivedCoreProperties) -> String raise
 
 pub fn emit_white_space(PropList) -> String raise
