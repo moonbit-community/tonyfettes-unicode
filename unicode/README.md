@@ -19,11 +19,11 @@ The generated tables target Unicode 16.0.0.
 New code should depend on the feature module it needs directly:
 
 ```bash
-moon add moonbit-community/ucd
-moon add moonbit-community/normalization
+moon add moonbit-community/unicode-data
+moon add moonbit-community/unicode-normalization
 moon add moonbit-community/punycode
-moon add moonbit-community/bidi
-moon add moonbit-community/idna
+moon add moonbit-community/unicode-bidi
+moon add moonbit-community/unicode-idna
 ```
 
 See the repository README for the full API reference, development commands,

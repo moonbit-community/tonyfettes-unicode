@@ -1,12 +1,13 @@
 import {
-  "moonbit-community/ucd/ccc",
-  "moonbit-community/ucd/composition",
-  "moonbit-community/ucd/decomposition",
+  "moonbit-community/unicode-data/ccc",
+  "moonbit-community/unicode-data/composition",
+  "moonbit-community/unicode-data/decomposition",
 }
 
 import {
-  "moonbit-community/normalization/internal/base_fuzz" @fuzz,
-  "moonbit-community/normalization/internal/fuzz" @normalization_fuzz,
+  "moonbit-community/unicode-normalization" @normalization,
+  "moonbit-community/unicode-normalization/internal/base_fuzz" @fuzz,
+  "moonbit-community/unicode-normalization/internal/fuzz" @normalization_fuzz,
   "moonbitlang/core/random",
   "moonbitlang/core/bench",
 } for "test"

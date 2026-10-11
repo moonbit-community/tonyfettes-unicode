@@ -1,4 +1,4 @@
-name = "moonbit-community/segmentation"
+name = "moonbit-community/unicode-segmentation"
 
 version = "0.5.2"
 

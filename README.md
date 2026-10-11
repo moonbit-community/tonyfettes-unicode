@@ -23,30 +23,31 @@ segmentation. The generated tables target Unicode 16.0.0.
 Add only the feature modules your application needs:
 
 ```bash
-moon add moonbit-community/ucd
-moon add moonbit-community/normalization
+moon add moonbit-community/unicode-data
+moon add moonbit-community/unicode-normalization
 moon add moonbit-community/punycode
-moon add moonbit-community/bidi
-moon add moonbit-community/segmentation
-moon add moonbit-community/idna
+moon add moonbit-community/unicode-bidi
+moon add moonbit-community/unicode-segmentation
+moon add moonbit-community/unicode-idna
 ```
 
 Import the packages you need in `moon.pkg`:
 
 ```moonbit
 import {
-  "moonbit-community/ucd"
-  "moonbit-community/normalization"
-  "moonbit-community/punycode"
-  "moonbit-community/idna"
-  "moonbit-community/bidi"
-  "moonbit-community/segmentation"
+  "moonbit-community/unicode-data" @ucd,
+  "moonbit-community/unicode-normalization" @normalization,
+  "moonbit-community/punycode",
+  "moonbit-community/unicode-idna" @idna,
+  "moonbit-community/unicode-bidi" @bidi,
+  "moonbit-community/unicode-segmentation" @segmentation,
 }
 ```
 
-MoonBit uses the last package path segment as the default alias, so these
-imports are used as `@ucd`, `@normalization`, `@punycode`, `@idna`, `@bidi`,
-and `@segmentation`. Existing users may continue depending on
+MoonBit uses the last package path segment as the default alias, which is not a
+valid identifier for the hyphenated `unicode-*` modules, so give those imports
+an explicit alias. The examples below use `@ucd`, `@normalization`,
+`@punycode`, `@idna`, `@bidi`, and `@segmentation`. Existing users may continue depending on
 `moonbit-community/unicode`; it is an umbrella compatibility module that
 preserves the old package paths.
 
@@ -159,7 +160,7 @@ let lower = @ucd.to_lowercase('\u{0130}') // "i" + combining dot above
 
 ## Public Packages
 
-### `moonbit-community/ucd`
+### `moonbit-community/unicode-data`
 
 Root package for Unicode Character Database helpers.
 
@@ -180,7 +181,7 @@ Root package for Unicode Character Database helpers.
 | `to_lowercase(Char) -> String` | Full lowercase mapping. |
 | `to_titlecase(Char) -> String` | Full titlecase mapping. |
 
-### `moonbit-community/normalization`
+### `moonbit-community/unicode-normalization`
 
 | API | Description |
 | --- | --- |
@@ -202,7 +203,7 @@ The available forms are `NFD`, `NFC`, `NFKD`, and `NFKC`.
 
 `PunycodeError` variants are `Overflow`, `InvalidInput`, and `BadInput`.
 
-### `moonbit-community/idna`
+### `moonbit-community/unicode-idna`
 
 | API | Description |
 | --- | --- |
@@ -220,7 +221,7 @@ The available forms are `NFD`, `NFC`, `NFKD`, and `NFKC`.
 `to_unicode` accepts the same options except `verify_dns_length`; they also
 default to `true`.
 
-### `moonbit-community/bidi`
+### `moonbit-community/unicode-bidi`
 
 | API | Description |
 | --- | --- |
@@ -236,7 +237,7 @@ default to `true`.
 `process_with_direction` and `process_with_base_level` remain available as
 deprecated compatibility wrappers.
 
-### `moonbit-community/segmentation`
+### `moonbit-community/unicode-segmentation`
 
 | API | Description |
 | --- | --- |
@@ -249,7 +250,7 @@ Common commands:
 ```bash
 moon check
 moon test
-moon test -p moonbit-community/normalization
+moon test -p moonbit-community/unicode-normalization
 moon fmt
 moon info
 moon build
@@ -290,7 +291,8 @@ reads committed data directly and supports Native, Wasm and Wasm-GC.
 
 The native release tool keeps the seven published module versions aligned,
 validates the workspace, and checks every package archive. During preparation it
-dry-runs the independent `ucd`, `punycode`, `bidi`, and `segmentation` modules:
+dry-runs the independent `unicode-data`, `punycode`, `unicode-bidi`, and
+`unicode-segmentation` modules:
 
 ```bash
 moon run --target native tools/release -- prepare --version 0.4.0
@@ -306,8 +308,9 @@ moon run --target native tools/release -- publish \
   --execute
 ```
 
-The tool publishes `ucd`, `punycode`, `bidi`, `segmentation`, `normalization`,
-`idna`, and the `unicode` compatibility umbrella in dependency order. It reads
+The tool publishes `unicode-data`, `punycode`, `unicode-bidi`,
+`unicode-segmentation`, `unicode-normalization`, `unicode-idna`, and the
+`unicode` compatibility umbrella in dependency order. It reads
 the release version from the umbrella manifest `unicode/moon.mod` and verifies
 that all seven published modules use that version. Modules that depend on same-release packages
 are dry-run immediately before their real publication, after the tool refreshes
@@ -318,7 +321,7 @@ resume with the underlying command:
 
 ```bash
 moon run --target native tools/release -- publish \
-  --from normalization \
+  --from unicode-normalization \
   --execute
 ```
 

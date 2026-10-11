@@ -14,26 +14,35 @@ test "release versions use stable semantic version syntax" {
 ///|
 test "publish dry-run accepts the known false failure" {
   let output =
-    #|Server status: 202 Accepted, detail: Dry run completed successfully. No changes were made. The dry-run was made for package moonbit-community/ucd version 0.4.0.
+    #|Server status: 202 Accepted, detail: Dry run completed successfully. No changes were made. The dry-run was made for package moonbit-community/unicode-data version 0.4.0.
     #|Error: `moon publish` failed
   assert_true(
-    publish_dry_run_succeeded(0, "", "moonbit-community/ucd", "0.4.0"),
+    publish_dry_run_succeeded(0, "", "moonbit-community/unicode-data", "0.4.0"),
   )
   assert_true(
-    publish_dry_run_succeeded(255, output, "moonbit-community/ucd", "0.4.0"),
+    publish_dry_run_succeeded(
+      255, output, "moonbit-community/unicode-data", "0.4.0",
+    ),
   )
   assert_true(
-    publish_dry_run_succeeded(-1, output, "moonbit-community/ucd", "0.4.0"),
-  )
-  assert_false(
-    publish_dry_run_succeeded(1, output, "moonbit-community/ucd", "0.4.0"),
-  )
-  assert_false(
-    publish_dry_run_succeeded(255, output, "moonbit-community/idna", "0.4.0"),
+    publish_dry_run_succeeded(
+      -1, output, "moonbit-community/unicode-data", "0.4.0",
+    ),
   )
   assert_false(
     publish_dry_run_succeeded(
-      255, "Server status: 500 Internal Server Error", "moonbit-community/ucd", "0.4.0",
+      1, output, "moonbit-community/unicode-data", "0.4.0",
+    ),
+  )
+  assert_false(
+    publish_dry_run_succeeded(
+      255, output, "moonbit-community/unicode-idna", "0.4.0",
+    ),
+  )
+  assert_false(
+    publish_dry_run_succeeded(
+      255, "Server status: 500 Internal Server Error", "moonbit-community/unicode-data",
+      "0.4.0",
     ),
   )
 }
@@ -116,7 +125,9 @@ test "manifest version declarations must be unique" {
     _ => fail("expected duplicate version declaration to fail")
   }
   try
-    manifest_version("name = \"moonbit-community/ucd\"\n", "ucd/moon.mod")
+    manifest_version(
+      "name = \"moonbit-community/unicode-data\"\n", "ucd/moon.mod",
+    )
   catch {
     ReleaseError(message) =>
       inspect(
@@ -143,14 +154,14 @@ test "publish resume points follow dependency order" {
   assert_true(unicode.requires_published_dependencies)
   inspect(unicode.directory, content="unicode")
   inspect(unicode.manifest_path(), content="unicode/moon.mod")
-  inspect(publish_start_index("ucd"), content="0")
-  inspect(publish_start_index("normalization"), content="4")
+  inspect(publish_start_index("unicode-data"), content="0")
+  inspect(publish_start_index("unicode-normalization"), content="4")
   inspect(publish_start_index("unicode"), content="6")
   try publish_start_index("tools") catch {
     ReleaseError(message) =>
       inspect(
         message,
-        content="Unknown --from module 'tools'; expected one of ucd, punycode, bidi, segmentation, normalization, idna, unicode",
+        content="Unknown --from module 'tools'; expected one of unicode-data, punycode, unicode-bidi, unicode-segmentation, unicode-normalization, unicode-idna, unicode",
       )
   } noraise {
     _ => fail("expected unknown resume module to fail")

@@ -11,11 +11,11 @@ readme = "README.md"
 description = "Unicode in MoonBit"
 
 import {
-  "moonbit-community/ucd@0.5.2",
-  "moonbit-community/normalization@0.5.2",
+  "moonbit-community/unicode-data@0.5.2",
+  "moonbit-community/unicode-normalization@0.5.2",
   "moonbit-community/punycode@0.5.2",
-  "moonbit-community/bidi@0.5.2",
-  "moonbit-community/idna@0.5.2",
+  "moonbit-community/unicode-bidi@0.5.2",
+  "moonbit-community/unicode-idna@0.5.2",
 }
 
 keywords = [

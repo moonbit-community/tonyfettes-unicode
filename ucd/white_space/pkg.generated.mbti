@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "moonbit-community/ucd/white_space"
+package "moonbit-community/unicode-data/white_space"
 
 // Values
 pub fn is_white_space(Char) -> Bool

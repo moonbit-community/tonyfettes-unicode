@@ -1,3 +1,3 @@
 import {
-  "moonbit-community/normalization" @impl,
+  "moonbit-community/unicode-normalization" @impl,
 }

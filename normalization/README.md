@@ -1,10 +1,10 @@
-# normalization
+# unicode-normalization
 
 Unicode NFC, NFD, NFKC, and NFKD normalization for MoonBit, using Unicode
-16.0.0 data from `moonbit-community/ucd`.
+16.0.0 data from `moonbit-community/unicode-data`.
 
 ```bash
-moon add moonbit-community/normalization
+moon add moonbit-community/unicode-normalization
 ```
 
 See the repository root README for API documentation and examples.

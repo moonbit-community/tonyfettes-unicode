@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "moonbit-community/normalization"
+package "moonbit-community/unicode-normalization"
 
 // Values
 pub fn is_normalized(String, NormalizationForm) -> Bool

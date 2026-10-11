@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "moonbit-community/ucd/case_mapping"
+package "moonbit-community/unicode-data/case_mapping"
 
 // Values
 pub fn full_lowercase(Char) -> String

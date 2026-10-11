@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "moonbit-community/ucd/alphabetic"
+package "moonbit-community/unicode-data/alphabetic"
 
 // Values
 pub fn is_alphabetic(Char) -> Bool

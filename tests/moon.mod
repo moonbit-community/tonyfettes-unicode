@@ -10,9 +10,9 @@ description = "Workspace-only Unicode conformance tests"
 
 import {
   "moonbit-community/unicode@0.5.2",
-  "moonbit-community/normalization@0.5.2",
-  "moonbit-community/bidi@0.5.2",
-  "moonbit-community/segmentation@0.5.2",
-  "moonbit-community/idna@0.5.2",
+  "moonbit-community/unicode-normalization@0.5.2",
+  "moonbit-community/unicode-bidi@0.5.2",
+  "moonbit-community/unicode-segmentation@0.5.2",
+  "moonbit-community/unicode-idna@0.5.2",
   "moonbitlang/async@0.22.4",
 }

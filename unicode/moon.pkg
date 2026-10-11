@@ -1,3 +1,3 @@
 import {
-  "moonbit-community/ucd" @impl,
+  "moonbit-community/unicode-data" @impl,
 }

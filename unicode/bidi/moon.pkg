@@ -1,4 +1,4 @@
 import {
-  "moonbit-community/bidi" @impl,
+  "moonbit-community/unicode-bidi" @impl,
   "moonbit-community/unicode/internal/bidi" @legacy_data,
 }
