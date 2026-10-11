@@ -1,7 +1,7 @@
 ///|
 /// IDNA (UTS #46) conformance tests, read directly from IdnaTestV2.txt
-/// (Unicode 16.0.0).
-/// Source: https://www.unicode.org/Public/idna/16.0.0/IdnaTestV2.txt
+/// (Unicode 18.0.0).
+/// Source: https://www.unicode.org/Public/18.0.0/idna/IdnaTestV2.txt
 ///
 /// Each line is `source; toUnicode; toUnicodeStatus; toAscii; toAsciiStatus`.
 /// Cases whose status list only contains codes tied to a validation flag are

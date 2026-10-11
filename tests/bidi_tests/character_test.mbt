@@ -1,7 +1,7 @@
 ///|
 /// Unicode Bidirectional Algorithm conformance tests, read directly from
-/// BidiCharacterTest.txt (Unicode 16.0.0).
-/// Source: https://www.unicode.org/Public/16.0.0/ucd/BidiCharacterTest.txt
+/// BidiCharacterTest.txt (Unicode 18.0.0).
+/// Source: https://www.unicode.org/Public/18.0.0/ucd/BidiCharacterTest.txt
 
 ///|
 /// Paragraph direction field of BidiCharacterTest.txt:

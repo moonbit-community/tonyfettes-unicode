@@ -4,7 +4,7 @@ Unicode support for MoonBit.
 
 This library implements selected Unicode standards for normalization, case and
 category lookup, Punycode, IDNA domain processing, bidirectional text, and text
-segmentation. The generated tables target Unicode 16.0.0.
+segmentation. The generated tables target Unicode 18.0.0.
 
 ## Features
 
@@ -278,7 +278,7 @@ moon run --target native tools/gen all
 ```
 
 Individual commands are `ucd`, `idna`, `bidi`, and `segmentation`. Downloaded
-Unicode source files are cached in `tools/.cache/`.
+Unicode source files are cached per version in `tools/.cache/<version>/`.
 
 Conformance tests live in the workspace-only `moonbit-community/unicode-tests`
 module (`tests/`). They read the official Unicode test data files committed

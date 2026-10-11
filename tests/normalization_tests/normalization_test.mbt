@@ -1,7 +1,7 @@
 ///|
 /// Unicode normalization conformance tests, read directly from
-/// NormalizationTest.txt (Unicode 16.0.0).
-/// Source: https://www.unicode.org/Public/16.0.0/ucd/NormalizationTest.txt
+/// NormalizationTest.txt (Unicode 18.0.0).
+/// Source: https://www.unicode.org/Public/18.0.0/ucd/NormalizationTest.txt
 ///
 /// Each line contains five strings (c1..c5) that must satisfy:
 /// - NFC:  c2 == NFC(c1) == NFC(c2) == NFC(c3)

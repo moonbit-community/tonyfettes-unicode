@@ -4,7 +4,7 @@
 library that is split into independently consumable modules. It preserves the
 original package paths for existing users by forwarding to the feature modules.
 
-The generated tables target Unicode 16.0.0.
+The generated tables target Unicode 18.0.0.
 
 ## Packages
 

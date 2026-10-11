@@ -12,20 +12,6 @@ const EmojiPictographic : Int = 1
 const EmojiZWJ : Int = 2
 
 ///|
-/// State of the GB9c conjunct scan within a cluster: no consonant is pending.
-const ConjunctNone : Int = 0
-
-///|
-/// The cluster so far ends in `\p{InCB=Consonant} \p{InCB=Extend}*`.
-const ConjunctConsonant : Int = 1
-
-///|
-/// The cluster so far ends in `\p{InCB=Consonant}` followed by
-/// `\p{InCB=Extend}` and `\p{InCB=Linker}` code points with at least one
-/// linker.
-const ConjunctLinker : Int = 2
-
-///|
 /// Code points below this limit are CR, LF, Control, or Other, and none has
 /// an Indic_Conjunct_Break value, so only GB3, GB4, GB5, and GB999 apply
 /// between two of them. Combining marks start at U+0300.
@@ -85,11 +71,8 @@ fn next_grapheme_boundary(text : StringView, start : Int) -> Int {
   } else {
     EmojiNone
   }
-  let mut conjunct = if ((previous >> InCBShift) & InCBMask) == InCBConsonant {
-    ConjunctConsonant
-  } else {
-    ConjunctNone
-  }
+  // Whether the cluster ends in `\p{InCB=Linker} \p{InCB=Extend}*` (GB9c).
+  let mut linker = ((previous >> InCBShift) & InCBMask) == InCBLinker
   while index < length {
     let code_point = code_point_at(text, index, length)
     let current = grapheme_break_value(code_point)
@@ -120,7 +103,7 @@ fn next_grapheme_boundary(text : StringView, start : Int) -> Int {
       (GcbRegionalIndicator, GcbRegionalIndicator) => regional_odd
       _ =>
         // GB9c: do not break within an Indic conjunct.
-        (conjunct == ConjunctLinker && conjunct_break == InCBConsonant) ||
+        (linker && conjunct_break == InCBConsonant) ||
         // GB11: do not break within an emoji ZWJ sequence.
         (emoji == EmojiZWJ && pictographic)
     }
@@ -138,11 +121,10 @@ fn next_grapheme_boundary(text : StringView, start : Int) -> Int {
     } else {
       EmojiNone
     }
-    conjunct = match conjunct_break {
-      InCBConsonant => ConjunctConsonant
-      InCBExtend => conjunct
-      InCBLinker if conjunct != ConjunctNone => ConjunctLinker
-      _ => ConjunctNone
+    linker = match conjunct_break {
+      InCBLinker => true
+      InCBExtend => linker
+      _ => false
     }
     index += if code_point >= 0x10000 { 2 } else { 1 }
     previous = current

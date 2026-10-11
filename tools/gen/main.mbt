@@ -1,5 +1,5 @@
 ///|
-const UnicodeVersion : String = "16.0.0"
+const UnicodeVersion : String = "18.0.0"
 
 ///|
 async fn find_project_root() -> String {
@@ -14,7 +14,7 @@ async fn find_project_root() -> String {
 
 ///|
 fn cache_path(root : StringView, name : StringView) -> String {
-  "\{root}/tools/.cache/\{name}"
+  "\{root}/tools/.cache/\{UnicodeVersion}/\{name}"
 }
 
 ///|
@@ -25,7 +25,7 @@ async fn read_source(root : StringView, name : String, url : String) -> String {
     return @fs.read_file(path).text()
   }
   println("Downloading \{name}...")
-  ensure_directory("\{root}/tools/.cache")
+  ensure_directory("\{root}/tools/.cache/\{UnicodeVersion}")
   let (response, body) = @http.get(url)
   guard response.code >= 200 && response.code < 300 else {
     fail("Download failed for \{url}: HTTP \{response.code}")
@@ -194,7 +194,7 @@ async fn generate_idna_data(root : StringView) -> Unit {
   let mapping = read_source(
     root,
     "IdnaMappingTable.txt",
-    "https://www.unicode.org/Public/idna/\{UnicodeVersion}/IdnaMappingTable.txt",
+    "https://www.unicode.org/Public/\{UnicodeVersion}/idna/IdnaMappingTable.txt",
   )
   let joining = read_source(
     root,
