@@ -7,11 +7,11 @@
 pub(all) enum IdnaStatus {
   Valid // 0: Valid character
   Ignored // 1: Character is removed
-  Mapped(Array[Char]) // 2: Character is mapped to other characters
-  Deviation(Array[Char]) // 3: Treated as valid in nontransitional mode
+  Mapped // 2: Character is replaced by its mapping
+  Deviation // 3: Treated as valid in nontransitional mode
   Disallowed // 4: Character is not allowed
   DisallowedSTD3Valid // 5: Valid only without UseSTD3ASCIIRules
-  DisallowedSTD3Mapped(Array[Char]) // 6: Mapped only without UseSTD3ASCIIRules
+  DisallowedSTD3Mapped // 6: Mapped only without UseSTD3ASCIIRules
 } derive(Eq)
 
 ///|
@@ -25,11 +25,11 @@ pub impl Show for IdnaStatus with fn output(self, logger) {
   match self {
     Valid => logger.write_string("Valid")
     Ignored => logger.write_string("Ignored")
-    Mapped(_) => logger.write_string("Mapped")
-    Deviation(_) => logger.write_string("Deviation")
+    Mapped => logger.write_string("Mapped")
+    Deviation => logger.write_string("Deviation")
     Disallowed => logger.write_string("Disallowed")
     DisallowedSTD3Valid => logger.write_string("DisallowedSTD3Valid")
-    DisallowedSTD3Mapped(_) => logger.write_string("DisallowedSTD3Mapped")
+    DisallowedSTD3Mapped => logger.write_string("DisallowedSTD3Mapped")
   }
 }
 
@@ -2103,8 +2103,13 @@ let idna_mapping_data : ReadOnlyArray[Int] = [
 ]
 
 ///|
-/// Look up the packed value `mapping << 3 | status` of a character.
-fn lookup_idna_value(c : Char) -> Int {
+/// Mapping table entry of a character, packed as
+/// `mapping << 3 | status`. Looking one up allocates nothing.
+struct IdnaEntry(Int)
+
+///|
+/// Look up the mapping table entry of a character.
+pub fn lookup_idna_entry(c : Char) -> IdnaEntry {
   let cp = c.to_int()
   if cp >= 0x40000 {
     // Binary search for the last range starting at or before `cp`.
@@ -2119,41 +2124,44 @@ fn lookup_idna_value(c : Char) -> Int {
         high = mid
       }
     }
-    return idna_high_ranges[low] & 7
+    return IdnaEntry(idna_high_ranges[low] & 7)
   }
   let mid = (idna_trie_top[cp >> 8].to_int() << 4) | ((cp >> 4) & 15)
   let leaf = (idna_trie_mid[2 * mid].to_int() << 8) |
     idna_trie_mid[2 * mid + 1].to_int()
   let offset = 2 * ((leaf << 4) | (cp & 15))
-  (idna_trie_leaf[offset].to_int() << 8) | idna_trie_leaf[offset + 1].to_int()
+  IdnaEntry(
+    (idna_trie_leaf[offset].to_int() << 8) | idna_trie_leaf[offset + 1].to_int(),
+  )
 }
 
 ///|
-fn mapping_at(index : Int) -> Array[Char] {
-  let mapping : Array[Char] = []
+pub fn IdnaEntry::status(self : IdnaEntry) -> IdnaStatus {
+  match self.0 & 7 {
+    0 => Valid
+    1 => Ignored
+    2 => Mapped
+    3 => Deviation
+    4 => Disallowed
+    5 => DisallowedSTD3Valid
+    6 => DisallowedSTD3Mapped
+    _ => Disallowed
+  }
+}
+
+///|
+/// Append the entry's mapping, which is empty unless the status is
+/// `Mapped`, `Deviation` or `DisallowedSTD3Mapped`.
+pub fn IdnaEntry::write_mapping(
+  self : IdnaEntry,
+  output : StringBuilder,
+) -> Unit {
+  let index = self.0 >> 3
   for
     code_point in idna_mapping_data.exact_view(
       start=idna_mapping_offsets[index],
       end=idna_mapping_offsets[index + 1],
     ) {
-    mapping.push(code_point.unsafe_to_char())
-  }
-  mapping
-}
-
-///|
-/// Look up the IDNA status for a character
-pub fn lookup_idna_mapping(c : Char) -> IdnaStatus {
-  let value = lookup_idna_value(c)
-  let mapping = value >> 3
-  match value & 7 {
-    0 => Valid
-    1 => Ignored
-    2 => Mapped(mapping_at(mapping))
-    3 => Deviation(mapping_at(mapping))
-    4 => Disallowed
-    5 => DisallowedSTD3Valid
-    6 => DisallowedSTD3Mapped(mapping_at(mapping))
-    _ => Disallowed
+    output.write_char(code_point.unsafe_to_char())
   }
 }

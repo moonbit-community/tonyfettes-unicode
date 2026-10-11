@@ -19,8 +19,9 @@ test "parse and emit IDNA mapping data" {
       // The empty mapping, "a", "s" shared by U+0053 and U+017F, and "ss".
        "let idna_mapping_offsets : ReadOnlyArray[Int] = [\n  0,\n  0,\n  1,\n  2,\n  4,\n]",
       "let idna_mapping_data : ReadOnlyArray[Int] = [\n  0x0061,\n  0x0073,\n  0x0073,\n  0x0073,\n]",
-      "Mapped(Array[Char])", "pub extend IdnaStatus with Eq::{not_equal, equal}",
-      "pub extend IdnaStatus with Show::{to_string, output}", "pub fn lookup_idna_mapping(c : Char) -> IdnaStatus",
+      "pub extend IdnaStatus with Eq::{not_equal, equal}", "pub extend IdnaStatus with Show::{to_string, output}",
+      "pub fn lookup_idna_entry(c : Char) -> IdnaEntry", "pub fn IdnaEntry::status(self : IdnaEntry) -> IdnaStatus",
+      "pub fn IdnaEntry::write_mapping(self : IdnaEntry, output : StringBuilder) -> Unit",
     ] {
     guard source.contains(expected) else {
       fail("Generated source is missing: \{expected}")
