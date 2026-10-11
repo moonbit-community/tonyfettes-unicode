@@ -187,3 +187,44 @@ test "RFC 3492 examples: N (Spanish)" {
     content="PorqunopuedensimplementehablarenEspaol-fmd56a",
   )
 }
+
+///|
+test "decode: rejects non-ASCII input" {
+  for
+    input in [
+      "\u{00FC}", "a-\u{00FC}", "\u{00FC}-a", "bcher-kva\u{00FC}", "\u{1F600}", "a-\u{1F600}",
+      "\u{1F600}-a",
+    ] {
+    try @punycode.decode(input) catch {
+      error => inspect(error, content="BadInput")
+    } noraise {
+      _ => fail("expected BadInput for \{input}")
+    }
+  }
+}
+
+///|
+test "decode: delimiters" {
+  // Only the last delimiter separates the basic code points.
+  inspect(@punycode.decode("-"), content="")
+  inspect(@punycode.decode("a-"), content="a")
+  inspect(@punycode.decode("a-b-"), content="a-b")
+  inspect(@punycode.decode("--"), content="-")
+  // A leading delimiter is skipped: no basic code points precede it.
+  inspect(@punycode.decode("-tda"), content="\u{00FC}")
+}
+
+///|
+test "roundtrip: output longer than the reserved size" {
+  // Large code points take more digits than the encoder reserves up front.
+  for
+    input in [
+      "\u{10FFFF}",
+      "a\u{10FFFF}",
+      "\u{10FFFF}".repeat(40),
+      "\u{0080}\u{10FFFF}".repeat(40),
+      "\u{00FC}".repeat(300) + "a".repeat(300),
+    ] {
+    assert_eq(@punycode.decode(@punycode.encode(input)), input)
+  }
+}
