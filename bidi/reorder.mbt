@@ -7,8 +7,8 @@
 /// L1: Reset levels of segment/paragraph separators and whitespace
 fn reset_whitespace_levels(
   original_classes : Array[BidiClass],
-  levels : Array[Int],
-  paragraph_level : Int,
+  levels : Array[Int32],
+  paragraph_level : Int32,
 ) -> Unit {
   let len = levels.length()
 
@@ -82,10 +82,10 @@ fn reset_whitespace_levels(
 /// L2: Reorder text based on levels
 /// Returns indices in visual order
 fn apply_reordering(
-  indices : Array[Int],
-  levels : Array[Int],
-  paragraph_level : Int,
-) -> Array[Int] {
+  indices : Array[Int32],
+  levels : Array[Int32],
+  paragraph_level : Int32,
+) -> Array[Int32] {
   let len = indices.length()
   if len == 0 {
     return []
@@ -126,7 +126,7 @@ fn apply_reordering(
 
 ///|
 /// Reverse a range in an array
-fn reverse_range(arr : Array[Int], start : Int, end : Int) -> Unit {
+fn reverse_range(arr : Array[Int32], start : Int32, end : Int32) -> Unit {
   let mut lo = start
   let mut hi = end
   while lo < hi {

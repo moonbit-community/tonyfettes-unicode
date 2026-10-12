@@ -3,10 +3,10 @@
 /// removed.
 pub struct DedupedBlocks {
   /// For each block of the input, the index of its copy in `blocks`.
-  ids : Array[Int]
+  ids : Array[Int32]
   /// The distinct blocks, concatenated. Block `i` starts at
   /// `i * block_size`.
-  blocks : Array[Int]
+  blocks : Array[Int32]
 }
 
 ///|
@@ -14,10 +14,10 @@ pub struct DedupedBlocks {
 /// distinct block, so `values[k]` is
 /// `blocks[ids[k / block_size] * block_size + k % block_size]`.
 pub fn deduplicate_blocks(
-  values : Array[Int],
-  block_size : Int,
+  values : Array[Int32],
+  block_size : Int32,
 ) -> DedupedBlocks {
-  let seen : Map[ArrayView[Int], Int] = Map([])
+  let seen : Map[ArrayView[Int32], Int32] = Map([])
   let ids = []
   let blocks = []
   for start = 0; start < values.length(); start = start + block_size {

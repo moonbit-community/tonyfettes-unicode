@@ -1,39 +1,39 @@
 ///|
-const MaxCodePoint : Int = 0x10FFFF
+const MaxCodePoint : Int32 = 0x10FFFF
 
 ///|
 /// Number of low bits holding the status code in a packed trie value or range.
-const IdnaStatusBits : Int = 3
+const IdnaStatusBits : Int32 = 3
 
 ///|
 /// Status code of code points the mapping table does not list.
-const IdnaDisallowed : Int = 4
+const IdnaDisallowed : Int32 = 4
 
 ///|
 /// The trie covers planes 0-3; the higher planes hold a few long ranges
 /// without mappings and are looked up as packed ranges instead.
-const IdnaTrieLimit : Int = 0x40000
+const IdnaTrieLimit : Int32 = 0x40000
 
 ///|
 /// Each top-level trie entry covers `1 << IdnaTrieTopShift` code points.
-const IdnaTrieTopShift : Int = 8
+const IdnaTrieTopShift : Int32 = 8
 
 ///|
 /// Each leaf block holds `1 << IdnaTrieLeafShift` packed values.
-const IdnaTrieLeafShift : Int = 4
+const IdnaTrieLeafShift : Int32 = 4
 
 ///|
 priv struct MappingEntry {
-  start : Int
-  end : Int
+  start : Int32
+  end : Int32
   status : String
-  mapping : Array[Int]
+  mapping : Array[Int32]
 }
 
 ///|
 priv struct JoiningEntry {
-  start : Int
-  end : Int
+  start : Int32
+  end : Int32
   joining_type : String
 }
 
@@ -88,7 +88,7 @@ fn parse_joining_table(content : String) -> Array[JoiningEntry] raise {
 }
 
 ///|
-fn status_code(status : StringView) -> Int {
+fn status_code(status : StringView) -> Int32 {
   match status {
     "valid" => 0
     "ignored" => 1
@@ -103,7 +103,11 @@ fn status_code(status : StringView) -> Int {
 
 ///|
 /// Append a packed range unless it continues the status of the previous one.
-fn push_high_range(ranges : Array[Int], start : Int, status : Int) -> Unit {
+fn push_high_range(
+  ranges : Array[Int32],
+  start : Int32,
+  status : Int32,
+) -> Unit {
   let status_mask = (1 << IdnaStatusBits) - 1
   if ranges.last() is Some(previous) && (previous & status_mask) == status {
     return
@@ -122,12 +126,12 @@ fn push_high_range(ranges : Array[Int], start : Int, status : Int) -> Unit {
 /// point. Identical blocks are shared at both levels.
 pub fn generate_mapping_source(content : String) -> String raise {
   // Mapping `i` is `mapping_data[mapping_offsets[i]:mapping_offsets[i + 1]]`.
-  let mapping_ids : Map[Array[Int], Int] = Map([([], 0)])
-  let mapping_offsets : Array[Int] = [0, 0]
-  let mapping_data : Array[Int] = []
+  let mapping_ids : Map[Array[Int32], Int32] = Map([([], 0)])
+  let mapping_offsets : Array[Int32] = [0, 0]
+  let mapping_data : Array[Int32] = []
   let values = Array::make(IdnaTrieLimit, IdnaDisallowed)
   // `start << IdnaStatusBits | status`, sorted by start code point.
-  let high_ranges : Array[Int] = []
+  let high_ranges : Array[Int32] = []
   let mut high_next = IdnaTrieLimit
   for entry in parse_mapping_table(content) {
     let status = status_code(entry.status)
@@ -142,7 +146,7 @@ pub fn generate_mapping_source(content : String) -> String raise {
       }
     }
     let value = (mapping << IdnaStatusBits) | status
-    for code_point in entry.start..<=Int::min(entry.end, IdnaTrieLimit - 1) {
+    for code_point in entry.start..<=Int32::min(entry.end, IdnaTrieLimit - 1) {
       values[code_point] = value
     }
     if entry.end >= IdnaTrieLimit {
@@ -151,7 +155,7 @@ pub fn generate_mapping_source(content : String) -> String raise {
           "IDNA mapping at or above \{@emitter.hex_upper(IdnaTrieLimit)} needs trie coverage",
         )
       }
-      let start = Int::max(entry.start, IdnaTrieLimit)
+      let start = Int32::max(entry.start, IdnaTrieLimit)
       guard start >= high_next else {
         fail("IDNA ranges above the trie must be sorted and disjoint")
       }
@@ -329,7 +333,7 @@ pub fn generate_mapping_source(content : String) -> String raise {
 
 ///|
 /// Split each value into its high and low byte.
-fn big_endian_16(values : Array[Int]) -> Array[Int] {
+fn big_endian_16(values : Array[Int32]) -> Array[Int32] {
   let bytes = []
   for value in values {
     bytes.push(value >> 8)
@@ -339,7 +343,7 @@ fn big_endian_16(values : Array[Int]) -> Array[Int] {
 }
 
 ///|
-fn joining_code(joining_type : StringView) -> Int? {
+fn joining_code(joining_type : StringView) -> Int32? {
   match joining_type {
     "L" => Some(0)
     "R" => Some(1)
@@ -354,7 +358,7 @@ fn joining_code(joining_type : StringView) -> Int? {
 ///|
 pub fn generate_joining_source(content : String) -> String raise {
   let entries = parse_joining_table(content)
-  let filtered : Array[(Int, Int, Int)] = []
+  let filtered : Array[(Int32, Int32, Int32)] = []
   for entry in entries {
     if joining_code(entry.joining_type) is Some(code) {
       filtered.push((entry.start, entry.end, code))

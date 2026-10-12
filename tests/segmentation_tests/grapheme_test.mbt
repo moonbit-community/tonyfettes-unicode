@@ -10,7 +10,7 @@
 /// represent.
 fn parse_clusters(line : StringView) -> Array[String]? raise {
   let clusters : Array[String] = []
-  let code_points : Array[Int] = []
+  let code_points : Array[Int32] = []
   for token in line.split(" ") {
     match token.trim() {
       "" | "×" => ()

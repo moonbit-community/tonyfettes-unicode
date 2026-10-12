@@ -22,20 +22,20 @@ pub async fn read_data_file(name : String) -> String {
 
 ///|
 /// Parse a hexadecimal integer, e.g. `"1E0A"`.
-pub fn parse_hex_int(text : StringView) -> Int raise {
+pub fn parse_hex_int(text : StringView) -> Int32 raise {
   @string.parse_int(text.trim(), base=16)
 }
 
 ///|
 /// Parse a decimal integer.
-pub fn parse_decimal_int(text : StringView) -> Int raise {
+pub fn parse_decimal_int(text : StringView) -> Int32 raise {
   @string.parse_int(text.trim(), base=10)
 }
 
 ///|
 /// Parse a space-separated sequence of hexadecimal code points.
-pub fn parse_code_point_sequence(text : StringView) -> Array[Int] raise {
-  let result : Array[Int] = []
+pub fn parse_code_point_sequence(text : StringView) -> Array[Int32] raise {
+  let result : Array[Int32] = []
   for part in text.trim().split(" ") {
     let part = part.trim()
     if !part.is_empty() {
@@ -48,7 +48,7 @@ pub fn parse_code_point_sequence(text : StringView) -> Array[Int] raise {
 ///|
 /// Build a string from code points. Returns `None` if any code point is a
 /// surrogate, which MoonBit strings cannot represent.
-pub fn code_points_to_string(code_points : ArrayView[Int]) -> String? {
+pub fn code_points_to_string(code_points : ArrayView[Int32]) -> String? {
   let out = StringBuilder()
   for code_point in code_points {
     if code_point >= 0xD800 && code_point <= 0xDFFF {
@@ -62,8 +62,8 @@ pub fn code_points_to_string(code_points : ArrayView[Int]) -> String? {
 ///|
 /// Parse a space-separated list of bidi levels; `x`/`X` marks a removed
 /// character and is represented as `-1`.
-pub fn parse_levels(text : StringView) -> Array[Int] raise {
-  let levels : Array[Int] = []
+pub fn parse_levels(text : StringView) -> Array[Int32] raise {
+  let levels : Array[Int32] = []
   for part in text.trim().split(" ") {
     let part = part.trim()
     if part.is_empty() {
@@ -79,8 +79,8 @@ pub fn parse_levels(text : StringView) -> Array[Int] raise {
 
 ///|
 /// Parse a space-separated list of visual ordering indices.
-pub fn parse_reorder(text : StringView) -> Array[Int] raise {
-  let reorder : Array[Int] = []
+pub fn parse_reorder(text : StringView) -> Array[Int32] raise {
+  let reorder : Array[Int32] = []
   for part in text.trim().split(" ") {
     let part = part.trim()
     if !part.is_empty() {
@@ -103,17 +103,17 @@ pub extend ParsedText with Debug::{to_repr}
 pub extend ParsedText with Eq::{not_equal, equal}
 
 ///|
-fn hex_value(character : Char) -> Int? {
+fn hex_value(character : Char) -> Int32? {
   match character {
-    '0'..='9' => Some(character.to_int() - '0'.to_int())
-    'a'..='f' => Some(character.to_int() - 'a'.to_int() + 10)
-    'A'..='F' => Some(character.to_int() - 'A'.to_int() + 10)
+    '0'..<='9' => Some(character.to_int() - '0'.to_int())
+    'a'..<='f' => Some(character.to_int() - 'a'.to_int() + 10)
+    'A'..<='F' => Some(character.to_int() - 'A'.to_int() + 10)
     _ => None
   }
 }
 
 ///|
-fn parse_hex_chars(chars : ArrayView[Char]) -> Int? {
+fn parse_hex_chars(chars : ArrayView[Char]) -> Int32? {
   if chars.is_empty() {
     return None
   }
@@ -126,7 +126,7 @@ fn parse_hex_chars(chars : ArrayView[Char]) -> Int? {
 }
 
 ///|
-fn parse_braced_hex(chars : ArrayView[Char]) -> (Int, ArrayView[Char])? {
+fn parse_braced_hex(chars : ArrayView[Char]) -> (Int32, ArrayView[Char])? {
   for remaining = chars, value = 0, has_digit = false {
     match remaining {
       ['}', .. rest] if has_digit => break Some((value, rest))

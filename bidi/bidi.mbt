@@ -43,14 +43,14 @@ pub(all) struct BidiParagraph {
   /// Resolved Bidi classes (after W and N rules)
   resolved_classes : Array[BidiClass]
   /// Resolved embedding level per character (0-125)
-  levels : Array[Int]
+  levels : Array[Int32]
   /// Paragraph embedding level (0 for LTR, 1 for RTL)
-  base_level : Int
+  base_level : Int32
 }
 
 ///|
 /// Maximum embedding level allowed by UAX #9
-let max_depth : Int = 125
+let max_depth : Int32 = 125
 
 ///|
 /// Look up Bidi_Class for a character
@@ -113,13 +113,13 @@ pub fn process_with_direction(
 #deprecated("Use process(text, direction=LTR or RTL) instead")
 pub fn process_with_base_level(
   text : String,
-  base_level : Int,
+  base_level : Int32,
 ) -> BidiParagraph {
   process_at_base_level(text, base_level)
 }
 
 ///|
-fn process_at_base_level(text : String, base_level : Int) -> BidiParagraph {
+fn process_at_base_level(text : String, base_level : Int32) -> BidiParagraph {
   // Convert to char array and get original classes
   let chars : Array[Char] = Array(capacity=text.length())
   let original_classes : Array[BidiClass] = Array(capacity=text.length())
@@ -137,7 +137,7 @@ fn process_at_base_level(text : String, base_level : Int) -> BidiParagraph {
   let resolved_classes = original_classes.copy()
 
   // Allocate levels array
-  let levels : Array[Int] = Array::make(chars.length(), base_level)
+  let levels : Array[Int32] = Array::make(chars.length(), base_level)
   let sequences = if has_explicit {
     // X1-X10: Process explicit formatting characters
     let isolate_pairs = process_explicit(resolved_classes, levels, base_level)
@@ -181,9 +181,9 @@ fn process_at_base_level(text : String, base_level : Int) -> BidiParagraph {
 /// Reorder text for display according to resolved levels
 /// Returns array of character indices in visual order
 /// X9-removed characters (LRE, RLE, LRO, RLO, PDF, BN) are excluded
-pub fn reorder(para : BidiParagraph) -> Array[Int] {
+pub fn reorder(para : BidiParagraph) -> Array[Int32] {
   // X9: remove explicit formatting and BN before reordering.
-  let indices : Array[Int] = []
+  let indices : Array[Int32] = []
   for i = 0; i < para.levels.length(); i = i + 1 {
     let bc = para.original_classes[i]
     if !bc.is_x9_removed() {
@@ -213,7 +213,7 @@ pub fn reorder_string(para : BidiParagraph) -> String {
 
 ///|
 /// Get the mirrored glyph for a character if in RTL context
-pub fn get_mirrored(c : Char, level : Int) -> Char {
+pub fn get_mirrored(c : Char, level : Int32) -> Char {
   if level % 2 == 1 {
     @bidi_data.bidi_mirroring_glyph(c)
   } else {
@@ -223,7 +223,7 @@ pub fn get_mirrored(c : Char, level : Int) -> Char {
 
 ///|
 /// Get embedding level for direction
-pub fn Direction::level(self : Direction) -> Int {
+pub fn Direction::level(self : Direction) -> Int32 {
   match self {
     LTR => 0
     RTL => 1
@@ -232,7 +232,7 @@ pub fn Direction::level(self : Direction) -> Int {
 
 ///|
 /// Get direction from embedding level
-pub fn direction_from_level(level : Int) -> Direction {
+pub fn direction_from_level(level : Int32) -> Direction {
   if level % 2 == 0 {
     LTR
   } else {

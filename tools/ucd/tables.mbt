@@ -1,17 +1,17 @@
 ///|
-fn sorted_ints(values : Array[Int]) -> Array[Int] {
+fn sorted_ints(values : Array[Int32]) -> Array[Int32] {
   let sorted = values.copy()
   sorted.sort()
   sorted
 }
 
 ///|
-fn contains_int(values : Array[Int], target : Int) -> Bool {
+fn contains_int(values : Array[Int32], target : Int32) -> Bool {
   values.any(value => value == target)
 }
 
 ///|
-fn ccc_for(data : UnicodeData, cp : Int) -> Int {
+fn ccc_for(data : UnicodeData, cp : Int32) -> Int32 {
   match data.ccc_entries.search_by(entry => entry.code_point == cp) {
     Some(index) => data.ccc_entries[index].value
     None => 0
@@ -19,7 +19,7 @@ fn ccc_for(data : UnicodeData, cp : Int) -> Int {
 }
 
 ///|
-fn gc_ordinal(category : String) -> Int {
+fn gc_ordinal(category : String) -> Int32 {
   match category {
     "Lu" => 0
     "Ll" => 1
@@ -147,7 +147,7 @@ pub fn compress_general_category_ranges(
 ///|
 pub fn build_composition_table(
   data : UnicodeData,
-  exclusions : Array[Int],
+  exclusions : Array[Int32],
 ) -> Array[CompositionEntry] {
   let compositions : Array[CompositionEntry] = []
   for decomp in data.canonical_decompositions {
@@ -174,8 +174,8 @@ pub fn build_composition_table(
 ///|
 pub fn build_full_composition_exclusions(
   data : UnicodeData,
-  explicit_exclusions : Array[Int],
-) -> Array[Int] {
+  explicit_exclusions : Array[Int32],
+) -> Array[Int32] {
   let exclusions = explicit_exclusions.copy()
   for decomp in data.canonical_decompositions {
     if decomp.code_points.length() == 1 {
@@ -213,8 +213,8 @@ fn decomposition_entries(data : UnicodeData) -> Array[DecompositionEntry] {
 /// Shared group order for norm16 records and the composition candidate table.
 fn composition_group_offsets(
   compositions : Array[CompositionEntry],
-) -> Array[Int] {
-  let offsets : Array[Int] = []
+) -> Array[Int32] {
+  let offsets : Array[Int32] = []
   let mut previous = -1
   for index, entry in compositions {
     if entry.first != previous {

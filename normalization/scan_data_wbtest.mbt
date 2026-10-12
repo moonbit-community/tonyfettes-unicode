@@ -1,6 +1,6 @@
 ///|
 /// The scan flags the generator derives from packed properties.
-fn expected_scan_flags(c : Char) -> Int {
+fn expected_scan_flags(c : Char) -> Int32 {
   let properties = @ccc.lookup_normalization_properties(c)
   let quick_check = properties >> 8 << 1
   if (properties & 255) != 0 {

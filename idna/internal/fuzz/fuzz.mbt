@@ -20,7 +20,7 @@ fn random_ascii_letter(rng : @random.Rand) -> Char {
 
 ///|
 /// Generate a random domain-like string (labels separated by dots)
-pub fn random_domain(rng : @random.Rand, max_labels? : Int = 3) -> String {
+pub fn random_domain(rng : @random.Rand, max_labels~ : Int32 = 3) -> String {
   let num_labels = rng.int(limit=max_labels) + 1
   let labels : Array[String] = []
   for _ in 0..<num_labels {

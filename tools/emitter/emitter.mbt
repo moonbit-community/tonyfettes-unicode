@@ -19,7 +19,7 @@ pub fn Emitter::write_char(self : Emitter, character : Char) -> Unit {
 }
 
 ///|
-pub fn Emitter::write_int(self : Emitter, value : Int) -> Unit {
+pub fn Emitter::write_int(self : Emitter, value : Int32) -> Unit {
   self.out.write_object(value)
 }
 
@@ -36,7 +36,7 @@ pub fn Emitter::finish(self : Emitter) -> String {
 
 ///|
 /// Uppercase hexadecimal digit for a value in `0..15`.
-fn hex_digit(value : Int) -> Char {
+fn hex_digit(value : Int32) -> Char {
   if value < 10 {
     (value + '0'.to_int()).unsafe_to_char()
   } else {
@@ -47,7 +47,7 @@ fn hex_digit(value : Int) -> Char {
 ///|
 /// Uppercase hexadecimal representation of `value`, zero-padded to at least
 /// `min_width` digits.
-pub fn hex_upper(value : Int, min_width? : Int = 0) -> String {
+pub fn hex_upper(value : Int32, min_width~ : Int32 = 0) -> String {
   let out = StringBuilder()
   let digits : Array[Char] = []
   let mut remaining = value
@@ -69,7 +69,7 @@ pub fn hex_upper(value : Int, min_width? : Int = 0) -> String {
 
 ///|
 /// `0x`-prefixed uppercase hexadecimal, zero-padded to at least four digits.
-fn hex_code(value : Int) -> String {
+fn hex_code(value : Int32) -> String {
   "0x" + hex_upper(value, min_width=4)
 }
 
@@ -89,7 +89,7 @@ pub fn Emitter::write_int_array(
   self : Emitter,
   doc : String,
   name : String,
-  values : Array[Int],
+  values : Array[Int32],
   hex~ : Bool,
 ) -> Unit {
   self.write("///|\n")
@@ -112,7 +112,7 @@ pub fn Emitter::write_byte_array(
   self : Emitter,
   doc : String,
   name : String,
-  values : Array[Int],
+  values : Array[Int32],
 ) -> Unit {
   self.write("///|\n")
   self.write("/// " + doc + "\n")

@@ -1,18 +1,18 @@
 ///|
 /// Binary property tries cover planes 0-3, like the General_Category trie.
 /// The few ranges above are checked with explicit comparisons instead.
-const BinaryTrieLimit : Int = 0x40000
+const BinaryTrieLimit : Int32 = 0x40000
 
 ///|
 /// Each top-level trie entry covers `1 << BinaryTrieTopShift` code points.
-const BinaryTrieTopShift : Int = 10
+const BinaryTrieTopShift : Int32 = 10
 
 ///|
 /// Each leaf block is a bitset of `1 << BinaryTrieLeafShift` code points.
-const BinaryTrieLeafShift : Int = 7
+const BinaryTrieLeafShift : Int32 = 7
 
 ///|
-fn hex_literal(value : Int) -> String {
+fn hex_literal(value : Int32) -> String {
   "0x\{@emitter.hex_upper(value)}"
 }
 
@@ -34,12 +34,12 @@ fn write_binary_property_trie(
   let bits = Array::make(BinaryTrieLimit / 8, 0)
   let high_ranges : Array[@parsing.CodePointRange] = []
   for range in ranges {
-    for cp in range.start..<=Int::min(range.end, BinaryTrieLimit - 1) {
+    for cp in range.start..<=Int32::min(range.end, BinaryTrieLimit - 1) {
       bits[cp >> 3] = bits[cp >> 3] | (1 << (cp & 7))
     }
     if range.end >= BinaryTrieLimit {
       high_ranges.push({
-        start: Int::max(range.start, BinaryTrieLimit),
+        start: Int32::max(range.start, BinaryTrieLimit),
         end: range.end,
       })
     }

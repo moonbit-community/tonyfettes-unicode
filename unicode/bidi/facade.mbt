@@ -35,8 +35,8 @@ pub(all) struct BidiParagraph {
   chars : Array[Char]
   original_classes : Array[BidiClass]
   resolved_classes : Array[BidiClass]
-  levels : Array[Int]
-  base_level : Int
+  levels : Array[Int32]
+  base_level : Int32
 }
 
 ///|
@@ -152,7 +152,7 @@ pub fn process(text : String, direction? : Direction) -> BidiParagraph {
 }
 
 ///|
-pub fn reorder(paragraph : BidiParagraph) -> Array[Int] {
+pub fn reorder(paragraph : BidiParagraph) -> Array[Int32] {
   @impl.reorder(paragraph.to_impl())
 }
 
@@ -162,7 +162,7 @@ pub fn reorder_string(paragraph : BidiParagraph) -> String {
 }
 
 ///|
-pub fn Direction::level(self : Direction) -> Int {
+pub fn Direction::level(self : Direction) -> Int32 {
   match self {
     LTR => 0
     RTL => 1
@@ -170,7 +170,7 @@ pub fn Direction::level(self : Direction) -> Int {
 }
 
 ///|
-pub fn direction_from_level(level : Int) -> Direction {
+pub fn direction_from_level(level : Int32) -> Direction {
   if level % 2 == 0 {
     LTR
   } else {
@@ -191,7 +191,7 @@ pub fn process_with_direction(
 #deprecated("Use process(text, direction=LTR or RTL) instead")
 pub fn process_with_base_level(
   text : String,
-  base_level : Int,
+  base_level : Int32,
 ) -> BidiParagraph {
   process(text, direction=direction_from_level(base_level))
 }

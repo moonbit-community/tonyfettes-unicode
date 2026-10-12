@@ -1,27 +1,27 @@
 ///|
 /// State of the GB11 emoji sequence scan within a cluster: no
 /// Extended_Pictographic code point is pending.
-const EmojiNone : Int = 0
+const EmojiNone : Int32 = 0
 
 ///|
 /// The cluster so far ends in `\p{Extended_Pictographic} Extend*`.
-const EmojiPictographic : Int = 1
+const EmojiPictographic : Int32 = 1
 
 ///|
 /// The cluster so far ends in `\p{Extended_Pictographic} Extend* ZWJ`.
-const EmojiZWJ : Int = 2
+const EmojiZWJ : Int32 = 2
 
 ///|
 /// Code points below this limit are CR, LF, Control, or Other, and none has
 /// an Indic_Conjunct_Break value, so only GB3, GB4, GB5, and GB999 apply
 /// between two of them. Combining marks start at U+0300.
-const SimpleLimit : Int = 0x300
+const SimpleLimit : Int32 = 0x300
 
 ///|
 /// Decode the code point starting at `index`. An unpaired surrogate is
 /// returned as is; like any code point GraphemeBreakProperty.txt does not
 /// list, its Grapheme_Cluster_Break value is Other.
-fn code_point_at(text : StringView, index : Int, length : Int) -> Int {
+fn code_point_at(text : StringView, index : Int32, length : Int32) -> Int32 {
   // SAFETY: callers guarantee 0 <= index < length.
   let first = text.unsafe_get(index)
   if first.is_leading_surrogate() && index + 1 < length {
@@ -40,7 +40,7 @@ fn code_point_at(text : StringView, index : Int, length : Int) -> Int {
 ///|
 /// Return the end offset of the extended grapheme cluster starting at `start`,
 /// following the boundary rules of UAX #29. Requires `start < text.length()`.
-fn next_grapheme_boundary(text : StringView, start : Int) -> Int {
+fn next_grapheme_boundary(text : StringView, start : Int32) -> Int32 {
   let length = text.length()
   // Fast path: two adjacent code points below `SimpleLimit` always break,
   // except CR LF (GB3).
@@ -141,7 +141,7 @@ fn next_grapheme_boundary(text : StringView, start : Int) -> Int {
 struct Graphemes {
   text : StringView
   /// Offset in `text` of the next cluster to return.
-  mut offset : Int
+  mut offset : Int32
 }
 
 ///|

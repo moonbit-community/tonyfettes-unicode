@@ -1294,11 +1294,11 @@ let idna_trie_leaf : Bytes = [
 
 ///|
 /// IDNA ranges from 0x40000 packed as `start << 3 | status`
-let idna_high_ranges : ReadOnlyArray[Int] = [0x200004, 0x700801, 0x700F84]
+let idna_high_ranges : ReadOnlyArray[Int32] = [0x200004, 0x700801, 0x700F84]
 
 ///|
 /// Mapping `i` is `idna_mapping_data[idna_mapping_offsets[i]:idna_mapping_offsets[i + 1]]`
-let idna_mapping_offsets : ReadOnlyArray[Int] = [
+let idna_mapping_offsets : ReadOnlyArray[Int32] = [
   0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
   22, 23, 24, 25, 26, 27, 29, 31, 32, 33, 35, 36, 38, 39, 42, 45, 48, 49, 50, 51,
   52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71,
@@ -1581,7 +1581,7 @@ let idna_mapping_offsets : ReadOnlyArray[Int] = [
 
 ///|
 /// Mapping data (flattened code points)
-let idna_mapping_data : ReadOnlyArray[Int] = [
+let idna_mapping_data : ReadOnlyArray[Int32] = [
   0x0061, 0x0062, 0x0063, 0x0064, 0x0065, 0x0066, 0x0067, 0x0068, 0x0069, 0x006A,
   0x006B, 0x006C, 0x006D, 0x006E, 0x006F, 0x0070, 0x0071, 0x0072, 0x0073, 0x0074,
   0x0075, 0x0076, 0x0077, 0x0078, 0x0079, 0x007A, 0x0020, 0x0020, 0x0308, 0x0020,
@@ -2147,7 +2147,7 @@ let idna_mapping_data : ReadOnlyArray[Int] = [
 ///|
 /// Mapping table entry of a character, packed as
 /// `mapping << 3 | status`. Looking one up allocates nothing.
-struct IdnaEntry(Int)
+struct IdnaEntry(Int32)
 
 ///|
 /// Look up the mapping table entry of a character.

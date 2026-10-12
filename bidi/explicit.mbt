@@ -7,7 +7,7 @@
 ///|
 /// Directional status stack entry
 priv struct DirectionalStatus {
-  level : Int
+  level : Int32
   override_status : BidiClass // L, R, or ON (neutral = no override)
   isolate_status : Bool
 }
@@ -17,9 +17,9 @@ priv struct DirectionalStatus {
 /// Returns list of (isolate_initiator_index, pdi_index) pairs
 fn process_explicit(
   types : Array[BidiClass],
-  levels : Array[Int],
-  paragraph_level : Int,
-) -> Array[(Int, Int)] {
+  levels : Array[Int32],
+  paragraph_level : Int32,
+) -> Array[(Int32, Int32)] {
   // X1: Initialize directional status stack
   let stack : Array[DirectionalStatus] = [
     {
@@ -33,8 +33,8 @@ fn process_explicit(
   let mut valid_isolate_count = 0
 
   // Track isolate pairs for later run sequence computation
-  let isolate_pairs : Array[(Int, Int)] = []
-  let isolate_stack : Array[Int] = [] // Stack of isolate initiator indices
+  let isolate_pairs : Array[(Int32, Int32)] = []
+  let isolate_stack : Array[Int32] = [] // Stack of isolate initiator indices
   for i = 0; i < types.length(); i = i + 1 {
     let bc = types[i]
     match bc {
@@ -247,7 +247,7 @@ fn process_explicit(
 /// Ensure NSM levels follow the last non-X9 character.
 fn adjust_nsm_levels(
   original_classes : Array[BidiClass],
-  levels : Array[Int],
+  levels : Array[Int32],
 ) -> Unit {
   let mut last_idx = -1
   let mut saw_explicit = false
@@ -278,7 +278,7 @@ fn adjust_nsm_levels(
 /// Determine direction for FSI by finding first strong character
 fn determine_isolate_direction(
   types : Array[BidiClass],
-  start : Int,
+  start : Int32,
 ) -> Direction {
   let mut isolate_count = 0
   for i = start; i < types.length(); i = i + 1 {
@@ -305,33 +305,33 @@ fn determine_isolate_direction(
 
 ///|
 /// Get next odd level >= current
-fn next_odd_level(level : Int) -> Int {
+fn next_odd_level(level : Int32) -> Int32 {
   (level + 1) | 1
 }
 
 ///|
 /// Get next even level >= current
-fn next_even_level(level : Int) -> Int {
+fn next_even_level(level : Int32) -> Int32 {
   (level + 2) & (1).lnot()
 }
 
 ///|
 /// Isolating run sequence - indices of characters that form a sequence
 priv struct IsolatingRunSequence {
-  indices : Array[Int] // Character indices in this sequence
+  indices : Array[Int32] // Character indices in this sequence
   sos : BidiClass // Start-of-sequence type (L or R)
   eos : BidiClass // End-of-sequence type (L or R)
-  level : Int // Embedding level of the sequence
+  level : Int32 // Embedding level of the sequence
 }
 
 ///|
 /// Compute isolating run sequences (X10)
 fn compute_isolating_run_sequences(
   types : Array[BidiClass],
-  levels : Array[Int],
+  levels : Array[Int32],
   original_classes : Array[BidiClass],
-  paragraph_level : Int,
-  isolate_pairs : Array[(Int, Int)],
+  paragraph_level : Int32,
+  isolate_pairs : Array[(Int32, Int32)],
 ) -> Array[IsolatingRunSequence] {
   let len = types.length()
   if len == 0 {
@@ -339,7 +339,7 @@ fn compute_isolating_run_sequences(
   }
 
   // Build a map from isolate initiator to PDI
-  let pdi_of_isolate : Array[Int] = Array::make(len, -1)
+  let pdi_of_isolate : Array[Int32] = Array::make(len, -1)
   for pair in isolate_pairs {
     pdi_of_isolate[pair.0] = pair.1
   }
@@ -360,7 +360,7 @@ fn compute_isolating_run_sequences(
     }
 
     // Start a new isolating run sequence
-    let indices : Array[Int] = []
+    let indices : Array[Int32] = []
     let seq_level = levels[i]
     let mut current = i
 
@@ -475,9 +475,9 @@ fn compute_isolating_run_sequences(
 /// that X9 keeps, with sos and eos given by that level.
 fn paragraph_run_sequence(
   types : Array[BidiClass],
-  paragraph_level : Int,
+  paragraph_level : Int32,
 ) -> Array[IsolatingRunSequence] {
-  let indices : Array[Int] = Array(capacity=types.length())
+  let indices : Array[Int32] = Array(capacity=types.length())
   for i, bc in types {
     if !(bc is BN) {
       indices.push(i)

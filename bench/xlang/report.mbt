@@ -11,7 +11,7 @@ priv struct Row {
   name : String
   ns : Double
   /// Code points processed per call; 1 for per-call cases.
-  units : Int
+  units : Int32
   /// A value every implementation must agree on, or `-` when none applies.
   check : String
 }
@@ -44,7 +44,7 @@ fn parse_rows(peer : String, output : String) -> Array[Row] {
 priv struct Cell {
   mut fastest : Double
   mut slowest : Double
-  units : Int
+  units : Int32
   check : String
 }
 
@@ -236,7 +236,7 @@ fn Results::spread(self : Results, column : String) -> Double? {
 /// The Markdown report: per group, the geometric mean of every operation over
 /// its inputs, then (with `detail`) every case; the check mismatches; and how
 /// much the rounds disagreed.
-fn Results::report(self : Results, rounds~ : Int, detail~ : Bool) -> String {
+fn Results::report(self : Results, rounds~ : Int32, detail~ : Bool) -> String {
   let out = StringBuilder()
   out.write_string(
     (

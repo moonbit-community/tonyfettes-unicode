@@ -172,7 +172,7 @@ fn validate_contextj(label : String) -> Unit raise IdnaError {
 /// Valid if:
 /// - There is a combining Virama (U+094D, etc.) before, OR
 /// - Surrounded by appropriate joining characters
-fn is_valid_zwnj_context(chars : Array[Char], pos : Int) -> Bool {
+fn is_valid_zwnj_context(chars : Array[Char], pos : Int32) -> Bool {
   // Rule 1: After a Virama (e.g., for Indic scripts)
   if pos > 0 && is_virama(chars[pos - 1]) {
     return true
@@ -189,7 +189,7 @@ fn is_valid_zwnj_context(chars : Array[Char], pos : Int) -> Bool {
 ///|
 /// Check if ZWJ is in a valid context
 /// Valid if preceded by a Virama
-fn is_valid_zwj_context(chars : Array[Char], pos : Int) -> Bool {
+fn is_valid_zwj_context(chars : Array[Char], pos : Int32) -> Bool {
   // ZWJ is valid if preceded by a combining Virama
   pos > 0 && is_virama(chars[pos - 1])
 }
@@ -202,7 +202,7 @@ fn is_virama(c : Char) -> Bool {
 
 ///|
 /// Check if there's a left-joining or dual-joining character before position
-fn has_left_joining_before(chars : Array[Char], pos : Int) -> Bool {
+fn has_left_joining_before(chars : Array[Char], pos : Int32) -> Bool {
   for i = pos - 1; i >= 0; i = i - 1 {
     let jt = @idna_data.lookup_joining_type(chars[i])
     match jt {
@@ -216,7 +216,7 @@ fn has_left_joining_before(chars : Array[Char], pos : Int) -> Bool {
 
 ///|
 /// Check if there's a right-joining or dual-joining character after position
-fn has_right_joining_after(chars : Array[Char], pos : Int) -> Bool {
+fn has_right_joining_after(chars : Array[Char], pos : Int32) -> Bool {
   for i = pos + 1; i < chars.length(); i = i + 1 {
     let jt = @idna_data.lookup_joining_type(chars[i])
     match jt {

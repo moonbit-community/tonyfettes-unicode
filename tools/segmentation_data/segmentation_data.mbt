@@ -1,33 +1,33 @@
 ///|
-const MaxCodePoint : Int = 0x10FFFF
+const MaxCodePoint : Int32 = 0x10FFFF
 
 ///|
 /// Number of low bits holding the Grapheme_Cluster_Break code in a packed
 /// value.
-const GcbBits : Int = 4
+const GcbBits : Int32 = 4
 
 ///|
 /// Number of bits holding the Indic_Conjunct_Break code, above the
 /// Grapheme_Cluster_Break code.
-const InCBBits : Int = 2
+const InCBBits : Int32 = 2
 
 ///|
 /// Total number of bits in a packed value: Grapheme_Cluster_Break,
 /// Indic_Conjunct_Break, and the Extended_Pictographic flag.
-const ValueBits : Int = 7
+const ValueBits : Int32 = 7
 
 ///|
 /// The trie covers planes 0-3; the higher planes hold only a few tag and
 /// variation selector ranges and are looked up as packed ranges instead.
-const TrieLimit : Int = 0x40000
+const TrieLimit : Int32 = 0x40000
 
 ///|
 /// Each top-level trie entry covers `1 << TrieTopShift` code points.
-const TrieTopShift : Int = 8
+const TrieTopShift : Int32 = 8
 
 ///|
 /// Each leaf block holds `1 << TrieLeafShift` packed values.
-const TrieLeafShift : Int = 4
+const TrieLeafShift : Int32 = 4
 
 ///|
 /// Grapheme_Cluster_Break values in code order. `Other` is the default for
@@ -51,7 +51,7 @@ fn property_code(
   property : String,
   names : ReadOnlyArray[String],
   name : StringView,
-) -> Int raise {
+) -> Int32 raise {
   for code, candidate in names {
     if name == candidate {
       return code
@@ -64,10 +64,10 @@ fn property_code(
 /// Combine `bits << shift` into the packed value of every code point in
 /// `range`.
 fn set_range_bits(
-  values : Array[Int],
+  values : Array[Int32],
   range : @parsing.CodePointRange,
-  bits : Int,
-  shift : Int,
+  bits : Int32,
+  shift : Int32,
 ) -> Unit {
   for code_point in range.start..<=range.end {
     values[code_point] = values[code_point] | (bits << shift)
@@ -82,7 +82,7 @@ fn parse_grapheme_break_values(
   grapheme_break_property : String,
   emoji_data : String,
   derived_core_properties : String,
-) -> Array[Int] raise {
+) -> Array[Int32] raise {
   let values = Array::make(MaxCodePoint + 1, 0)
   for raw_line in grapheme_break_property.split("\n") {
     let line = @parsing.strip_comment(raw_line)
@@ -148,7 +148,7 @@ pub fn generate_grapheme_break_source(
   )
   // `start << ValueBits | value`, so the packed ranges sort by start code
   // point. The ranges cover every code point from `TrieLimit` without gaps.
-  let high_ranges : Array[Int] = []
+  let high_ranges : Array[Int32] = []
   for code_point in TrieLimit..<=MaxCodePoint {
     if code_point == TrieLimit || values[code_point] != values[code_point - 1] {
       high_ranges.push((code_point << ValueBits) | values[code_point])

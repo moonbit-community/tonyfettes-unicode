@@ -537,24 +537,24 @@ let normalization_pair_flags : Bytes = [
 ]
 
 ///|
-const NormalizationPairShift : Int = 4
+const NormalizationPairShift : Int32 = 4
 
 ///|
-const NormalizationPairBlockMask : Int = 15
+const NormalizationPairBlockMask : Int32 = 15
 
 ///|
-const NormalizationScanShift : Int = 5
+const NormalizationScanShift : Int32 = 5
 
 ///|
-const NormalizationScanBlockMask : Int = 31
+const NormalizationScanBlockMask : Int32 = 31
 
 ///|
-const NormalizationScanLeadSurrogate : Int = 128
+const NormalizationScanLeadSurrogate : Int32 = 128
 
 ///|
 // The all-zero property tail begins at this UTF-16 pair. No decoding or
 // table access is needed there; earlier pairs use the summaries above.
-const NormalizationTailLeadIndex : Int = 126
+const NormalizationTailLeadIndex : Int32 = 126
 
 ///|
-const NormalizationTailTrail : Int = 56862
+const NormalizationTailTrail : Int32 = 56862

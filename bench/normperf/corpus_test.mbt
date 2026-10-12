@@ -1,7 +1,7 @@
 ///|
 priv struct CorpusFile {
   name : String
-  bytes : Int
+  bytes : Int32
   sha256 : String
   encoding : String
 } derive(@json.FromJson)

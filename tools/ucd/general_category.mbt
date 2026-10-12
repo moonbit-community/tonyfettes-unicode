@@ -1,33 +1,33 @@
 ///|
 /// General_Category ordinal of Cn (Unassigned), the value of every code point
 /// not listed in UnicodeData.txt.
-const GcUnassigned : Int = 29
+const GcUnassigned : Int32 = 29
 
 ///|
 /// Number of low bits holding the General_Category ordinal in a packed range.
-const GcValueBits : Int = 5
+const GcValueBits : Int32 = 5
 
 ///|
-const MaxCodePoint : Int = 0x10FFFF
+const MaxCodePoint : Int32 = 0x10FFFF
 
 ///|
 /// The trie covers planes 0-3; the higher planes are almost entirely
 /// unassigned or private use and are looked up as packed ranges instead.
-const GcTrieLimit : Int = 0x40000
+const GcTrieLimit : Int32 = 0x40000
 
 ///|
 /// Each top-level trie entry covers `1 << GcTrieTopShift` code points.
-const GcTrieTopShift : Int = 8
+const GcTrieTopShift : Int32 = 8
 
 ///|
 /// Each leaf block holds `1 << GcTrieLeafShift` General_Category ordinals.
-const GcTrieLeafShift : Int = 4
+const GcTrieLeafShift : Int32 = 4
 
 ///|
 /// Pack the ranges covering `[GcTrieLimit, MaxCodePoint]` as
 /// `start << GcValueBits | ordinal`, so the packed values sort by start code
 /// point. Gaps before, between, and after the ranges become Cn entries.
-fn pack_high_ranges(ranges : Array[GeneralCategoryRange]) -> Array[Int] {
+fn pack_high_ranges(ranges : Array[GeneralCategoryRange]) -> Array[Int32] {
   let packed = []
   let mut next = GcTrieLimit
   for range in ranges {
@@ -56,12 +56,12 @@ pub fn emit_general_category(
   let values = Array::make(GcTrieLimit, GcUnassigned)
   let high_ranges : Array[GeneralCategoryRange] = []
   for range in ranges {
-    for cp in range.start..<=Int::min(range.end, GcTrieLimit - 1) {
+    for cp in range.start..<=Int32::min(range.end, GcTrieLimit - 1) {
       values[cp] = range.value
     }
     if range.end >= GcTrieLimit {
       high_ranges.push({
-        start: Int::max(range.start, GcTrieLimit),
+        start: Int32::max(range.start, GcTrieLimit),
         end: range.end,
         value: range.value,
       })

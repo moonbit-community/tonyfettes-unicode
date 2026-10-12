@@ -31,7 +31,7 @@ fn pairs(path : String) -> Array[(String, String)] raise {
 ///|
 /// Elapsed microseconds for `iterations` calls. The results are folded into
 /// the returned sink so that the calls cannot be optimized away.
-fn run(iterations : Int, f : () -> Int) -> (Double, Int) {
+fn run(iterations : Int32, f : () -> Int32) -> (Double, Int32) {
   let mut sink = 0
   let start = @bench.monotonic_clock_start()
   for _ in 0..<iterations {
@@ -48,7 +48,12 @@ fn run(iterations : Int, f : () -> Int) -> (Double, Int) {
 /// fastest of 12 samples. `units` is the number of code points processed per
 /// call (1 for per-call cases) and `check` is a value every implementation
 /// must agree on. The library column is empty: this harness has one library.
-fn measure(name : String, units : Int, check : Int, f : () -> Int) -> Unit {
+fn measure(
+  name : String,
+  units : Int32,
+  check : Int32,
+  f : () -> Int32,
+) -> Unit {
   let mut iterations = 1
   while run(iterations, f).0 < 10000.0 {
     iterations = iterations * 2
