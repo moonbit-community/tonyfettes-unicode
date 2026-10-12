@@ -41,6 +41,11 @@ moon info           # Regenerate pkg.generated.mbti files
   They read the official Unicode test data files committed under `tests/data/`
   directly at run time with `moonbitlang/async`; no test code is generated
 
+- **bench/** (`local/unicode-bench`): workspace-only benchmarks. `normperf/`
+  measures normalization with `moon bench`; `xlang/` compares every module with
+  other languages' libraries (`moon run --target native bench/xlang`), with one
+  standalone harness per language in its subdirectories
+
 ### Internal Data Packages (auto-generated)
 
 - **ucd/data/**: Unicode Character Database lookup tables

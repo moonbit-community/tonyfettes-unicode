@@ -297,6 +297,13 @@ Run `moon bench ./bench/normperf` to measure normalization using the
 [14 full ICU normperf corpora](bench/normperf/README.md). The benchmark
 reads committed data directly and supports Native, Wasm and Wasm-GC.
 
+### Cross-language benchmark
+
+Run `moon run --target native bench/xlang` to compare every module with ICU4C,
+ICU4X and the usual Rust, Go, Node and Python libraries on the same inputs.
+See [bench/xlang](bench/xlang/README.md) for the harnesses and how to read the
+report.
+
 ### Releasing
 
 The native release tool keeps the seven published module versions aligned,

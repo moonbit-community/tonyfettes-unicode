@@ -1,0 +1,14 @@
+import {
+  "moonbit-community/unicode-normalization" @normalization,
+  "moonbit-community/unicode-data" @ucd,
+  "moonbit-community/unicode-bidi" @bidi,
+  "moonbit-community/unicode-segmentation" @segmentation,
+  "moonbit-community/unicode-idna" @idna,
+  "moonbit-community/punycode",
+  "moonbitlang/core/argparse",
+  "moonbitlang/core/bench",
+  "moonbitlang/core/encoding/utf8",
+  "moonbitlang/x/fs",
+}
+
+pkgtype(kind: "executable")
