@@ -8,7 +8,7 @@
 /// Resolve neutral types within an isolating run sequence
 fn resolve_neutral_types(
   types : Array[BidiClass],
-  _levels : Array[Int],
+  _levels : Array[Int32],
   seq : IsolatingRunSequence,
 ) -> Unit {
   let indices = seq.indices
@@ -85,8 +85,8 @@ fn is_neutral_or_isolate(bc : BidiClass) -> Bool {
 /// Returns effective strong type (L, R) - EN and AN become R
 fn get_preceding_strong_type(
   types : Array[BidiClass],
-  indices : Array[Int],
-  before_pos : Int,
+  indices : Array[Int32],
+  before_pos : Int32,
   sos : BidiClass,
 ) -> BidiClass {
   let mut i = before_pos - 1
@@ -107,8 +107,8 @@ fn get_preceding_strong_type(
 /// Returns effective strong type (L, R) - EN and AN become R
 fn get_following_strong_type(
   types : Array[BidiClass],
-  indices : Array[Int],
-  after_pos : Int,
+  indices : Array[Int32],
+  after_pos : Int32,
   eos : BidiClass,
 ) -> BidiClass {
   let mut i = after_pos + 1

@@ -1,7 +1,7 @@
 ///|
 /// Ordinal of an East_Asian_Width value in the `EastAsianWidth` enum.
 /// `@missing` lines may spell out the long alias.
-fn east_asian_width_ordinal(value : StringView) -> Int? {
+fn east_asian_width_ordinal(value : StringView) -> Int32? {
   match value {
     "A" | "Ambiguous" => Some(0)
     "F" | "Fullwidth" => Some(1)

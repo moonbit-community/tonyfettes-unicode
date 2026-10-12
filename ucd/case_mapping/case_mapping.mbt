@@ -159,7 +159,7 @@ let case_trie_leaf : Bytes = [
 
 ///|
 /// Simple uppercase mapping of each record as `target - code point`
-let case_upper_deltas : ReadOnlyArray[Int] = [
+let case_upper_deltas : ReadOnlyArray[Int32] = [
   0, 0, -32, 743, 0, 121, 0, -1, 0, -232, 0, -300, 195, 0, 0, 0, 0, 0, 0, 0, 97,
   0, 0, 163, 42561, 0, 130, 0, 0, 0, 0, 56, 0, -1, -2, -79, 0, 0, 0, 0, 0, 0, 10815,
   0, 0, 0, 10783, 10780, 10782, -210, -206, -205, -202, -203, 42319, 42315, -207,
@@ -175,7 +175,7 @@ let case_upper_deltas : ReadOnlyArray[Int] = [
 
 ///|
 /// Simple lowercase mapping of each record as `target - code point`
-let case_lower_deltas : ReadOnlyArray[Int] = [
+let case_lower_deltas : ReadOnlyArray[Int32] = [
   0, 32, 0, 0, 0, 0, 1, 0, -199, 0, -121, 0, 0, 210, 206, 205, 79, 202, 203, 207,
   0, 211, 209, 0, 0, 213, 0, 214, 218, 217, 219, 0, 2, 1, 0, 0, -97, -56, -130, 10795,
   -163, 10792, 0, -195, 69, 71, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -191,7 +191,7 @@ let case_lower_deltas : ReadOnlyArray[Int] = [
 
 ///|
 /// Simple titlecase mapping of each record as `target - code point`
-let case_title_deltas : ReadOnlyArray[Int] = [
+let case_title_deltas : ReadOnlyArray[Int32] = [
   0, 0, -32, 743, 0, 121, 0, -1, 0, -232, 0, -300, 195, 0, 0, 0, 0, 0, 0, 0, 97,
   0, 0, 163, 42561, 0, 130, 0, 0, 0, 0, 56, 1, 0, -1, -79, 0, 0, 0, 0, 0, 0, 10815,
   0, 0, 0, 10783, 10780, 10782, -210, -206, -205, -202, -203, 42319, 42315, -207,
@@ -220,7 +220,7 @@ let case_special_flags : Bytes = [
 
 ///|
 /// Code points whose full uppercase mapping is not their simple one (sorted for binary search)
-let special_upper_cps : ReadOnlyArray[Int] = [
+let special_upper_cps : ReadOnlyArray[Int32] = [
   0x00DF, 0x0149, 0x01F0, 0x0390, 0x03B0, 0x0587, 0x1E96, 0x1E97, 0x1E98, 0x1E99,
   0x1E9A, 0x1F50, 0x1F52, 0x1F54, 0x1F56, 0x1F80, 0x1F81, 0x1F82, 0x1F83, 0x1F84,
   0x1F85, 0x1F86, 0x1F87, 0x1F88, 0x1F89, 0x1F8A, 0x1F8B, 0x1F8C, 0x1F8D, 0x1F8E,
@@ -267,7 +267,7 @@ let special_upper_strings : ReadOnlyArray[String] = [
 
 ///|
 /// Code points whose full lowercase mapping is not their simple one (sorted for binary search)
-let special_lower_cps : ReadOnlyArray[Int] = [0x0130]
+let special_lower_cps : ReadOnlyArray[Int32] = [0x0130]
 
 ///|
 /// Full lowercase mapping of each such code point
@@ -275,7 +275,7 @@ let special_lower_strings : ReadOnlyArray[String] = ["\u{0069}\u{0307}"]
 
 ///|
 /// Code points whose full titlecase mapping is not their simple one (sorted for binary search)
-let special_title_cps : ReadOnlyArray[Int] = [
+let special_title_cps : ReadOnlyArray[Int32] = [
   0x00DF, 0x0149, 0x01F0, 0x0390, 0x03B0, 0x0587, 0x1E96, 0x1E97, 0x1E98, 0x1E99,
   0x1E9A, 0x1F50, 0x1F52, 0x1F54, 0x1F56, 0x1FB2, 0x1FB4, 0x1FB6, 0x1FB7, 0x1FC2,
   0x1FC4, 0x1FC6, 0x1FC7, 0x1FD2, 0x1FD3, 0x1FD6, 0x1FD7, 0x1FE2, 0x1FE3, 0x1FE4,
@@ -327,7 +327,7 @@ let ascii_strings : ReadOnlyArray[String] = [
 
 ///|
 /// Index of the record holding a character's case mappings
-fn lookup_case_record(c : Char) -> Int {
+fn lookup_case_record(c : Char) -> Int32 {
   let cp = c.to_int()
   if cp >= 0x20000 {
     return 0
@@ -339,7 +339,7 @@ fn lookup_case_record(c : Char) -> Int {
 
 ///|
 /// Binary search helper - returns index if found, -1 otherwise
-fn binary_search_case(arr : ReadOnlyArray[Int], cp : Int) -> Int {
+fn binary_search_case(arr : ReadOnlyArray[Int32], cp : Int32) -> Int32 {
   let mut left = 0
   let mut right = arr.length() - 1
 

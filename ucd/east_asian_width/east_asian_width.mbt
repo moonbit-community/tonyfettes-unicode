@@ -220,14 +220,14 @@ let eaw_trie_leaf : Bytes = [
 
 ///|
 /// East_Asian_Width ranges from 0x40000 packed as `start << 3 | value`
-let eaw_high_ranges : ReadOnlyArray[Int] = [
+let eaw_high_ranges : ReadOnlyArray[Int32] = [
   0x200003, 0x700800, 0x700F83, 0x780000, 0x7FFFF3, 0x800000, 0x87FFF3,
 ]
 
 ///|
 /// Look up East_Asian_Width ordinal for a character
 /// Returns ordinal value (0-5) corresponding to EastAsianWidth enum
-pub fn lookup_east_asian_width(c : Char) -> Int {
+pub fn lookup_east_asian_width(c : Char) -> Int32 {
   let cp = c.to_int()
   if cp >= 0x40000 {
     // Binary search for the last range starting at or before `cp`.

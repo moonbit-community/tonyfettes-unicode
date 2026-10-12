@@ -1,31 +1,31 @@
 ///|
 priv struct CccEntry {
-  code_point : Int
-  value : Int
+  code_point : Int32
+  value : Int32
 }
 
 ///|
 priv struct DecompositionEntry {
-  code_point : Int
-  code_points : Array[Int]
+  code_point : Int32
+  code_points : Array[Int32]
 }
 
 ///|
 priv struct GeneralCategoryEntry {
-  code_point : Int
+  code_point : Int32
   category : String
 }
 
 ///|
 priv struct SimpleMappingEntry {
-  code_point : Int
-  target : Int
+  code_point : Int32
+  target : Int32
 }
 
 ///|
 priv struct FullMappingEntry {
-  code_point : Int
-  targets : Array[Int]
+  code_point : Int32
+  targets : Array[Int32]
 }
 
 ///|
@@ -33,7 +33,7 @@ struct UnicodeData {
   ccc_entries : Array[CccEntry]
   canonical_decompositions : Array[DecompositionEntry]
   compatibility_decompositions : Array[DecompositionEntry]
-  mark_code_points : Array[Int]
+  mark_code_points : Array[Int32]
   general_categories : Array[GeneralCategoryEntry]
   simple_uppercase : Array[SimpleMappingEntry]
   simple_lowercase : Array[SimpleMappingEntry]
@@ -63,21 +63,21 @@ struct PropList {
 
 ///|
 struct CccRange {
-  start : Int
-  end : Int
-  value : Int
+  start : Int32
+  end : Int32
+  value : Int32
 }
 
 ///|
 struct GeneralCategoryRange {
-  start : Int
-  end : Int
-  value : Int
+  start : Int32
+  end : Int32
+  value : Int32
 }
 
 ///|
 struct CompositionEntry {
-  first : Int
-  second : Int
-  result : Int
+  first : Int32
+  second : Int32
+  result : Int32
 }

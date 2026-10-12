@@ -1,18 +1,18 @@
 ///|
-const MaxCodePoint : Int = 0x10FFFF
+const MaxCodePoint : Int32 = 0x10FFFF
 
 ///|
 /// Value tries cover planes 0-3; the higher planes hold few distinct runs and
 /// are looked up as packed ranges instead.
-const ValueTrieLimit : Int = 0x40000
+const ValueTrieLimit : Int32 = 0x40000
 
 ///|
 /// Each top-level trie entry covers `1 << ValueTrieTopShift` code points.
-const ValueTrieTopShift : Int = 8
+const ValueTrieTopShift : Int32 = 8
 
 ///|
 /// Each leaf block holds `1 << ValueTrieLeafShift` values.
-const ValueTrieLeafShift : Int = 4
+const ValueTrieLeafShift : Int32 = 4
 
 ///|
 /// Write a table holding one small integer per code point, followed by its
@@ -36,8 +36,8 @@ pub fn Emitter::write_value_trie(
   prefix~ : String,
   lookup~ : String,
   lookup_doc~ : Array[String],
-  value_bits~ : Int,
-  values : FixedArray[Int],
+  value_bits~ : Int32,
+  values : FixedArray[Int32],
 ) -> Unit raise {
   guard values.length() == MaxCodePoint + 1 else {
     fail("\{property} table must hold one value per code point")

@@ -9,7 +9,7 @@
 
 ///|
 /// Representative code point for each bidi class used by BidiTest.txt.
-fn class_code_point(class : StringView) -> Int raise {
+fn class_code_point(class : StringView) -> Int32 raise {
   match class {
     "L" => 0x0061
     "R" => 0x05D0
@@ -62,7 +62,7 @@ fn classes_to_string(classes : ArrayView[String]) -> String raise {
 ///|
 /// Paragraph direction implied by a BidiTest.txt bitset bit:
 /// 1 = auto, 2 = LTR, 4 = RTL.
-fn bit_paragraph_direction(bit : Int) -> @bidi.Direction? {
+fn bit_paragraph_direction(bit : Int32) -> @bidi.Direction? {
   match bit {
     1 => None
     2 => Some(@bidi.Direction::LTR)
@@ -74,9 +74,9 @@ fn bit_paragraph_direction(bit : Int) -> @bidi.Direction? {
 fn check_case(
   input : String,
   direction : @bidi.Direction?,
-  expected_levels : Array[Int],
-  expected_reorder : Array[Int],
-  line : Int,
+  expected_levels : Array[Int32],
+  expected_reorder : Array[Int32],
+  line : Int32,
 ) -> Unit raise {
   let result = @bidi.process(input, direction?)
   for index, expected_level in expected_levels {
@@ -98,8 +98,8 @@ fn check_case(
 ///|
 async test "BidiTest.txt conformance" {
   let content = @support.read_data_file("BidiTest.txt")
-  let mut current_levels : Array[Int] = []
-  let mut current_reorder : Array[Int] = []
+  let mut current_levels : Array[Int32] = []
+  let mut current_reorder : Array[Int32] = []
   for line_number, raw_line in content.split("\n") {
     let line = raw_line.trim()
     if line.is_empty() || line.has_prefix("#") {

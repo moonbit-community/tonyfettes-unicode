@@ -10,7 +10,7 @@
 
 ///|
 struct TestCase {
-  line_number : Int
+  line_number : Int32
   source : String
   to_ascii : String
   status : Array[String]
@@ -26,7 +26,7 @@ struct RequiredFlags {
 }
 
 ///|
-fn parse_test_line(line : StringView, line_number : Int) -> TestCase? {
+fn parse_test_line(line : StringView, line_number : Int32) -> TestCase? {
   let line = line.trim()
   if line.is_empty() || line.has_prefix("#") {
     return None

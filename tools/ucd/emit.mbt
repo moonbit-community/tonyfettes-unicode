@@ -38,10 +38,10 @@ pub fn emit_xid(properties : DerivedCoreProperties) -> String raise {
 ///|
 pub fn emit_decomposition(data : UnicodeData) -> String raise {
   let entries = decomposition_entries(data)
-  let starts : Array[Int] = []
-  let canonical_lens : Array[Int] = []
-  let compat_lens : Array[Int] = []
-  let flattened : Array[Int] = []
+  let starts : Array[Int32] = []
+  let canonical_lens : Array[Int32] = []
+  let compat_lens : Array[Int32] = []
+  let flattened : Array[Int32] = []
   for entry in entries {
     starts.push(flattened.length())
     match
@@ -146,7 +146,7 @@ pub fn emit_decomposition(data : UnicodeData) -> String raise {
   )
   // Lets the lookup skip everything below the first character with a mapping.
   let first_decomposable = entries.fold(init=MaxCodePoint + 1, (first, entry) => {
-    Int::min(first, entry.code_point)
+    Int32::min(first, entry.code_point)
   })
   out.write(
     (
@@ -199,7 +199,7 @@ pub fn emit_decomposition(data : UnicodeData) -> String raise {
 ///|
 pub fn emit_composition(
   compositions : Array[CompositionEntry],
-  exclusions : Array[Int],
+  exclusions : Array[Int32],
 ) -> String {
   let out = @emitter.Emitter::new()
   out.write_file_header(

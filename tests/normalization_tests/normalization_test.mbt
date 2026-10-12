@@ -11,7 +11,7 @@
 
 ///|
 struct NormalizationCase {
-  line_number : Int
+  line_number : Int32
   c1 : String
   c2 : String
   c3 : String
@@ -25,7 +25,10 @@ fn parse_field(field : StringView) -> String? raise {
 }
 
 ///|
-fn parse_case(line : StringView, line_number : Int) -> NormalizationCase? raise {
+fn parse_case(
+  line : StringView,
+  line_number : Int32,
+) -> NormalizationCase? raise {
   let line = line.trim()
   if line.is_empty() || line.has_prefix("#") || line.has_prefix("@") {
     return None

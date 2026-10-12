@@ -7,7 +7,7 @@
 /// Error types for IDNA processing
 pub(all) suberror IdnaError {
   PunycodeError(@punycode.PunycodeError)
-  DisallowedCodePoint(cp~ : Int)
+  DisallowedCodePoint(cp~ : Int32)
   InvalidLabel(String)
   InvalidHyphen
   LabelTooLong
@@ -51,11 +51,11 @@ let ace_prefix : String = "xn--"
 /// This is the main entry point for IDNA ToASCII operation
 pub fn to_ascii(
   domain : String,
-  use_std3_ascii_rules? : Bool = true,
-  check_hyphens? : Bool = true,
-  check_bidi? : Bool = true,
-  check_joiners? : Bool = true,
-  verify_dns_length? : Bool = true,
+  use_std3_ascii_rules~ : Bool = true,
+  check_hyphens~ : Bool = true,
+  check_bidi~ : Bool = true,
+  check_joiners~ : Bool = true,
+  verify_dns_length~ : Bool = true,
 ) -> String raise IdnaError {
   if ascii_fast_path(
       domain,
@@ -204,10 +204,10 @@ fn process_label_for_ascii(
 /// This is the main entry point for IDNA ToUnicode operation
 pub fn to_unicode(
   domain : String,
-  use_std3_ascii_rules? : Bool = true,
-  check_hyphens? : Bool = true,
-  check_bidi? : Bool = true,
-  check_joiners? : Bool = true,
+  use_std3_ascii_rules~ : Bool = true,
+  check_hyphens~ : Bool = true,
+  check_bidi~ : Bool = true,
+  check_joiners~ : Bool = true,
 ) -> String raise IdnaError {
   // ToUnicode does not verify DNS lengths.
   if ascii_fast_path(

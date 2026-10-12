@@ -120,7 +120,7 @@ pub impl Show for GeneralCategory with fn output(self, logger) {
 
 ///|
 /// Convert GeneralCategory ordinal to enum value
-fn ordinal_to_gc(ordinal : Int) -> GeneralCategory {
+fn ordinal_to_gc(ordinal : Int32) -> GeneralCategory {
   match ordinal {
     0 => Lu
     1 => Ll

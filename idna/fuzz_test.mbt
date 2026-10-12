@@ -4,7 +4,7 @@
 
 ///|
 /// Number of iterations for fuzz tests
-let fuzz_iterations : Int = 50000
+let fuzz_iterations : Int32 = 50000
 
 ///|
 /// Seed for reproducibility (must be exactly 32 bytes for chacha8)

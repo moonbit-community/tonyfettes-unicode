@@ -1,6 +1,6 @@
 ///|
 /// ASCII has CCC=0 and Quick_Check=Yes for every normalization form.
-fn normalization_properties(c : Char) -> Int {
+fn normalization_properties(c : Char) -> Int32 {
   if c.to_int() < 0x80 {
     0
   } else {
@@ -14,8 +14,8 @@ fn normalization_properties(c : Char) -> Int {
 priv struct NormalizationBuffer {
   chars : Array[Char]
   mut output : StringBuilder?
-  mut copied_until : Int
-  mut previous_ccc : Int
+  mut copied_until : Int32
+  mut previous_ccc : Int32
   mut needs_order : Bool
 }
 
@@ -25,7 +25,7 @@ priv struct NormalizationBuffer {
 fn NormalizationBuffer::append(
   self : NormalizationBuffer,
   c : Char,
-  properties : Int,
+  properties : Int32,
   compatibility~ : Bool,
 ) -> Unit {
   let decomp_shift = if compatibility { 13 } else { 12 }
@@ -73,8 +73,8 @@ fn span_equals(chars : Array[Char], span : StringView) -> Bool {
 fn NormalizationBuffer::finish(
   self : NormalizationBuffer,
   s : String,
-  start : Int,
-  end : Int,
+  start : Int32,
+  end : Int32,
   compose~ : Bool,
   check_only~ : Bool,
 ) -> Bool {
@@ -116,14 +116,14 @@ fn NormalizationBuffer::finish(
 fn process_suspect_spans(
   buffer : NormalizationBuffer,
   s : String,
-  start : Int,
-  problem_offset : Int,
-  shift : Int,
-  mask : Int,
+  start : Int32,
+  problem_offset : Int32,
+  shift : Int32,
+  mask : Int32,
   compatibility~ : Bool,
   compose~ : Bool,
   check_only~ : Bool,
-) -> Int {
+) -> Int32 {
   // Retain the starter and any preceding marks in the first suspect segment.
   for c in s[start:problem_offset] {
     buffer.append(c, normalization_properties(c), compatibility~)
@@ -190,7 +190,7 @@ fn process_suspect_spans(
 /// functions are not inlined across packages. Even one call on a rare path
 /// would make every entry to this function save and restore registers, which
 /// shows on text with many short runs.
-fn scan_clean_run(s : String, start : Int, slow_mask : Int) -> Int {
+fn scan_clean_run(s : String, start : Int32, slow_mask : Int32) -> Int32 {
   let length = s.length()
   let scan_mask = slow_mask >> 7
   let unit_mask = scan_mask | NormalizationScanLeadSurrogate
@@ -272,8 +272,8 @@ fn scan_clean_run(s : String, start : Int, slow_mask : Int) -> Int {
 /// None means the checking mode found a difference; normalization returns Some.
 fn process_spans(
   s : String,
-  shift : Int,
-  mask : Int,
+  shift : Int32,
+  mask : Int32,
   compatibility~ : Bool,
   compose~ : Bool,
   check_only~ : Bool,
@@ -341,10 +341,10 @@ fn process_spans(
 /// keeps this scratch/output state out of its hot loop.
 fn process_remaining_spans(
   s : String,
-  start : Int,
-  problem_offset : Int,
-  shift : Int,
-  mask : Int,
+  start : Int32,
+  problem_offset : Int32,
+  shift : Int32,
+  mask : Int32,
   compatibility~ : Bool,
   compose~ : Bool,
   check_only~ : Bool,
@@ -404,8 +404,8 @@ fn process_remaining_spans(
 ///|
 fn normalize_spans(
   s : String,
-  shift : Int,
-  mask : Int,
+  shift : Int32,
+  mask : Int32,
   compatibility~ : Bool,
   compose~ : Bool,
 ) -> String {

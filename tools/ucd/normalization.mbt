@@ -1,16 +1,16 @@
 ///|
 /// BMP lookups use one block-offset load and one norm16 value load.
-const NormalizationBmpShift : Int = 5
+const NormalizationBmpShift : Int32 = 5
 
 ///|
-const NormalizationBmpLimit : Int = 0x10000
+const NormalizationBmpLimit : Int32 = 0x10000
 
 ///|
 /// Supplementary top blocks cover 128 code points; leaves hold four values.
-const NormalizationTopShift : Int = 7
+const NormalizationTopShift : Int32 = 7
 
 ///|
-const NormalizationLeafShift : Int = 2
+const NormalizationLeafShift : Int32 = 2
 
 ///|
 /// Pack CCC and Quick_Check properties. Zero means CCC=0 and all checks Yes.
@@ -19,7 +19,7 @@ const NormalizationLeafShift : Int = 2
 fn normalization_values(
   ccc_ranges : Array[CccRange],
   derived_properties : String,
-) -> Array[Int] raise {
+) -> Array[Int32] raise {
   let values = Array::make(MaxCodePoint + 1, 0)
   for range in ccc_ranges {
     guard range.start >= 0 &&
@@ -107,7 +107,7 @@ pub fn emit_normalization(
     guard group < 65535 else { fail("Too many composition groups for norm16") }
     composition_groups[compositions[offsets[group]].first] = group + 1
   }
-  let extra : Array[Int] = []
+  let extra : Array[Int32] = []
   for cp in 0..<=MaxCodePoint {
     if decomp_indices[cp] != 0 || composition_groups[cp] != 0 {
       let record = extra.length() / 6
@@ -124,7 +124,7 @@ pub fn emit_normalization(
     last -= 1
   }
   let top_size = 1 << NormalizationTopShift
-  let limit = Int::max(
+  let limit = Int32::max(
     NormalizationBmpLimit,
     (last + top_size) / top_size * top_size,
   )

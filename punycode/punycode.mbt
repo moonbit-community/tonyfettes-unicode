@@ -27,37 +27,37 @@ pub impl Show for PunycodeError with fn output(self, logger) {
 ///|
 /// Base for variable-length integer encoding. Punycode uses base-36
 /// (letters a-z represent 0-25, digits 0-9 represent 26-35).
-const Base : Int = 36
+const Base : Int32 = 36
 
 ///|
 /// Minimum threshold for variable-length integer encoding.
 /// Ensures at least one digit is always output.
-const Tmin : Int = 1
+const Tmin : Int32 = 1
 
 ///|
 /// Maximum threshold for variable-length integer encoding.
 /// Equals the number of lowercase letters (a-z).
-const Tmax : Int = 26
+const Tmax : Int32 = 26
 
 ///|
 /// Skew parameter for bias adaptation function.
 /// Controls how quickly the bias adjusts to character frequencies.
-const Skew : Int = 38
+const Skew : Int32 = 38
 
 ///|
 /// Damping factor applied only to the first delta value.
 /// Prevents the bias from changing too rapidly at the start.
-const Damp : Int = 700
+const Damp : Int32 = 700
 
 ///|
 /// Initial bias value for the adaptation algorithm.
 /// Chosen to work well for typical internationalized domain names.
-const InitialBias : Int = 72
+const InitialBias : Int32 = 72
 
 ///|
 /// Initial value of n, the threshold between basic ASCII (0-127)
 /// and non-basic code points that require encoding.
-const InitialN : Int = 0x80
+const InitialN : Int32 = 0x80
 
 ///|
 /// Delimiter character separating the basic ASCII portion
@@ -66,11 +66,11 @@ const Delimiter : Char = '-'
 
 ///|
 /// Largest positive value representable by MoonBit's signed Int type.
-const MaxInt : Int = 0x7FFFFFFF
+const MaxInt : Int32 = 0x7FFFFFFF
 
 ///|
 /// Bias adaptation function (RFC 3492 Section 3.4)
-fn adapt(delta : Int, numpoints : Int, firsttime : Bool) -> Int {
+fn adapt(delta : Int32, numpoints : Int32, firsttime : Bool) -> Int32 {
   let mut delta = delta
   if firsttime {
     delta = delta / Damp
@@ -88,7 +88,7 @@ fn adapt(delta : Int, numpoints : Int, firsttime : Bool) -> Int {
 
 ///|
 /// Encode a digit to a basic code point (a-z for 0-25, 0-9 for 26-35)
-fn encode_digit(d : Int) -> Char {
+fn encode_digit(d : Int32) -> Char {
   if d < 26 {
     (d + 'a'.to_int()).unsafe_to_char()
   } else {
@@ -98,7 +98,7 @@ fn encode_digit(d : Int) -> Char {
 
 ///|
 /// Decode a basic code point to a digit
-fn decode_digit(cp : Int) -> Int {
+fn decode_digit(cp : Int32) -> Int32 {
   if cp >= 'a'.to_int() && cp <= 'z'.to_int() {
     cp - 'a'.to_int()
   } else if cp >= 'A'.to_int() && cp <= 'Z'.to_int() {
@@ -114,7 +114,7 @@ fn decode_digit(cp : Int) -> Int {
 /// Encode a Unicode string to Punycode
 pub fn encode(input : String) -> String raise PunycodeError {
   // The UTF-16 length bounds the number of code points.
-  let code_points : FixedArray[Int] = FixedArray::make(input.length(), 0)
+  let code_points : FixedArray[Int32] = FixedArray::make(input.length(), 0)
   let mut count = 0
   let mut basic_count = 0
   for c in input {
@@ -229,7 +229,7 @@ pub fn decode(input : String) -> String raise PunycodeError {
 
   // Code points of the output. Each one consumes at least one code unit of
   // input, so the input length bounds their number.
-  let output : FixedArray[Int] = FixedArray::make(length, 0)
+  let output : FixedArray[Int32] = FixedArray::make(length, 0)
   let mut output_length = 0
 
   // Copy basic code points before the last delimiter

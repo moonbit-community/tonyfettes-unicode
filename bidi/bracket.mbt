@@ -7,27 +7,27 @@
 
 ///|
 priv struct BracketPair {
-  open_index : Int
-  close_index : Int
-  open_position : Int
-  close_position : Int
+  open_index : Int32
+  close_index : Int32
+  open_position : Int32
+  close_position : Int32
   /// Strong types between the brackets: `StrongLtr`, `StrongRtl`, or both.
-  strong : Int
+  strong : Int32
 }
 
 ///|
 /// An L between a bracket pair.
-const StrongLtr : Int = 1
+const StrongLtr : Int32 = 1
 
 ///|
 /// An R, EN or AN between a bracket pair.
-const StrongRtl : Int = 2
+const StrongRtl : Int32 = 2
 
 ///|
 priv struct BracketStackEntry {
   bracket : Char
-  char_index : Int
-  sequence_position : Int
+  char_index : Int32
+  sequence_position : Int32
 }
 
 ///|
@@ -39,7 +39,7 @@ priv struct BracketScratch {
   /// Open brackets not yet closed.
   stack : Array[BracketStackEntry]
   /// Strong types seen directly inside each open bracket on the stack.
-  strong : Array[Int]
+  strong : Array[Int32]
 }
 
 ///|
@@ -142,8 +142,8 @@ fn resolve_bracket_pairs(
 fn retype_following_marks(
   types : Array[BidiClass],
   original_classes : Array[BidiClass],
-  indices : Array[Int],
-  bracket_position : Int,
+  indices : Array[Int32],
+  bracket_position : Int32,
   resolved : BidiClass,
 ) -> Unit {
   for position in (bracket_position + 1)..<indices.length() {
@@ -166,7 +166,7 @@ fn find_bracket_pairs(
   scratch : BracketScratch,
   chars : Array[Char],
   types : Array[BidiClass],
-  indices : Array[Int],
+  indices : Array[Int32],
 ) -> Unit {
   let { pairs, stack, strong, } = scratch
   pairs.clear()

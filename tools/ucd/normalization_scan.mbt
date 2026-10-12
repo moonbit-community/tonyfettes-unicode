@@ -1,20 +1,20 @@
 ///|
 /// The scan table covers 32 BMP code points per block, like the norm16 trie.
-const NormalizationScanShift : Int = 5
+const NormalizationScanShift : Int32 = 5
 
 ///|
 /// Supplementary groups with flags store them in blocks of 16 code points.
-const NormalizationPairShift : Int = 4
+const NormalizationPairShift : Int32 = 4
 
 ///|
 /// Scan flag of a leading surrogate; Quick_Check bits stay below it.
-const NormalizationScanLeadSurrogate : Int = 0x80
+const NormalizationScanLeadSurrogate : Int32 = 0x80
 
 ///|
 /// Reduce packed properties to the byte the UTF-16 scan tests: bit 0 marks a
 /// nonzero CCC and bits 1..6 are the Quick_Check bits 8..13. A properties mask
 /// `255 | quick_check_bits` therefore becomes a scan mask by shifting right 7.
-fn normalization_scan_flags(properties : Int) -> Int {
+fn normalization_scan_flags(properties : Int32) -> Int32 {
   let quick_check = properties >> 8 << 1
   if (properties & 255) != 0 {
     quick_check | 1

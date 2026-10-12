@@ -12,7 +12,7 @@
 ///|
 /// Determine the paragraph embedding level for text
 /// P2-P3: Find first strong character not in isolate, return its level
-fn determine_paragraph_level(text : String, default_level~ : Int) -> Int {
+fn determine_paragraph_level(text : String, default_level~ : Int32) -> Int32 {
   let mut isolate_count = 0
   for c in text {
     let bc = lookup_bidi_class(c)

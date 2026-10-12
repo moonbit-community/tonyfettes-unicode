@@ -1,40 +1,40 @@
 ///|
-const MaxCodePoint : Int = 0x10FFFF
+const MaxCodePoint : Int32 = 0x10FFFF
 
 ///|
 /// Number of low bits holding the Bidi_Class code in a packed range.
-const BidiValueBits : Int = 5
+const BidiValueBits : Int32 = 5
 
 ///|
 /// The trie covers planes 0-3; the higher planes are almost entirely L or BN
 /// and are looked up as packed ranges instead.
-const BidiTrieLimit : Int = 0x40000
+const BidiTrieLimit : Int32 = 0x40000
 
 ///|
 /// Each top-level trie entry covers `1 << BidiTrieTopShift` code points.
-const BidiTrieTopShift : Int = 8
+const BidiTrieTopShift : Int32 = 8
 
 ///|
 /// Each leaf block holds `1 << BidiTrieLeafShift` Bidi_Class codes.
-const BidiTrieLeafShift : Int = 4
+const BidiTrieLeafShift : Int32 = 4
 
 ///|
 priv struct BidiRange {
-  start : Int
-  end : Int
+  start : Int32
+  end : Int32
   bidi_class : String
 }
 
 ///|
 priv struct MirrorEntry {
-  code_point : Int
-  mirrored : Int
+  code_point : Int32
+  mirrored : Int32
 }
 
 ///|
 priv struct BracketEntry {
-  code_point : Int
-  paired : Int
+  code_point : Int32
+  paired : Int32
   bracket_type : String
 }
 
@@ -153,7 +153,7 @@ fn parse_brackets(content : String) -> Array[BracketEntry] raise {
 }
 
 ///|
-fn bidi_class_code(name : StringView) -> Int? {
+fn bidi_class_code(name : StringView) -> Int32? {
   match name {
     "L" => Some(0)
     "R" => Some(1)
@@ -193,16 +193,16 @@ pub fn generate_bidi_class_source(content : String) -> String raise {
   let values = Array::make(BidiTrieLimit, 0)
   // `start << BidiValueBits | code`, so the packed values sort by start code
   // point. The parsed ranges cover every code point without gaps.
-  let high_ranges : Array[Int] = []
+  let high_ranges : Array[Int32] = []
   for range in parse_bidi_ranges(content) {
     guard bidi_class_code(range.bidi_class) is Some(code) else {
       fail("Unknown Bidi_Class: \{range.bidi_class}")
     }
-    for code_point in range.start..<=Int::min(range.end, BidiTrieLimit - 1) {
+    for code_point in range.start..<=Int32::min(range.end, BidiTrieLimit - 1) {
       values[code_point] = code
     }
     if range.end >= BidiTrieLimit {
-      let start = Int::max(range.start, BidiTrieLimit)
+      let start = Int32::max(range.start, BidiTrieLimit)
       high_ranges.push((start << BidiValueBits) | code)
     }
   }

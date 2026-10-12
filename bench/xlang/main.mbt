@@ -3,9 +3,9 @@
 /// (stdout only, or stdout and stderr merged for builds).
 async fn run_step(
   step : Step,
-  extra? : Array[String] = [],
-  merge_stderr? : Bool = false,
-) -> (Int, String) {
+  extra~ : Array[String] = [],
+  merge_stderr~ : Bool = false,
+) -> (Int32, String) {
   let arguments = [..step.arguments, ..extra]
   let (status, output) = if merge_stderr {
     @process.collect_output_merged(step.program, arguments, cwd=step.cwd)

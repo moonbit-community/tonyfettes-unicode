@@ -4,83 +4,83 @@
 
 ///|
 /// Grapheme_Cluster_Break=CR
-const GcbCR : Int = 1
+const GcbCR : Int32 = 1
 
 ///|
 /// Grapheme_Cluster_Break=LF
-const GcbLF : Int = 2
+const GcbLF : Int32 = 2
 
 ///|
 /// Grapheme_Cluster_Break=Control
-const GcbControl : Int = 3
+const GcbControl : Int32 = 3
 
 ///|
 /// Grapheme_Cluster_Break=Extend
-const GcbExtend : Int = 4
+const GcbExtend : Int32 = 4
 
 ///|
 /// Grapheme_Cluster_Break=ZWJ
-const GcbZWJ : Int = 5
+const GcbZWJ : Int32 = 5
 
 ///|
 /// Grapheme_Cluster_Break=Regional_Indicator
-const GcbRegionalIndicator : Int = 6
+const GcbRegionalIndicator : Int32 = 6
 
 ///|
 /// Grapheme_Cluster_Break=Prepend
-const GcbPrepend : Int = 7
+const GcbPrepend : Int32 = 7
 
 ///|
 /// Grapheme_Cluster_Break=SpacingMark
-const GcbSpacingMark : Int = 8
+const GcbSpacingMark : Int32 = 8
 
 ///|
 /// Grapheme_Cluster_Break=L
-const GcbL : Int = 9
+const GcbL : Int32 = 9
 
 ///|
 /// Grapheme_Cluster_Break=V
-const GcbV : Int = 10
+const GcbV : Int32 = 10
 
 ///|
 /// Grapheme_Cluster_Break=T
-const GcbT : Int = 11
+const GcbT : Int32 = 11
 
 ///|
 /// Grapheme_Cluster_Break=LV
-const GcbLV : Int = 12
+const GcbLV : Int32 = 12
 
 ///|
 /// Grapheme_Cluster_Break=LVT
-const GcbLVT : Int = 13
+const GcbLVT : Int32 = 13
 
 ///|
 /// Indic_Conjunct_Break=Consonant
-const InCBConsonant : Int = 1
+const InCBConsonant : Int32 = 1
 
 ///|
 /// Indic_Conjunct_Break=Extend
-const InCBExtend : Int = 2
+const InCBExtend : Int32 = 2
 
 ///|
 /// Indic_Conjunct_Break=Linker
-const InCBLinker : Int = 3
+const InCBLinker : Int32 = 3
 
 ///|
 /// Mask selecting the Grapheme_Cluster_Break code of a packed value.
-const GcbMask : Int = 15
+const GcbMask : Int32 = 15
 
 ///|
 /// Shift moving the Indic_Conjunct_Break code of a packed value to bit 0.
-const InCBShift : Int = 4
+const InCBShift : Int32 = 4
 
 ///|
 /// Mask selecting the Indic_Conjunct_Break code after shifting.
-const InCBMask : Int = 3
+const InCBMask : Int32 = 3
 
 ///|
 /// Bit set in a packed value for Extended_Pictographic code points.
-const ExtendedPictographicBit : Int = 64
+const ExtendedPictographicBit : Int32 = 64
 
 ///|
 /// Grapheme break trie top level: `cp >> 8` to mid block index
@@ -514,7 +514,7 @@ let grapheme_break_trie_leaf : Bytes = [
 
 ///|
 /// Grapheme break ranges from 0x40000 packed as `start << 7 | value`
-let grapheme_break_high_ranges : ReadOnlyArray[Int] = [
+let grapheme_break_high_ranges : ReadOnlyArray[Int32] = [
   0x2000000, 0x7000003, 0x7001024, 0x7004003, 0x7008024, 0x700F803, 0x7080000,
 ]
 
@@ -522,7 +522,7 @@ let grapheme_break_high_ranges : ReadOnlyArray[Int] = [
 /// Look up the packed grapheme cluster break properties of a code point:
 /// `extended_pictographic << 6 | indic_conjunct_break << 4 |
 /// grapheme_cluster_break`.
-fn grapheme_break_value(cp : Int) -> Int {
+fn grapheme_break_value(cp : Int32) -> Int32 {
   if cp >= 0x40000 {
     // Binary search for the last range starting at or before `cp`.
     let key = (cp << 7) | 127

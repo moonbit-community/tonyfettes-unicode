@@ -13,7 +13,7 @@
 /// still needs in locals instead of re-reading them.
 fn resolve_weak_types(
   types : Array[BidiClass],
-  _levels : Array[Int],
+  _levels : Array[Int32],
   seq : IsolatingRunSequence,
 ) -> Unit {
   let indices = seq.indices

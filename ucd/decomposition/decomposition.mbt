@@ -4,7 +4,7 @@
 
 ///|
 /// Data start index for each code point
-let decomp_data_starts : ReadOnlyArray[Int] = [
+let decomp_data_starts : ReadOnlyArray[Int32] = [
   0, 1, 3, 4, 6, 7, 8, 10, 11, 13, 14, 15, 18, 21, 24, 26, 28, 30, 32, 34, 36, 38,
   40, 42, 44, 46, 48, 50, 52, 54, 56, 58, 60, 62, 64, 66, 68, 70, 72, 74, 76, 78,
   80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110, 112, 114,
@@ -885,7 +885,7 @@ let decomp_compat_lens : Bytes = [
 
 ///|
 /// Decomposition data (flattened code points)
-let decomp_data : ReadOnlyArray[Int] = [
+let decomp_data : ReadOnlyArray[Int32] = [
   0x0020, 0x0020, 0x0308, 0x0061, 0x0020, 0x0304, 0x0032, 0x0033, 0x0020, 0x0301,
   0x03BC, 0x0020, 0x0327, 0x0031, 0x006F, 0x0031, 0x2044, 0x0034, 0x0031, 0x2044,
   0x0032, 0x0033, 0x2044, 0x0034, 0x0041, 0x0300, 0x0041, 0x0301, 0x0041, 0x0302,

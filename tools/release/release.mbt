@@ -69,7 +69,7 @@ fn validate_release_version(version : String) -> Unit raise ReleaseError {
 
 ///|
 fn publish_dry_run_succeeded(
-  status : Int,
+  status : Int32,
   output : StringView,
   package_name : StringView,
   version : StringView,
@@ -166,7 +166,7 @@ fn replace_manifest_version(
 }
 
 ///|
-fn publish_start_index(name : String) -> Int raise ReleaseError {
+fn publish_start_index(name : String) -> Int32 raise ReleaseError {
   for index, release_module in published_modules {
     if release_module.name == name {
       return index

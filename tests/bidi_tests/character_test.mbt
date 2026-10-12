@@ -6,7 +6,7 @@
 ///|
 /// Paragraph direction field of BidiCharacterTest.txt:
 /// 0 = LTR, 1 = RTL, 2 = auto.
-fn level_paragraph_direction(level : Int) -> @bidi.Direction? {
+fn level_paragraph_direction(level : Int32) -> @bidi.Direction? {
   match level {
     0 => Some(@bidi.Direction::LTR)
     1 => Some(@bidi.Direction::RTL)

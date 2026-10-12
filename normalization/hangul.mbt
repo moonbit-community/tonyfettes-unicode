@@ -4,39 +4,39 @@
 
 ///|
 /// First Hangul syllable (가)
-let hangul_s_base : Int = 0xAC00
+let hangul_s_base : Int32 = 0xAC00
 
 ///|
 /// First leading consonant jamo (ᄀ)
-let hangul_l_base : Int = 0x1100
+let hangul_l_base : Int32 = 0x1100
 
 ///|
 /// First vowel jamo (ᅡ)
-let hangul_v_base : Int = 0x1161
+let hangul_v_base : Int32 = 0x1161
 
 ///|
 /// First trailing consonant jamo (ᆨ) - note: T_BASE itself represents no trailing
-let hangul_t_base : Int = 0x11A7
+let hangul_t_base : Int32 = 0x11A7
 
 ///|
 /// Number of leading consonant jamo (19)
-let hangul_l_count : Int = 19
+let hangul_l_count : Int32 = 19
 
 ///|
 /// Number of vowel jamo (21)
-let hangul_v_count : Int = 21
+let hangul_v_count : Int32 = 21
 
 ///|
 /// Number of trailing consonant jamo including none (28)
-let hangul_t_count : Int = 28
+let hangul_t_count : Int32 = 28
 
 ///|
 /// V_COUNT * T_COUNT = 588
-let hangul_n_count : Int = 588
+let hangul_n_count : Int32 = 588
 
 ///|
 /// Total number of Hangul syllables (11172)
-let hangul_s_count : Int = 11172
+let hangul_s_count : Int32 = 11172
 
 ///|
 /// Check if a character is a precomposed Hangul syllable

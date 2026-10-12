@@ -21,8 +21,8 @@ fn ascii_fast_path(
   let mut has_uppercase = false
   for i in 0..<length {
     match domain[i] {
-      'a'..='z' | '0'..='9' | '-' => ()
-      'A'..='Z' => has_uppercase = true
+      'a'..<='z' | '0'..<='9' | '-' => ()
+      'A'..<='Z' => has_uppercase = true
       '.' => {
         guard is_plain_ascii_label(
           domain,
@@ -62,8 +62,8 @@ fn ascii_fast_path(
 /// valid ASCII, against the rules that depend on position and length.
 fn is_plain_ascii_label(
   domain : String,
-  start : Int,
-  end : Int,
+  start : Int32,
+  end : Int32,
   check_hyphens~ : Bool,
   verify_dns_length~ : Bool,
 ) -> Bool {

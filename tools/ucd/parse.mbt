@@ -46,15 +46,15 @@ fn is_mark_category(category : StringView) -> Bool {
 }
 
 ///|
-fn is_identity_or_empty(cp : Int, targets : Array[Int]) -> Bool {
+fn is_identity_or_empty(cp : Int32, targets : Array[Int32]) -> Bool {
   targets.length() == 0 || (targets.length() == 1 && targets[0] == cp)
 }
 
 ///|
 fn append_general_category(
   general_categories : Array[GeneralCategoryEntry],
-  mark_code_points : Array[Int],
-  cp : Int,
+  mark_code_points : Array[Int32],
+  cp : Int32,
   category : String,
 ) -> Unit {
   general_categories.push({ code_point: cp, category, })
@@ -68,7 +68,7 @@ pub fn parse_unicode_data(content : String) -> UnicodeData raise {
   let ccc_entries : Array[CccEntry] = []
   let canonical_decompositions : Array[DecompositionEntry] = []
   let compatibility_decompositions : Array[DecompositionEntry] = []
-  let mark_code_points : Array[Int] = []
+  let mark_code_points : Array[Int32] = []
   let general_categories : Array[GeneralCategoryEntry] = []
   let simple_uppercase : Array[SimpleMappingEntry] = []
   let simple_lowercase : Array[SimpleMappingEntry] = []
@@ -177,8 +177,8 @@ pub fn parse_unicode_data(content : String) -> UnicodeData raise {
 }
 
 ///|
-pub fn parse_composition_exclusions(content : String) -> Array[Int] raise {
-  let exclusions : Array[Int] = []
+pub fn parse_composition_exclusions(content : String) -> Array[Int32] raise {
+  let exclusions : Array[Int32] = []
   for raw_line in content.split("\n") {
     let line = @parsing.strip_comment(raw_line)
     if line.length() == 0 {

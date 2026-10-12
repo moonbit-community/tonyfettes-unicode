@@ -811,7 +811,7 @@ let gc_trie_leaf : Bytes = [
 
 ///|
 /// General_Category ranges from 0x40000 packed as `start << 5 | ordinal`
-let gc_high_ranges : ReadOnlyArray[Int] = [
+let gc_high_ranges : ReadOnlyArray[Int32] = [
   0x80001D, 0x1C0003A, 0x1C0005D, 0x1C0041A, 0x1C0101D, 0x1C02005, 0x1C03E1D, 0x1E0001C,
   0x1FFFFDD, 0x200001C, 0x21FFFDD,
 ]
@@ -819,7 +819,7 @@ let gc_high_ranges : ReadOnlyArray[Int] = [
 ///|
 /// Look up General_Category ordinal for a character
 /// Returns ordinal value (0-29) corresponding to GeneralCategory enum
-pub fn lookup_general_category(c : Char) -> Int {
+pub fn lookup_general_category(c : Char) -> Int32 {
   let cp = c.to_int()
   if cp >= 0x40000 {
     // Binary search for the last range starting at or before `cp`.

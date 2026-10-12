@@ -12,8 +12,8 @@ pub extend GeneratedFile with Eq::{not_equal, equal}
 
 ///|
 pub(all) struct CodePointRange {
-  start : Int
-  end : Int
+  start : Int32
+  end : Int32
 } derive(Debug, Eq)
 
 ///|
@@ -44,12 +44,12 @@ pub fn strip_comment(line : StringView) -> StringView {
 }
 
 ///|
-pub fn parse_hex_int(text : StringView) -> Int raise {
+pub fn parse_hex_int(text : StringView) -> Int32 raise {
   @string.parse_int(text.trim(), base=16)
 }
 
 ///|
-pub fn parse_decimal_int(text : StringView) -> Int raise {
+pub fn parse_decimal_int(text : StringView) -> Int32 raise {
   @string.parse_int(text.trim(), base=10)
 }
 
@@ -65,7 +65,7 @@ pub fn parse_code_point_range(text : StringView) -> CodePointRange raise {
 }
 
 ///|
-const MaxCodePoint : Int = 0x10FFFF
+const MaxCodePoint : Int32 = 0x10FFFF
 
 ///|
 /// Read a UCD file for one enumerated property, whose data lines are
@@ -105,8 +105,8 @@ pub fn parse_enumerated_property(
 }
 
 ///|
-pub fn parse_code_point_sequence(text : StringView) -> Array[Int] raise {
-  let result : Array[Int] = []
+pub fn parse_code_point_sequence(text : StringView) -> Array[Int32] raise {
+  let result : Array[Int32] = []
   for part in text.trim().split(" ") {
     let part = part.trim()
     if !part.is_empty() {
@@ -117,12 +117,12 @@ pub fn parse_code_point_sequence(text : StringView) -> Array[Int] raise {
 }
 
 ///|
-pub fn moonbit_code_point_escape(code_point : Int) -> String {
+pub fn moonbit_code_point_escape(code_point : Int32) -> String {
   "\\u{\{@emitter.hex_upper(code_point, min_width=4)}}"
 }
 
 ///|
-pub fn code_points_to_moonbit_string(code_points : ArrayView[Int]) -> String {
+pub fn code_points_to_moonbit_string(code_points : ArrayView[Int32]) -> String {
   let out = @emitter.Emitter::new()
   for code_point in code_points {
     out.write(moonbit_code_point_escape(code_point))
@@ -131,7 +131,7 @@ pub fn code_points_to_moonbit_string(code_points : ArrayView[Int]) -> String {
 }
 
 ///|
-pub fn int_array_literal(values : ArrayView[Int]) -> String {
+pub fn int_array_literal(values : ArrayView[Int32]) -> String {
   let out = @emitter.Emitter::new()
   out.write("[")
   for index, value in values {
@@ -145,7 +145,7 @@ pub fn int_array_literal(values : ArrayView[Int]) -> String {
 }
 
 ///|
-pub fn optional_int_array_literal(values : ArrayView[Int?]) -> String {
+pub fn optional_int_array_literal(values : ArrayView[Int32?]) -> String {
   let out = @emitter.Emitter::new()
   out.write("[")
   for index, value in values {
@@ -194,17 +194,17 @@ pub fn escape_moonbit_string(text : StringView) -> String {
 }
 
 ///|
-fn hex_value(character : Char) -> Int? {
+fn hex_value(character : Char) -> Int32? {
   match character {
-    '0'..='9' => Some(character.to_int() - '0'.to_int())
-    'a'..='f' => Some(character.to_int() - 'a'.to_int() + 10)
-    'A'..='F' => Some(character.to_int() - 'A'.to_int() + 10)
+    '0'..<='9' => Some(character.to_int() - '0'.to_int())
+    'a'..<='f' => Some(character.to_int() - 'a'.to_int() + 10)
+    'A'..<='F' => Some(character.to_int() - 'A'.to_int() + 10)
     _ => None
   }
 }
 
 ///|
-fn parse_hex_chars(chars : ArrayView[Char]) -> Int? {
+fn parse_hex_chars(chars : ArrayView[Char]) -> Int32? {
   if chars.is_empty() {
     return None
   }
@@ -217,7 +217,7 @@ fn parse_hex_chars(chars : ArrayView[Char]) -> Int? {
 }
 
 ///|
-fn parse_braced_hex(chars : ArrayView[Char]) -> (Int, ArrayView[Char])? {
+fn parse_braced_hex(chars : ArrayView[Char]) -> (Int32, ArrayView[Char])? {
   for remaining = chars, value = 0, has_digit = false {
     match remaining {
       ['}', .. rest] if has_digit => break Some((value, rest))
@@ -273,7 +273,7 @@ pub fn parse_escaped_text(text : StringView) -> ParsedText {
 }
 
 ///|
-pub fn truncate_chars(text : StringView, max_chars : Int) -> String {
+pub fn truncate_chars(text : StringView, max_chars : Int32) -> String {
   let out = @emitter.Emitter::new()
   let mut count = 0
   let mut truncated = false

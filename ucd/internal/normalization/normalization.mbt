@@ -4,7 +4,7 @@
 
 ///|
 /// BMP block offsets (32 code points per block)
-let normalization_bmp_index : ReadOnlyArray[Int] = [
+let normalization_bmp_index : ReadOnlyArray[Int32] = [
   0, 32, 64, 96, 0, 128, 160, 192, 224, 256, 288, 320, 0, 352, 384, 416, 448, 480,
   0, 0, 512, 544, 576, 608, 640, 672, 704, 736, 768, 800, 832, 864, 896, 928, 960,
   992, 1024, 0, 1056, 1088, 0, 0, 1120, 0, 1152, 1184, 1216, 0, 1248, 1280, 1312,
@@ -107,7 +107,7 @@ let normalization_bmp_index : ReadOnlyArray[Int] = [
 
 ///|
 /// BMP norm16 values: direct properties or tagged extra-record indices
-let normalization_bmp_data : ReadOnlyArray[Int] = [
+let normalization_bmp_data : ReadOnlyArray[Int32] = [
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 32768, 32769, 32770, 0, 0, 32771, 32772, 32773, 32774, 32775,
@@ -705,7 +705,7 @@ let normalization_trie_top : Bytes = [
 
 ///|
 /// Supplementary leaf block indices (4 code points per block)
-let normalization_trie_mid : ReadOnlyArray[Int] = [
+let normalization_trie_mid : ReadOnlyArray[Int32] = [
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -814,7 +814,7 @@ let normalization_trie_mid : ReadOnlyArray[Int] = [
 
 ///|
 /// Supplementary norm16 values: direct properties or tagged extra-record indices
-let normalization_trie_leaf : ReadOnlyArray[Int] = [
+let normalization_trie_leaf : ReadOnlyArray[Int32] = [
   0, 0, 0, 0, 0, 220, 0, 0, 220, 0, 0, 0, 0, 0, 230, 230, 230, 230, 230, 0, 0, 36893,
   0, 0, 0, 0, 36894, 0, 0, 0, 36895, 0, 36896, 0, 0, 0, 0, 36897, 36898, 36899, 36900,
   36901, 0, 36902, 36903, 36904, 36905, 36906, 36907, 36908, 36909, 36910, 36911,
@@ -2666,7 +2666,7 @@ const UncheckedSupplementaryLookup : Bool = false
 
 ///|
 /// Bit 15 tags an extra-record index; otherwise the value is packed properties.
-fn lookup_norm16(c : Char) -> Int {
+fn lookup_norm16(c : Char) -> Int32 {
   let cp = c.to_int()
   if cp < 65536 {
     return lookup_bmp_norm16(cp)
@@ -2676,13 +2676,13 @@ fn lookup_norm16(c : Char) -> Int {
 
 ///|
 /// Two indexed loads for BMP normalization descriptors.
-fn lookup_bmp_norm16(cp : Int) -> Int {
+fn lookup_bmp_norm16(cp : Int32) -> Int32 {
   normalization_bmp_data[normalization_bmp_index[cp >> 5] + (cp & 31)]
 }
 
 ///|
 /// Keep the compressed supplementary path out of the BMP lookup.
-fn lookup_supplementary_norm16(cp : Int) -> Int {
+fn lookup_supplementary_norm16(cp : Int32) -> Int32 {
   if cp >= 195200 {
     return 0
   }
@@ -2707,7 +2707,7 @@ fn lookup_supplementary_norm16(cp : Int) -> Int {
 ///|
 /// Packed properties. Bits 0..7: CCC; 8..9: NFC_QC; 10..11: NFKC_QC;
 /// bit 12: NFD_QC; bit 13: NFKD_QC. Yes=0, No=1, Maybe=2 (NFC/NFKC).
-pub fn lookup_normalization_properties(c : Char) -> Int {
+pub fn lookup_normalization_properties(c : Char) -> Int32 {
   // Dispatch here so the full-scan property path has no extra lookup wrapper.
   let cp = c.to_int()
   let norm16 = if cp < 65536 {
@@ -2724,7 +2724,7 @@ pub fn lookup_normalization_properties(c : Char) -> Int {
 }
 
 ///|
-pub fn normalization_decomposition_index(c : Char) -> Int {
+pub fn normalization_decomposition_index(c : Char) -> Int32 {
   let norm16 = lookup_norm16(c)
   if norm16 < 0x8000 {
     return -1
@@ -2738,7 +2738,7 @@ pub fn normalization_decomposition_index(c : Char) -> Int {
 }
 
 ///|
-pub fn normalization_composition_group(c : Char) -> Int {
+pub fn normalization_composition_group(c : Char) -> Int32 {
   let norm16 = lookup_norm16(c)
   if norm16 < 0x8000 {
     return -1

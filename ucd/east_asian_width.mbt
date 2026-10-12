@@ -30,7 +30,7 @@ pub impl Show for EastAsianWidth with fn output(self, logger) {
 
 ///|
 /// Convert EastAsianWidth ordinal to enum value
-fn ordinal_to_eaw(ordinal : Int) -> EastAsianWidth {
+fn ordinal_to_eaw(ordinal : Int32) -> EastAsianWidth {
   match ordinal {
     0 => A
     1 => F

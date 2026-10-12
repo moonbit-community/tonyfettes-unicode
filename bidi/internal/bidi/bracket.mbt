@@ -26,7 +26,7 @@ pub impl Show for BracketType with fn output(self, logger) {
 
 ///|
 /// Code points of paired brackets
-let bracket_code_points : ReadOnlyArray[Int] = [
+let bracket_code_points : ReadOnlyArray[Int32] = [
   0x0028, 0x0029, 0x005B, 0x005D, 0x007B, 0x007D, 0x0F3A, 0x0F3B, 0x0F3C, 0x0F3D,
   0x169B, 0x169C, 0x2045, 0x2046, 0x207D, 0x207E, 0x208D, 0x208E, 0x2308, 0x2309,
   0x230A, 0x230B, 0x2329, 0x232A, 0x2768, 0x2769, 0x276A, 0x276B, 0x276C, 0x276D,
@@ -44,7 +44,7 @@ let bracket_code_points : ReadOnlyArray[Int] = [
 
 ///|
 /// Paired bracket for each code point
-let paired_brackets : ReadOnlyArray[Int] = [
+let paired_brackets : ReadOnlyArray[Int32] = [
   0x0029, 0x0028, 0x005D, 0x005B, 0x007D, 0x007B, 0x0F3B, 0x0F3A, 0x0F3D, 0x0F3C,
   0x169C, 0x169B, 0x2046, 0x2045, 0x207E, 0x207D, 0x208E, 0x208D, 0x2309, 0x2308,
   0x230B, 0x230A, 0x232A, 0x2329, 0x2769, 0x2768, 0x276B, 0x276A, 0x276D, 0x276C,
@@ -62,7 +62,7 @@ let paired_brackets : ReadOnlyArray[Int] = [
 
 ///|
 /// Bracket types (0 = open, 1 = close)
-let bracket_types : ReadOnlyArray[Int] = [
+let bracket_types : ReadOnlyArray[Int32] = [
   0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0,
   1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1,
   0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0,
@@ -71,7 +71,7 @@ let bracket_types : ReadOnlyArray[Int] = [
 ]
 
 ///|
-fn find_bracket_index(c : Char) -> Int {
+fn find_bracket_index(c : Char) -> Int32 {
   let cp = c.to_int()
   let mut left = 0
   let mut right = bracket_code_points.length() - 1

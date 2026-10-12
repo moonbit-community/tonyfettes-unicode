@@ -480,7 +480,7 @@ let bidi_trie_leaf : Bytes = [
 
 ///|
 /// Bidi_Class ranges from 0x40000 packed as `start << 5 | code`
-let bidi_high_ranges : ReadOnlyArray[Int] = [
+let bidi_high_ranges : ReadOnlyArray[Int32] = [
   0x800000, 0x9FFFC9, 0xA00000, 0xBFFFC9, 0xC00000, 0xDFFFC9, 0xE00000, 0xFFFFC9,
   0x1000000, 0x11FFFC9, 0x1200000, 0x13FFFC9, 0x1400000, 0x15FFFC9, 0x1600000, 0x17FFFC9,
   0x1800000, 0x19FFFC9, 0x1A00000, 0x1BFFFC9, 0x1C02008, 0x1C03E09, 0x1C20000, 0x1DFFFC9,
@@ -489,7 +489,7 @@ let bidi_high_ranges : ReadOnlyArray[Int] = [
 
 ///|
 /// Look up the Bidi_Class code (the `BidiClass` constructor index).
-fn lookup_bidi_class_code(c : Char) -> Int {
+fn lookup_bidi_class_code(c : Char) -> Int32 {
   let cp = c.to_int()
   if cp >= 0x40000 {
     // Binary search for the last range starting at or before `cp`.
@@ -513,7 +513,7 @@ fn lookup_bidi_class_code(c : Char) -> Int {
 }
 
 ///|
-fn bidi_from_code(code : Int) -> BidiClass {
+fn bidi_from_code(code : Int32) -> BidiClass {
   match code {
     0 => L
     1 => R

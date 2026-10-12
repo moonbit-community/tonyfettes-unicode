@@ -1,7 +1,7 @@
 ///|
 pub(all) suberror IdnaError {
   PunycodeError(@legacy_punycode.PunycodeError)
-  DisallowedCodePoint(cp~ : Int)
+  DisallowedCodePoint(cp~ : Int32)
   InvalidLabel(String)
   InvalidHyphen
   LabelTooLong
@@ -67,11 +67,11 @@ fn legacy_error(error : @impl.IdnaError) -> IdnaError {
 ///|
 pub fn to_ascii(
   domain : String,
-  use_std3_ascii_rules? : Bool = true,
-  check_hyphens? : Bool = true,
-  check_bidi? : Bool = true,
-  check_joiners? : Bool = true,
-  verify_dns_length? : Bool = true,
+  use_std3_ascii_rules~ : Bool = true,
+  check_hyphens~ : Bool = true,
+  check_bidi~ : Bool = true,
+  check_joiners~ : Bool = true,
+  verify_dns_length~ : Bool = true,
 ) -> String raise IdnaError {
   @impl.to_ascii(
     domain,
@@ -88,10 +88,10 @@ pub fn to_ascii(
 ///|
 pub fn to_unicode(
   domain : String,
-  use_std3_ascii_rules? : Bool = true,
-  check_hyphens? : Bool = true,
-  check_bidi? : Bool = true,
-  check_joiners? : Bool = true,
+  use_std3_ascii_rules~ : Bool = true,
+  check_hyphens~ : Bool = true,
+  check_bidi~ : Bool = true,
+  check_joiners~ : Bool = true,
 ) -> String raise IdnaError {
   @impl.to_unicode(
     domain,

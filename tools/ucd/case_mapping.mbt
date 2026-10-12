@@ -1,14 +1,14 @@
 ///|
 /// The trie covers planes 0-1, which hold every case mapping.
-const CaseTrieLimit : Int = 0x20000
+const CaseTrieLimit : Int32 = 0x20000
 
 ///|
 /// Each top-level trie entry covers `1 << CaseTrieTopShift` code points.
-const CaseTrieTopShift : Int = 8
+const CaseTrieTopShift : Int32 = 8
 
 ///|
 /// Each leaf block holds `1 << CaseTrieLeafShift` record indices.
-const CaseTrieLeafShift : Int = 4
+const CaseTrieLeafShift : Int32 = 4
 
 ///|
 /// One case conversion: its simple mappings as per-code-point deltas, and
@@ -17,9 +17,9 @@ priv struct CaseTable {
   /// "upper", "lower" or "title": the prefix of generated table names.
   name : String
   /// `target - code_point` of the simple mapping, 0 where there is none.
-  deltas : Array[Int]
+  deltas : Array[Int32]
   /// Full mappings other than the single simple target, by code point.
-  special : Map[Int, Array[Int]]
+  special : Map[Int32, Array[Int32]]
 }
 
 ///|
@@ -37,7 +37,7 @@ fn CaseTable::new(
     }
     deltas[entry.code_point] = entry.target - entry.code_point
   }
-  let special : Map[Int, Array[Int]] = Map([])
+  let special : Map[Int32, Array[Int32]] = Map([])
   for entry in special_casing {
     guard entry.code_point < CaseTrieLimit else {
       fail(
@@ -58,7 +58,7 @@ fn CaseTable::new(
 
 ///|
 /// A MoonBit string literal of the given code points.
-fn string_literal(code_points : Array[Int]) -> String {
+fn string_literal(code_points : Array[Int32]) -> String {
   let literal = StringBuilder()
   literal.write_char('"')
   for code_point in code_points {
@@ -87,8 +87,8 @@ pub fn emit_case_mapping(
   ]
   // A record is one delta per case followed by the special-mapping flags.
   // Record 0 is a code point without any case mapping.
-  let record_ids : Map[Array[Int], Int] = Map([([0, 0, 0, 0], 0)])
-  let records : Array[Array[Int]] = [[0, 0, 0, 0]]
+  let record_ids : Map[Array[Int32], Int32] = Map([([0, 0, 0, 0], 0)])
+  let records : Array[Array[Int32]] = [[0, 0, 0, 0]]
   let values = Array::make(CaseTrieLimit, 0)
   for code_point in 0..<CaseTrieLimit {
     let record = cases.map(table => table.deltas[code_point])
