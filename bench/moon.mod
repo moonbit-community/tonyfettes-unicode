@@ -11,6 +11,6 @@ import {
   "moonbit-community/unicode-segmentation@0.5.2",
   "moonbit-community/unicode-idna@0.5.2",
   "moonbit-community/punycode@0.5.2",
-  "moonbitlang/x@0.4.43",
+  "moonbitlang/x@0.4.45",
   "moonbitlang/async@0.22.4",
 }
