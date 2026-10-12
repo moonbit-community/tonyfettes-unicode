@@ -18,7 +18,7 @@ twelve minutes.
 | Option | Meaning |
 |---|---|
 | `--rounds N` | Rounds to run; each case keeps its fastest round (default 3) |
-| `--impl A,B` | Only these harnesses (default: every one that builds) |
+| `--impl A,B` | Only these harnesses (default: every one that can be set up) |
 | `--group G` | Only `norm`, `seg`, `bidi`, `idna`, `puny` or `case` |
 | `--detail` | Also report every case, not only the mean per operation |
 
@@ -37,8 +37,9 @@ same cases with the same protocol, and prints rows in the same format.
 | `node` | `node/` | `String.prototype.normalize` and `Intl.Segmenter` (ICU4C behind V8), `url.domainToASCII` (ada), the bundled `punycode` | `node` |
 | `python` | `python/` | `unicodedata` (normalization only) | `python3` |
 
-A harness whose toolchain or library is missing is reported as skipped and the
-comparison continues without it. ICU4C is looked up in `ICU_ROOT`, then in
+A harness whose toolchain, runtime or library is missing is reported as
+skipped and the comparison continues without it; the run fails only when no
+harness produces a result. ICU4C is looked up in `ICU_ROOT`, then in
 Homebrew's keg-only `icu4c`, then on the compiler's default paths; `CXX`
 selects the compiler. Rust and Go dependencies are pinned by `Cargo.lock` and
 `go.sum`.

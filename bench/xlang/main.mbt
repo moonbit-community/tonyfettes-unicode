@@ -16,10 +16,10 @@ async fn run_step(
 }
 
 ///|
-/// Build `peer`; `Some(reason)` when it cannot take part in the comparison,
-/// typically because its toolchain or library is not installed.
-async fn build_failure(peer : Peer) -> String? {
-  for step in peer.build {
+/// Set `peer` up; `Some(reason)` when it cannot take part in the comparison,
+/// typically because its toolchain, runtime or library is not installed.
+async fn setup_failure(peer : Peer) -> String? {
+  for step in peer.setup {
     let (status, output) = run_step(step, merge_stderr=true) catch {
       error if @async.is_being_cancelled() => raise error
       error => return Some("cannot run \{step.program}: \{error}")
@@ -53,12 +53,12 @@ async fn main {
       @argparse.OptionArg(
         "impl",
         long="impl",
-        about="Comma-separated harnesses to run (default: all that build)",
+        about="Comma-separated harnesses to run (default: all that can be set up)",
       ),
       @argparse.OptionArg(
         "group",
         long="group",
-        about="Only run this group: norm, seg, bidi, idna, puny or case",
+        about="Only run this group: \{groups.join(", ")}",
       ),
     ],
   )
@@ -68,7 +68,11 @@ async fn main {
     Some([value, ..]) => @string.parse_int(value)
     _ => 3
   }
+  guard rounds >= 1 else { fail("--rounds must be at least 1, not \{rounds}") }
   let group = matches.values.get("group").map(values => values[0])
+  if group is Some(group) && !groups.contains(group) {
+    fail("Unknown group \{group}; choose from \{groups.join(", ")}")
+  }
   guard @fs.exists("moon.work") && @fs.exists("bench/xlang/moon.pkg") else {
     fail("Run this from the repository root")
   }
@@ -93,14 +97,13 @@ async fn main {
   prepare_inputs(root, inputs)
   let ready = []
   for peer in selected {
-    if !peer.build.is_empty() {
-      println("==> Building \{peer.name}")
-    }
-    match build_failure(peer) {
+    println("==> Setting up \{peer.name}")
+    match setup_failure(peer) {
       Some(reason) => println("    Skipped: \{reason}")
       None => ready.push(peer)
     }
   }
+  guard !ready.is_empty() else { fail("None of the harnesses could be set up") }
   let extra = if group is Some(group) { [inputs, group] } else { [inputs] }
   let results = Results(Map([]))
   let raw = StringBuilder()
@@ -129,6 +132,8 @@ async fn main {
       }
     }
   }
+  // A report without measurements would claim that every implementation agrees.
+  guard !results.0.is_empty() else { fail("No harness produced any result") }
   let report = results.report(rounds~, detail~)
   write_text("\{work}/results.tsv", raw.to_string())
   write_text("\{work}/report.md", report)

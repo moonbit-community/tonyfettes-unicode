@@ -11,25 +11,40 @@ priv struct Step {
 priv struct Peer {
   /// Names the harness in `--impl` and in the report's column headers.
   name : String
-  /// Run in order before any timing; a failing step skips the peer.
-  build : Array[Step]
+  /// Run in order before any timing: builds, and probes for the runtimes that
+  /// `run` needs. A failing step skips the peer.
+  setup : Array[Step]
   /// Prints result rows; the inputs directory and the group are appended.
   run : Step
 }
 
 ///|
-/// The same MoonBit harness, built for one backend.
+/// The groups of cases a harness can be asked for.
+let groups : Array[String] = ["norm", "seg", "bidi", "idna", "puny", "case"]
+
+///|
+/// Succeeds when `program` can be started.
+fn probe(root : String, program : String) -> Step {
+  { program, arguments: ["--version"], cwd: root, }
+}
+
+///|
+/// The same MoonBit harness, built for one backend. `moon run` starts the JS
+/// build with Node.
 fn moonbit_peer(root : String, target : String) -> Peer {
   let package_ = "bench/xlang/moonbit"
+  let build = {
+    program: "moon",
+    arguments: ["build", "--target", target, "--release", package_],
+    cwd: root,
+  }
   {
     name: "moonbit-\{target}",
-    build: [
-      {
-        program: "moon",
-        arguments: ["build", "--target", target, "--release", package_],
-        cwd: root,
-      },
-    ],
+    setup: if target == "js" {
+      [probe(root, "node"), build]
+    } else {
+      [build]
+    },
     run: {
       program: "moon",
       arguments: ["run", "--target", target, "--release", package_, "--"],
@@ -69,7 +84,7 @@ async fn all_peers(root : String, work : String) -> Array[Peer] {
     moonbit_peer(root, "js"),
     {
       name: "icu4c",
-      build: [
+      setup: [
         {
           program: @env.get_env_var("CXX").unwrap_or("c++"),
           arguments: [
@@ -89,7 +104,7 @@ async fn all_peers(root : String, work : String) -> Array[Peer] {
     },
     {
       name: "rust",
-      build: [
+      setup: [
         {
           program: "cargo",
           arguments: [
@@ -106,7 +121,7 @@ async fn all_peers(root : String, work : String) -> Array[Peer] {
     },
     {
       name: "go",
-      build: [
+      setup: [
         {
           program: "go",
           arguments: ["build", "-o", "\{work}/go", "."],
@@ -117,7 +132,7 @@ async fn all_peers(root : String, work : String) -> Array[Peer] {
     },
     {
       name: "node",
-      build: [],
+      setup: [probe(root, "node")],
       run: {
         program: "node",
         // The bundled punycode module is deprecated but still what Node ships.
@@ -127,7 +142,7 @@ async fn all_peers(root : String, work : String) -> Array[Peer] {
     },
     {
       name: "python",
-      build: [],
+      setup: [probe(root, "python3")],
       run: {
         program: "python3",
         arguments: ["\{source}/python/main.py"],
