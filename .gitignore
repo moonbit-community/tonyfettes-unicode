@@ -4,6 +4,9 @@ _build/
 publish/
 .repos/
 
+# Cargo, when bench/xlang/rust is built by hand
+target/
+
 # VSCode
 .vscode/
 

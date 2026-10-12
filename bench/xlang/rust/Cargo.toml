@@ -1,0 +1,21 @@
+[package]
+name = "xlang"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+icu_casemap = "2"
+icu_normalizer = "2"
+icu_properties = "2"
+icu_segmenter = "2"
+idna = "1"
+unicode-bidi = "0.3"
+unicode-general-category = "1"
+unicode-normalization = "0.1"
+unicode-segmentation = "1"
+
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
