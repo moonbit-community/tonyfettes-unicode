@@ -21,14 +21,13 @@ twelve minutes.
 | `--impl A,B` | Only these harnesses (default: every one that can be set up) |
 | `--group G` | Only `norm`, `seg`, `bidi`, `idna`, `puny` or `case` |
 | `--detail` | Also report every case, not only the mean per operation |
-| `--strict` | Fail if a harness cannot be set up or fails a round, instead of leaving it out |
+| `--strict` | Fail if a harness cannot be set up, fails a round or prints no results, instead of leaving it out |
 
 ## In CI
 
 The [`bench` workflow](../../.github/workflows/bench.yml) runs the benchmark
-with `--strict` once a week, on demand, and for pull requests that touch it
-(one round there), so that a toolchain or dependency update that breaks a
-harness is noticed. The report is in the job summary and, with the raw
+with `--strict` for pull requests that touch it (one round there) and on
+demand, so that a change that breaks a harness is noticed. The report is in the job summary and, with the raw
 results, in the `results` artifact. Nothing is published: the numbers come
 from shared machines that differ from run to run, so they are only good for
 comparing columns within one run.

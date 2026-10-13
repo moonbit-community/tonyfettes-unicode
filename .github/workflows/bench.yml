@@ -1,8 +1,8 @@
 name: bench
 
-# Runs the cross-language benchmark (bench/xlang) to notice when a toolchain
-# or dependency update breaks one of its harnesses. The report goes to the
-# job summary; nothing is published.
+# Runs the cross-language benchmark (bench/xlang) to check that a change
+# leaves every one of its harnesses working. The report goes to the job
+# summary; nothing is published.
 
 on:
   pull_request:
@@ -12,9 +12,6 @@ on:
       - bench/moon.mod
       - bench/normperf/data/**
       - .github/workflows/bench.yml
-  schedule:
-    # Weekly, since the other libraries and the toolchains change on their own.
-    - cron: "17 3 * * 1"
   workflow_dispatch:
 
 permissions:
