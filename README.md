@@ -309,19 +309,15 @@ report.
 The native release tool keeps the seven published module versions aligned,
 validates the workspace, and checks every package archive. Preparation
 publishes nothing and never dry-runs an archive against the registry, so it
-needs no mooncakes.io credentials. It passes `--frozen` to every `moon`
-command that can synchronize dependencies, so a cold or stale local registry
-fails loudly instead of fetching mid-release:
+needs no mooncakes.io credentials:
 
 ```bash
-moon run --frozen --target native tools/release -- prepare --version <MAJOR.MINOR.PATCH>
+moon run --target native tools/release -- prepare --version <MAJOR.MINOR.PATCH>
 ```
 
 The version is a plain `MAJOR.MINOR.PATCH` with no prerelease suffix. `prepare`
 refuses to run unless the Git worktree is clean and the seven published
 manifests already agree on one version, which it then rewrites to the new one.
-A machine that has never resolved this workspace's dependencies needs a
-`moon update` before that command, because of `--frozen`.
 
 Review and commit the resulting manifest changes, open a pull request, and wait
 for CI to pass before merging: `main` is protected and rejects direct pushes.

@@ -154,26 +154,21 @@ async fn prepare_release(root : StringView, version : String) -> Unit {
     "Synchronizing workspace versions",
   )
   run_checked(root, "moon", ["fmt"], "Formatting the workspace")
+  run_checked(root, "moon", ["info"], "Refreshing generated interfaces")
   run_checked(
     root,
     "moon",
-    ["info", "--frozen"],
-    "Refreshing generated interfaces",
-  )
-  run_checked(
-    root,
-    "moon",
-    ["check", "tools/release", "--target", "native", "--frozen"],
+    ["check", "tools/release", "--target", "native"],
     "Checking the native release tool",
   )
   run_checked(
     root,
     "moon",
-    ["test", "tools/release", "--target", "native", "--frozen"],
+    ["test", "tools/release", "--target", "native"],
     "Testing the native release tool",
   )
-  run_checked(root, "moon", ["check", "--frozen"], "Checking the workspace")
-  run_checked(root, "moon", ["test", "--frozen"], "Testing the workspace")
+  run_checked(root, "moon", ["check"], "Checking the workspace")
+  run_checked(root, "moon", ["test"], "Testing the workspace")
   for release_module in published_modules {
     run_checked(
       root,
