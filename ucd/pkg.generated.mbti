@@ -10,6 +10,10 @@ pub fn east_asian_width(Char) -> EastAsianWidth
 
 pub fn general_category(Char) -> GeneralCategory
 
+pub fn hangul_syllable_type(Char) -> HangulSyllableType
+
+pub fn has_emoji_variation_sequence(Char) -> Bool
+
 pub fn is_alphabetic(Char) -> Bool
 
 pub fn is_default_ignorable_code_point(Char) -> Bool
@@ -36,7 +40,11 @@ pub fn is_xid_continue(Char) -> Bool
 
 pub fn is_xid_start(Char) -> Bool
 
+pub fn joining_group(Char) -> JoiningGroup
+
 pub fn joining_type(Char) -> JoiningType
+
+pub fn line_break(Char) -> LineBreak
 
 pub fn to_lowercase(Char) -> String
 
@@ -122,6 +130,144 @@ pub fn GeneralCategoryGroup::to_repr(Self) -> @debug.Repr
 pub fn GeneralCategoryGroup::to_string(Self) -> String
 pub impl Show for GeneralCategoryGroup
 
+pub(all) enum HangulSyllableType {
+  NotApplicable
+  LeadingJamo
+  VowelJamo
+  TrailingJamo
+  LVSyllable
+  LVTSyllable
+} derive(Eq)
+pub fn HangulSyllableType::equal(Self, Self) -> Bool
+pub fn HangulSyllableType::not_equal(Self, Self) -> Bool
+pub fn HangulSyllableType::output(Self, &Logger) -> Unit
+pub fn HangulSyllableType::to_string(Self) -> String
+pub impl Show for HangulSyllableType
+
+pub(all) enum JoiningGroup {
+  AfricanFeh
+  AfricanNoon
+  AfricanQaf
+  Ain
+  Alaph
+  Alef
+  Beh
+  Beth
+  BurushaskiYehBarree
+  CrownAin
+  CrownBeh
+  CrownFeh
+  CrownHah
+  CrownHeh
+  CrownKaf
+  CrownMeem
+  CrownSad
+  CrownSeen
+  CrownTah
+  Dal
+  DalathRish
+  E
+  FarsiYeh
+  Fe
+  Feh
+  FinalSemkath
+  Gaf
+  Gamal
+  Hah
+  HanifiRohingyaKinnaYa
+  HanifiRohingyaPa
+  He
+  Heh
+  HehGoal
+  Heth
+  Kaf
+  Kaph
+  KashmiriYeh
+  Khaph
+  KnottedHeh
+  Lam
+  Lamadh
+  MalayalamBha
+  MalayalamJa
+  MalayalamLla
+  MalayalamLlla
+  MalayalamNga
+  MalayalamNna
+  MalayalamNnna
+  MalayalamNya
+  MalayalamRa
+  MalayalamSsa
+  MalayalamTta
+  ManichaeanAleph
+  ManichaeanAyin
+  ManichaeanBeth
+  ManichaeanDaleth
+  ManichaeanDhamedh
+  ManichaeanFive
+  ManichaeanGimel
+  ManichaeanHeth
+  ManichaeanHundred
+  ManichaeanKaph
+  ManichaeanLamedh
+  ManichaeanMem
+  ManichaeanNun
+  ManichaeanOne
+  ManichaeanPe
+  ManichaeanQoph
+  ManichaeanResh
+  ManichaeanSadhe
+  ManichaeanSamekh
+  ManichaeanTaw
+  ManichaeanTen
+  ManichaeanTeth
+  ManichaeanThamedh
+  ManichaeanTwenty
+  ManichaeanWaw
+  ManichaeanYodh
+  ManichaeanZayin
+  Meem
+  Mim
+  NoJoiningGroup
+  Noon
+  Nun
+  Nya
+  Pe
+  Qaf
+  Qaph
+  Reh
+  ReversedPe
+  RohingyaYeh
+  Sad
+  Sadhe
+  Seen
+  Semkath
+  Shin
+  StraightWaw
+  SwashKaf
+  SyriacWaw
+  Tah
+  Taw
+  TehMarbuta
+  TehMarbutaGoal
+  Teth
+  ThinNoon
+  ThinYeh
+  VerticalTail
+  Waw
+  Yeh
+  YehBarree
+  YehWithTail
+  Yudh
+  YudhHe
+  Zain
+  Zhain
+} derive(Eq)
+pub fn JoiningGroup::equal(Self, Self) -> Bool
+pub fn JoiningGroup::not_equal(Self, Self) -> Bool
+pub fn JoiningGroup::output(Self, &Logger) -> Unit
+pub fn JoiningGroup::to_string(Self) -> String
+pub impl Show for JoiningGroup
+
 pub(all) enum JoiningType {
   NonJoining
   JoinCausing
@@ -135,6 +281,63 @@ pub fn JoiningType::not_equal(Self, Self) -> Bool
 pub fn JoiningType::output(Self, &Logger) -> Unit
 pub fn JoiningType::to_string(Self) -> String
 pub impl Show for JoiningType
+
+pub(all) enum LineBreak {
+  AI
+  AK
+  AL
+  AP
+  AS
+  B2
+  BA
+  BB
+  BK
+  CB
+  CJ
+  CL
+  CM
+  CP
+  CR
+  EB
+  EM
+  EX
+  GL
+  H2
+  H3
+  HH
+  HL
+  HY
+  ID
+  IN
+  IS
+  JL
+  JT
+  JV
+  LF
+  NL
+  NS
+  NU
+  OP
+  PO
+  PR
+  QU
+  RI
+  SA
+  SG
+  SP
+  SY
+  VF
+  VI
+  WJ
+  XX
+  ZW
+  ZWJ
+} derive(Eq)
+pub fn LineBreak::equal(Self, Self) -> Bool
+pub fn LineBreak::not_equal(Self, Self) -> Bool
+pub fn LineBreak::output(Self, &Logger) -> Unit
+pub fn LineBreak::to_string(Self) -> String
+pub impl Show for LineBreak
 
 // Type aliases
 

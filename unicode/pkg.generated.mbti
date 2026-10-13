@@ -11,6 +11,10 @@ pub fn east_asian_width(Char) -> @unicode-data.EastAsianWidth
 
 pub fn general_category(Char) -> GeneralCategory
 
+pub fn hangul_syllable_type(Char) -> @unicode-data.HangulSyllableType
+
+pub fn has_emoji_variation_sequence(Char) -> Bool
+
 pub fn is_alphabetic(Char) -> Bool
 
 pub fn is_default_ignorable_code_point(Char) -> Bool
@@ -37,7 +41,11 @@ pub fn is_xid_continue(Char) -> Bool
 
 pub fn is_xid_start(Char) -> Bool
 
+pub fn joining_group(Char) -> @unicode-data.JoiningGroup
+
 pub fn joining_type(Char) -> @unicode-data.JoiningType
+
+pub fn line_break(Char) -> @unicode-data.LineBreak
 
 pub fn to_lowercase(Char) -> String
 
@@ -112,6 +120,12 @@ pub impl Show for GeneralCategoryGroup
 // Type aliases
 pub using @unicode-data {type EastAsianWidth}
 
+pub using @unicode-data {type HangulSyllableType}
+
+pub using @unicode-data {type JoiningGroup}
+
 pub using @unicode-data {type JoiningType}
+
+pub using @unicode-data {type LineBreak}
 
 // Traits

@@ -1,8 +1,13 @@
 ///|
 pub using @impl {
   type EastAsianWidth,
+  type HangulSyllableType,
+  type JoiningGroup,
   type JoiningType,
+  type LineBreak,
   east_asian_width,
+  hangul_syllable_type,
+  has_emoji_variation_sequence,
   is_alphabetic,
   is_default_ignorable_code_point,
   is_emoji_modifier,
@@ -16,7 +21,9 @@ pub using @impl {
   is_white_space,
   is_xid_continue,
   is_xid_start,
+  joining_group,
   joining_type,
+  line_break,
   to_lowercase,
   to_simple_lowercase,
   to_simple_titlecase,

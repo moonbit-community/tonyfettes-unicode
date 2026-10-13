@@ -1,0 +1,13 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbit-community/unicode-data/line_break"
+
+// Values
+pub fn lookup_line_break(Char) -> Int
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits

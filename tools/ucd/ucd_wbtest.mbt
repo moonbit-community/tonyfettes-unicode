@@ -415,12 +415,19 @@ test "emit Emoji tables" {
         #|1F44D ; Emoji_Modifier_Base
       ),
     ),
+    parse_emoji_variation_sequences(
+      (
+        #|0023 FE0E  ; text style;  # (1.1) NUMBER SIGN
+        #|0023 FE0F  ; emoji style; # (1.1) NUMBER SIGN
+      ),
+    ),
   )
   for
     expected in [
-      "/// Generated from emoji-data.txt\n", "let emoji_presentation_trie_top : Bytes = [",
+      "/// Generated from emoji-data.txt and emoji-variation-sequences.txt\n", "let emoji_presentation_trie_top : Bytes = [",
       "pub fn is_emoji_presentation(c : Char) -> Bool", "let emoji_modifier_trie_leaf : Bytes = [",
       "pub fn is_emoji_modifier(c : Char) -> Bool", "pub fn is_emoji_modifier_base(c : Char) -> Bool",
+      "/// Check whether a character starts an emoji variation sequence\npub fn has_emoji_variation_sequence(c : Char) -> Bool",
     ] {
     guard source.contains(expected) else {
       fail("Generated source is missing: \{expected}")
@@ -463,5 +470,174 @@ test "unknown Joining_Type is rejected" {
       )
   } noraise {
     _ => fail("expected an unknown Joining_Type to be rejected")
+  }
+}
+
+///|
+test "parse emoji variation sequences into ranges" {
+  let ranges = parse_emoji_variation_sequences(
+    (
+      #|0023 FE0E  ; text style;  # (1.1) NUMBER SIGN
+      #|0023 FE0F  ; emoji style; # (1.1) NUMBER SIGN
+      #|0030 FE0E  ; text style;  # (1.1) DIGIT ZERO
+      #|0030 FE0F  ; emoji style; # (1.1) DIGIT ZERO
+      #|0031 FE0E  ; text style;  # (1.1) DIGIT ONE
+      #|0031 FE0F  ; emoji style; # (1.1) DIGIT ONE
+    ),
+  )
+  debug_inspect(
+    ranges,
+    content=(
+      #|[{ start: 35, end: 35 }, { start: 48, end: 49 }]
+    ),
+  )
+}
+
+///|
+test "emoji variation sequences must come in pairs" {
+  try
+    parse_emoji_variation_sequences(
+      (
+        #|0023 FE0E  ; text style;  # (1.1) NUMBER SIGN
+        #|0023 FE0F  ; emoji style; # (1.1) NUMBER SIGN
+        #|0030 FE0F  ; emoji style; # (1.1) DIGIT ZERO
+      ),
+    )
+  catch {
+    error =>
+      inspect(
+        error.to_string().contains("have different base characters"),
+        content="true",
+      )
+  } noraise {
+    _ => fail("expected an unpaired variation sequence to be rejected")
+  }
+  try parse_emoji_variation_sequences("0023 FE0F ; text style;\n") catch {
+    error =>
+      inspect(
+        error.to_string().contains("Unexpected emoji variation sequence"),
+        content="true",
+      )
+  } noraise {
+    _ => fail("expected a mismatched selector to be rejected")
+  }
+}
+
+///|
+test "emit Hangul_Syllable_Type table" {
+  let source = emit_hangul_syllable_type(
+    (
+      #|# @missing: 0000..10FFFF; Not_Applicable
+      #|1100..115F ; L
+      #|AC00 ; LV
+      #|AC01..AC1B ; LVT
+      #|
+    ),
+  )
+  for
+    expected in [
+      "/// Hangul_Syllable_Type lookup data\n/// Generated from HangulSyllableType.txt\n",
+      "let hangul_syllable_type_trie_leaf : Bytes = [", "pub fn lookup_hangul_syllable_type(c : Char) -> Int {",
+    ] {
+    guard source.contains(expected) else {
+      fail("Generated source is missing: \{expected}")
+    }
+  }
+  try emit_hangul_syllable_type("1100 ; X\n") catch {
+    error =>
+      inspect(
+        error.to_string().contains("Unknown Hangul_Syllable_Type: X"),
+        content="true",
+      )
+  } noraise {
+    _ => fail("expected an unknown Hangul_Syllable_Type to be rejected")
+  }
+}
+
+///|
+test "emit Joining_Group table and enum in dictionary order" {
+  let input =
+    #|# @missing: 0000..10FFFF; No_Joining_Group
+    #|0629 ; Teh_Marbuta
+    #|0628 ; Beh
+    #|06C3 ; Teh_Marbuta_Goal
+    #|0647 ; Heh
+    #|062D ; Hah
+    #|
+  let source = emit_joining_group(input)
+  for
+    expected in [
+      "/// Joining_Group lookup data\n/// Generated from DerivedJoiningGroup.txt\n",
+      "let joining_group_trie_leaf : Bytes = [", "/// Returns ordinal value (0-5) corresponding to JoiningGroup enum\n",
+      "pub fn lookup_joining_group(c : Char) -> Int {",
+    ] {
+    guard source.contains(expected) else {
+      fail("Generated source is missing: \{expected}")
+    }
+  }
+  let api = emit_joining_group_enum(input)
+  for
+    expected in [
+      // Dictionary order, not the length-first order of `String::compare`.
+      "pub(all) enum JoiningGroup {\n  Beh // Beh\n  Hah // Hah\n  Heh // Heh\n  NoJoiningGroup // No_Joining_Group\n  TehMarbuta // Teh_Marbuta\n  TehMarbutaGoal // Teh_Marbuta_Goal\n} derive(Eq)",
+      "      TehMarbutaGoal => \"TehMarbutaGoal\"\n", "    0 => Beh\n    1 => Hah\n    2 => Heh\n    4 => TehMarbuta\n    5 => TehMarbutaGoal\n    _ => NoJoiningGroup // 3 or any unknown\n",
+      "  ordinal_to_joining_group(@joining_group.lookup_joining_group(c))\n",
+    ] {
+    guard api.contains(expected) else {
+      fail("Generated source is missing: \{expected}")
+    }
+  }
+}
+
+///|
+test "emit Line_Break table and enum" {
+  let lines = StringBuilder()
+  lines.write_string("# @missing: 0000..10FFFF; XX\n")
+  for cp, entry in line_break_values {
+    lines.write_string("\{@emitter.hex_upper(0x100 + cp)} ; \{entry.0}\n")
+  }
+  let source = emit_line_break(lines.to_string())
+  for
+    expected in [
+      "/// Line_Break lookup data\n/// Generated from LineBreak.txt\n", "let line_break_trie_leaf : Bytes = [",
+      "/// Returns ordinal value (0-48) corresponding to LineBreak enum\n", "pub fn lookup_line_break(c : Char) -> Int {",
+    ] {
+    guard source.contains(expected) else {
+      fail("Generated source is missing: \{expected}")
+    }
+  }
+  let api = emit_line_break_enum()
+  for
+    expected in [
+      "pub(all) enum LineBreak {\n  AI // Ambiguous (Alphabetic or Ideographic)\n",
+      "  ZWJ // Zero Width Joiner\n} derive(Eq)", "    45 => WJ\n    47 => ZW\n    48 => ZWJ\n    _ => XX // 46 or any unknown\n",
+      "  ordinal_to_line_break(@line_break.lookup_line_break(c))\n",
+    ] {
+    guard api.contains(expected) else {
+      fail("Generated source is missing: \{expected}")
+    }
+  }
+}
+
+///|
+test "Line_Break values must match the data" {
+  try emit_line_break("0041 ; QQ\n") catch {
+    error =>
+      inspect(
+        error.to_string().contains("Unknown Line_Break: QQ"),
+        content="true",
+      )
+  } noraise {
+    _ => fail("expected an unknown Line_Break to be rejected")
+  }
+  try emit_line_break("0041 ; AL\n") catch {
+    error =>
+      inspect(
+        error.to_string().contains("does not occur in LineBreak.txt"),
+        content="true",
+      )
+  } noraise {
+    _ =>
+      fail("expected a Line_Break value missing from the data to be rejected")
   }
 }

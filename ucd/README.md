@@ -1,11 +1,12 @@
 # unicode-data
 
 Unicode Character Database lookup, general categories, East Asian width,
-joining types, binary properties (White_Space, Alphabetic, Lowercase,
-Uppercase, XID_Start, XID_Continue, Default_Ignorable_Code_Point,
-Grapheme_Extend, Regional_Indicator, Prepended_Concatenation_Mark,
-Emoji_Presentation, Emoji_Modifier, Emoji_Modifier_Base), and case mapping for
-MoonBit. This module uses Unicode 18.0.0 data.
+line break classes, joining types and groups, Hangul syllable types, binary
+properties (White_Space, Alphabetic, Lowercase, Uppercase, XID_Start,
+XID_Continue, Default_Ignorable_Code_Point, Grapheme_Extend,
+Regional_Indicator, Prepended_Concatenation_Mark, Emoji_Presentation,
+Emoji_Modifier, Emoji_Modifier_Base), emoji variation sequences, and case
+mapping for MoonBit. This module uses Unicode 18.0.0 data.
 
 ```bash
 moon add moonbit-community/unicode-data
@@ -35,8 +36,11 @@ tables and exposes lookup functions; the tables themselves remain private.
 | `grapheme_extend` | Grapheme_Extend |
 | `regional_indicator` | Regional_Indicator |
 | `prepended_concatenation_mark` | Prepended_Concatenation_Mark |
-| `emoji` | Emoji_Presentation, Emoji_Modifier, and Emoji_Modifier_Base |
+| `emoji` | Emoji_Presentation, Emoji_Modifier, Emoji_Modifier_Base, and the characters starting an emoji variation sequence |
 | `joining_type` | Joining_Type ordinal |
+| `joining_group` | Joining_Group ordinal |
+| `hangul_syllable_type` | Hangul_Syllable_Type ordinal |
+| `line_break` | Line_Break ordinal |
 
 `moonbit-community/unicode-data/data` remains a compatibility package that re-exports
 the old lookup functions with deprecation notices pointing to these packages.

@@ -459,3 +459,182 @@ test "joining_type: planes above the trie" {
   inspect(@ucd.joining_type('\u{E01F0}'), content="NonJoining") // reserved
   inspect(@ucd.joining_type('\u{10FFFF}'), content="NonJoining") // noncharacter
 }
+
+///|
+test "emoji variation sequences" {
+  // Text by default: VARIATION SELECTOR-16 asks for the emoji presentation.
+  inspect(@ucd.has_emoji_variation_sequence('#'), content="true")
+  inspect(@ucd.has_emoji_variation_sequence('0'), content="true")
+  inspect(@ucd.has_emoji_variation_sequence('\u{00A9}'), content="true") // COPYRIGHT SIGN
+  inspect(@ucd.has_emoji_variation_sequence('\u{2764}'), content="true") // HEAVY BLACK HEART
+  // Emoji by default: VARIATION SELECTOR-15 asks for the text presentation.
+  inspect(@ucd.has_emoji_variation_sequence('\u{231A}'), content="true") // WATCH
+  inspect(@ucd.has_emoji_variation_sequence('\u{1F004}'), content="true") // MAHJONG TILE RED DRAGON
+  // Emoji without a text presentation to select
+  inspect(@ucd.has_emoji_variation_sequence('\u{1F600}'), content="false") // GRINNING FACE
+  inspect(@ucd.has_emoji_variation_sequence('\u{1F1E6}'), content="false") // REGIONAL INDICATOR SYMBOL LETTER A
+  inspect(@ucd.has_emoji_variation_sequence('\u{1F3FB}'), content="false") // EMOJI MODIFIER FITZPATRICK TYPE-1-2
+  inspect(@ucd.has_emoji_variation_sequence('a'), content="false")
+  inspect(@ucd.has_emoji_variation_sequence('\u{FE0F}'), content="false") // VARIATION SELECTOR-16
+}
+
+///|
+test "hangul_syllable_type: each value" {
+  inspect(@ucd.hangul_syllable_type('a'), content="NotApplicable")
+  inspect(@ucd.hangul_syllable_type('\u{1100}'), content="LeadingJamo") // HANGUL CHOSEONG KIYEOK
+  inspect(@ucd.hangul_syllable_type('\u{1161}'), content="VowelJamo") // HANGUL JUNGSEONG A
+  inspect(@ucd.hangul_syllable_type('\u{11A8}'), content="TrailingJamo") // HANGUL JONGSEONG KIYEOK
+  inspect(@ucd.hangul_syllable_type('\u{AC00}'), content="LVSyllable") // HANGUL SYLLABLE GA
+  inspect(@ucd.hangul_syllable_type('\u{AC01}'), content="LVTSyllable") // HANGUL SYLLABLE GAG
+}
+
+///|
+test "hangul_syllable_type: jamo blocks and syllable boundaries" {
+  inspect(@ucd.hangul_syllable_type('\u{115F}'), content="LeadingJamo") // HANGUL CHOSEONG FILLER
+  inspect(@ucd.hangul_syllable_type('\u{1160}'), content="VowelJamo") // HANGUL JUNGSEONG FILLER
+  inspect(@ucd.hangul_syllable_type('\u{A960}'), content="LeadingJamo") // HANGUL CHOSEONG TIKEUT-MIEUM
+  inspect(@ucd.hangul_syllable_type('\u{D7B0}'), content="VowelJamo") // HANGUL JUNGSEONG O-YEO
+  inspect(@ucd.hangul_syllable_type('\u{D7CB}'), content="TrailingJamo") // HANGUL JONGSEONG NIEUN-RIEUL
+  inspect(@ucd.hangul_syllable_type('\u{AC1C}'), content="LVSyllable") // HANGUL SYLLABLE GAE
+  inspect(@ucd.hangul_syllable_type('\u{D7A3}'), content="LVTSyllable") // HANGUL SYLLABLE HIH
+  inspect(@ucd.hangul_syllable_type('\u{D7A4}'), content="NotApplicable") // reserved
+}
+
+///|
+test "hangul_syllable_type: characters outside the conjoining jamo" {
+  inspect(@ucd.hangul_syllable_type('\u{3131}'), content="NotApplicable") // HANGUL LETTER KIYEOK
+  inspect(@ucd.hangul_syllable_type('\u{FFA1}'), content="NotApplicable") // HALFWIDTH HANGUL LETTER KIYEOK
+  // Grapheme_Cluster_Break=V outside Hangul
+  inspect(@ucd.hangul_syllable_type('\u{16D63}'), content="NotApplicable") // KIRAT RAI VOWEL SIGN AA
+  inspect(@ucd.hangul_syllable_type('\u{E0100}'), content="NotApplicable") // VARIATION SELECTOR-17
+}
+
+///|
+test "line_break: common classes" {
+  inspect(@ucd.line_break('a'), content="AL")
+  inspect(@ucd.line_break('0'), content="NU")
+  inspect(@ucd.line_break(' '), content="SP")
+  inspect(@ucd.line_break('\n'), content="LF")
+  inspect(@ucd.line_break('\r'), content="CR")
+  inspect(@ucd.line_break('\u{0C}'), content="BK") // FORM FEED
+  inspect(@ucd.line_break('\u{85}'), content="NL") // NEXT LINE
+  inspect(@ucd.line_break('('), content="OP")
+  inspect(@ucd.line_break(')'), content="CP")
+  inspect(@ucd.line_break('}'), content="CL")
+  inspect(@ucd.line_break('!'), content="EX")
+  inspect(@ucd.line_break('"'), content="QU")
+  inspect(@ucd.line_break('-'), content="HY")
+  inspect(@ucd.line_break('/'), content="SY")
+  inspect(@ucd.line_break(','), content="IS")
+  inspect(@ucd.line_break('$'), content="PR")
+  inspect(@ucd.line_break('%'), content="PO")
+  inspect(@ucd.line_break('\u{A0}'), content="GL") // NO-BREAK SPACE
+  inspect(@ucd.line_break('\u{0301}'), content="CM") // COMBINING ACUTE ACCENT
+  inspect(@ucd.line_break('\u{200B}'), content="ZW") // ZERO WIDTH SPACE
+  inspect(@ucd.line_break('\u{200D}'), content="ZWJ") // ZERO WIDTH JOINER
+  inspect(@ucd.line_break('\u{2060}'), content="WJ") // WORD JOINER
+  inspect(@ucd.line_break('\u{2014}'), content="B2") // EM DASH
+  inspect(@ucd.line_break('\u{FFFC}'), content="CB") // OBJECT REPLACEMENT CHARACTER
+}
+
+///|
+test "line_break: East Asian and Hangul classes" {
+  inspect(@ucd.line_break('\u{4E2D}'), content="ID") // CJK UNIFIED IDEOGRAPH-4E2D
+  inspect(@ucd.line_break('\u{3042}'), content="ID") // HIRAGANA LETTER A
+  inspect(@ucd.line_break('\u{3041}'), content="CJ") // HIRAGANA LETTER SMALL A
+  inspect(@ucd.line_break('\u{3005}'), content="NS") // IDEOGRAPHIC ITERATION MARK
+  inspect(@ucd.line_break('\u{3001}'), content="CL") // IDEOGRAPHIC COMMA
+  inspect(@ucd.line_break('\u{1100}'), content="JL") // HANGUL CHOSEONG KIYEOK
+  inspect(@ucd.line_break('\u{1161}'), content="JV") // HANGUL JUNGSEONG A
+  inspect(@ucd.line_break('\u{11A8}'), content="JT") // HANGUL JONGSEONG KIYEOK
+  inspect(@ucd.line_break('\u{AC00}'), content="H2") // HANGUL SYLLABLE GA
+  inspect(@ucd.line_break('\u{AC01}'), content="H3") // HANGUL SYLLABLE GAG
+}
+
+///|
+test "line_break: classes rule LB1 resolves are returned unresolved" {
+  inspect(@ucd.line_break('\u{00A7}'), content="AI") // SECTION SIGN
+  inspect(@ucd.line_break('\u{2460}'), content="AI") // CIRCLED DIGIT ONE
+  inspect(@ucd.line_break('\u{0E01}'), content="SA") // THAI CHARACTER KO KAI
+  inspect(@ucd.line_break('\u{0378}'), content="XX") // reserved
+  inspect(@ucd.line_break('\u{E000}'), content="XX") // private use
+}
+
+///|
+test "line_break: emoji, Hebrew, and Brahmic classes" {
+  inspect(@ucd.line_break('\u{1F1E6}'), content="RI") // REGIONAL INDICATOR SYMBOL LETTER A
+  inspect(@ucd.line_break('\u{1F44D}'), content="EB") // THUMBS UP SIGN
+  inspect(@ucd.line_break('\u{1F3FB}'), content="EM") // EMOJI MODIFIER FITZPATRICK TYPE-1-2
+  inspect(@ucd.line_break('\u{1F600}'), content="ID") // GRINNING FACE
+  inspect(@ucd.line_break('\u{05D0}'), content="HL") // HEBREW LETTER ALEF
+  inspect(@ucd.line_break('\u{2010}'), content="HH") // HYPHEN
+  inspect(@ucd.line_break('\u{1B05}'), content="AK") // BALINESE LETTER AKARA
+  inspect(@ucd.line_break('\u{1B44}'), content="VI") // BALINESE ADEG ADEG
+  inspect(@ucd.line_break('\u{1BF2}'), content="VF") // BATAK PANGOLAT
+  inspect(@ucd.line_break('\u{1B50}'), content="AS") // BALINESE DIGIT ZERO
+  inspect(@ucd.line_break('\u{11003}'), content="AP") // BRAHMI SIGN JIHVAMULIYA
+}
+
+///|
+test "line_break: unassigned code points" {
+  inspect(@ucd.line_break('\u{20CF}'), content="PR") // reserved, Currency Symbols
+  inspect(@ucd.line_break('\u{2FFFD}'), content="ID") // reserved, plane 2
+  inspect(@ucd.line_break('\u{3FFFD}'), content="ID") // reserved, plane 3
+  inspect(@ucd.line_break('\u{1FAFF}'), content="ID") // reserved
+  inspect(@ucd.line_break('\u{2FFFE}'), content="XX") // noncharacter
+}
+
+///|
+test "line_break: planes above the trie" {
+  inspect(@ucd.line_break('\u{40000}'), content="XX") // reserved, plane 4
+  inspect(@ucd.line_break('\u{E0001}'), content="CM") // LANGUAGE TAG
+  inspect(@ucd.line_break('\u{E0100}'), content="CM") // VARIATION SELECTOR-17
+  inspect(@ucd.line_break('\u{F0000}'), content="XX") // private use, plane 15
+  inspect(@ucd.line_break('\u{10FFFF}'), content="XX") // noncharacter
+}
+
+///|
+test "joining_group: letters sharing a shape share a group" {
+  inspect(@ucd.joining_group('\u{0628}'), content="Beh") // ARABIC LETTER BEH
+  inspect(@ucd.joining_group('\u{062A}'), content="Beh") // ARABIC LETTER TEH
+  inspect(@ucd.joining_group('\u{062B}'), content="Beh") // ARABIC LETTER THEH
+  inspect(@ucd.joining_group('\u{0627}'), content="Alef") // ARABIC LETTER ALEF
+  inspect(@ucd.joining_group('\u{0622}'), content="Alef") // ARABIC LETTER ALEF WITH MADDA ABOVE
+  inspect(@ucd.joining_group('\u{0644}'), content="Lam") // ARABIC LETTER LAM
+}
+
+///|
+test "joining_group: names of several words" {
+  inspect(@ucd.joining_group('\u{06D2}'), content="YehBarree") // ARABIC LETTER YEH BARREE
+  inspect(@ucd.joining_group('\u{0629}'), content="TehMarbuta") // ARABIC LETTER TEH MARBUTA
+  inspect(@ucd.joining_group('\u{06C3}'), content="TehMarbutaGoal") // ARABIC LETTER TEH MARBUTA GOAL
+  inspect(@ucd.joining_group('\u{0710}'), content="Alaph") // SYRIAC LETTER ALAPH
+  inspect(@ucd.joining_group('\u{10AC0}'), content="ManichaeanAleph") // MANICHAEAN LETTER ALEPH
+}
+
+///|
+test "joining_group: characters outside the groups" {
+  inspect(@ucd.joining_group('a'), content="NoJoiningGroup")
+  // Joining characters without a group
+  inspect(@ucd.joining_group('\u{0640}'), content="NoJoiningGroup") // ARABIC TATWEEL
+  inspect(@ucd.joining_group('\u{064B}'), content="NoJoiningGroup") // ARABIC FATHATAN
+  inspect(@ucd.joining_group('\u{200D}'), content="NoJoiningGroup") // ZERO WIDTH JOINER
+  inspect(@ucd.joining_group('\u{0378}'), content="NoJoiningGroup") // reserved
+  inspect(@ucd.joining_group('\u{E0100}'), content="NoJoiningGroup") // VARIATION SELECTOR-17
+  inspect(@ucd.joining_group('\u{10FFFF}'), content="NoJoiningGroup") // noncharacter
+}
+
+///|
+test "joining_group: Pe is told apart from the General_Category value" {
+  inspect(
+    @ucd.joining_group('\u{0726}') == @ucd.JoiningGroup::Pe,
+    content="true",
+  ) // SYRIAC LETTER PE
+  inspect(
+    @ucd.general_category(')') == @ucd.GeneralCategory::Pe,
+    content="true",
+  )
+  // The type is known from the other operand, so the name alone is enough.
+  inspect(@ucd.joining_group('\u{0726}') == Pe, content="true")
+  inspect(@ucd.general_category(')') == Pe, content="true")
+}
