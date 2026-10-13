@@ -181,7 +181,8 @@ fn process_suspect_spans(
 
 ///|
 /// Skip Quick_Check=Yes, CCC=0 characters from `start` and return the offset
-/// of the first other character, or the length. `slow_mask` selects CCC and
+/// of the first other character. Without one before `end`, return `end`, or
+/// one past it when a surrogate pair crosses it. `slow_mask` selects CCC and
 /// one form's Quick_Check bits of the packed properties; shifted right by
 /// seven it selects the same bits of the generated scan flags.
 ///
@@ -189,14 +190,21 @@ fn process_suspect_spans(
 /// properties up through `@ccc` instead costs a call per character, because
 /// functions are not inlined across packages. Even one call on a rare path
 /// would make every entry to this function save and restore registers, which
-/// shows on text with many short runs.
-fn scan_clean_run(s : String, start : Int32, slow_mask : Int32) -> Int32 {
+/// shows on text with many short runs. The loop is also sensitive to its
+/// shape: trying blocks inside it instead of around it costs an extra taken
+/// branch per character.
+fn scan_clean_units(
+  s : String,
+  start : Int32,
+  end : Int32,
+  slow_mask : Int32,
+) -> Int32 {
   let length = s.length()
   let scan_mask = slow_mask >> 7
   let unit_mask = scan_mask | NormalizationScanLeadSurrogate
   let mut offset = start
-  while offset < length {
-    // SAFETY: offset starts at a nonnegative boundary and the loop guarantees offset < length.
+  while offset < end {
+    // SAFETY: offset starts at a nonnegative boundary and the loop guarantees offset < end <= length.
     // It advances by two only after checking that a second unit exists.
     let first = s.unsafe_get(offset).to_int()
     if first < 0x80 {
@@ -261,6 +269,95 @@ fn scan_clean_run(s : String, start : Int32, slow_mask : Int32) -> Int32 {
       break
     }
     offset += 2
+  }
+  offset
+}
+
+///|
+/// Return the end of the run of clean characters starting at `start`.
+#cfg(not(any(target="native", target="wasm")))
+fn scan_clean_run(s : String, start : Int32, slow_mask : Int32) -> Int32 {
+  scan_clean_units(s, start, s.length(), slow_mask)
+}
+
+///|
+/// Return the end of the run of clean characters starting at `start`.
+///
+/// Once a stretch of code units has passed the scan one at a time, blocks of
+/// eight are tried: a block whose code units are all below the clean limit
+/// needs no table. The stretch starts short, so that a run that soon ends
+/// never reaches a block, and grows while no block is clean, so that text
+/// above the limit pays for few tries and few calls.
+#cfg(any(target="native", target="wasm"))
+fn scan_clean_run(s : String, start : Int32, slow_mask : Int32) -> Int32 {
+  let length = s.length()
+  let mut offset = start
+  let mut stretch = MinUnitStretch
+  while true {
+    let end = if length - offset > stretch { offset + stretch } else { length }
+    offset = scan_clean_units(s, offset, end, slow_mask)
+    // A pair that crosses `end` leaves the offset one past it.
+    if offset < end || offset >= length {
+      break
+    }
+    let blocks_end = skip_clean_blocks(s, offset, length, slow_mask >> 7)
+    if blocks_end > offset {
+      stretch = MinUnitStretch
+    } else if stretch < MaxUnitStretch {
+      stretch = 4 * stretch
+    }
+    offset = blocks_end
+  }
+  offset
+}
+
+///|
+/// Code units scanned one at a time before the first block and after a block
+/// that is not clean.
+#cfg(any(target="native", target="wasm"))
+const MinUnitStretch : Int32 = 16
+
+///|
+#cfg(any(target="native", target="wasm"))
+const MaxUnitStretch : Int32 = 4096
+
+///|
+/// The first code unit that is not a clean starter in the forms `scan_mask`
+/// selects: U+00A0 has a compatibility mapping, U+00C0 a canonical one, and
+/// U+0300 is the first combining mark.
+#cfg(any(target="native", target="wasm"))
+fn clean_unit_limit(scan_mask : Int32) -> Int32 {
+  if (scan_mask & 0b1011000) != 0 {
+    0xA0
+  } else if (scan_mask & 0b0100000) != 0 {
+    0xC0
+  } else {
+    0x300
+  }
+}
+
+///|
+/// Skip blocks of eight code units that are all below the clean limit, and
+/// return the offset of the first block that is not, or that is incomplete.
+#cfg(any(target="native", target="wasm"))
+// The SIMD operations are experimental upstream. Only this function uses
+// them, so the alert is silenced here and not for the whole package.
+#warnings("-alert_experimental")
+fn skip_clean_blocks(
+  s : String,
+  start : Int32,
+  length : Int32,
+  scan_mask : Int32,
+) -> Int32 {
+  let limit = @v128.i16x8_splat(clean_unit_limit(scan_mask).to_uint16())
+  let mut offset = start
+  while offset + 8 <= length {
+    // SAFETY: offset is nonnegative and offset + 8 <= length is checked above.
+    let block = @v128.v128_load_i16x8(s, offset)
+    if @v128.v128_any_true(@v128.i16x8_ge_u(block, limit)) {
+      break
+    }
+    offset += 8
   }
   offset
 }

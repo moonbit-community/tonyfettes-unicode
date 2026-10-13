@@ -2,6 +2,7 @@ import {
   "moonbit-community/unicode-data/ccc",
   "moonbit-community/unicode-data/composition",
   "moonbit-community/unicode-data/decomposition",
+  "moonbitlang/core/v128",
 }
 
 import {
@@ -15,3 +16,8 @@ import {
 import {
   "moonbitlang/core/debug",
 } for "wbtest"
+
+// Only the native and Wasm backends reach the `moonbitlang/core/v128` import,
+// so the other backends would report it as unused.
+
+warnings = "-unused_package"
