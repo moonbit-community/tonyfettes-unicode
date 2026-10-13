@@ -1,6 +1,6 @@
 name = "moonbit-community/unicode-segmentation"
 
-version = "0.5.2"
+version = "0.6.0"
 
 license = "Apache-2.0"
 
