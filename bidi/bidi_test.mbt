@@ -331,3 +331,33 @@ test "explicit formatting: a lone PDF or PDI still takes the general path" {
     content="[0, 0, 1]",
   )
 }
+
+///|
+test "requires_bidi: finds a character at every offset of a block" {
+  for
+    marker in [
+      "\u{05D0}", "\u{0627}", "\u{202B}", "\u{2067}", "\u{10800}", "\u{1E900}",
+    ] {
+    for before in 0..<48 {
+      for after in [0, 1, 7, 8, 9] {
+        let prefix = "a".repeat(before)
+        let suffix = "z".repeat(after)
+        assert_true(@bidi.requires_bidi(prefix + marker + suffix))
+        // Characters above the block limit that need no bidi processing.
+        assert_false(@bidi.requires_bidi(prefix + "世😀" + suffix))
+      }
+    }
+  }
+}
+
+///|
+test "requires_bidi: no character below the Hebrew block needs it" {
+  for cp in 0..<0x590 {
+    let c = cp.unsafe_to_char()
+    let class = @bidi.bidi_class(c)
+    guard !class.is_strong_rtl() && !class.is_explicit() else {
+      fail("code point \{cp} requires bidi processing")
+    }
+  }
+  assert_true(@bidi.bidi_class('\u{0590}').is_strong_rtl())
+}

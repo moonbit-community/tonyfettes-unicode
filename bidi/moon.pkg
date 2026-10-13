@@ -1,6 +1,7 @@
 import {
   "moonbit-community/unicode-bidi/internal/bidi" @bidi_data,
   "moonbitlang/core/cmp",
+  "moonbitlang/core/v128",
 }
 
 import {
@@ -8,3 +9,8 @@ import {
   "moonbitlang/core/debug",
   "moonbitlang/core/bench",
 } for "test"
+
+// Only the native and Wasm backends reach the `moonbitlang/core/v128` import,
+// so the other backends would report it as unused.
+
+warnings = "-unused_package"
