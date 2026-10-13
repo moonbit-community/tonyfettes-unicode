@@ -45,7 +45,7 @@ async fn main {
       @argparse.FlagArg(
         "strict",
         long="strict",
-        about="Fail if a harness cannot be set up or fails a round, instead of leaving it out",
+        about="Fail if a harness cannot be set up, fails a round or prints no results, instead of leaving it out",
       ),
     ],
     options=[
@@ -137,7 +137,15 @@ async fn main {
         problems.push("\{peer.name} failed in round \{round}")
         continue
       }
-      for row in parse_rows(peer.name, output) {
+      let rows = parse_rows(peer.name, output)
+      // With `--group`, a harness that does not cover the group prints
+      // nothing. Otherwise every harness has results, so none is a failure,
+      // such as output that no longer parses.
+      if rows.is_empty() && group is None {
+        println("    Failed: it printed no results")
+        problems.push("\{peer.name} printed no results in round \{round}")
+      }
+      for row in rows {
         results.add(row)
         raw.write_string(
           "\{round}\t\{row.column}\t\{row.name}\t\{row.ns}\t\{row.units}\t\{row.check}\n",
