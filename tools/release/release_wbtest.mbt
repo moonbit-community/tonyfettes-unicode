@@ -140,7 +140,7 @@ test "manifest version declarations must be unique" {
 }
 
 ///|
-test "publish resume points follow dependency order" {
+test "published modules follow dependency order" {
   guard published_modules
     is [ucd, punycode, bidi, segmentation, normalization, idna, unicode] else {
     fail("expected seven published modules")
@@ -154,16 +154,15 @@ test "publish resume points follow dependency order" {
   assert_true(unicode.requires_published_dependencies)
   inspect(unicode.directory, content="unicode")
   inspect(unicode.manifest_path(), content="unicode/moon.mod")
-  inspect(publish_start_index("unicode-data"), content="0")
-  inspect(publish_start_index("unicode-normalization"), content="4")
-  inspect(publish_start_index("unicode"), content="6")
-  try publish_start_index("tools") catch {
-    ReleaseError(message) =>
-      inspect(
-        message,
-        content="Unknown --from module 'tools'; expected one of unicode-data, punycode, unicode-bidi, unicode-segmentation, unicode-normalization, unicode-idna, unicode",
-      )
-  } noraise {
-    _ => fail("expected unknown resume module to fail")
-  }
+}
+
+///|
+/// Every module that can be validated before this release publishes anything
+/// must be: otherwise a rejected archive would surface only after the modules
+/// before it had been published irreversibly.
+///
+test "preflight covers every module that does not depend on this release" {
+  assert_eq(preflight_modules().map(release_module => release_module.name), [
+    "unicode-data", "punycode", "unicode-bidi", "unicode-segmentation",
+  ])
 }

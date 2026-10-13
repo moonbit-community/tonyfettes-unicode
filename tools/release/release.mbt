@@ -166,13 +166,17 @@ fn replace_manifest_version(
 }
 
 ///|
-fn publish_start_index(name : String) -> Int32 raise ReleaseError {
-  for index, release_module in published_modules {
-    if release_module.name == name {
-      return index
+/// The published modules whose archives can be validated against the registry
+/// before any of this release is published: the ones that do not depend on
+/// same-release packages. Every other module can only be dry-run once its
+/// dependencies exist on the registry, which is why `publish_release` checks
+/// those one at a time, immediately before publishing each of them.
+fn preflight_modules() -> Array[ReleaseModule] {
+  let result : Array[ReleaseModule] = []
+  for release_module in published_modules {
+    if !release_module.requires_published_dependencies {
+      result.push(release_module)
     }
   }
-  raise ReleaseError(
-    "Unknown --from module '\{name}'; expected one of unicode-data, punycode, unicode-bidi, unicode-segmentation, unicode-normalization, unicode-idna, unicode",
-  )
+  result
 }

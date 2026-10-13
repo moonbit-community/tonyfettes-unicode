@@ -176,14 +176,8 @@ async fn prepare_release(root : StringView, version : String) -> Unit {
       ["-C", release_module.directory, "package", "--list", "--frozen"],
       "Listing moonbit-community/\{release_module.name}@\{version}",
     )
-    if release_module.requires_published_dependencies {
-      println(
-        "==> Deferring the moonbit-community/\{release_module.name}@\{version} dry-run until its same-release dependencies are published",
-      )
-    } else {
-      run_publish_dry_run(root, release_module, version)
-    }
   }
+  println("==> Preparation completed without publishing or dry-running")
   println(
     "Release \{version} is prepared. Review and commit the manifest changes,",
   )
@@ -192,48 +186,49 @@ async fn prepare_release(root : StringView, version : String) -> Unit {
 }
 
 ///|
-async fn publish_release(root : StringView, first_module : String) -> Unit {
-  let start_index = publish_start_index(first_module)
+async fn publish_release(root : StringView) -> Unit {
   println(
     "No registry changes will be made until every preflight check passes.",
   )
   ensure_clean_worktree(root)
   let version = verify_published_versions(root)
-  println("Publishing release \{version} from module \{first_module}")
+  println("Publishing release \{version}")
   run_checked(root, "moon", ["whoami"], "Checking mooncakes.io login")
+  // Check the modules that can be validated before anything is published
+  // first, so a rejected archive cannot leave a partial release behind.
+  println("==> Dry-running the modules that do not depend on this release")
+  for release_module in preflight_modules() {
+    run_publish_dry_run(root, release_module, version)
+  }
   println("==> All preflight checks passed; starting module publication")
   for index, release_module in published_modules {
-    if index >= start_index {
-      println(
-        "==> [\{index + 1}/\{published_modules.length()}] Releasing moonbit-community/\{release_module.name}@\{version}",
-      )
-      if release_module.requires_published_dependencies {
-        run_checked(
-          root,
-          "moon",
-          ["-C", release_module.directory, "update"],
-          "Refreshing the registry for moonbit-community/\{release_module.name}@\{version}",
-        )
-      }
-      run_publish_dry_run(root, release_module, version)
-      println(
-        "==> Publishing moonbit-community/\{release_module.name}@\{version}",
-      )
-      println("    $ moon -C \{release_module.directory} publish")
-      let status = @process.run(
+    println(
+      "==> [\{index + 1}/\{published_modules.length()}] Releasing moonbit-community/\{release_module.name}@\{version}",
+    )
+    if release_module.requires_published_dependencies {
+      run_checked(
+        root,
         "moon",
-        ["-C", release_module.directory, "publish"],
-        cwd=root,
+        ["-C", release_module.directory, "update"],
+        "Refreshing the registry for moonbit-community/\{release_module.name}@\{version}",
       )
-      guard status == 0 else {
-        raise ReleaseError(
-          "Publishing moonbit-community/\{release_module.name}@\{version} failed with exit status \{status}. After resolving the problem, resume with --from \{release_module.name}",
-        )
-      }
-      println(
-        "    Published moonbit-community/\{release_module.name}@\{version}",
+      run_publish_dry_run(root, release_module, version)
+    }
+    println(
+      "==> Publishing moonbit-community/\{release_module.name}@\{version}",
+    )
+    println("    $ moon -C \{release_module.directory} publish")
+    let status = @process.run(
+      "moon",
+      ["-C", release_module.directory, "publish"],
+      cwd=root,
+    )
+    guard status == 0 else {
+      raise ReleaseError(
+        "Publishing moonbit-community/\{release_module.name}@\{version} failed with exit status \{status}. The modules published before it stay at \{version}: resolve the problem and release the whole set again at a new version.",
       )
     }
+    println("    Published moonbit-community/\{release_module.name}@\{version}")
   }
   println("Published all modules for version \{version}")
 }
@@ -247,7 +242,7 @@ async fn run_cli() -> Unit {
     subcommands=[
       Command(
         "prepare",
-        about="Bump versions, validate the workspace, and dry-run independent modules",
+        about="Bump versions and validate the workspace without publishing or dry-running",
         options=[
           OptionArg(
             "version",
@@ -257,26 +252,14 @@ async fn run_cli() -> Unit {
           ),
         ],
       ),
-      Command(
-        "publish",
-        about="Publish all modules in dependency order",
-        flags=[
-          FlagArg(
-            "execute",
-            long="execute",
-            about="Confirm the irreversible publication step",
-            required=true,
-          ),
-        ],
-        options=[
-          OptionArg(
-            "from",
-            long="from",
-            about="Resume publication from this module",
-            default_values=["unicode-data"],
-          ),
-        ],
-      ),
+      Command("publish", about="Publish all modules in dependency order", flags=[
+        FlagArg(
+          "execute",
+          long="execute",
+          about="Confirm the irreversible publication step",
+          required=true,
+        ),
+      ]),
     ],
   )
   let matches = command.parse()
@@ -289,13 +272,10 @@ async fn run_cli() -> Unit {
       prepare_release(root, version)
     }
     Some(("publish", child)) => {
-      guard child.values.get("from") is Some([first_module]) else {
-        raise ReleaseError("Invalid --from option")
-      }
       guard child.flags.get("execute").unwrap_or(false) else {
         raise ReleaseError("Publication requires the explicit --execute flag")
       }
-      publish_release(root, first_module)
+      publish_release(root)
     }
     Some((name, _)) => raise ReleaseError("Unknown release command \{name}")
     None => raise ReleaseError("A release command is required")

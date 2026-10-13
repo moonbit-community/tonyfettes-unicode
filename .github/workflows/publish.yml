@@ -1,22 +1,8 @@
 name: publish-package
-run-name: publish ${{ github.sha }} from ${{ inputs.from }}
+run-name: publish ${{ github.sha }}
 
 on:
   workflow_dispatch:
-    inputs:
-      from:
-        description: Resume publication from this module
-        required: true
-        default: unicode-data
-        type: choice
-        options:
-          - unicode-data
-          - punycode
-          - unicode-bidi
-          - unicode-segmentation
-          - unicode-normalization
-          - unicode-idna
-          - unicode
 
 permissions:
   contents: read
@@ -63,8 +49,6 @@ jobs:
           umask 077
           printf '%s' "$MOONCAKES_CREDENTIALS" > "$credentials_file"
           trap 'rm -f "$credentials_file"' EXIT
-          moon run --target native tools/release -- \
-            publish --from "$FROM_MODULE" --execute
+          moon run --target native tools/release -- publish --execute
         env:
-          FROM_MODULE: ${{ inputs.from }}
           MOONCAKES_CREDENTIALS: ${{ secrets.MOONCAKES_MOONBIT_COMMUNITY_TOKEN }}

@@ -307,18 +307,23 @@ report.
 ### Releasing
 
 The native release tool keeps the seven published module versions aligned,
-validates the workspace, and checks every package archive. During preparation it
-dry-runs the independent `unicode-data`, `punycode`, `unicode-bidi`, and
-`unicode-segmentation` modules:
+validates the workspace, and checks every package archive. Preparation
+publishes nothing and never dry-runs an archive against the registry, so it
+needs no mooncakes.io credentials:
 
 ```bash
-moon run --target native tools/release -- prepare --version 0.4.0
+moon run --target native tools/release -- prepare --version <MAJOR.MINOR.PATCH>
 ```
 
-Review and commit the resulting manifest changes to the default branch, then
-wait for CI to pass. Publication is a separate, explicit step that does not
-require a Git tag. Run the `publish-package` workflow in GitHub Actions, or run
-the underlying command from a clean checkout of the commit to publish:
+The version is a plain `MAJOR.MINOR.PATCH` with no prerelease suffix. `prepare`
+refuses to run unless the Git worktree is clean and the seven published
+manifests already agree on one version, which it then rewrites to the new one.
+
+Review and commit the resulting manifest changes, open a pull request, and wait
+for CI to pass before merging: `main` is protected and rejects direct pushes.
+Publication is a separate, explicit step that does not require a Git tag. Run
+the `publish-package` workflow in GitHub Actions, or run the underlying command
+from a clean checkout of the commit to publish:
 
 ```bash
 moon run --target native tools/release -- publish \
@@ -329,18 +334,14 @@ The tool publishes `unicode-data`, `punycode`, `unicode-bidi`,
 `unicode-segmentation`, `unicode-normalization`, `unicode-idna`, and the
 `unicode` compatibility umbrella in dependency order. It reads
 the release version from the umbrella manifest `unicode/moon.mod` and verifies
-that all seven published modules use that version. Modules that depend on same-release packages
-are dry-run immediately before their real publication, after the tool refreshes
-the registry and their dependencies are available. It never publishes the
-workspace-only `tests` or `tools` modules. If publication stops partway
-through, rerun the workflow with its `from` input set to the failed module, or
-resume with the underlying command:
-
-```bash
-moon run --target native tools/release -- publish \
-  --from unicode-normalization \
-  --execute
-```
+that all seven published modules use that version. The modules that do not
+depend on this release are dry-run before anything is published, so a rejected
+archive cannot leave a partial release behind; each remaining module is
+dry-run immediately before its own publication, after the registry is
+refreshed for its same-release dependencies. It never publishes the
+workspace-only `tests` or `tools` modules. If publication stops partway there
+is no resume step: the modules that were already published stay at that
+version, so fix the problem and release the whole set again at a new version.
 
 ## Standards
 
