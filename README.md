@@ -312,8 +312,12 @@ dry-runs the independent `unicode-data`, `punycode`, `unicode-bidi`, and
 `unicode-segmentation` modules:
 
 ```bash
-moon run --target native tools/release -- prepare --version 0.4.0
+moon run --target native tools/release -- prepare --version <MAJOR.MINOR.PATCH>
 ```
+
+The version is a plain `MAJOR.MINOR.PATCH` with no prerelease suffix. `prepare`
+refuses to run unless the Git worktree is clean and the seven published
+manifests already agree on one version, which it then rewrites to the new one.
 
 Review and commit the resulting manifest changes to the default branch, then
 wait for CI to pass. Publication is a separate, explicit step that does not
