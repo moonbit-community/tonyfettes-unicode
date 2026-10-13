@@ -358,3 +358,80 @@ test "clean pairs in flagged groups become the safe boundary" {
     }
   }
 }
+
+///|
+test "block scans stop at every offset within and between blocks" {
+  // Each case is a character that only some forms leave alone, with its
+  // normalization in NFC, NFD, NFKC and NFKD.
+  for
+    (suspect, nfc, nfd, nfkc, nfkd) in [
+      ("\u{A0}", "\u{A0}", "\u{A0}", " ", " "),
+      ("é", "é", "e\u{0301}", "é", "e\u{0301}"),
+      ("e\u{0301}", "é", "e\u{0301}", "é", "e\u{0301}"),
+      ("😀", "😀", "😀", "😀", "😀"),
+      (
+        "\u{1D15E}", "\u{1D157}\u{1D165}", "\u{1D157}\u{1D165}", "\u{1D157}\u{1D165}",
+        "\u{1D157}\u{1D165}",
+      ),
+    ] {
+    for before in 0..<48 {
+      for after in [0, 1, 7, 8, 9, 17] {
+        let prefix = "a".repeat(before)
+        let suffix = "z".repeat(after)
+        let input = prefix + suspect + suffix
+        for
+          (form, expected) in [
+            (@normalization.NFC, nfc),
+            (@normalization.NFD, nfd),
+            (@normalization.NFKC, nfkc),
+            (@normalization.NFKD, nfkd),
+          ] {
+          let normalized = prefix + expected + suffix
+          assert_eq(@normalization.normalize(input, form), normalized)
+          assert_eq(
+            @normalization.is_normalized(input, form),
+            input == normalized,
+          )
+        }
+      }
+    }
+  }
+}
+
+///|
+test "long ASCII runs at every length" {
+  for
+    form in [
+      @normalization.NFC,
+      @normalization.NFD,
+      @normalization.NFKC,
+      @normalization.NFKD,
+    ] {
+    for ascii in 0..<=40 {
+      let run = "a".repeat(ascii)
+      // These prefixes decompose under no form, so prefix + run is unchanged.
+      for prefix in ["", "世界", "😀"] {
+        assert_true(@normalization.is_normalized(prefix + run, form))
+        assert_eq(@normalization.normalize(prefix + run, form), prefix + run)
+      }
+    }
+  }
+  for ascii in 0..<=40 {
+    let run = "a".repeat(ascii)
+    // A change before the run, after it, and on both sides: the run itself is
+    // copied as it is either way.
+    assert_eq(@normalization.nfc("e\u{0301}" + run), "é" + run)
+    assert_false(
+      @normalization.is_normalized("e\u{0301}" + run, @normalization.NFC),
+    )
+    assert_eq(
+      @normalization.nfc("世界" + run + "e\u{0301}"),
+      "世界" + run + "é",
+    )
+    assert_eq(@normalization.nfkc("ﬃ" + run), "ffi" + run)
+    assert_eq(@normalization.nfc(run + "e\u{0301}"), run + "é")
+    assert_false(
+      @normalization.is_normalized(run + "e\u{0301}", @normalization.NFC),
+    )
+  }
+}
