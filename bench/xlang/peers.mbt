@@ -11,6 +11,8 @@ priv struct Step {
 priv struct Peer {
   /// Names the harness in `--impl` and in the report's column headers.
   name : String
+  /// The groups it has cases for. Asked for another one, it prints nothing.
+  groups : Array[String]
   /// Run in order before any timing: builds, and probes for the runtimes that
   /// `run` needs. A failing step skips the peer.
   setup : Array[Step]
@@ -40,6 +42,7 @@ fn moonbit_peer(root : String, target : String) -> Peer {
   }
   {
     name: "moonbit-\{target}",
+    groups,
     setup: if target == "js" {
       [probe(root, "node"), build]
     } else {
@@ -84,6 +87,7 @@ async fn all_peers(root : String, work : String) -> Array[Peer] {
     moonbit_peer(root, "js"),
     {
       name: "icu4c",
+      groups: ["norm", "seg", "bidi", "idna", "case"],
       setup: [
         {
           program: @env.get_env_var("CXX").unwrap_or("c++"),
@@ -104,6 +108,7 @@ async fn all_peers(root : String, work : String) -> Array[Peer] {
     },
     {
       name: "rust",
+      groups,
       setup: [
         {
           program: "cargo",
@@ -121,6 +126,7 @@ async fn all_peers(root : String, work : String) -> Array[Peer] {
     },
     {
       name: "go",
+      groups: ["norm", "seg", "bidi", "idna", "case"],
       setup: [
         {
           program: "go",
@@ -132,6 +138,7 @@ async fn all_peers(root : String, work : String) -> Array[Peer] {
     },
     {
       name: "node",
+      groups: ["norm", "seg", "idna", "puny"],
       setup: [probe(root, "node")],
       run: {
         program: "node",
@@ -142,6 +149,7 @@ async fn all_peers(root : String, work : String) -> Array[Peer] {
     },
     {
       name: "python",
+      groups: ["norm"],
       setup: [probe(root, "python3")],
       run: {
         program: "python3",

@@ -77,7 +77,8 @@ corpora committed for [`bench/normperf`](../normperf/README.md), as they are
 and converted to NFD.
 
 To add a harness, write a program that takes `<inputs> [group]` and prints
-rows in this format, then add it to `all_peers` in `peers.mbt`.
+rows in this format, then add it to `all_peers` in `peers.mbt` with the groups
+it covers.
 
 ## Reading the report
 

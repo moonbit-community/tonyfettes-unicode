@@ -138,10 +138,14 @@ async fn main {
         continue
       }
       let rows = parse_rows(peer.name, output)
-      // With `--group`, a harness that does not cover the group prints
-      // nothing. Otherwise every harness has results, so none is a failure,
-      // such as output that no longer parses.
-      if rows.is_empty() && group is None {
+      // Asked for a group it has no cases for, a harness prints nothing.
+      // Anywhere else that is a failure, such as output that no longer
+      // parses.
+      let expected = match group {
+        Some(group) => peer.groups.contains(group)
+        None => true
+      }
+      if rows.is_empty() && expected {
         println("    Failed: it printed no results")
         problems.push("\{peer.name} printed no results in round \{round}")
       }
