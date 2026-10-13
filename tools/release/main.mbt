@@ -242,7 +242,7 @@ async fn run_cli() -> Unit {
     subcommands=[
       Command(
         "prepare",
-        about="Bump versions and validate the workspace without contacting the registry",
+        about="Bump versions and validate the workspace without publishing or dry-running",
         options=[
           OptionArg(
             "version",
