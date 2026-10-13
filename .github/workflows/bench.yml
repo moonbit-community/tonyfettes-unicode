@@ -8,8 +8,10 @@ on:
   pull_request:
     paths:
       - bench/xlang/**
-      # Its dependencies and the corpora it reads.
+      # Its dependencies, the workspace that resolves them to this checkout,
+      # and the corpora it reads.
       - bench/moon.mod
+      - moon.work
       - bench/normperf/data/**
       - .github/workflows/bench.yml
   workflow_dispatch:
