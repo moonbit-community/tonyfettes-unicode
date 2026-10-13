@@ -323,10 +323,11 @@ manifests already agree on one version, which it then rewrites to the new one.
 A machine that has never resolved this workspace's dependencies needs a
 `moon update` before that command, because of `--frozen`.
 
-Review and commit the resulting manifest changes to the default branch, then
-wait for CI to pass. Publication is a separate, explicit step that does not
-require a Git tag. Run the `publish-package` workflow in GitHub Actions, or run
-the underlying command from a clean checkout of the commit to publish:
+Review and commit the resulting manifest changes, open a pull request, and wait
+for CI to pass before merging: `main` is protected and rejects direct pushes.
+Publication is a separate, explicit step that does not require a Git tag. Run
+the `publish-package` workflow in GitHub Actions, or run the underlying command
+from a clean checkout of the commit to publish:
 
 ```bash
 moon run --target native tools/release -- publish \
@@ -342,15 +343,9 @@ depend on this release are dry-run before anything is published, so a rejected
 archive cannot leave a partial release behind; each remaining module is
 dry-run immediately before its own publication, after the registry is
 refreshed for its same-release dependencies. It never publishes the
-workspace-only `tests` or `tools` modules. If publication stops partway
-through, rerun the workflow with its `from` input set to the failed module, or
-resume with the underlying command:
-
-```bash
-moon run --target native tools/release -- publish \
-  --from unicode-normalization \
-  --execute
-```
+workspace-only `tests` or `tools` modules. If publication stops partway there
+is no resume step: the modules that were already published stay at that
+version, so fix the problem and release the whole set again at a new version.
 
 ## Standards
 
