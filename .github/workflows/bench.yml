@@ -1,0 +1,83 @@
+name: bench
+
+# Runs the cross-language benchmark (bench/xlang) to notice when a toolchain
+# or dependency update breaks one of its harnesses. The report goes to the
+# job summary; nothing is published.
+
+on:
+  pull_request:
+    paths:
+      - bench/xlang/**
+      # Its dependencies and the corpora it reads.
+      - bench/moon.mod
+      - bench/normperf/data/**
+      - .github/workflows/bench.yml
+  schedule:
+    # Weekly, since the other libraries and the toolchains change on their own.
+    - cron: "17 3 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: bench-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: install moon
+        run: |
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
+          echo "$HOME/.moon/bin" >> $GITHUB_PATH
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.26"
+          cache-dependency-path: bench/xlang/go/go.sum
+
+      - name: install ICU4C
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libicu-dev
+
+      - name: versions
+        run: |
+          moon version --all
+          cargo --version
+          go version
+          node --version
+          python3 --version
+          c++ --version
+          pkg-config --modversion icu-uc || true
+
+      - name: moon update
+        run: moon update
+
+      - name: benchmark
+        # One round is enough to see that a pull request leaves every harness
+        # working. `--strict` fails the job when one of them does not.
+        run: moon run --target native bench/xlang -- --strict --rounds "$ROUNDS"
+        env:
+          ROUNDS: ${{ github.event_name == 'pull_request' && '1' || '3' }}
+
+      - name: report
+        if: always()
+        run: |
+          if [ -f _build/xlang/report.md ]; then
+            cat _build/xlang/report.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: results
+          path: |
+            _build/xlang/report.md
+            _build/xlang/results.tsv
+          if-no-files-found: ignore

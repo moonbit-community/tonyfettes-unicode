@@ -42,6 +42,11 @@ async fn main {
         long="detail",
         about="Also report every case, not only the mean per operation",
       ),
+      @argparse.FlagArg(
+        "strict",
+        long="strict",
+        about="Fail if a harness cannot be set up or fails a round, instead of leaving it out",
+      ),
     ],
     options=[
       @argparse.OptionArg(
@@ -64,6 +69,7 @@ async fn main {
   )
   let matches = command.parse()
   let detail = matches.flags.get("detail").unwrap_or(false)
+  let strict = matches.flags.get("strict").unwrap_or(false)
   let rounds = match matches.values.get("rounds") {
     Some([value, ..]) => @string.parse_int(value)
     _ => 3
@@ -96,10 +102,15 @@ async fn main {
   println("==> Preparing inputs in \{inputs}")
   prepare_inputs(root, inputs)
   let ready = []
+  // What `--strict` does not tolerate.
+  let problems = []
   for peer in selected {
     println("==> Setting up \{peer.name}")
     match setup_failure(peer) {
-      Some(reason) => println("    Skipped: \{reason}")
+      Some(reason) => {
+        println("    Skipped: \{reason}")
+        problems.push("\{peer.name} could not be set up")
+      }
       None => ready.push(peer)
     }
   }
@@ -117,11 +128,13 @@ async fn main {
         error if @async.is_being_cancelled() => raise error
         error => {
           println("    Failed: \{error}")
+          problems.push("\{peer.name} failed in round \{round}")
           continue
         }
       }
       if status != 0 {
         println("    Failed: exit status \{status}; its results are dropped")
+        problems.push("\{peer.name} failed in round \{round}")
         continue
       }
       for row in parse_rows(peer.name, output) {
@@ -140,4 +153,7 @@ async fn main {
   println("")
   println(report)
   println("Raw results: \{work}/results.tsv; this report: \{work}/report.md")
+  guard !strict || problems.is_empty() else {
+    fail("The comparison is incomplete: \{problems.join("; ")}")
+  }
 }
