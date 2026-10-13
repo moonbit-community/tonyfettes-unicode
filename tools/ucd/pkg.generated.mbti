@@ -30,13 +30,23 @@ pub fn emit_default_ignorable_code_point(DerivedCoreProperties) -> String raise
 
 pub fn emit_east_asian_width(String) -> String raise
 
-pub fn emit_emoji(EmojiData) -> String raise
+pub fn emit_emoji(EmojiData, Array[@parsing.CodePointRange]) -> String raise
 
 pub fn emit_general_category(Array[GeneralCategoryRange]) -> String raise
 
 pub fn emit_grapheme_extend(DerivedCoreProperties) -> String raise
 
+pub fn emit_hangul_syllable_type(String) -> String raise
+
+pub fn emit_joining_group(String) -> String raise
+
+pub fn emit_joining_group_enum(String) -> String raise
+
 pub fn emit_joining_type(String) -> String raise
+
+pub fn emit_line_break(String) -> String raise
+
+pub fn emit_line_break_enum() -> String raise
 
 pub fn emit_lowercase(DerivedCoreProperties) -> String raise
 
@@ -61,6 +71,8 @@ pub fn parse_composition_exclusions(String) -> Array[Int] raise
 pub fn parse_derived_core_properties(String) -> DerivedCoreProperties raise
 
 pub fn parse_emoji_data(String) -> EmojiData raise
+
+pub fn parse_emoji_variation_sequences(String) -> Array[@parsing.CodePointRange] raise
 
 pub fn parse_prop_list(String) -> PropList raise
 

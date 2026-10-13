@@ -284,3 +284,41 @@ pub fn parse_emoji_data(content : String) -> EmojiData raise {
     emoji_modifier_base: parse_property_ranges(content, "Emoji_Modifier_Base"),
   }
 }
+
+///|
+/// Collect the characters `emoji-variation-sequences.txt` lists a variation
+/// sequence for, as sorted ranges.
+///
+/// Every data line is `base selector ; style`, where the selector is U+FE0E
+/// for `text style` and U+FE0F for `emoji style`. Each base must have both
+/// sequences, so that one set of characters describes the file.
+pub fn parse_emoji_variation_sequences(
+  content : String,
+) -> Array[@parsing.CodePointRange] raise {
+  let text_style : Array[Int32] = []
+  let emoji_style : Array[Int32] = []
+  for raw_line in content.split("\n") {
+    let line = @parsing.strip_comment(raw_line)
+    guard line.split(";").collect() is [sequence, style, ..] else { continue }
+    match (@parsing.parse_code_point_sequence(sequence), style.trim()) {
+      ([base, 0xFE0E], "text style") => text_style.push(base)
+      ([base, 0xFE0F], "emoji style") => emoji_style.push(base)
+      _ => fail("Unexpected emoji variation sequence: \{line}")
+    }
+  }
+  text_style.sort()
+  emoji_style.sort()
+  guard text_style == emoji_style else {
+    fail("Text and emoji variation sequences have different base characters")
+  }
+  let ranges : Array[@parsing.CodePointRange] = []
+  for base in text_style {
+    if ranges.last() is Some(range) && range.end + 1 == base {
+      ranges[ranges.length() - 1] = { start: range.start, end: base, }
+    } else {
+      ranges.push({ start: base, end: base, })
+    }
+  }
+  validate_property_ranges("emoji variation sequence", ranges)
+  ranges
+}

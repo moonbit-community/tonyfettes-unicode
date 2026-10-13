@@ -25,3 +25,17 @@ pub fn is_emoji_modifier(c : Char) -> Bool {
 pub fn is_emoji_modifier_base(c : Char) -> Bool {
   @emoji.is_emoji_modifier_base(c)
 }
+
+///|
+/// Check whether a character starts an emoji variation sequence.
+///
+/// These are the characters `emoji-variation-sequences.txt` lists: each can
+/// be followed by U+FE0E VARIATION SELECTOR-15 to ask for a text
+/// presentation or by U+FE0F VARIATION SELECTOR-16 to ask for an emoji
+/// presentation. The set contains characters on both sides of
+/// Emoji_Presentation, such as U+2764 HEAVY BLACK HEART, which is text by
+/// default, and U+231A WATCH, which is emoji by default. Most emoji are not
+/// in it, since they have no text presentation to select.
+pub fn has_emoji_variation_sequence(c : Char) -> Bool {
+  @emoji.has_emoji_variation_sequence(c)
+}

@@ -1,6 +1,6 @@
 ///|
-/// Emoji_Presentation, Emoji_Modifier, and Emoji_Modifier_Base lookup data
-/// Generated from emoji-data.txt
+/// Emoji_Presentation, Emoji_Modifier, Emoji_Modifier_Base, and emoji variation sequence lookup data
+/// Generated from emoji-data.txt and emoji-variation-sequences.txt
 
 ///|
 /// Emoji_Presentation trie top level: `cp >> 10` to mid block index
@@ -153,5 +153,67 @@ pub fn is_emoji_modifier_base(c : Char) -> Bool {
     ((cp >> 7) & 7)
   let leaf = emoji_modifier_base_trie_mid[mid].to_int()
   let bits = emoji_modifier_base_trie_leaf[(leaf << 4) | ((cp >> 3) & 15)].to_int()
+  ((bits >> (cp & 7)) & 1) != 0
+}
+
+///|
+/// Emoji_Variation_Sequence trie top level: `cp >> 10` to mid block index
+let emoji_variation_sequence_trie_top : Bytes = [
+  0, 1, 1, 1, 1, 1, 1, 1, 2, 3, 4, 1, 5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 6, 7, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+]
+
+///|
+/// Emoji_Variation_Sequence trie mid level: leaf block indices
+let emoji_variation_sequence_trie_mid : Bytes = [
+  0, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 2, 4, 5, 2, 2, 6, 7, 2, 8, 2,
+  9, 10, 11, 12, 13, 2, 2, 14, 2, 2, 2, 15, 2, 16, 2, 2, 2, 2, 17, 2, 2, 18, 2, 19,
+  2, 20, 2, 21, 22, 23, 24, 25, 26, 27, 28, 2, 2,
+]
+
+///|
+/// Emoji_Variation_Sequence trie leaf level: bitsets of 128 code points, least significant bit first
+let emoji_variation_sequence_trie_leaf : Bytes = [
+  0, 0, 0, 0, 8, 4, 255, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 66, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 16, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 240, 3, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12, 0, 1, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 128, 0, 0, 0, 254, 15, 7, 0, 0,
+  0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12, 64, 0, 1, 0, 0, 0,
+  0, 0, 0, 120, 31, 64, 50, 33, 77, 196, 0, 7, 5, 255, 15, 128, 105, 1, 0, 200, 0,
+  0, 252, 26, 131, 12, 3, 96, 48, 193, 26, 0, 0, 6, 191, 39, 36, 191, 84, 32, 2,
+  1, 24, 0, 144, 80, 184, 0, 24, 0, 0, 0, 0, 0, 224, 0, 2, 0, 1, 128, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 48, 0, 0, 0, 0, 0, 0, 0, 0, 0, 224, 0, 0, 24, 0,
+  0, 0, 0, 0, 0, 33, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 32, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 128, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 192, 4, 0, 0,
+  4, 0, 128, 128, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 224, 32, 16, 242, 31, 64, 0, 0, 0,
+  0, 0, 0, 0, 0, 33, 0, 0, 200, 206, 128, 112, 0, 0, 84, 124, 240, 255, 1, 32, 168,
+  0, 0, 1, 32, 128, 64, 0, 0, 128, 198, 99, 8, 0, 0, 4, 0, 32, 0, 0, 0, 0, 8, 0,
+  9, 136, 0, 8, 0, 132, 112, 60, 128, 46, 0, 33, 12, 0, 0, 0, 0, 0, 0, 6, 255, 255,
+  255, 128, 249, 3, 128, 60, 1, 0, 32, 1, 6, 16, 28, 0, 14, 112, 10, 129, 8, 4, 0,
+  0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 128, 32, 18, 1, 0, 32, 4, 22, 0, 232,
+  0, 0, 63, 2, 9, 0,
+]
+
+///|
+/// Check whether a character starts an emoji variation sequence
+pub fn has_emoji_variation_sequence(c : Char) -> Bool {
+  let cp = c.to_int()
+  if cp >= 0x40000 {
+    return false
+  }
+  let mid = (emoji_variation_sequence_trie_top[cp >> 10].to_int() << 3) |
+    ((cp >> 7) & 7)
+  let leaf = emoji_variation_sequence_trie_mid[mid].to_int()
+  let bits = emoji_variation_sequence_trie_leaf[(leaf << 4) | ((cp >> 3) & 15)].to_int()
   ((bits >> (cp & 7)) & 1) != 0
 }

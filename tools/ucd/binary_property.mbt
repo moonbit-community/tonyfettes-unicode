@@ -22,15 +22,24 @@ fn hex_literal(value : Int32) -> String {
 /// followed by the lookup function `is_<prefix>`, where `<prefix>` is the
 /// property name in lowercase (`White_Space` becomes `white_space`).
 ///
+/// A set of code points that is not a Unicode property passes `lookup`, the
+/// name of the lookup function, and `lookup_doc`, its one-line description.
+///
 /// The top level maps `cp >> 10` to a mid block, the mid level maps the next
 /// three bits to a leaf block, and each leaf block holds one bit per code
 /// point for 128 code points. Identical blocks are shared at both levels.
 fn write_binary_property_trie(
   out : @emitter.Emitter,
   property~ : String,
+  lookup? : String,
+  lookup_doc? : String,
   ranges : Array[@parsing.CodePointRange],
 ) -> Unit raise {
   let prefix = property.to_lower()
+  let lookup = lookup.unwrap_or("is_\{prefix}")
+  let lookup_doc = lookup_doc.unwrap_or(
+    "Check whether a character has the Unicode \{property} property",
+  )
   let bits = Array::make(BinaryTrieLimit / 8, 0)
   let high_ranges : Array[@parsing.CodePointRange] = []
   for range in ranges {
@@ -86,8 +95,8 @@ fn write_binary_property_trie(
   out.write(
     (
       $|///|
-      $|/// Check whether a character has the Unicode \{property} property
-      $|pub fn is_\{prefix}(c : Char) -> Bool {
+      $|/// \{lookup_doc}
+      $|pub fn \{lookup}(c : Char) -> Bool {
       $|  let cp = c.to_int()
       $|  if cp >= \{hex_literal(BinaryTrieLimit)} {
       $|    return \{high_check}
@@ -192,10 +201,14 @@ pub fn emit_prepended_concatenation_mark(properties : PropList) -> String raise 
 }
 
 ///|
-pub fn emit_emoji(properties : EmojiData) -> String raise {
+pub fn emit_emoji(
+  properties : EmojiData,
+  variation_sequences : Array[@parsing.CodePointRange],
+) -> String raise {
   let out = @emitter.Emitter::new()
   out.write_file_header(
-    "Emoji_Presentation, Emoji_Modifier, and Emoji_Modifier_Base lookup data", "emoji-data.txt",
+    "Emoji_Presentation, Emoji_Modifier, Emoji_Modifier_Base, and emoji variation sequence lookup data",
+    "emoji-data.txt and emoji-variation-sequences.txt",
   )
   write_binary_property_trie(
     out,
@@ -211,6 +224,13 @@ pub fn emit_emoji(properties : EmojiData) -> String raise {
     out,
     property="Emoji_Modifier_Base",
     properties.emoji_modifier_base,
+  )
+  write_binary_property_trie(
+    out,
+    property="Emoji_Variation_Sequence",
+    lookup="has_emoji_variation_sequence",
+    lookup_doc="Check whether a character starts an emoji variation sequence",
+    variation_sequences,
   )
   out.finish()
 }

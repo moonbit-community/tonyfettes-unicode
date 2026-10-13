@@ -2,6 +2,8 @@
 package "moonbit-community/unicode-data/emoji"
 
 // Values
+pub fn has_emoji_variation_sequence(Char) -> Bool
+
 pub fn is_emoji_modifier(Char) -> Bool
 
 pub fn is_emoji_modifier_base(Char) -> Bool

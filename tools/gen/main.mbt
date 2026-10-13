@@ -205,7 +205,54 @@ async fn generate_ucd(root : StringView) -> Unit {
     "ucd/prepended_concatenation_mark/prepended_concatenation_mark.mbt",
     @ucd.emit_prepended_concatenation_mark(prop_list),
   )
-  write_source(root, "ucd/emoji/emoji.mbt", @ucd.emit_emoji(emoji_data))
+  write_source(
+    root,
+    "ucd/emoji/emoji.mbt",
+    @ucd.emit_emoji(
+      emoji_data,
+      @ucd.parse_emoji_variation_sequences(
+        read_source(
+          root,
+          "emoji-variation-sequences.txt",
+          "\{base}/emoji/emoji-variation-sequences.txt",
+        ),
+      ),
+    ),
+  )
+  write_source(
+    root,
+    "ucd/hangul_syllable_type/hangul_syllable_type.mbt",
+    @ucd.emit_hangul_syllable_type(
+      read_source(
+        root,
+        "HangulSyllableType.txt",
+        "\{base}/HangulSyllableType.txt",
+      ),
+    ),
+  )
+  let joining_groups = read_source(
+    root,
+    "DerivedJoiningGroup.txt",
+    "\{base}/extracted/DerivedJoiningGroup.txt",
+  )
+  write_source(
+    root,
+    "ucd/joining_group/joining_group.mbt",
+    @ucd.emit_joining_group(joining_groups),
+  )
+  write_source(
+    root,
+    "ucd/joining_group.mbt",
+    @ucd.emit_joining_group_enum(joining_groups),
+  )
+  write_source(
+    root,
+    "ucd/line_break/line_break.mbt",
+    @ucd.emit_line_break(
+      read_source(root, "LineBreak.txt", "\{base}/LineBreak.txt"),
+    ),
+  )
+  write_source(root, "ucd/line_break.mbt", @ucd.emit_line_break_enum())
   write_source(
     root,
     "ucd/joining_type/joining_type.mbt",
@@ -220,12 +267,13 @@ async fn generate_ucd(root : StringView) -> Unit {
   let generated_files = [
     "ucd/default_ignorable_code_point/default_ignorable_code_point.mbt", "ucd/grapheme_extend/grapheme_extend.mbt",
     "ucd/regional_indicator/regional_indicator.mbt", "ucd/prepended_concatenation_mark/prepended_concatenation_mark.mbt",
-    "ucd/emoji/emoji.mbt", "ucd/joining_type/joining_type.mbt", "ucd/internal/normalization/normalization.mbt",
-    "ucd/general_category/mark.mbt", "ucd/ccc/ccc.mbt", "ucd/decomposition/decomposition.mbt",
-    "ucd/composition/composition.mbt", "ucd/general_category/general_category.mbt",
-    "ucd/case_mapping/case_mapping.mbt", "ucd/xid/xid.mbt", "ucd/alphabetic/alphabetic.mbt",
-    "ucd/lowercase/lowercase.mbt", "ucd/uppercase/uppercase.mbt", "ucd/white_space/white_space.mbt",
-    "ucd/east_asian_width/east_asian_width.mbt",
+    "ucd/emoji/emoji.mbt", "ucd/joining_type/joining_type.mbt", "ucd/hangul_syllable_type/hangul_syllable_type.mbt",
+    "ucd/joining_group/joining_group.mbt", "ucd/joining_group.mbt", "ucd/line_break/line_break.mbt",
+    "ucd/line_break.mbt", "ucd/internal/normalization/normalization.mbt", "ucd/general_category/mark.mbt",
+    "ucd/ccc/ccc.mbt", "ucd/decomposition/decomposition.mbt", "ucd/composition/composition.mbt",
+    "ucd/general_category/general_category.mbt", "ucd/case_mapping/case_mapping.mbt",
+    "ucd/xid/xid.mbt", "ucd/alphabetic/alphabetic.mbt", "ucd/lowercase/lowercase.mbt",
+    "ucd/uppercase/uppercase.mbt", "ucd/white_space/white_space.mbt", "ucd/east_asian_width/east_asian_width.mbt",
   ]
   for file in generated_files {
     format_file(root, file)

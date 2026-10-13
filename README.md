@@ -14,12 +14,13 @@ segmentation. The generated tables target Unicode 18.0.0.
   joiner checks, and DNS length checks
 - Unicode Bidirectional Algorithm support from UAX #9
 - Extended grapheme cluster segmentation from UAX #29
-- General_Category, East_Asian_Width, and Joining_Type lookup, binary property
-  predicates (White_Space, Alphabetic, Lowercase, Uppercase, XID_Start,
-  XID_Continue, Default_Ignorable_Code_Point, Grapheme_Extend,
-  Regional_Indicator, Prepended_Concatenation_Mark, Emoji_Presentation,
-  Emoji_Modifier, Emoji_Modifier_Base), and simple/full case mapping from the
-  Unicode Character Database
+- General_Category, East_Asian_Width, Line_Break, Joining_Type, Joining_Group,
+  and Hangul_Syllable_Type lookup, binary property predicates (White_Space,
+  Alphabetic, Lowercase, Uppercase, XID_Start, XID_Continue,
+  Default_Ignorable_Code_Point, Grapheme_Extend, Regional_Indicator,
+  Prepended_Concatenation_Mark, Emoji_Presentation, Emoji_Modifier,
+  Emoji_Modifier_Base), emoji variation sequences, and simple/full case mapping
+  from the Unicode Character Database
 
 ## Installation
 
@@ -165,6 +166,10 @@ let is_upper = @ucd.is_uppercase('\u{2160}') // true, although gc is Nl
 let joining = @ucd.joining_type('\u{0628}') // DualJoining
 let is_ignorable = @ucd.is_default_ignorable_code_point('\u{200D}') // true
 let is_emoji = @ucd.is_emoji_presentation('\u{2764}') // false: text by default
+let has_vs = @ucd.has_emoji_variation_sequence('\u{2764}') // true: U+FE0F selects emoji
+let group = @ucd.joining_group('\u{062A}') // Beh
+let break_class = @ucd.line_break('\u{4E2D}') // ID
+let hangul = @ucd.hangul_syllable_type('\u{AC00}') // LVSyllable
 
 let simple = @ucd.to_simple_uppercase('a') // 'A'
 let full = @ucd.to_uppercase('\u{00DF}') // "SS"
@@ -195,13 +200,21 @@ Root package for Unicode Character Database helpers.
 | `is_emoji_presentation(Char) -> Bool` | Test the UTS #51 Emoji_Presentation property (emoji by default). |
 | `is_emoji_modifier(Char) -> Bool` | Test the UTS #51 Emoji_Modifier property (skin tone modifiers). |
 | `is_emoji_modifier_base(Char) -> Bool` | Test the UTS #51 Emoji_Modifier_Base property. |
+| `has_emoji_variation_sequence(Char) -> Bool` | Test whether `emoji-variation-sequences.txt` lists the character, so that U+FE0E or U+FE0F may follow it to select a text or emoji presentation. |
 | `joining_type(Char) -> JoiningType` | Return the Joining_Type value: `NonJoining`, `JoinCausing`, `DualJoining`, `LeftJoining`, `RightJoining`, or `Transparent`. |
+| `joining_group(Char) -> JoiningGroup` | Return the Joining_Group value, such as `Beh`, `Alef`, or `Lam`; `NoJoiningGroup` for characters outside the groups. |
+| `hangul_syllable_type(Char) -> HangulSyllableType` | Return the Hangul_Syllable_Type value: `NotApplicable`, `LeadingJamo`, `VowelJamo`, `TrailingJamo`, `LVSyllable`, or `LVTSyllable`. |
+| `line_break(Char) -> LineBreak` | Return the UAX #14 Line_Break class, such as `AL`, `ID`, or `OP`, as the Unicode Character Database assigns it. Rule LB1 is not applied, and the line breaking algorithm itself is not implemented. |
 | `to_simple_uppercase(Char) -> Char` | Simple uppercase mapping. |
 | `to_simple_lowercase(Char) -> Char` | Simple lowercase mapping. |
 | `to_simple_titlecase(Char) -> Char` | Simple titlecase mapping. |
 | `to_uppercase(Char) -> String` | Full uppercase mapping. |
 | `to_lowercase(Char) -> String` | Full lowercase mapping. |
 | `to_titlecase(Char) -> String` | Full titlecase mapping. |
+
+The Joining_Group value `Pe` shares its name with a General_Category value.
+Where the type is not known from the context, write `@ucd.JoiningGroup::Pe` or
+`@ucd.GeneralCategory::Pe`.
 
 ### `moonbit-community/unicode-normalization`
 

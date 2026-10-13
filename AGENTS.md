@@ -51,6 +51,9 @@ moon info           # Regenerate pkg.generated.mbti files
 ### Internal Data Packages (auto-generated)
 
 - **ucd/data/**: Unicode Character Database lookup tables
+- **ucd/line_break.mbt**, **ucd/joining_group.mbt**: the `LineBreak` and
+  `JoiningGroup` enums of the root package, generated so that they stay in
+  step with the ordinals in `ucd/line_break/` and `ucd/joining_group/`
 - **idna/internal/idna/**: IDNA mapping table (Joining_Type comes from
   `unicode-data`)
 - **bidi/internal/bidi/**: Bidi mirroring and bracket tables
