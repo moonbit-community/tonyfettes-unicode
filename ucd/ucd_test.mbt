@@ -344,3 +344,118 @@ test "east_asian_width: planes above the trie" {
   inspect(@ucd.east_asian_width('\u{10FFFD}'), content="A") // private use, plane 16
   inspect(@ucd.east_asian_width('\u{10FFFF}'), content="N") // noncharacter
 }
+
+///|
+test "Default_Ignorable_Code_Point" {
+  inspect(@ucd.is_default_ignorable_code_point('\u{00AD}'), content="true") // SOFT HYPHEN
+  inspect(@ucd.is_default_ignorable_code_point('\u{034F}'), content="true") // COMBINING GRAPHEME JOINER
+  inspect(@ucd.is_default_ignorable_code_point('\u{115F}'), content="true") // HANGUL CHOSEONG FILLER
+  inspect(@ucd.is_default_ignorable_code_point('\u{200B}'), content="true") // ZERO WIDTH SPACE
+  inspect(@ucd.is_default_ignorable_code_point('\u{200D}'), content="true") // ZERO WIDTH JOINER
+  inspect(@ucd.is_default_ignorable_code_point('\u{202E}'), content="true") // RIGHT-TO-LEFT OVERRIDE
+  inspect(@ucd.is_default_ignorable_code_point('\u{FE0F}'), content="true") // VARIATION SELECTOR-16
+  inspect(@ucd.is_default_ignorable_code_point('\u{FEFF}'), content="true") // ZERO WIDTH NO-BREAK SPACE
+  inspect(@ucd.is_default_ignorable_code_point('\u{E0001}'), content="true") // LANGUAGE TAG
+  inspect(@ucd.is_default_ignorable_code_point('\u{E0100}'), content="true") // VARIATION SELECTOR-17
+  inspect(@ucd.is_default_ignorable_code_point('\u{E0FFF}'), content="true") // reserved
+  inspect(@ucd.is_default_ignorable_code_point('a'), content="false")
+  inspect(@ucd.is_default_ignorable_code_point(' '), content="false")
+  inspect(@ucd.is_default_ignorable_code_point('\u{0301}'), content="false") // COMBINING ACUTE ACCENT
+  inspect(@ucd.is_default_ignorable_code_point('\u{0600}'), content="false") // ARABIC NUMBER SIGN
+  inspect(@ucd.is_default_ignorable_code_point('\u{E1000}'), content="false") // reserved
+}
+
+///|
+test "Grapheme_Extend" {
+  inspect(@ucd.is_grapheme_extend('\u{0301}'), content="true") // COMBINING ACUTE ACCENT (Mn)
+  inspect(@ucd.is_grapheme_extend('\u{20DD}'), content="true") // COMBINING ENCLOSING CIRCLE (Me)
+  inspect(@ucd.is_grapheme_extend('\u{200C}'), content="true") // ZERO WIDTH NON-JOINER (Cf)
+  inspect(@ucd.is_grapheme_extend('\u{09BE}'), content="true") // BENGALI VOWEL SIGN AA (Mc)
+  inspect(@ucd.is_grapheme_extend('\u{E0020}'), content="true") // TAG SPACE
+  inspect(@ucd.is_grapheme_extend('\u{E0100}'), content="true") // VARIATION SELECTOR-17
+  inspect(@ucd.is_grapheme_extend('\u{200D}'), content="false") // ZERO WIDTH JOINER
+  // Grapheme_Cluster_Break=Extend also covers the emoji modifiers, which are
+  // not Grapheme_Extend.
+  inspect(@ucd.is_grapheme_extend('\u{1F3FB}'), content="false") // EMOJI MODIFIER FITZPATRICK TYPE-1-2
+  inspect(@ucd.is_grapheme_extend('\u{093E}'), content="false") // DEVANAGARI VOWEL SIGN AA (Mc)
+  inspect(@ucd.is_grapheme_extend('\u{00AD}'), content="false") // SOFT HYPHEN
+  inspect(@ucd.is_grapheme_extend('a'), content="false")
+}
+
+///|
+test "Regional_Indicator" {
+  inspect(@ucd.is_regional_indicator('\u{1F1E6}'), content="true") // REGIONAL INDICATOR SYMBOL LETTER A
+  inspect(@ucd.is_regional_indicator('\u{1F1FF}'), content="true") // REGIONAL INDICATOR SYMBOL LETTER Z
+  inspect(@ucd.is_regional_indicator('\u{1F1E5}'), content="false")
+  inspect(@ucd.is_regional_indicator('\u{1F200}'), content="false")
+  inspect(@ucd.is_regional_indicator('A'), content="false")
+}
+
+///|
+test "Prepended_Concatenation_Mark" {
+  inspect(@ucd.is_prepended_concatenation_mark('\u{0600}'), content="true") // ARABIC NUMBER SIGN
+  inspect(@ucd.is_prepended_concatenation_mark('\u{06DD}'), content="true") // ARABIC END OF AYAH
+  inspect(@ucd.is_prepended_concatenation_mark('\u{070F}'), content="true") // SYRIAC ABBREVIATION MARK
+  inspect(@ucd.is_prepended_concatenation_mark('\u{110BD}'), content="true") // KAITHI NUMBER SIGN
+  inspect(@ucd.is_prepended_concatenation_mark('\u{0606}'), content="false") // ARABIC-INDIC CUBE ROOT
+  inspect(@ucd.is_prepended_concatenation_mark('\u{061C}'), content="false") // ARABIC LETTER MARK
+  inspect(@ucd.is_prepended_concatenation_mark('a'), content="false")
+}
+
+///|
+test "Emoji_Presentation" {
+  inspect(@ucd.is_emoji_presentation('\u{231A}'), content="true") // WATCH
+  inspect(@ucd.is_emoji_presentation('\u{1F600}'), content="true") // GRINNING FACE
+  inspect(@ucd.is_emoji_presentation('\u{1F1E6}'), content="true") // REGIONAL INDICATOR SYMBOL LETTER A
+  inspect(@ucd.is_emoji_presentation('\u{1F3FB}'), content="true") // EMOJI MODIFIER FITZPATRICK TYPE-1-2
+  // Emoji whose default presentation is text
+  inspect(@ucd.is_emoji_presentation('#'), content="false")
+  inspect(@ucd.is_emoji_presentation('0'), content="false")
+  inspect(@ucd.is_emoji_presentation('\u{00A9}'), content="false") // COPYRIGHT SIGN
+  inspect(@ucd.is_emoji_presentation('\u{2764}'), content="false") // HEAVY BLACK HEART
+  inspect(@ucd.is_emoji_presentation('\u{261D}'), content="false") // WHITE UP POINTING INDEX
+  inspect(@ucd.is_emoji_presentation('a'), content="false")
+}
+
+///|
+test "Emoji_Modifier and Emoji_Modifier_Base" {
+  inspect(@ucd.is_emoji_modifier('\u{1F3FB}'), content="true") // EMOJI MODIFIER FITZPATRICK TYPE-1-2
+  inspect(@ucd.is_emoji_modifier('\u{1F3FF}'), content="true") // EMOJI MODIFIER FITZPATRICK TYPE-6
+  inspect(@ucd.is_emoji_modifier('\u{1F3FA}'), content="false") // AMPHORA
+  inspect(@ucd.is_emoji_modifier('\u{1F44D}'), content="false") // THUMBS UP SIGN
+  inspect(@ucd.is_emoji_modifier_base('\u{1F44D}'), content="true") // THUMBS UP SIGN
+  inspect(@ucd.is_emoji_modifier_base('\u{261D}'), content="true") // WHITE UP POINTING INDEX
+  inspect(@ucd.is_emoji_modifier_base('\u{1F9D1}'), content="true") // ADULT
+  inspect(@ucd.is_emoji_modifier_base('\u{1F600}'), content="false") // GRINNING FACE
+  inspect(@ucd.is_emoji_modifier_base('\u{1F3FB}'), content="false")
+}
+
+///|
+test "joining_type: each value" {
+  inspect(@ucd.joining_type('a'), content="NonJoining")
+  inspect(@ucd.joining_type('\u{200D}'), content="JoinCausing") // ZERO WIDTH JOINER
+  inspect(@ucd.joining_type('\u{0640}'), content="JoinCausing") // ARABIC TATWEEL
+  inspect(@ucd.joining_type('\u{0628}'), content="DualJoining") // ARABIC LETTER BEH
+  inspect(@ucd.joining_type('\u{A872}'), content="LeftJoining") // PHAGS-PA SUPERFIXED LETTER RA
+  inspect(@ucd.joining_type('\u{0627}'), content="RightJoining") // ARABIC LETTER ALEF
+  inspect(@ucd.joining_type('\u{064B}'), content="Transparent") // ARABIC FATHATAN
+}
+
+///|
+test "joining_type: non-joining and transparent characters" {
+  inspect(@ucd.joining_type('\u{200C}'), content="NonJoining") // ZERO WIDTH NON-JOINER
+  inspect(@ucd.joining_type('\u{0621}'), content="NonJoining") // ARABIC LETTER HAMZA
+  inspect(@ucd.joining_type('\u{0378}'), content="NonJoining") // reserved
+  inspect(@ucd.joining_type('\u{00AD}'), content="Transparent") // SOFT HYPHEN
+  inspect(@ucd.joining_type('\u{0301}'), content="Transparent") // COMBINING ACUTE ACCENT
+  inspect(@ucd.joining_type('\u{0338}'), content="Transparent") // COMBINING LONG SOLIDUS OVERLAY
+}
+
+///|
+test "joining_type: planes above the trie" {
+  inspect(@ucd.joining_type('\u{40000}'), content="NonJoining") // reserved, plane 4
+  inspect(@ucd.joining_type('\u{E0001}'), content="Transparent") // LANGUAGE TAG
+  inspect(@ucd.joining_type('\u{E0100}'), content="Transparent") // VARIATION SELECTOR-17
+  inspect(@ucd.joining_type('\u{E01F0}'), content="NonJoining") // reserved
+  inspect(@ucd.joining_type('\u{10FFFF}'), content="NonJoining") // noncharacter
+}

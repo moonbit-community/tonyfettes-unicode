@@ -3,6 +3,7 @@ import {
   "moonbit-community/unicode-normalization" @normalization,
   "moonbit-community/unicode-bidi" @bidi,
   "moonbit-community/unicode-idna/internal/idna" @idna_data,
+  "moonbit-community/unicode-data" @ucd,
   "moonbit-community/unicode-data/ccc",
   "moonbit-community/unicode-data/general_category",
 }

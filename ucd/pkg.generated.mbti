@@ -12,7 +12,21 @@ pub fn general_category(Char) -> GeneralCategory
 
 pub fn is_alphabetic(Char) -> Bool
 
+pub fn is_default_ignorable_code_point(Char) -> Bool
+
+pub fn is_emoji_modifier(Char) -> Bool
+
+pub fn is_emoji_modifier_base(Char) -> Bool
+
+pub fn is_emoji_presentation(Char) -> Bool
+
+pub fn is_grapheme_extend(Char) -> Bool
+
 pub fn is_lowercase(Char) -> Bool
+
+pub fn is_prepended_concatenation_mark(Char) -> Bool
+
+pub fn is_regional_indicator(Char) -> Bool
 
 pub fn is_uppercase(Char) -> Bool
 
@@ -21,6 +35,8 @@ pub fn is_white_space(Char) -> Bool
 pub fn is_xid_continue(Char) -> Bool
 
 pub fn is_xid_start(Char) -> Bool
+
+pub fn joining_type(Char) -> JoiningType
 
 pub fn to_lowercase(Char) -> String
 
@@ -105,6 +121,20 @@ pub fn GeneralCategoryGroup::output(Self, &Logger) -> Unit
 pub fn GeneralCategoryGroup::to_repr(Self) -> @debug.Repr
 pub fn GeneralCategoryGroup::to_string(Self) -> String
 pub impl Show for GeneralCategoryGroup
+
+pub(all) enum JoiningType {
+  NonJoining
+  JoinCausing
+  DualJoining
+  LeftJoining
+  RightJoining
+  Transparent
+} derive(Eq)
+pub fn JoiningType::equal(Self, Self) -> Bool
+pub fn JoiningType::not_equal(Self, Self) -> Bool
+pub fn JoiningType::output(Self, &Logger) -> Unit
+pub fn JoiningType::to_string(Self) -> String
+pub impl Show for JoiningType
 
 // Type aliases
 

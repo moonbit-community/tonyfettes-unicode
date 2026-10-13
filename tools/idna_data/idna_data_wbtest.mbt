@@ -59,24 +59,3 @@ test "IDNA mappings above the trie are rejected" {
     _ => fail("expected a mapping above the trie to be rejected")
   }
 }
-
-///|
-test "parse and emit joining data" {
-  let source = generate_joining_source(
-    (
-      #|0620..063F ; D # Arabic letters
-      #|200C ; U
-      #|
-    ),
-  )
-  inspect(source.contains("let joining_range_types"), content="true")
-  inspect(source.contains("  2"), content="true")
-  inspect(
-    source.contains("pub extend JoiningType with Eq::{not_equal, equal}"),
-    content="true",
-  )
-  inspect(
-    source.contains("pub extend JoiningType with Show::{to_string, output}"),
-    content="true",
-  )
-}

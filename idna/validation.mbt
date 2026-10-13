@@ -204,10 +204,10 @@ fn is_virama(c : Char) -> Bool {
 /// Check if there's a left-joining or dual-joining character before position
 fn has_left_joining_before(chars : Array[Char], pos : Int32) -> Bool {
   for i = pos - 1; i >= 0; i = i - 1 {
-    let jt = @idna_data.lookup_joining_type(chars[i])
+    let jt = @ucd.joining_type(chars[i])
     match jt {
-      @idna_data.LeftJoining | @idna_data.DualJoining => return true
-      @idna_data.Transparent => continue
+      @ucd.LeftJoining | @ucd.DualJoining => return true
+      @ucd.Transparent => continue
       _ => return false
     }
   }
@@ -218,10 +218,10 @@ fn has_left_joining_before(chars : Array[Char], pos : Int32) -> Bool {
 /// Check if there's a right-joining or dual-joining character after position
 fn has_right_joining_after(chars : Array[Char], pos : Int32) -> Bool {
   for i = pos + 1; i < chars.length(); i = i + 1 {
-    let jt = @idna_data.lookup_joining_type(chars[i])
+    let jt = @ucd.joining_type(chars[i])
     match jt {
-      @idna_data.RightJoining | @idna_data.DualJoining => return true
-      @idna_data.Transparent => continue
+      @ucd.RightJoining | @ucd.DualJoining => return true
+      @ucd.Transparent => continue
       _ => return false
     }
   }

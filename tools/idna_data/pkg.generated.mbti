@@ -2,8 +2,6 @@
 package "moonbit-community/unicode-tools/idna_data"
 
 // Values
-pub fn generate_joining_source(String) -> String raise
-
 pub fn generate_mapping_source(String) -> String raise
 
 // Errors

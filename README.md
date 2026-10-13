@@ -14,9 +14,12 @@ segmentation. The generated tables target Unicode 18.0.0.
   joiner checks, and DNS length checks
 - Unicode Bidirectional Algorithm support from UAX #9
 - Extended grapheme cluster segmentation from UAX #29
-- General_Category and East_Asian_Width lookup, binary property predicates
-  (White_Space, Alphabetic, Lowercase, Uppercase, XID_Start, XID_Continue), and
-  simple/full case mapping from the Unicode Character Database
+- General_Category, East_Asian_Width, and Joining_Type lookup, binary property
+  predicates (White_Space, Alphabetic, Lowercase, Uppercase, XID_Start,
+  XID_Continue, Default_Ignorable_Code_Point, Grapheme_Extend,
+  Regional_Indicator, Prepended_Concatenation_Mark, Emoji_Presentation,
+  Emoji_Modifier, Emoji_Modifier_Base), and simple/full case mapping from the
+  Unicode Character Database
 
 ## Installation
 
@@ -159,6 +162,9 @@ let is_space = @ucd.is_white_space('\u{3000}') // true
 let is_letter = @ucd.is_alphabetic('\u{093E}') // true (Other_Alphabetic)
 let is_lower = @ucd.is_lowercase('\u{00AA}') // true, although gc is Lo
 let is_upper = @ucd.is_uppercase('\u{2160}') // true, although gc is Nl
+let joining = @ucd.joining_type('\u{0628}') // DualJoining
+let is_ignorable = @ucd.is_default_ignorable_code_point('\u{200D}') // true
+let is_emoji = @ucd.is_emoji_presentation('\u{2764}') // false: text by default
 
 let simple = @ucd.to_simple_uppercase('a') // 'A'
 let full = @ucd.to_uppercase('\u{00DF}') // "SS"
@@ -182,6 +188,14 @@ Root package for Unicode Character Database helpers.
 | `is_uppercase(Char) -> Bool` | Test the Unicode Uppercase property (broader than General_Category Lu). |
 | `is_xid_start(Char) -> Bool` | Test the Unicode XID_Start identifier property. |
 | `is_xid_continue(Char) -> Bool` | Test the Unicode XID_Continue identifier property. |
+| `is_default_ignorable_code_point(Char) -> Bool` | Test the Unicode Default_Ignorable_Code_Point property. |
+| `is_grapheme_extend(Char) -> Bool` | Test the Unicode Grapheme_Extend property. |
+| `is_regional_indicator(Char) -> Bool` | Test the Unicode Regional_Indicator property. |
+| `is_prepended_concatenation_mark(Char) -> Bool` | Test the Unicode Prepended_Concatenation_Mark property. |
+| `is_emoji_presentation(Char) -> Bool` | Test the UTS #51 Emoji_Presentation property (emoji by default). |
+| `is_emoji_modifier(Char) -> Bool` | Test the UTS #51 Emoji_Modifier property (skin tone modifiers). |
+| `is_emoji_modifier_base(Char) -> Bool` | Test the UTS #51 Emoji_Modifier_Base property. |
+| `joining_type(Char) -> JoiningType` | Return the Joining_Type value: `NonJoining`, `JoinCausing`, `DualJoining`, `LeftJoining`, `RightJoining`, or `Transparent`. |
 | `to_simple_uppercase(Char) -> Char` | Simple uppercase mapping. |
 | `to_simple_lowercase(Char) -> Char` | Simple lowercase mapping. |
 | `to_simple_titlecase(Char) -> Char` | Simple titlecase mapping. |
@@ -252,6 +266,7 @@ deprecated compatibility wrappers.
 | `graphemes(StringView) -> Graphemes` | Create a single-pass cursor over the extended grapheme clusters of a text. |
 | `Graphemes::iter() -> Iter[StringView]` | Iterate over the remaining clusters, each a view into the input; enables `for .. in`. |
 | `Graphemes::next() -> StringView` | Return the next cluster, or an empty view at the end. |
+| `grapheme_cluster_break(Char) -> GraphemeClusterBreak` | Return the UAX #29 Grapheme_Cluster_Break value of a single character. |
 
 ## Development
 

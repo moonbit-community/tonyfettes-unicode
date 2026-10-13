@@ -31,13 +31,6 @@ priv struct MappingEntry {
 }
 
 ///|
-priv struct JoiningEntry {
-  start : Int32
-  end : Int32
-  joining_type : String
-}
-
-///|
 fn parse_mapping_table(content : String) -> Array[MappingEntry] raise {
   let entries : Array[MappingEntry] = []
   for raw_line in content.split("\n") {
@@ -61,28 +54,6 @@ fn parse_mapping_table(content : String) -> Array[MappingEntry] raise {
       []
     }
     entries.push({ start: range.start, end: range.end, status, mapping, })
-  }
-  entries
-}
-
-///|
-fn parse_joining_table(content : String) -> Array[JoiningEntry] raise {
-  let entries : Array[JoiningEntry] = []
-  for raw_line in content.split("\n") {
-    let line = @parsing.strip_comment(raw_line)
-    if line.is_empty() {
-      continue
-    }
-    let fields = line.split(";").collect()
-    if fields.length() < 2 {
-      continue
-    }
-    let range = @parsing.parse_code_point_range(fields[0])
-    entries.push({
-      start: range.start,
-      end: range.end,
-      joining_type: fields[1].trim().to_owned(),
-    })
   }
   entries
 }
@@ -340,131 +311,4 @@ fn big_endian_16(values : Array[Int32]) -> Array[Int32] {
     bytes.push(value & 0xFF)
   }
   bytes
-}
-
-///|
-fn joining_code(joining_type : StringView) -> Int32? {
-  match joining_type {
-    "L" => Some(0)
-    "R" => Some(1)
-    "D" => Some(2)
-    "C" => Some(3)
-    "T" => Some(4)
-    "U" => Some(5)
-    _ => None
-  }
-}
-
-///|
-pub fn generate_joining_source(content : String) -> String raise {
-  let entries = parse_joining_table(content)
-  let filtered : Array[(Int32, Int32, Int32)] = []
-  for entry in entries {
-    if joining_code(entry.joining_type) is Some(code) {
-      filtered.push((entry.start, entry.end, code))
-    }
-  }
-  filtered.sort_by((left, right) => left.0 - right.0)
-  let out = @emitter.Emitter::new()
-  out.write(
-    (
-      #|///|
-      #|/// Joining_Type lookup for IDNA ContextJ validation (RFC 5892)
-      #|/// Generated from DerivedJoiningType.txt
-      #|
-      #|///|
-      #|/// Joining type values
-      #|pub(all) enum JoiningType {
-      #|  LeftJoining
-      #|  RightJoining
-      #|  DualJoining
-      #|  JoinCausing
-      #|  Transparent
-      #|  NonJoining
-      #|} derive(Eq)
-      #|
-      #|///|
-      #|pub extend JoiningType with Eq::{not_equal, equal}
-      #|
-      #|///|
-      #|pub extend JoiningType with Show::{to_string, output}
-      #|
-      #|///|
-      #|pub impl Show for JoiningType with fn output(self, logger) {
-      #|  match self {
-      #|    LeftJoining => logger.write_string("LeftJoining")
-      #|    RightJoining => logger.write_string("RightJoining")
-      #|    DualJoining => logger.write_string("DualJoining")
-      #|    JoinCausing => logger.write_string("JoinCausing")
-      #|    Transparent => logger.write_string("Transparent")
-      #|    NonJoining => logger.write_string("NonJoining")
-      #|  }
-      #|}
-      #|
-    ),
-  )
-  out.write_int_array(
-    "Range start code points",
-    "joining_range_starts",
-    filtered.map(entry => entry.0),
-    hex=true,
-  )
-  out.write_int_array(
-    "Range end code points (inclusive)",
-    "joining_range_ends",
-    filtered.map(entry => entry.1),
-    hex=true,
-  )
-  out.write_int_array(
-    "Joining type codes for each range",
-    "joining_range_types",
-    filtered.map(entry => entry.2),
-    hex=false,
-  )
-  out.write(
-    (
-      #|///|
-      #|fn find_joining_range(c : Char) -> Int {
-      #|  let cp = c.to_int()
-      #|  let mut left = 0
-      #|  let mut right = joining_range_starts.length() - 1
-      #|  while left <= right {
-      #|    let mid = (left + right) / 2
-      #|    let start = joining_range_starts[mid]
-      #|    let end = joining_range_ends[mid]
-      #|    if cp < start {
-      #|      right = mid - 1
-      #|    } else if cp > end {
-      #|      left = mid + 1
-      #|    } else {
-      #|      return mid
-      #|    }
-      #|  }
-      #|  -1
-      #|}
-      #|
-      #|///|
-      #|fn joining_from_code(code : Int) -> JoiningType {
-      #|  match code {
-      #|    0 => LeftJoining
-      #|    1 => RightJoining
-      #|    2 => DualJoining
-      #|    3 => JoinCausing
-      #|    4 => Transparent
-      #|    _ => NonJoining
-      #|  }
-      #|}
-      #|
-      #|///|
-      #|pub fn lookup_joining_type(c : Char) -> JoiningType {
-      #|  let idx = find_joining_range(c)
-      #|  if idx < 0 {
-      #|    return NonJoining
-      #|  }
-      #|  joining_from_code(joining_range_types[idx])
-      #|}
-      #|
-    ),
-  )
-  out.finish()
 }
