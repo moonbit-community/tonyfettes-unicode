@@ -176,14 +176,8 @@ async fn prepare_release(root : StringView, version : String) -> Unit {
       ["-C", release_module.directory, "package", "--list", "--frozen"],
       "Listing moonbit-community/\{release_module.name}@\{version}",
     )
-    if release_module.requires_published_dependencies {
-      println(
-        "==> Deferring the moonbit-community/\{release_module.name}@\{version} dry-run until its same-release dependencies are published",
-      )
-    } else {
-      run_publish_dry_run(root, release_module, version)
-    }
   }
+  println("==> Preparation completed without contacting the registry")
   println(
     "Release \{version} is prepared. Review and commit the manifest changes,",
   )
@@ -247,7 +241,7 @@ async fn run_cli() -> Unit {
     subcommands=[
       Command(
         "prepare",
-        about="Bump versions, validate the workspace, and dry-run independent modules",
+        about="Bump versions and validate the workspace without contacting the registry",
         options=[
           OptionArg(
             "version",

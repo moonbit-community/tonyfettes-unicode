@@ -307,9 +307,9 @@ report.
 ### Releasing
 
 The native release tool keeps the seven published module versions aligned,
-validates the workspace, and checks every package archive. During preparation it
-dry-runs the independent `unicode-data`, `punycode`, `unicode-bidi`, and
-`unicode-segmentation` modules:
+validates the workspace, and checks every package archive. Preparation is
+offline: it never contacts the registry, so it needs no mooncakes.io
+credentials:
 
 ```bash
 moon run --target native tools/release -- prepare --version <MAJOR.MINOR.PATCH>
@@ -333,12 +333,12 @@ The tool publishes `unicode-data`, `punycode`, `unicode-bidi`,
 `unicode-segmentation`, `unicode-normalization`, `unicode-idna`, and the
 `unicode` compatibility umbrella in dependency order. It reads
 the release version from the umbrella manifest `unicode/moon.mod` and verifies
-that all seven published modules use that version. Modules that depend on same-release packages
-are dry-run immediately before their real publication, after the tool refreshes
-the registry and their dependencies are available. It never publishes the
-workspace-only `tests` or `tools` modules. If publication stops partway
-through, rerun the workflow with its `from` input set to the failed module, or
-resume with the underlying command:
+that all seven published modules use that version. Every module is dry-run
+immediately before its real publication; a module that depends on same-release
+packages has the registry refreshed first so those dependencies are available.
+It never publishes the workspace-only `tests` or `tools` modules. If publication
+stops partway through, rerun the workflow with its `from` input set to the
+failed module, or resume with the underlying command:
 
 ```bash
 moon run --target native tools/release -- publish \
