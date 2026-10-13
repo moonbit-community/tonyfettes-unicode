@@ -40,3 +40,48 @@ pub fn is_lowercase(c : Char) -> Bool {
 pub fn is_uppercase(c : Char) -> Bool {
   @uppercase.is_uppercase(c)
 }
+
+///|
+/// Check whether a character has the Unicode Default_Ignorable_Code_Point
+/// property.
+///
+/// Default_Ignorable_Code_Point covers characters that should not be
+/// displayed when a font has no glyph for them, such as U+00AD SOFT HYPHEN,
+/// the zero width joiners, the bidirectional controls, the variation
+/// selectors, and the tag characters. It also covers some unassigned code
+/// points reserved for future characters of this kind.
+pub fn is_default_ignorable_code_point(c : Char) -> Bool {
+  @default_ignorable_code_point.is_default_ignorable_code_point(c)
+}
+
+///|
+/// Check whether a character has the Unicode Grapheme_Extend property.
+///
+/// Grapheme_Extend covers the nonspacing and enclosing marks
+/// (General_Category Mn and Me) and Other_Grapheme_Extend characters such as
+/// U+200C ZERO WIDTH NON-JOINER and a few spacing marks. U+200D ZERO WIDTH
+/// JOINER is not Grapheme_Extend.
+pub fn is_grapheme_extend(c : Char) -> Bool {
+  @grapheme_extend.is_grapheme_extend(c)
+}
+
+///|
+/// Check whether a character has the Unicode Regional_Indicator property.
+///
+/// Regional_Indicator covers the 26 regional indicator symbols U+1F1E6 to
+/// U+1F1FF, which pair up to form emoji flags.
+pub fn is_regional_indicator(c : Char) -> Bool {
+  @regional_indicator.is_regional_indicator(c)
+}
+
+///|
+/// Check whether a character has the Unicode Prepended_Concatenation_Mark
+/// property.
+///
+/// Prepended_Concatenation_Mark covers format characters that enclose or
+/// extend under the digits or letters following them, such as U+0600 ARABIC
+/// NUMBER SIGN and U+06DD ARABIC END OF AYAH. Unlike most format characters
+/// they are visible.
+pub fn is_prepended_concatenation_mark(c : Char) -> Bool {
+  @prepended_concatenation_mark.is_prepended_concatenation_mark(c)
+}

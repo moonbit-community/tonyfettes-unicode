@@ -1,0 +1,13 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbit-community/unicode-data/grapheme_extend"
+
+// Values
+pub fn is_grapheme_extend(Char) -> Bool
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits

@@ -77,6 +77,11 @@ test "parse XID properties" {
     #|0061..007A ; Lowercase # Ll
     #|00AA ; Lowercase # Lo
     #|0041..005A ; Uppercase # Lu
+    #|00AD ; Default_Ignorable_Code_Point # Cf
+    #|200C..200F ; Default_Ignorable_Code_Point # Cf
+    #|0300..036F ; Grapheme_Extend # Mn
+    #|200C ; Grapheme_Extend # Cf
+    #|200D ; Grapheme_Base # ignored
   let properties = parse_derived_core_properties(input)
   inspect(properties.xid_start.length(), content="2")
   inspect(properties.xid_start[0].start, content="65")
@@ -87,6 +92,10 @@ test "parse XID properties" {
   inspect(properties.lowercase.length(), content="2")
   inspect(properties.lowercase[1].start, content="170")
   inspect(properties.uppercase.length(), content="1")
+  inspect(properties.default_ignorable_code_point.length(), content="2")
+  inspect(properties.default_ignorable_code_point[1].end, content="8207")
+  inspect(properties.grapheme_extend.length(), content="2")
+  inspect(properties.grapheme_extend[1].start, content="8204")
 }
 
 ///|
@@ -96,11 +105,37 @@ test "parse White_Space from PropList" {
     #|0020          ; White_Space # Zs       SPACE
     #|002D          ; Dash # Pd       HYPHEN-MINUS
     #|3000          ; White_Space # Zs       IDEOGRAPHIC SPACE
+    #|0600..0605    ; Prepended_Concatenation_Mark # Cf   [6] ARABIC NUMBER SIGN..ARABIC NUMBER MARK ABOVE
+    #|06DD          ; Prepended_Concatenation_Mark # Cf       ARABIC END OF AYAH
+    #|1F1E6..1F1FF  ; Regional_Indicator # So  [26] REGIONAL INDICATOR SYMBOL LETTER A..REGIONAL INDICATOR SYMBOL LETTER Z
   let properties = parse_prop_list(input)
   inspect(properties.white_space.length(), content="3")
   inspect(properties.white_space[0].start, content="9")
   inspect(properties.white_space[0].end, content="13")
   inspect(properties.white_space[2].start, content="12288")
+  inspect(properties.prepended_concatenation_mark.length(), content="2")
+  inspect(properties.prepended_concatenation_mark[1].start, content="1757")
+  inspect(properties.regional_indicator.length(), content="1")
+  inspect(properties.regional_indicator[0].end, content="127487")
+}
+
+///|
+test "parse emoji-data properties" {
+  let input =
+    #|0023          ; Emoji                # E0.0   [1] (#️)       hash sign
+    #|231A..231B    ; Emoji_Presentation   # E0.6   [2] (⌚..⌛)    watch..hourglass done
+    #|1F600         ; Emoji_Presentation   # E1.0   [1] (😀)       grinning face
+    #|1F3FB..1F3FF  ; Emoji_Modifier       # E1.0   [5] (🏻..🏿)    light skin tone..dark skin tone
+    #|261D          ; Emoji_Modifier_Base  # E0.6   [1] (☝️)       index pointing up
+    #|1F44D         ; Emoji_Modifier_Base  # E0.6   [1] (👍)       thumbs up
+    #|00A9          ; Extended_Pictographic# E0.6   [1] (©️)       copyright
+  let properties = parse_emoji_data(input)
+  inspect(properties.emoji_presentation.length(), content="2")
+  inspect(properties.emoji_presentation[0].end, content="8987")
+  inspect(properties.emoji_modifier.length(), content="1")
+  inspect(properties.emoji_modifier[0].start, content="127995")
+  inspect(properties.emoji_modifier_base.length(), content="2")
+  inspect(properties.emoji_modifier_base[1].start, content="128077")
 }
 
 ///|
@@ -188,6 +223,8 @@ test "emit XID table" {
       #|0041..005A ; Alphabetic
       #|0061..007A ; Lowercase
       #|0041..005A ; Uppercase
+      #|00AD ; Default_Ignorable_Code_Point
+      #|0300..036F ; Grapheme_Extend
     ),
   )
   let source = emit_xid(properties)
@@ -314,6 +351,8 @@ test "emit White_Space table" {
       (
         #|0009..000D ; White_Space
         #|0020 ; White_Space
+        #|0600..0605 ; Prepended_Concatenation_Mark
+        #|1F1E6..1F1FF ; Regional_Indicator
       ),
     ),
   )
@@ -363,5 +402,66 @@ test "unknown East_Asian_Width is rejected" {
       )
   } noraise {
     _ => fail("expected an unknown East_Asian_Width to be rejected")
+  }
+}
+
+///|
+test "emit Emoji tables" {
+  let source = emit_emoji(
+    parse_emoji_data(
+      (
+        #|231A..231B ; Emoji_Presentation
+        #|1F3FB..1F3FF ; Emoji_Modifier
+        #|1F44D ; Emoji_Modifier_Base
+      ),
+    ),
+  )
+  for
+    expected in [
+      "/// Generated from emoji-data.txt\n", "let emoji_presentation_trie_top : Bytes = [",
+      "pub fn is_emoji_presentation(c : Char) -> Bool", "let emoji_modifier_trie_leaf : Bytes = [",
+      "pub fn is_emoji_modifier(c : Char) -> Bool", "pub fn is_emoji_modifier_base(c : Char) -> Bool",
+    ] {
+    guard source.contains(expected) else {
+      fail("Generated source is missing: \{expected}")
+    }
+  }
+}
+
+///|
+test "emit Joining_Type table" {
+  let source = emit_joining_type(
+    (
+      #|# @missing: 0000..10FFFF; Non_Joining
+      #|0620 ; D
+      #|0627 ; R
+      #|200D ; C
+      #|E0100..E01EF ; T
+      #|
+    ),
+  )
+  for
+    expected in [
+      "/// Joining_Type lookup data\n/// Generated from DerivedJoiningType.txt\n",
+      "let joining_type_trie_top : Bytes = [", "let joining_type_trie_leaf : Bytes = [",
+      // Planes 4 and up: U from U+40000, T at U+E0100..U+E01EF, U again after.
+       "  0x200000,\n  0x700805,\n  0x700F80,\n]", "pub fn lookup_joining_type(c : Char) -> Int {",
+    ] {
+    guard source.contains(expected) else {
+      fail("Generated source is missing: \{expected}")
+    }
+  }
+}
+
+///|
+test "unknown Joining_Type is rejected" {
+  try emit_joining_type("0041 ; X\n") catch {
+    error =>
+      inspect(
+        error.to_string().contains("Unknown Joining_Type: X"),
+        content="true",
+      )
+  } noraise {
+    _ => fail("expected an unknown Joining_Type to be rejected")
   }
 }

@@ -258,10 +258,29 @@ pub fn parse_derived_core_properties(
     uppercase: parse_property_ranges(content, "Uppercase"),
     xid_start,
     xid_continue,
+    default_ignorable_code_point: parse_property_ranges(
+      content, "Default_Ignorable_Code_Point",
+    ),
+    grapheme_extend: parse_property_ranges(content, "Grapheme_Extend"),
   }
 }
 
 ///|
 pub fn parse_prop_list(content : String) -> PropList raise {
-  { white_space: parse_property_ranges(content, "White_Space"), }
+  {
+    white_space: parse_property_ranges(content, "White_Space"),
+    regional_indicator: parse_property_ranges(content, "Regional_Indicator"),
+    prepended_concatenation_mark: parse_property_ranges(
+      content, "Prepended_Concatenation_Mark",
+    ),
+  }
+}
+
+///|
+pub fn parse_emoji_data(content : String) -> EmojiData raise {
+  {
+    emoji_presentation: parse_property_ranges(content, "Emoji_Presentation"),
+    emoji_modifier: parse_property_ranges(content, "Emoji_Modifier"),
+    emoji_modifier_base: parse_property_ranges(content, "Emoji_Modifier_Base"),
+  }
 }

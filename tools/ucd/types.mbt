@@ -54,11 +54,22 @@ struct DerivedCoreProperties {
   uppercase : Array[@parsing.CodePointRange]
   xid_start : Array[@parsing.CodePointRange]
   xid_continue : Array[@parsing.CodePointRange]
+  default_ignorable_code_point : Array[@parsing.CodePointRange]
+  grapheme_extend : Array[@parsing.CodePointRange]
 }
 
 ///|
 struct PropList {
   white_space : Array[@parsing.CodePointRange]
+  regional_indicator : Array[@parsing.CodePointRange]
+  prepended_concatenation_mark : Array[@parsing.CodePointRange]
+}
+
+///|
+struct EmojiData {
+  emoji_presentation : Array[@parsing.CodePointRange]
+  emoji_modifier : Array[@parsing.CodePointRange]
+  emoji_modifier_base : Array[@parsing.CodePointRange]
 }
 
 ///|

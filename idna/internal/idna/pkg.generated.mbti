@@ -4,8 +4,6 @@ package "moonbit-community/unicode-idna/internal/idna"
 // Values
 pub fn lookup_idna_entry(Char) -> IdnaEntry
 
-pub fn lookup_joining_type(Char) -> JoiningType
-
 // Errors
 
 // Types and methods
@@ -27,20 +25,6 @@ pub fn IdnaStatus::not_equal(Self, Self) -> Bool
 pub fn IdnaStatus::output(Self, &Logger) -> Unit
 pub fn IdnaStatus::to_string(Self) -> String
 pub impl Show for IdnaStatus
-
-pub(all) enum JoiningType {
-  LeftJoining
-  RightJoining
-  DualJoining
-  JoinCausing
-  Transparent
-  NonJoining
-} derive(Eq)
-pub fn JoiningType::equal(Self, Self) -> Bool
-pub fn JoiningType::not_equal(Self, Self) -> Bool
-pub fn JoiningType::output(Self, &Logger) -> Unit
-pub fn JoiningType::to_string(Self) -> String
-pub impl Show for JoiningType
 
 // Type aliases
 

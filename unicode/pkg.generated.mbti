@@ -13,7 +13,21 @@ pub fn general_category(Char) -> GeneralCategory
 
 pub fn is_alphabetic(Char) -> Bool
 
+pub fn is_default_ignorable_code_point(Char) -> Bool
+
+pub fn is_emoji_modifier(Char) -> Bool
+
+pub fn is_emoji_modifier_base(Char) -> Bool
+
+pub fn is_emoji_presentation(Char) -> Bool
+
+pub fn is_grapheme_extend(Char) -> Bool
+
 pub fn is_lowercase(Char) -> Bool
+
+pub fn is_prepended_concatenation_mark(Char) -> Bool
+
+pub fn is_regional_indicator(Char) -> Bool
 
 pub fn is_uppercase(Char) -> Bool
 
@@ -22,6 +36,8 @@ pub fn is_white_space(Char) -> Bool
 pub fn is_xid_continue(Char) -> Bool
 
 pub fn is_xid_start(Char) -> Bool
+
+pub fn joining_type(Char) -> @unicode-data.JoiningType
 
 pub fn to_lowercase(Char) -> String
 
@@ -95,5 +111,7 @@ pub impl Show for GeneralCategoryGroup
 
 // Type aliases
 pub using @unicode-data {type EastAsianWidth}
+
+pub using @unicode-data {type JoiningType}
 
 // Traits

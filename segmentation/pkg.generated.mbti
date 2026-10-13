@@ -2,11 +2,35 @@
 package "moonbit-community/unicode-segmentation"
 
 // Values
+pub fn grapheme_cluster_break(Char) -> GraphemeClusterBreak
+
 pub fn graphemes(StringView) -> Graphemes
 
 // Errors
 
 // Types and methods
+pub(all) enum GraphemeClusterBreak {
+  Other
+  CR
+  LF
+  Control
+  Extend
+  ZWJ
+  RegionalIndicator
+  Prepend
+  SpacingMark
+  L
+  V
+  T
+  LV
+  LVT
+} derive(Eq)
+pub fn GraphemeClusterBreak::equal(Self, Self) -> Bool
+pub fn GraphemeClusterBreak::not_equal(Self, Self) -> Bool
+pub fn GraphemeClusterBreak::output(Self, &Logger) -> Unit
+pub fn GraphemeClusterBreak::to_string(Self) -> String
+pub impl Show for GraphemeClusterBreak
+
 type Graphemes
 pub fn Graphemes::iter(Self) -> Iter[StringView]
 pub fn Graphemes::next(Self) -> StringView

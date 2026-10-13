@@ -102,6 +102,9 @@ async fn generate_ucd(root : StringView) -> Unit {
   let prop_list = @ucd.parse_prop_list(
     read_source(root, "PropList.txt", "\{base}/PropList.txt"),
   )
+  let emoji_data = @ucd.parse_emoji_data(
+    read_source(root, "emoji-data.txt", "\{base}/emoji/emoji-data.txt"),
+  )
   let normalization_properties = read_source(
     root,
     "DerivedNormalizationProps.txt",
@@ -182,12 +185,47 @@ async fn generate_ucd(root : StringView) -> Unit {
       read_source(root, "EastAsianWidth.txt", "\{base}/EastAsianWidth.txt"),
     ),
   )
+  write_source(
+    root,
+    "ucd/default_ignorable_code_point/default_ignorable_code_point.mbt",
+    @ucd.emit_default_ignorable_code_point(core_properties),
+  )
+  write_source(
+    root,
+    "ucd/grapheme_extend/grapheme_extend.mbt",
+    @ucd.emit_grapheme_extend(core_properties),
+  )
+  write_source(
+    root,
+    "ucd/regional_indicator/regional_indicator.mbt",
+    @ucd.emit_regional_indicator(prop_list),
+  )
+  write_source(
+    root,
+    "ucd/prepended_concatenation_mark/prepended_concatenation_mark.mbt",
+    @ucd.emit_prepended_concatenation_mark(prop_list),
+  )
+  write_source(root, "ucd/emoji/emoji.mbt", @ucd.emit_emoji(emoji_data))
+  write_source(
+    root,
+    "ucd/joining_type/joining_type.mbt",
+    @ucd.emit_joining_type(
+      read_source(
+        root,
+        "DerivedJoiningType.txt",
+        "\{base}/extracted/DerivedJoiningType.txt",
+      ),
+    ),
+  )
   let generated_files = [
-    "ucd/internal/normalization/normalization.mbt", "ucd/general_category/mark.mbt",
-    "ucd/ccc/ccc.mbt", "ucd/decomposition/decomposition.mbt", "ucd/composition/composition.mbt",
-    "ucd/general_category/general_category.mbt", "ucd/case_mapping/case_mapping.mbt",
-    "ucd/xid/xid.mbt", "ucd/alphabetic/alphabetic.mbt", "ucd/lowercase/lowercase.mbt",
-    "ucd/uppercase/uppercase.mbt", "ucd/white_space/white_space.mbt", "ucd/east_asian_width/east_asian_width.mbt",
+    "ucd/default_ignorable_code_point/default_ignorable_code_point.mbt", "ucd/grapheme_extend/grapheme_extend.mbt",
+    "ucd/regional_indicator/regional_indicator.mbt", "ucd/prepended_concatenation_mark/prepended_concatenation_mark.mbt",
+    "ucd/emoji/emoji.mbt", "ucd/joining_type/joining_type.mbt", "ucd/internal/normalization/normalization.mbt",
+    "ucd/general_category/mark.mbt", "ucd/ccc/ccc.mbt", "ucd/decomposition/decomposition.mbt",
+    "ucd/composition/composition.mbt", "ucd/general_category/general_category.mbt",
+    "ucd/case_mapping/case_mapping.mbt", "ucd/xid/xid.mbt", "ucd/alphabetic/alphabetic.mbt",
+    "ucd/lowercase/lowercase.mbt", "ucd/uppercase/uppercase.mbt", "ucd/white_space/white_space.mbt",
+    "ucd/east_asian_width/east_asian_width.mbt",
   ]
   for file in generated_files {
     format_file(root, file)
@@ -202,23 +240,12 @@ async fn generate_idna_data(root : StringView) -> Unit {
     "IdnaMappingTable.txt",
     "https://www.unicode.org/Public/\{UnicodeVersion}/idna/IdnaMappingTable.txt",
   )
-  let joining = read_source(
-    root,
-    "DerivedJoiningType.txt",
-    "https://www.unicode.org/Public/\{UnicodeVersion}/ucd/extracted/DerivedJoiningType.txt",
-  )
   write_source(
     root,
     "idna/internal/idna/mapping.mbt",
     @idna_data.generate_mapping_source(mapping),
   )
-  write_source(
-    root,
-    "idna/internal/idna/joining.mbt",
-    @idna_data.generate_joining_source(joining),
-  )
   format_file(root, "idna/internal/idna/mapping.mbt")
-  format_file(root, "idna/internal/idna/joining.mbt")
   generate_interfaces(root, "idna/internal/idna")
 }
 

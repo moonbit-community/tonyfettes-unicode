@@ -32,6 +32,8 @@ moon info           # Regenerate pkg.generated.mbti files
 - **segmentation/** (`moonbit-community/unicode-segmentation`): UAX #29 text segmentation
   - `graphemes(StringView) -> Graphemes` - cursor over extended grapheme clusters
     (`iter()` for `for .. in`, `next()` returning an empty view at the end)
+  - `grapheme_cluster_break(Char) -> GraphemeClusterBreak` - the property of one
+    character, read from the same packed table
 - **idna/** (`moonbit-community/unicode-idna`): UTS #46 IDNA processing
   - `to_ascii()` - convert domain to ASCII (Punycode)
   - `to_unicode()` - convert domain from Punycode
@@ -49,7 +51,8 @@ moon info           # Regenerate pkg.generated.mbti files
 ### Internal Data Packages (auto-generated)
 
 - **ucd/data/**: Unicode Character Database lookup tables
-- **idna/internal/idna/**: IDNA mapping and joining tables
+- **idna/internal/idna/**: IDNA mapping table (Joining_Type comes from
+  `unicode-data`)
 - **bidi/internal/bidi/**: Bidi mirroring and bracket tables
 - **segmentation/grapheme_break_property.mbt**: grapheme cluster break properties
 

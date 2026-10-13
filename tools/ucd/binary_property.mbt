@@ -152,3 +152,65 @@ pub fn emit_white_space(properties : PropList) -> String raise {
     properties.white_space,
   )
 }
+
+///|
+pub fn emit_default_ignorable_code_point(
+  properties : DerivedCoreProperties,
+) -> String raise {
+  emit_binary_property(
+    property="Default_Ignorable_Code_Point",
+    source="DerivedCoreProperties.txt",
+    properties.default_ignorable_code_point,
+  )
+}
+
+///|
+pub fn emit_grapheme_extend(properties : DerivedCoreProperties) -> String raise {
+  emit_binary_property(
+    property="Grapheme_Extend",
+    source="DerivedCoreProperties.txt",
+    properties.grapheme_extend,
+  )
+}
+
+///|
+pub fn emit_regional_indicator(properties : PropList) -> String raise {
+  emit_binary_property(
+    property="Regional_Indicator",
+    source="PropList.txt",
+    properties.regional_indicator,
+  )
+}
+
+///|
+pub fn emit_prepended_concatenation_mark(properties : PropList) -> String raise {
+  emit_binary_property(
+    property="Prepended_Concatenation_Mark",
+    source="PropList.txt",
+    properties.prepended_concatenation_mark,
+  )
+}
+
+///|
+pub fn emit_emoji(properties : EmojiData) -> String raise {
+  let out = @emitter.Emitter::new()
+  out.write_file_header(
+    "Emoji_Presentation, Emoji_Modifier, and Emoji_Modifier_Base lookup data", "emoji-data.txt",
+  )
+  write_binary_property_trie(
+    out,
+    property="Emoji_Presentation",
+    properties.emoji_presentation,
+  )
+  write_binary_property_trie(
+    out,
+    property="Emoji_Modifier",
+    properties.emoji_modifier,
+  )
+  write_binary_property_trie(
+    out,
+    property="Emoji_Modifier_Base",
+    properties.emoji_modifier_base,
+  )
+  out.finish()
+}

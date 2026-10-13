@@ -1,8 +1,11 @@
 # unicode-data
 
 Unicode Character Database lookup, general categories, East Asian width,
-binary properties (White_Space, Alphabetic, Lowercase, Uppercase, XID_Start,
-XID_Continue), and case mapping for MoonBit. This module uses Unicode 18.0.0 data.
+joining types, binary properties (White_Space, Alphabetic, Lowercase,
+Uppercase, XID_Start, XID_Continue, Default_Ignorable_Code_Point,
+Grapheme_Extend, Regional_Indicator, Prepended_Concatenation_Mark,
+Emoji_Presentation, Emoji_Modifier, Emoji_Modifier_Base), and case mapping for
+MoonBit. This module uses Unicode 18.0.0 data.
 
 ```bash
 moon add moonbit-community/unicode-data
@@ -28,6 +31,12 @@ tables and exposes lookup functions; the tables themselves remain private.
 | `lowercase` | Lowercase |
 | `uppercase` | Uppercase |
 | `white_space` | White_Space |
+| `default_ignorable_code_point` | Default_Ignorable_Code_Point |
+| `grapheme_extend` | Grapheme_Extend |
+| `regional_indicator` | Regional_Indicator |
+| `prepended_concatenation_mark` | Prepended_Concatenation_Mark |
+| `emoji` | Emoji_Presentation, Emoji_Modifier, and Emoji_Modifier_Base |
+| `joining_type` | Joining_Type ordinal |
 
 `moonbit-community/unicode-data/data` remains a compatibility package that re-exports
 the old lookup functions with deprecation notices pointing to these packages.

@@ -1,0 +1,13 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbit-community/unicode-data/default_ignorable_code_point"
+
+// Values
+pub fn is_default_ignorable_code_point(Char) -> Bool
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
