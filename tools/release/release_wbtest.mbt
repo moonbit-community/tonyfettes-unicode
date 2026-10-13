@@ -167,3 +167,21 @@ test "publish resume points follow dependency order" {
     _ => fail("expected unknown resume module to fail")
   }
 }
+
+///|
+/// Every module that can be validated before this release publishes anything
+/// must be: otherwise a rejected archive would surface only after the modules
+/// before it had been published irreversibly.
+///
+test "preflight covers every module that does not depend on this release" {
+  assert_eq(preflight_modules(0).map(release_module => release_module.name), [
+    "unicode-data", "punycode", "unicode-bidi", "unicode-segmentation",
+  ])
+  assert_eq(preflight_modules(3).map(release_module => release_module.name), [
+    "unicode-segmentation",
+  ])
+  // Resuming from `unicode-normalization` leaves only modules that need their
+  // same-release dependencies, so nothing can be preflighted in advance.
+  assert_eq(preflight_modules(4).length(), 0)
+  assert_eq(preflight_modules(7).length(), 0)
+}

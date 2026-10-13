@@ -307,17 +307,21 @@ report.
 ### Releasing
 
 The native release tool keeps the seven published module versions aligned,
-validates the workspace, and checks every package archive. Preparation is
-offline: it never contacts the registry, so it needs no mooncakes.io
-credentials:
+validates the workspace, and checks every package archive. Preparation
+publishes nothing and never dry-runs an archive against the registry, so it
+needs no mooncakes.io credentials. It passes `--frozen` to every `moon`
+command that can synchronize dependencies, so a cold or stale local registry
+fails loudly instead of fetching mid-release:
 
 ```bash
-moon run --target native tools/release -- prepare --version <MAJOR.MINOR.PATCH>
+moon run --frozen --target native tools/release -- prepare --version <MAJOR.MINOR.PATCH>
 ```
 
 The version is a plain `MAJOR.MINOR.PATCH` with no prerelease suffix. `prepare`
 refuses to run unless the Git worktree is clean and the seven published
 manifests already agree on one version, which it then rewrites to the new one.
+A machine that has never resolved this workspace's dependencies needs a
+`moon update` before that command, because of `--frozen`.
 
 Review and commit the resulting manifest changes to the default branch, then
 wait for CI to pass. Publication is a separate, explicit step that does not
@@ -333,12 +337,14 @@ The tool publishes `unicode-data`, `punycode`, `unicode-bidi`,
 `unicode-segmentation`, `unicode-normalization`, `unicode-idna`, and the
 `unicode` compatibility umbrella in dependency order. It reads
 the release version from the umbrella manifest `unicode/moon.mod` and verifies
-that all seven published modules use that version. Every module is dry-run
-immediately before its real publication; a module that depends on same-release
-packages has the registry refreshed first so those dependencies are available.
-It never publishes the workspace-only `tests` or `tools` modules. If publication
-stops partway through, rerun the workflow with its `from` input set to the
-failed module, or resume with the underlying command:
+that all seven published modules use that version. The modules that do not
+depend on this release are dry-run before anything is published, so a rejected
+archive cannot leave a partial release behind; each remaining module is
+dry-run immediately before its own publication, after the registry is
+refreshed for its same-release dependencies. It never publishes the
+workspace-only `tests` or `tools` modules. If publication stops partway
+through, rerun the workflow with its `from` input set to the failed module, or
+resume with the underlying command:
 
 ```bash
 moon run --target native tools/release -- publish \

@@ -154,21 +154,26 @@ async fn prepare_release(root : StringView, version : String) -> Unit {
     "Synchronizing workspace versions",
   )
   run_checked(root, "moon", ["fmt"], "Formatting the workspace")
-  run_checked(root, "moon", ["info"], "Refreshing generated interfaces")
   run_checked(
     root,
     "moon",
-    ["check", "tools/release", "--target", "native"],
+    ["info", "--frozen"],
+    "Refreshing generated interfaces",
+  )
+  run_checked(
+    root,
+    "moon",
+    ["check", "tools/release", "--target", "native", "--frozen"],
     "Checking the native release tool",
   )
   run_checked(
     root,
     "moon",
-    ["test", "tools/release", "--target", "native"],
+    ["test", "tools/release", "--target", "native", "--frozen"],
     "Testing the native release tool",
   )
-  run_checked(root, "moon", ["check"], "Checking the workspace")
-  run_checked(root, "moon", ["test"], "Testing the workspace")
+  run_checked(root, "moon", ["check", "--frozen"], "Checking the workspace")
+  run_checked(root, "moon", ["test", "--frozen"], "Testing the workspace")
   for release_module in published_modules {
     run_checked(
       root,
@@ -177,7 +182,7 @@ async fn prepare_release(root : StringView, version : String) -> Unit {
       "Listing moonbit-community/\{release_module.name}@\{version}",
     )
   }
-  println("==> Preparation completed without contacting the registry")
+  println("==> Preparation completed without publishing or dry-running")
   println(
     "Release \{version} is prepared. Review and commit the manifest changes,",
   )
@@ -195,6 +200,12 @@ async fn publish_release(root : StringView, first_module : String) -> Unit {
   let version = verify_published_versions(root)
   println("Publishing release \{version} from module \{first_module}")
   run_checked(root, "moon", ["whoami"], "Checking mooncakes.io login")
+  // Check the modules that can be validated before anything is published
+  // first, so a rejected archive cannot leave a partial release behind.
+  println("==> Dry-running the modules that do not depend on this release")
+  for release_module in preflight_modules(start_index) {
+    run_publish_dry_run(root, release_module, version)
+  }
   println("==> All preflight checks passed; starting module publication")
   for index, release_module in published_modules {
     if index >= start_index {
@@ -208,8 +219,8 @@ async fn publish_release(root : StringView, first_module : String) -> Unit {
           ["-C", release_module.directory, "update"],
           "Refreshing the registry for moonbit-community/\{release_module.name}@\{version}",
         )
+        run_publish_dry_run(root, release_module, version)
       }
-      run_publish_dry_run(root, release_module, version)
       println(
         "==> Publishing moonbit-community/\{release_module.name}@\{version}",
       )
