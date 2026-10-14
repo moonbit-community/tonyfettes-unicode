@@ -5,12 +5,6 @@ pub using @impl {get_mirrored, requires_bidi}
 pub using @legacy_data {type BidiClass}
 
 ///|
-pub(all) suberror BidiError {
-  InvalidIsolate(String)
-  StackOverflow
-}
-
-///|
 pub(all) enum Direction {
   LTR
   RTL

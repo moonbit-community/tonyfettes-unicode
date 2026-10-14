@@ -6,13 +6,6 @@
 /// and right-to-left characters.
 
 ///|
-/// Error types for Bidi processing
-pub(all) suberror BidiError {
-  InvalidIsolate(String) // Mismatched isolate initiator/PDI
-  StackOverflow // Embedding level stack overflow (max 125)
-}
-
-///|
 /// Direction of text
 pub(all) enum Direction {
   LTR // Left-to-Right (base level 0)
