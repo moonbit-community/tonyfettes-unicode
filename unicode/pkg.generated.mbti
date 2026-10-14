@@ -3,13 +3,12 @@ package "moonbit-community/unicode"
 
 import {
   "moonbit-community/unicode-data",
-  "moonbitlang/core/debug",
 }
 
 // Values
 pub fn east_asian_width(Char) -> @unicode-data.EastAsianWidth
 
-pub fn general_category(Char) -> GeneralCategory
+pub fn general_category(Char) -> @unicode-data.GeneralCategory
 
 pub fn hangul_syllable_type(Char) -> @unicode-data.HangulSyllableType
 
@@ -62,63 +61,13 @@ pub fn to_uppercase(Char) -> String
 // Errors
 
 // Types and methods
-pub(all) enum GeneralCategory {
-  Lu
-  Ll
-  Lt
-  Lm
-  Lo
-  Mn
-  Mc
-  Me
-  Nd
-  Nl
-  No
-  Zs
-  Zl
-  Zp
-  Pc
-  Pd
-  Ps
-  Pe
-  Pi
-  Pf
-  Po
-  Sm
-  Sc
-  Sk
-  So
-  Cc
-  Cf
-  Cs
-  Co
-  Cn
-} derive(Eq)
-pub fn GeneralCategory::equal(Self, Self) -> Bool
-pub fn GeneralCategory::group(Self) -> GeneralCategoryGroup
-pub fn GeneralCategory::not_equal(Self, Self) -> Bool
-pub fn GeneralCategory::output(Self, &Logger) -> Unit
-pub fn GeneralCategory::to_string(Self) -> String
-pub impl Show for GeneralCategory
-
-pub(all) enum GeneralCategoryGroup {
-  L
-  M
-  N
-  Z
-  P
-  S
-  C
-} derive(Eq, @debug.Debug)
-pub fn GeneralCategoryGroup::equal(Self, Self) -> Bool
-pub fn GeneralCategoryGroup::not_equal(Self, Self) -> Bool
-pub fn GeneralCategoryGroup::output(Self, &Logger) -> Unit
-pub fn GeneralCategoryGroup::to_repr(Self) -> @debug.Repr
-pub fn GeneralCategoryGroup::to_string(Self) -> String
-pub impl Show for GeneralCategoryGroup
 
 // Type aliases
 pub using @unicode-data {type EastAsianWidth}
+
+pub using @unicode-data {type GeneralCategory}
+
+pub using @unicode-data {type GeneralCategoryGroup}
 
 pub using @unicode-data {type HangulSyllableType}
 
