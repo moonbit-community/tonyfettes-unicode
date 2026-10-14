@@ -9,7 +9,10 @@ pub(all) enum HangulSyllableType {
   TrailingJamo // T
   LVSyllable // LV
   LVTSyllable // LVT
-} derive(Eq)
+} derive(Debug, Eq)
+
+///|
+pub extend HangulSyllableType with Debug::{to_repr}
 
 ///|
 pub extend HangulSyllableType with Eq::{not_equal, equal}

@@ -68,10 +68,11 @@ pub(all) enum EastAsianWidth {
   N
   Na
   W
-} derive(Eq)
+} derive(Eq, @debug.Debug)
 pub fn EastAsianWidth::equal(Self, Self) -> Bool
 pub fn EastAsianWidth::not_equal(Self, Self) -> Bool
 pub fn EastAsianWidth::output(Self, &Logger) -> Unit
+pub fn EastAsianWidth::to_repr(Self) -> @debug.Repr
 pub fn EastAsianWidth::to_string(Self) -> String
 pub impl Show for EastAsianWidth
 
@@ -106,11 +107,12 @@ pub(all) enum GeneralCategory {
   Cs
   Co
   Cn
-} derive(Eq)
+} derive(Eq, @debug.Debug)
 pub fn GeneralCategory::equal(Self, Self) -> Bool
 pub fn GeneralCategory::group(Self) -> GeneralCategoryGroup
 pub fn GeneralCategory::not_equal(Self, Self) -> Bool
 pub fn GeneralCategory::output(Self, &Logger) -> Unit
+pub fn GeneralCategory::to_repr(Self) -> @debug.Repr
 pub fn GeneralCategory::to_string(Self) -> String
 pub impl Show for GeneralCategory
 
@@ -137,10 +139,11 @@ pub(all) enum HangulSyllableType {
   TrailingJamo
   LVSyllable
   LVTSyllable
-} derive(Eq)
+} derive(Eq, @debug.Debug)
 pub fn HangulSyllableType::equal(Self, Self) -> Bool
 pub fn HangulSyllableType::not_equal(Self, Self) -> Bool
 pub fn HangulSyllableType::output(Self, &Logger) -> Unit
+pub fn HangulSyllableType::to_repr(Self) -> @debug.Repr
 pub fn HangulSyllableType::to_string(Self) -> String
 pub impl Show for HangulSyllableType
 
@@ -261,10 +264,11 @@ pub(all) enum JoiningGroup {
   YudhHe
   Zain
   Zhain
-} derive(Eq)
+} derive(Eq, @debug.Debug)
 pub fn JoiningGroup::equal(Self, Self) -> Bool
 pub fn JoiningGroup::not_equal(Self, Self) -> Bool
 pub fn JoiningGroup::output(Self, &Logger) -> Unit
+pub fn JoiningGroup::to_repr(Self) -> @debug.Repr
 pub fn JoiningGroup::to_string(Self) -> String
 pub impl Show for JoiningGroup
 
@@ -275,10 +279,11 @@ pub(all) enum JoiningType {
   LeftJoining
   RightJoining
   Transparent
-} derive(Eq)
+} derive(Eq, @debug.Debug)
 pub fn JoiningType::equal(Self, Self) -> Bool
 pub fn JoiningType::not_equal(Self, Self) -> Bool
 pub fn JoiningType::output(Self, &Logger) -> Unit
+pub fn JoiningType::to_repr(Self) -> @debug.Repr
 pub fn JoiningType::to_string(Self) -> String
 pub impl Show for JoiningType
 
@@ -332,10 +337,11 @@ pub(all) enum LineBreak {
   XX
   ZW
   ZWJ
-} derive(Eq)
+} derive(Eq, @debug.Debug)
 pub fn LineBreak::equal(Self, Self) -> Bool
 pub fn LineBreak::not_equal(Self, Self) -> Bool
 pub fn LineBreak::output(Self, &Logger) -> Unit
+pub fn LineBreak::to_repr(Self) -> @debug.Repr
 pub fn LineBreak::to_string(Self) -> String
 pub impl Show for LineBreak
 

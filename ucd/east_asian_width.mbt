@@ -8,7 +8,10 @@ pub(all) enum EastAsianWidth {
   N // Neutral
   Na // Narrow
   W // Wide
-} derive(Eq)
+} derive(Debug, Eq)
+
+///|
+pub extend EastAsianWidth with Debug::{to_repr}
 
 ///|
 pub extend EastAsianWidth with Eq::{not_equal, equal}

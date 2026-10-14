@@ -123,7 +123,10 @@ pub(all) enum JoiningGroup {
   YudhHe // Yudh_He
   Zain // Zain
   Zhain // Zhain
-} derive(Eq)
+} derive(Debug, Eq)
+
+///|
+pub extend JoiningGroup with Debug::{to_repr}
 
 ///|
 pub extend JoiningGroup with Eq::{not_equal, equal}

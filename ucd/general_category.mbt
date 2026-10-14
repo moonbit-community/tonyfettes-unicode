@@ -74,7 +74,10 @@ pub(all) enum GeneralCategory {
   Cs // Surrogate
   Co // Private_Use
   Cn // Unassigned
-} derive(Eq)
+} derive(Debug, Eq)
+
+///|
+pub extend GeneralCategory with Debug::{to_repr}
 
 ///|
 pub extend GeneralCategory with Eq::{not_equal, equal}
