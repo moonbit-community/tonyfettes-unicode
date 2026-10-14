@@ -1,8 +1,0 @@
-import {
-  "moonbit-community/unicode-data" @ucd,
-}
-
-import {
-  "moonbit-community/unicode-linebreak" @linebreak,
-  "moonbitlang/core/debug",
-} for "test"

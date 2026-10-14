@@ -40,15 +40,46 @@ async test "LineBreakTest.txt conformance" {
       expect_marker = !expect_marker
     }
     assert_false(expect_marker, msg="Missing final boundary marker")
-    let actual = @linebreak.line_breaks(out.to_string())
-      .iter()
-      .map(p => p.0)
-      .collect()
+    let text = out.to_string().view()
+    let breaks = @segmentation.line_breaks(text)
+    let actual = []
+    let kinds = []
+    let mut previous_end = text.start_offset()
+    for segment in breaks {
+      assert_eq(segment.start_offset(), previous_end)
+      assert_false(segment.is_empty())
+      previous_end += segment.length()
+      actual.push(previous_end - text.start_offset())
+      kinds.push(breaks.opportunity())
+    }
+    assert_eq(previous_end, text.start_offset() + text.length())
     @debug.assert_eq(
       actual,
       expected,
       msg="LineBreakTest.txt line \{line_number + 1}: \{line}",
     )
+    // The combined cursor must expose exactly the default opportunities at
+    // complete UAX #29 cluster ends, without changing either segmentation.
+    let graphemes = @segmentation.graphemes(text)
+    let mut point = 0
+    for grapheme in graphemes {
+      let end = grapheme.start_offset() -
+        text.start_offset() +
+        grapheme.length()
+      while point < expected.length() && expected[point] < end {
+        point += 1
+      }
+      let kind = if point < expected.length() && expected[point] == end {
+        kinds[point]
+      } else {
+        @segmentation.Prohibited
+      }
+      @debug.assert_eq(
+        graphemes.line_break(),
+        kind,
+        msg="Grapheme ending at \{end}, LineBreakTest.txt line \{line_number + 1}",
+      )
+    }
     cases += 1
   }
   // Exact fixture count: deleting/skipping any test must fail.

@@ -33,7 +33,6 @@ moon add moonbit-community/unicode-normalization
 moon add moonbit-community/punycode
 moon add moonbit-community/unicode-bidi
 moon add moonbit-community/unicode-segmentation
-moon add moonbit-community/unicode-linebreak
 moon add moonbit-community/unicode-idna
 ```
 
@@ -47,14 +46,13 @@ import {
   "moonbit-community/unicode-idna" @idna,
   "moonbit-community/unicode-bidi" @bidi,
   "moonbit-community/unicode-segmentation" @segmentation,
-  "moonbit-community/unicode-linebreak" @linebreak,
 }
 ```
 
 MoonBit uses the last package path segment as the default alias, which is not a
 valid identifier for the hyphenated `unicode-*` modules, so give those imports
 an explicit alias. The examples below use `@ucd`, `@normalization`,
-`@punycode`, `@idna`, `@bidi`, `@segmentation`, and `@linebreak`. Existing users may continue depending on
+`@punycode`, `@idna`, `@bidi`, and `@segmentation`. Existing users may continue depending on
 `moonbit-community/unicode`; it is an umbrella compatibility module that
 preserves the old package paths.
 
@@ -208,7 +206,7 @@ Root package for Unicode Character Database helpers.
 | `joining_group(Char) -> JoiningGroup` | Return the Joining_Group value, such as `Beh`, `Alef`, or `Lam`; `NoJoiningGroup` for characters outside the groups. |
 | `hangul_syllable_type(Char) -> HangulSyllableType` | Return the Hangul_Syllable_Type value: `NotApplicable`, `LeadingJamo`, `VowelJamo`, `TrailingJamo`, `LVSyllable`, or `LVTSyllable`. |
 | `is_extended_pictographic(Char) -> Bool` | Test Extended_Pictographic, including reserved potential emoji. |
-| `line_break(Char) -> LineBreak` | Return the UAX #14 Line_Break class, such as `AL`, `ID`, or `OP`, as the Unicode Character Database assigns it. Rule LB1 is not applied here; use `unicode-linebreak` for the default line breaking algorithm. |
+| `line_break(Char) -> LineBreak` | Return the UAX #14 Line_Break class, such as `AL`, `ID`, or `OP`, as the Unicode Character Database assigns it. Rule LB1 is not applied here; use `unicode-segmentation` for the default line breaking algorithm. |
 | `to_simple_uppercase(Char) -> Char` | Simple uppercase mapping. |
 | `to_simple_lowercase(Char) -> Char` | Simple lowercase mapping. |
 | `to_simple_titlecase(Char) -> Char` | Simple titlecase mapping. |
@@ -280,22 +278,25 @@ deprecated compatibility wrappers.
 
 | API | Description |
 | --- | --- |
-| `graphemes(StringView) -> Graphemes` | Create a single-pass cursor over the extended grapheme clusters of a text. |
-| `Graphemes::iter() -> Iter[StringView]` | Iterate over the remaining clusters, each a view into the input; enables `for .. in`. |
+| `graphemes(StringView) -> Graphemes` | Create a cursor over extended grapheme clusters (UAX #29). |
+| `Graphemes::iter() -> Iter[StringView]` | Iterate over remaining clusters; enables `for .. in`. |
 | `Graphemes::next() -> StringView` | Return the next cluster, or an empty view at the end. |
-| `grapheme_cluster_break(Char) -> GraphemeClusterBreak` | Return the UAX #29 Grapheme_Cluster_Break value of a single character. |
+| `Graphemes::line_break() -> BreakOpportunity` | Query `Prohibited`, `Allowed`, or `Mandatory` after the last returned cluster. Initializes line breaking context only when queried. |
+| `grapheme_cluster_break(Char) -> GraphemeClusterBreak` | Return the UAX #29 property of a character. |
+| `line_breaks(StringView) -> LineBreaks` | Create a cursor over segments ending at default UAX #14 opportunities. |
+| `LineBreaks::next() -> StringView` | Return the next segment, or an empty view at the end. |
+| `LineBreaks::iter() -> Iter[StringView]` | Iterate over remaining segments; enables `for .. in`. |
+| `LineBreaks::opportunity() -> BreakOpportunity` | Query the break kind at the end of the last returned segment. |
 
-### `moonbit-community/unicode-linebreak`
+Both cursors retain spaces, newlines, and the views' offsets in the backing
+string. Before the first result their break queries return `Prohibited`;
+after exhaustion they preserve the last kind. Nonempty text ends with
+`Mandatory`, even without a newline. Empty text has no results.
 
-| API | Description |
-| --- | --- |
-| `line_breaks(StringView) -> LineBreaks` | Create a cursor over default UAX #14 opportunities. |
-| `LineBreaks::next() -> (Int, BreakOpportunity)?` | Return the next UTF-16 offset and `Allowed` or `Mandatory`, or `None` when exhausted. |
-| `LineBreaks::iter() -> Iter[(Int, BreakOpportunity)]` | Consume the remaining opportunities; also enables `for .. in`. |
-
-Offsets are relative to the input view. The start is omitted, and nonempty
-text ends with one `Mandatory` at its length. Empty text has no results.
-See [linebreak](linebreak/README.md) for the full contract and examples.
+`LineBreaks` exposes every default UAX #14 opportunity, including ones inside
+grapheme clusters. `Graphemes::line_break()` queries only complete cluster ends,
+without moving internal opportunities to those ends. See
+[segmentation](segmentation/README.md) for examples and complexity.
 The workspace conformance suite runs every Unicode 18.0.0 `LineBreakTest.txt`
 case directly from `tests/data/`.
 
@@ -352,7 +353,7 @@ report.
 
 ### Releasing
 
-The native release tool keeps the eight published module versions aligned,
+The native release tool keeps the seven published module versions aligned,
 validates the workspace, and checks every package archive. Preparation
 publishes nothing and never dry-runs an archive against the registry, so it
 needs no mooncakes.io credentials:
@@ -362,7 +363,7 @@ moon run --target native tools/release -- prepare --version <MAJOR.MINOR.PATCH>
 ```
 
 The version is a plain `MAJOR.MINOR.PATCH` with no prerelease suffix. `prepare`
-refuses to run unless the Git worktree is clean and the eight published
+refuses to run unless the Git worktree is clean and the seven published
 manifests already agree on one version, which it then rewrites to the new one.
 
 Review and commit the resulting manifest changes, open a pull request, and wait
@@ -377,10 +378,10 @@ moon run --target native tools/release -- publish \
 ```
 
 The tool publishes `unicode-data`, `punycode`, `unicode-bidi`,
-`unicode-segmentation`, `unicode-linebreak`, `unicode-normalization`, `unicode-idna`, and the
+`unicode-segmentation`, `unicode-normalization`, `unicode-idna`, and the
 `unicode` compatibility umbrella in dependency order. It reads
 the release version from the umbrella manifest `unicode/moon.mod` and verifies
-that all eight published modules use that version. The modules that do not
+that all seven published modules use that version. The modules that do not
 depend on this release are dry-run before anything is published, so a rejected
 archive cannot leave a partial release behind; each remaining module is
 dry-run immediately before its own publication, after the registry is

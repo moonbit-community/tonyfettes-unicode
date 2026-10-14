@@ -1,7 +1,7 @@
 supported_targets = "native"
 
 import {
-  "moonbit-community/unicode-linebreak" @linebreak,
+  "moonbit-community/unicode-segmentation" @segmentation,
   "moonbit-community/unicode-tests/support",
   "moonbitlang/async",
   "moonbitlang/core/debug",

@@ -9,5 +9,4 @@ members = [
   "tests",
   "tools",
   "bench",
-  "./linebreak",
 ]

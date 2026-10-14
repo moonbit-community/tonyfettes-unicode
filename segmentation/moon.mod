@@ -10,4 +10,15 @@ readme = "README.md"
 
 description = "Unicode Text Segmentation for MoonBit"
 
-keywords = [ "unicode", "segmentation", "uax29", "grapheme" ]
+keywords = [
+  "unicode",
+  "segmentation",
+  "uax29",
+  "grapheme",
+  "uax14",
+  "linebreak",
+]
+
+import {
+  "moonbit-community/unicode-data@0.6.0",
+}

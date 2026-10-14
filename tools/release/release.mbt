@@ -34,11 +34,6 @@ let published_modules : Array[ReleaseModule] = [
   {
     name: "unicode-segmentation",
     directory: "segmentation",
-    requires_published_dependencies: false,
-  },
-  {
-    name: "unicode-linebreak",
-    directory: "linebreak",
     requires_published_dependencies: true,
   },
   {
