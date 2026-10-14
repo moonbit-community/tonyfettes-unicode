@@ -1,6 +1,6 @@
 ///|
 test "legacy UCD package surface" {
-  let category : @unicode.GeneralCategory = @unicode.Lu
+  let category : @unicode.GeneralCategory = @unicode.GeneralCategory::Lu
   inspect(category, content="Lu")
   inspect(category.group(), content="L")
   inspect(@unicode.general_category('A'), content="Lu")
