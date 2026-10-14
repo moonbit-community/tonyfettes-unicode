@@ -25,10 +25,6 @@ pub fn reorder_string(BidiParagraph) -> String
 pub fn requires_bidi(String) -> Bool
 
 // Errors
-pub(all) suberror BidiError {
-  InvalidIsolate(String)
-  StackOverflow
-}
 
 // Types and methods
 pub(all) enum BidiClass {
