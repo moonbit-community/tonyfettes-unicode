@@ -1,4 +1,11 @@
 ///|
+/// Check the Unicode Extended_Pictographic property, including reserved
+/// code points intended for future emoji. Used by UAX #14 and UAX #29.
+pub fn is_extended_pictographic(c : Char) -> Bool {
+  @emoji.is_extended_pictographic(c)
+}
+
+///|
 /// Check whether a character has the Unicode Emoji_Presentation property.
 ///
 /// Emoji_Presentation covers the characters displayed as emoji by default.

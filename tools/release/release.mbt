@@ -37,6 +37,11 @@ let published_modules : Array[ReleaseModule] = [
     requires_published_dependencies: false,
   },
   {
+    name: "unicode-linebreak",
+    directory: "linebreak",
+    requires_published_dependencies: true,
+  },
+  {
     name: "unicode-normalization",
     directory: "normalization",
     requires_published_dependencies: true,

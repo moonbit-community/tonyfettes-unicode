@@ -24,6 +24,8 @@ pub fn is_emoji_modifier_base(Char) -> Bool
 
 pub fn is_emoji_presentation(Char) -> Bool
 
+pub fn is_extended_pictographic(Char) -> Bool
+
 pub fn is_grapheme_extend(Char) -> Bool
 
 pub fn is_lowercase(Char) -> Bool

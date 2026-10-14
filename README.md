@@ -13,13 +13,14 @@ segmentation. The generated tables target Unicode 18.0.0.
 - IDNA processing from UTS #46, including mapping, validation, Bidi checks,
   joiner checks, and DNS length checks
 - Unicode Bidirectional Algorithm support from UAX #9
+- Default line breaking opportunities from UAX #14
 - Extended grapheme cluster segmentation from UAX #29
 - General_Category, East_Asian_Width, Line_Break, Joining_Type, Joining_Group,
   and Hangul_Syllable_Type lookup, binary property predicates (White_Space,
   Alphabetic, Lowercase, Uppercase, XID_Start, XID_Continue,
   Default_Ignorable_Code_Point, Grapheme_Extend, Regional_Indicator,
   Prepended_Concatenation_Mark, Emoji_Presentation, Emoji_Modifier,
-  Emoji_Modifier_Base), emoji variation sequences, and simple/full case mapping
+  Emoji_Modifier_Base, Extended_Pictographic), emoji variation sequences, and simple/full case mapping
   from the Unicode Character Database
 
 ## Installation
@@ -32,6 +33,7 @@ moon add moonbit-community/unicode-normalization
 moon add moonbit-community/punycode
 moon add moonbit-community/unicode-bidi
 moon add moonbit-community/unicode-segmentation
+moon add moonbit-community/unicode-linebreak
 moon add moonbit-community/unicode-idna
 ```
 
@@ -45,13 +47,14 @@ import {
   "moonbit-community/unicode-idna" @idna,
   "moonbit-community/unicode-bidi" @bidi,
   "moonbit-community/unicode-segmentation" @segmentation,
+  "moonbit-community/unicode-linebreak" @linebreak,
 }
 ```
 
 MoonBit uses the last package path segment as the default alias, which is not a
 valid identifier for the hyphenated `unicode-*` modules, so give those imports
 an explicit alias. The examples below use `@ucd`, `@normalization`,
-`@punycode`, `@idna`, `@bidi`, and `@segmentation`. Existing users may continue depending on
+`@punycode`, `@idna`, `@bidi`, `@segmentation`, and `@linebreak`. Existing users may continue depending on
 `moonbit-community/unicode`; it is an umbrella compatibility module that
 preserves the old package paths.
 
@@ -204,7 +207,8 @@ Root package for Unicode Character Database helpers.
 | `joining_type(Char) -> JoiningType` | Return the Joining_Type value: `NonJoining`, `JoinCausing`, `DualJoining`, `LeftJoining`, `RightJoining`, or `Transparent`. |
 | `joining_group(Char) -> JoiningGroup` | Return the Joining_Group value, such as `Beh`, `Alef`, or `Lam`; `NoJoiningGroup` for characters outside the groups. |
 | `hangul_syllable_type(Char) -> HangulSyllableType` | Return the Hangul_Syllable_Type value: `NotApplicable`, `LeadingJamo`, `VowelJamo`, `TrailingJamo`, `LVSyllable`, or `LVTSyllable`. |
-| `line_break(Char) -> LineBreak` | Return the UAX #14 Line_Break class, such as `AL`, `ID`, or `OP`, as the Unicode Character Database assigns it. Rule LB1 is not applied, and the line breaking algorithm itself is not implemented. |
+| `is_extended_pictographic(Char) -> Bool` | Test Extended_Pictographic, including reserved potential emoji. |
+| `line_break(Char) -> LineBreak` | Return the UAX #14 Line_Break class, such as `AL`, `ID`, or `OP`, as the Unicode Character Database assigns it. Rule LB1 is not applied here; use `unicode-linebreak` for the default line breaking algorithm. |
 | `to_simple_uppercase(Char) -> Char` | Simple uppercase mapping. |
 | `to_simple_lowercase(Char) -> Char` | Simple lowercase mapping. |
 | `to_simple_titlecase(Char) -> Char` | Simple titlecase mapping. |
@@ -281,6 +285,20 @@ deprecated compatibility wrappers.
 | `Graphemes::next() -> StringView` | Return the next cluster, or an empty view at the end. |
 | `grapheme_cluster_break(Char) -> GraphemeClusterBreak` | Return the UAX #29 Grapheme_Cluster_Break value of a single character. |
 
+### `moonbit-community/unicode-linebreak`
+
+| API | Description |
+| --- | --- |
+| `line_breaks(StringView) -> LineBreaks` | Create a cursor over default UAX #14 opportunities. |
+| `LineBreaks::next() -> (Int, BreakOpportunity)?` | Return the next UTF-16 offset and `Allowed` or `Mandatory`, or `None` when exhausted. |
+| `LineBreaks::iter() -> Iter[(Int, BreakOpportunity)]` | Consume the remaining opportunities; also enables `for .. in`. |
+
+Offsets are relative to the input view. The start is omitted, and nonempty
+text ends with one `Mandatory` at its length. Empty text has no results.
+See [linebreak](linebreak/README.md) for the full contract and examples.
+The workspace conformance suite runs every Unicode 18.0.0 `LineBreakTest.txt`
+case directly from `tests/data/`.
+
 ## Development
 
 Common commands:
@@ -334,7 +352,7 @@ report.
 
 ### Releasing
 
-The native release tool keeps the seven published module versions aligned,
+The native release tool keeps the eight published module versions aligned,
 validates the workspace, and checks every package archive. Preparation
 publishes nothing and never dry-runs an archive against the registry, so it
 needs no mooncakes.io credentials:
@@ -344,7 +362,7 @@ moon run --target native tools/release -- prepare --version <MAJOR.MINOR.PATCH>
 ```
 
 The version is a plain `MAJOR.MINOR.PATCH` with no prerelease suffix. `prepare`
-refuses to run unless the Git worktree is clean and the seven published
+refuses to run unless the Git worktree is clean and the eight published
 manifests already agree on one version, which it then rewrites to the new one.
 
 Review and commit the resulting manifest changes, open a pull request, and wait
@@ -359,10 +377,10 @@ moon run --target native tools/release -- publish \
 ```
 
 The tool publishes `unicode-data`, `punycode`, `unicode-bidi`,
-`unicode-segmentation`, `unicode-normalization`, `unicode-idna`, and the
+`unicode-segmentation`, `unicode-linebreak`, `unicode-normalization`, `unicode-idna`, and the
 `unicode` compatibility umbrella in dependency order. It reads
 the release version from the umbrella manifest `unicode/moon.mod` and verifies
-that all seven published modules use that version. The modules that do not
+that all eight published modules use that version. The modules that do not
 depend on this release are dry-run before anything is published, so a rejected
 archive cannot leave a partial release behind; each remaining module is
 dry-run immediately before its own publication, after the registry is
@@ -374,6 +392,7 @@ version, so fix the problem and release the whole set again at a new version.
 ## Standards
 
 - [UAX #9: Unicode Bidirectional Algorithm](https://unicode.org/reports/tr9/)
+- [UAX #14: Unicode Line Breaking Algorithm](https://unicode.org/reports/tr14/)
 - [UAX #15: Unicode Normalization Forms](https://unicode.org/reports/tr15/)
 - [UAX #29: Unicode Text Segmentation](https://unicode.org/reports/tr29/)
 - [UAX #44: Unicode Character Database](https://unicode.org/reports/tr44/)
