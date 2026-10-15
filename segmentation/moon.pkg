@@ -1,3 +1,8 @@
 import {
+  "moonbit-community/unicode-data" @ucd,
+}
+
+import {
   "moonbit-community/unicode-segmentation" @segmentation,
+  "moonbitlang/core/debug",
 } for "test"

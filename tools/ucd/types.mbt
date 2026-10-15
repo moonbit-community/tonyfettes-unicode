@@ -67,6 +67,7 @@ struct PropList {
 
 ///|
 struct EmojiData {
+  extended_pictographic : Array[@parsing.CodePointRange]
   emoji_presentation : Array[@parsing.CodePointRange]
   emoji_modifier : Array[@parsing.CodePointRange]
   emoji_modifier_base : Array[@parsing.CodePointRange]

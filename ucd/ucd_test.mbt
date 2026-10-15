@@ -538,6 +538,18 @@ test "line_break: common classes" {
 }
 
 ///|
+test "extended pictographic includes potential emoji" {
+  assert_true(@ucd.is_extended_pictographic('\u{1F600}'))
+  assert_true(@ucd.is_extended_pictographic('\u{00A9}'))
+  assert_true(@ucd.is_extended_pictographic('\u{1FC00}'))
+  assert_true(@ucd.is_extended_pictographic('\u{1FFFD}'))
+  assert_false(@ucd.is_extended_pictographic('\u{1FFFE}'))
+  assert_false(@ucd.is_extended_pictographic('a'))
+  assert_false(@ucd.is_extended_pictographic('\u{1F1E6}'))
+  assert_false(@ucd.is_extended_pictographic('\u{1F3FB}'))
+}
+
+///|
 test "line_break: East Asian and Hangul classes" {
   inspect(@ucd.line_break('\u{4E2D}'), content="ID") // CJK UNIFIED IDEOGRAPH-4E2D
   inspect(@ucd.line_break('\u{3042}'), content="ID") // HIRAGANA LETTER A

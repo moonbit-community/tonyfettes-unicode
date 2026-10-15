@@ -207,8 +207,13 @@ pub fn emit_emoji(
 ) -> String raise {
   let out = @emitter.Emitter::new()
   out.write_file_header(
-    "Emoji_Presentation, Emoji_Modifier, Emoji_Modifier_Base, and emoji variation sequence lookup data",
+    "Extended_Pictographic, Emoji_Presentation, Emoji_Modifier, Emoji_Modifier_Base, and emoji variation sequence lookup data",
     "emoji-data.txt and emoji-variation-sequences.txt",
+  )
+  write_binary_property_trie(
+    out,
+    property="Extended_Pictographic",
+    properties.extended_pictographic,
   )
   write_binary_property_trie(
     out,

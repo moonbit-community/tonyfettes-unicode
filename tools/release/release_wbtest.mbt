@@ -148,7 +148,7 @@ test "published modules follow dependency order" {
   assert_false(ucd.requires_published_dependencies)
   assert_false(punycode.requires_published_dependencies)
   assert_false(bidi.requires_published_dependencies)
-  assert_false(segmentation.requires_published_dependencies)
+  assert_true(segmentation.requires_published_dependencies)
   assert_true(normalization.requires_published_dependencies)
   assert_true(idna.requires_published_dependencies)
   assert_true(unicode.requires_published_dependencies)
@@ -163,6 +163,6 @@ test "published modules follow dependency order" {
 ///
 test "preflight covers every module that does not depend on this release" {
   assert_eq(preflight_modules().map(release_module => release_module.name), [
-    "unicode-data", "punycode", "unicode-bidi", "unicode-segmentation",
+    "unicode-data", "punycode", "unicode-bidi",
   ])
 }
