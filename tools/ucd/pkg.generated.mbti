@@ -18,6 +18,8 @@ pub fn compress_mark_ranges(UnicodeData) -> Array[@parsing.CodePointRange]
 
 pub fn emit_alphabetic(DerivedCoreProperties) -> String raise
 
+pub fn emit_case_folding(String) -> String raise
+
 pub fn emit_case_mapping(UnicodeData, SpecialCasingData) -> String raise
 
 pub fn emit_ccc() -> String
@@ -51,6 +53,8 @@ pub fn emit_line_break_enum() -> String raise
 pub fn emit_lowercase(DerivedCoreProperties) -> String raise
 
 pub fn emit_marks(Array[@parsing.CodePointRange]) -> String
+
+pub fn emit_nfkc_casefold(String) -> String raise
 
 pub fn emit_normalization(UnicodeData, Array[CompositionEntry], String) -> String raise
 

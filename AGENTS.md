@@ -25,6 +25,8 @@ moon info           # Regenerate pkg.generated.mbti files
   case mapping, and general category APIs
 - **normalization/** (`moonbit-community/unicode-normalization`): UAX #15 Unicode
   normalization
+- **casefold/** (`moonbit-community/unicode-casefold`): full case folding,
+  canonical caseless matching, and NFKC_Casefold
 - **punycode/** (`moonbit-community/punycode`): RFC 3492 Punycode encoding/decoding
   - `encode(String) -> String raise PunycodeError`
   - `decode(String) -> String raise PunycodeError`
@@ -49,6 +51,8 @@ moon info           # Regenerate pkg.generated.mbti files
 ### Internal Data Packages (auto-generated)
 
 - **ucd/data/**: Unicode Character Database lookup tables
+- **casefold/case_folding_data.mbt**, **casefold/nfkc_casefold_data.mbt**:
+  full default case folding and NFKC_CF mappings
 - **ucd/line_break.mbt**, **ucd/joining_group.mbt**: the `LineBreak` and
   `JoiningGroup` enums of the root package, generated so that they stay in
   step with the ordinals in `ucd/line_break/` and `ucd/joining_group/`
@@ -61,6 +65,7 @@ moon info           # Regenerate pkg.generated.mbti files
 
 ```
 unicode-normalization -> unicode-data
+unicode-casefold -> unicode-normalization
 unicode-idna -> unicode-data
 unicode-idna -> unicode-normalization
 unicode-idna -> punycode
@@ -76,7 +81,8 @@ moon run --target native tools/gen data   # Generate all Unicode lookup tables
 moon run --target native tools/gen all    # Alias for `data`
 ```
 
-Individual commands are `ucd`, `idna`, `bidi`, and `segmentation`. Downloaded
+Individual commands are `ucd`, `casefold`, `idna`, `bidi`, and `segmentation`.
+`casefold` regenerates folding tables only and is also included in `data` / `all`. Downloaded
 Unicode data is cached per version in `tools/.cache/<version>/`.
 
 ## Conformance Tests
@@ -88,6 +94,10 @@ test time via
 `moonbitlang/async`. The data files are committed under `tests/data/`, so the
 test module keeps its `moonbitlang/async` dependency separate from the
 published modules.
+
+Case folding conformance tests also read `CaseFolding.txt` and
+`DerivedNormalizationProps.txt`, checking every Unicode scalar value against
+the full default folding and NFKC_CF mappings.
 
 ## Publishing
 

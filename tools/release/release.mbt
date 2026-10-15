@@ -42,6 +42,11 @@ let published_modules : Array[ReleaseModule] = [
     requires_published_dependencies: true,
   },
   {
+    name: "unicode-casefold",
+    directory: "casefold",
+    requires_published_dependencies: true,
+  },
+  {
     name: "unicode-idna",
     directory: "idna",
     requires_published_dependencies: true,

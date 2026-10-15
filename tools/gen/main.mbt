@@ -369,9 +369,35 @@ async fn generate_segmentation_data(root : StringView) -> Unit {
 ///|
 async fn generate_data(root : StringView) -> Unit {
   generate_ucd(root)
+  generate_case_folding(root)
   generate_idna_data(root)
   generate_bidi_data(root)
   generate_segmentation_data(root)
+}
+
+///|
+async fn generate_case_folding(root : StringView) -> Unit {
+  let base = "https://www.unicode.org/Public/\{UnicodeVersion}/ucd"
+  write_source(
+    root,
+    "casefold/case_folding_data.mbt",
+    @ucd.emit_case_folding(
+      read_source(root, "CaseFolding.txt", "\{base}/CaseFolding.txt"),
+    ),
+  )
+  write_source(
+    root,
+    "casefold/nfkc_casefold_data.mbt",
+    @ucd.emit_nfkc_casefold(
+      read_source(
+        root,
+        "DerivedNormalizationProps.txt",
+        "\{base}/DerivedNormalizationProps.txt",
+      ),
+    ),
+  )
+  format_file(root, "casefold/case_folding_data.mbt")
+  format_file(root, "casefold/nfkc_casefold_data.mbt")
 }
 
 ///|
@@ -381,6 +407,7 @@ async fn main {
     about="Generate Unicode lookup tables with MoonBit",
     subcommands=[
       @argparse.Command("ucd"),
+      @argparse.Command("casefold"),
       @argparse.Command("idna"),
       @argparse.Command("bidi"),
       @argparse.Command("segmentation"),
@@ -393,6 +420,7 @@ async fn main {
   match matches.subcommand {
     None | Some(("all", _)) | Some(("data", _)) => generate_data(root)
     Some(("ucd", _)) => generate_ucd(root)
+    Some(("casefold", _)) => generate_case_folding(root)
     Some(("idna", _)) => generate_idna_data(root)
     Some(("bidi", _)) => generate_bidi_data(root)
     Some(("segmentation", _)) => generate_segmentation_data(root)

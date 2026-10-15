@@ -1,5 +1,6 @@
 import {
   "moonbit-community/unicode",
+  "moonbit-community/unicode/casefold" @unicode/casefold,
   "moonbit-community/unicode/normalization" @unicode/normalization,
   "moonbit-community/unicode/punycode" @unicode/punycode,
   "moonbit-community/unicode/bidi" @unicode/bidi,

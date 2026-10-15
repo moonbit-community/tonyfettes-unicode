@@ -1,0 +1,9 @@
+supported_targets = "-all+native+wasm"
+
+import {
+  "moonbit-community/unicode-casefold" @casefold,
+  "moonbit-community/unicode-normalization" @normalization,
+  "moonbit-community/unicode-tests/support",
+  "moonbitlang/async",
+  "moonbitlang/core/debug",
+} for "test"

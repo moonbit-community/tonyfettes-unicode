@@ -9,6 +9,8 @@ segmentation. The generated tables target Unicode 18.0.0.
 ## Features
 
 - Unicode Normalization Forms from UAX #15: NFD, NFC, NFKD, and NFKC
+- Default full case folding, canonical caseless matching, and NFKC_Casefold
+  identifier matching from Unicode section 3.13
 - Punycode encoding and decoding from RFC 3492
 - IDNA processing from UTS #46, including mapping, validation, Bidi checks,
   joiner checks, and DNS length checks
@@ -30,6 +32,7 @@ Add only the feature modules your application needs:
 ```bash
 moon add moonbit-community/unicode-data
 moon add moonbit-community/unicode-normalization
+moon add moonbit-community/unicode-casefold
 moon add moonbit-community/punycode
 moon add moonbit-community/unicode-bidi
 moon add moonbit-community/unicode-segmentation
@@ -42,6 +45,7 @@ Import the packages you need in `moon.pkg`:
 import {
   "moonbit-community/unicode-data" @ucd,
   "moonbit-community/unicode-normalization" @normalization,
+  "moonbit-community/unicode-casefold" @casefold,
   "moonbit-community/punycode",
   "moonbit-community/unicode-idna" @idna,
   "moonbit-community/unicode-bidi" @bidi,
@@ -51,7 +55,7 @@ import {
 
 MoonBit uses the last package path segment as the default alias, which is not a
 valid identifier for the hyphenated `unicode-*` modules, so give those imports
-an explicit alias. The examples below use `@ucd`, `@normalization`,
+an explicit alias. The examples below use `@ucd`, `@normalization`, `@casefold`,
 `@punycode`, `@idna`, `@bidi`, and `@segmentation`. Existing users may continue depending on
 `moonbit-community/unicode`; it is an umbrella compatibility module that
 preserves the old package paths.
@@ -75,6 +79,34 @@ let normalized = @normalization.normalize(
   @normalization.NFKC,
 )
 ```
+
+### Case folding and caseless matching
+
+```moonbit
+let folded = @casefold.case_fold("Straße") // "strasse"
+let same_case = @casefold.caseless_match("Straße", "STRASSE") // true
+let same_text = @casefold.canonical_caseless_match("Å", "a\u{030A}") // true
+let search_key = @casefold.canonical_case_fold("Å") // "a\u{030A}"
+let folded_id = @casefold.nfkc_casefold("Ａ\u{00AD}") // "a"
+let same_id = @casefold.identifier_caseless_match("Ａ\u{00AD}", "a") // true
+```
+
+These operations follow [Unicode §3.13](https://www.unicode.org/versions/Unicode18.0.0/core-spec/chapter-3/)
+and are locale-independent. Default full folding uses `CaseFolding.txt` statuses
+`C` and `F`, with expansions such as `ß → ss`; it does not normalize text or
+apply Turkic tailoring. `I` folds to `i`, while `İ` folds to `i` plus U+0307.
+Cherokee folds to uppercase, so a folded string is not necessarily lowercase.
+
+For canonically equivalent text, `canonical_case_fold(s)` computes
+`NFD(case_fold(NFD(s)))` (D145). Store and compare these keys, or search folded
+text with a folded query. Folding can change text length, so result offsets do
+not directly identify positions in the original text.
+
+`nfkc_casefold(s)` applies the official `NFKC_CF` mappings and then NFC (R5).
+This merges compatibility differences and removes default-ignorable characters.
+`identifier_caseless_match(a, b)` first applies NFD to both inputs before
+NFKC_Casefold (D147), including the Greek iota-subscript edge cases. It tests
+equality; identifier validation and confusable detection are separate operations.
 
 ### Punycode
 
@@ -231,6 +263,17 @@ Where the type is not known from the context, write `@ucd.JoiningGroup::Pe` or
 
 The available forms are `NFD`, `NFC`, `NFKD`, and `NFKC`.
 
+### `moonbit-community/unicode-casefold`
+
+| API | Description |
+| --- | --- |
+| `case_fold(String) -> String` | Default full case folding (R4). |
+| `caseless_match(String, String) -> Bool` | Default caseless equality, without normalization (D144). |
+| `canonical_case_fold(String) -> String` | Canonical caseless comparison/search key (D145). |
+| `canonical_caseless_match(String, String) -> Bool` | Caseless equality under canonical equivalence (D145). |
+| `nfkc_casefold(String) -> String` | Official NFKC_CF mapping followed by NFC (R5). |
+| `identifier_caseless_match(String, String) -> Bool` | Identifier caseless equality after initial NFD (D147). |
+
 ### `moonbit-community/punycode`
 
 | API | Description |
@@ -323,8 +366,9 @@ moon run --target native tools/gen data
 moon run --target native tools/gen all
 ```
 
-Individual commands are `ucd`, `idna`, `bidi`, and `segmentation`. Downloaded
-Unicode source files are cached per version in `tools/.cache/<version>/`.
+Individual commands are `ucd`, `casefold`, `idna`, `bidi`, and `segmentation`.
+`casefold` regenerates just the folding tables; it is also included in `data` / `all`.
+Downloaded Unicode source files are cached per version in `tools/.cache/<version>/`.
 
 Conformance tests live in the workspace-only `moonbit-community/unicode-tests`
 module (`tests/`). They read the official Unicode test data files committed
@@ -352,7 +396,7 @@ report.
 
 ### Releasing
 
-The native release tool keeps the seven published module versions aligned,
+The native release tool keeps the eight published module versions aligned,
 validates the workspace, and checks every package archive. Preparation
 publishes nothing and never dry-runs an archive against the registry, so it
 needs no mooncakes.io credentials:
@@ -362,7 +406,7 @@ moon run --target native tools/release -- prepare --version <MAJOR.MINOR.PATCH>
 ```
 
 The version is a plain `MAJOR.MINOR.PATCH` with no prerelease suffix. `prepare`
-refuses to run unless the Git worktree is clean and the seven published
+refuses to run unless the Git worktree is clean and the eight published
 manifests already agree on one version, which it then rewrites to the new one.
 
 Review and commit the resulting manifest changes, open a pull request, and wait
@@ -377,10 +421,10 @@ moon run --target native tools/release -- publish \
 ```
 
 The tool publishes `unicode-data`, `punycode`, `unicode-bidi`,
-`unicode-segmentation`, `unicode-normalization`, `unicode-idna`, and the
+`unicode-segmentation`, `unicode-normalization`, `unicode-casefold`, `unicode-idna`, and the
 `unicode` compatibility umbrella in dependency order. It reads
 the release version from the umbrella manifest `unicode/moon.mod` and verifies
-that all seven published modules use that version. The modules that do not
+that all eight published modules use that version. The modules that do not
 depend on this release are dry-run before anything is published, so a rejected
 archive cannot leave a partial release behind; each remaining module is
 dry-run immediately before its own publication, after the registry is

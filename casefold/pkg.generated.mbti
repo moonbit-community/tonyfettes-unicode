@@ -1,0 +1,23 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbit-community/unicode-casefold"
+
+// Values
+pub fn canonical_case_fold(String) -> String
+
+pub fn canonical_caseless_match(String, String) -> Bool
+
+pub fn case_fold(String) -> String
+
+pub fn caseless_match(String, String) -> Bool
+
+pub fn identifier_caseless_match(String, String) -> Bool
+
+pub fn nfkc_casefold(String) -> String
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
