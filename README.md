@@ -282,7 +282,6 @@ deprecated compatibility wrappers.
 | `Graphemes::iter() -> Iter[StringView]` | Iterate over remaining clusters; enables `for .. in`. |
 | `Graphemes::next() -> StringView` | Return the next cluster, or an empty view at the end. |
 | `Graphemes::line_break() -> BreakOpportunity` | Query `Prohibited`, `Allowed`, or `Mandatory` after the last returned cluster. Initializes line breaking context only when queried. |
-| `grapheme_cluster_break(Char) -> GraphemeClusterBreak` | Return the UAX #29 property of a character. |
 | `line_breaks(StringView) -> LineBreaks` | Create a cursor over segments ending at default UAX #14 opportunities. |
 | `LineBreaks::next() -> StringView` | Return the next segment, or an empty view at the end. |
 | `LineBreaks::iter() -> Iter[StringView]` | Iterate over remaining segments; enables `for .. in`. |

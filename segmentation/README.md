@@ -23,7 +23,6 @@ for grapheme in graphemes {
 `graphemes(StringView) -> Graphemes` creates a forward cursor over extended
 grapheme clusters. `next() -> StringView` returns an empty view at exhaustion;
 `iter() -> Iter[StringView]` consumes the same cursor.
-`grapheme_cluster_break(Char)` separately returns the raw UAX #29 property.
 
 `Graphemes::line_break() -> BreakOpportunity` queries the boundary after the
 last returned cluster. The first query after a cluster prepares line breaking
