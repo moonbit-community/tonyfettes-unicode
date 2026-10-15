@@ -367,8 +367,10 @@ fn skip_clean_blocks(
 /// Scan UTF-16 with one cursor. The clean-run scan only skips Quick_Check=Yes,
 /// CCC=0 characters; CCC ordering and boundary recovery live outside that loop.
 /// When it stops, the last skipped code point is the preceding safe boundary.
-/// None means the checking mode found a difference; normalization returns Some.
-/// Unchanged input stays a view so checking never copies a substring.
+/// Checking returns None on a difference and Some("") on success, without
+/// copying the input. Normalization returns Some with the normalized string.
+/// String? uses the native nullable-pointer representation; StringView? would
+/// allocate an Option wrapper even when the input is already normalized.
 fn process_spans(
   s : StringView,
   shift : Int32,
@@ -376,7 +378,7 @@ fn process_spans(
   compatibility~ : Bool,
   compose~ : Bool,
   check_only~ : Bool,
-) -> StringView? {
+) -> String? {
   let length = s.length()
   let slow_mask = 255 | (mask << shift)
   let mut offset = 0
@@ -386,7 +388,7 @@ fn process_spans(
     let run_start = offset
     offset = scan_clean_run(s, offset, slow_mask)
     if offset == length {
-      return Some(s)
+      return Some(if check_only { "" } else { s.to_owned() })
     }
     // SAFETY: offset < length is checked above.
     let mut cp = s.unsafe_get(offset).to_int()
@@ -431,13 +433,14 @@ fn process_spans(
     previous_ccc = ccc
     offset += width
   }
-  Some(s)
+  Some(if check_only { "" } else { s.to_owned() })
 }
 
 ///|
 /// Continue after the first suspect character, reusing one scratch buffer.
 /// Normal runs resume the tight scanner; the allocation-free entry path above
 /// keeps this scratch/output state out of its hot loop.
+/// Uses the same checking/normalization result convention as process_spans.
 fn process_remaining_spans(
   s : StringView,
   start : Int32,
@@ -447,7 +450,7 @@ fn process_remaining_spans(
   compatibility~ : Bool,
   compose~ : Bool,
   check_only~ : Bool,
-) -> StringView? {
+) -> String? {
   let buffer : NormalizationBuffer = {
     chars: [],
     output: None,
@@ -494,9 +497,9 @@ fn process_remaining_spans(
     if buffer.copied_until < length {
       out.write_view(s[buffer.copied_until:])
     }
-    Some(out.to_string().view())
+    Some(out.to_string())
   } else {
-    Some(s)
+    Some(if check_only { "" } else { s.to_owned() })
   }
 }
 
@@ -508,7 +511,11 @@ fn normalize_spans(
   compatibility~ : Bool,
   compose~ : Bool,
 ) -> String {
-  process_spans(s, shift, mask, compatibility~, compose~, check_only=false)
-  .unwrap_or(s)
-  .to_owned()
+  // Keep the fallback lazy without allocating a capturing closure.
+  if process_spans(s, shift, mask, compatibility~, compose~, check_only=false)
+    is Some(result) {
+    result
+  } else {
+    s.to_owned()
+  }
 }
