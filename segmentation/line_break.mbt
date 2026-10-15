@@ -8,9 +8,16 @@ pub(all) enum BreakOpportunity {
 } derive(Eq, Debug)
 
 ///|
-pub extend BreakOpportunity with Eq::{equal, not_equal}
+pub extend BreakOpportunity with Eq::{equal}
 
 ///|
+#deprecated("Use `!=` instead", skip_current_package=true)
+#doc(hidden)
+pub extend BreakOpportunity with Eq::{not_equal}
+
+///|
+#deprecated("Use `Debug::to_repr` instead", skip_current_package=true)
+#doc(hidden)
 pub extend BreakOpportunity with Debug::{to_repr}
 
 ///|
