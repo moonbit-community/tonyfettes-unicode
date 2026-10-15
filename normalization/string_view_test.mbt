@@ -22,8 +22,21 @@ test "normalization scanners respect view offsets and ends" {
       let gap = "x".repeat(gap_length)
       for
         sample in [
-          "", "ASCII", "é", "e\u{0301}", "Ａﬃ", "x\u{0301}", "\u{0315}\u{0316}",
-          "각", "😀", "\u{1D15E}", "\u{16D63}\u{16D68}",
+          "",
+          "ASCII",
+          "é",
+          "e\u{0301}",
+          "Ａﬃ",
+          "x\u{0301}",
+          "\u{0315}\u{0316}",
+          "각",
+          "😀",
+          "\u{1D15E}",
+          "\u{16D63}\u{16D68}",
+          // Resume absolute scanning between suspect segments, then recover
+          // the preceding starter inside a view with a nonzero start.
+          "e\u{0301}\{gap}😀e\u{0301}",
+          "x\u{0315}\u{0316}\{gap}\u{1D15E}",
         ] {
         let input = "\{gap}\{sample}\{gap}"
         let source = "\{prefix}\{input}é\u{0301}😀"

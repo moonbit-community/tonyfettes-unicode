@@ -185,6 +185,8 @@ fn process_suspect_spans(
 /// one past it when a surrogate pair crosses it. `slow_mask` selects CCC and
 /// one form's Quick_Check bits of the packed properties; shifted right by
 /// seven it selects the same bits of the generated scan flags.
+/// Offsets are absolute in the backing string. `limit` is the view's end;
+/// a pair may cross the current scan chunk's `end`, but never `limit`.
 ///
 /// The loop reads the generated one-byte flags and makes no calls. Looking
 /// properties up through `@ccc` instead costs a call per character, because
@@ -194,17 +196,17 @@ fn process_suspect_spans(
 /// shape: trying blocks inside it instead of around it costs an extra taken
 /// branch per character.
 fn scan_clean_units(
-  s : StringView,
+  s : String,
   start : Int32,
   end : Int32,
+  limit : Int32,
   slow_mask : Int32,
 ) -> Int32 {
-  let length = s.length()
   let scan_mask = slow_mask >> 7
   let unit_mask = scan_mask | NormalizationScanLeadSurrogate
   let mut offset = start
   while offset < end {
-    // SAFETY: offset starts at a nonnegative boundary and the loop guarantees offset < end <= length.
+    // SAFETY: offset starts at a nonnegative boundary and offset < end <= limit <= s.length().
     // It advances by two only after checking that a second unit exists.
     let first = s.unsafe_get(offset).to_int()
     if first < 0x80 {
@@ -229,11 +231,11 @@ fn scan_clean_units(
       break
     }
     // An unpaired surrogate has default properties.
-    if offset + 1 >= length {
+    if offset + 1 >= limit {
       offset += 1
       continue
     }
-    // SAFETY: offset + 1 < length is checked above.
+    // SAFETY: offset + 1 < limit is checked above.
     let second = s.unsafe_get(offset + 1).to_int()
     if second < 0xDC00 || second > 0xDFFF {
       offset += 1
@@ -276,8 +278,13 @@ fn scan_clean_units(
 ///|
 /// Return the end of the run of clean characters starting at `start`.
 #cfg(not(any(target="native", target="wasm")))
-fn scan_clean_run(s : StringView, start : Int32, slow_mask : Int32) -> Int32 {
-  scan_clean_units(s, start, s.length(), slow_mask)
+fn scan_clean_run(
+  s : String,
+  start : Int32,
+  end : Int32,
+  slow_mask : Int32,
+) -> Int32 {
+  scan_clean_units(s, start, end, end, slow_mask)
 }
 
 ///|
@@ -289,18 +296,22 @@ fn scan_clean_run(s : StringView, start : Int32, slow_mask : Int32) -> Int32 {
 /// never reaches a block, and grows while no block is clean, so that text
 /// above the limit pays for few tries and few calls.
 #cfg(any(target="native", target="wasm"))
-fn scan_clean_run(s : StringView, start : Int32, slow_mask : Int32) -> Int32 {
-  let length = s.length()
+fn scan_clean_run(
+  s : String,
+  start : Int32,
+  end : Int32,
+  slow_mask : Int32,
+) -> Int32 {
   let mut offset = start
   let mut stretch = MinUnitStretch
   while true {
-    let end = if length - offset > stretch { offset + stretch } else { length }
-    offset = scan_clean_units(s, offset, end, slow_mask)
-    // A pair that crosses `end` leaves the offset one past it.
-    if offset < end || offset >= length {
+    let chunk_end = if end - offset > stretch { offset + stretch } else { end }
+    offset = scan_clean_units(s, offset, chunk_end, end, slow_mask)
+    // A pair that crosses `chunk_end` leaves the offset one past it.
+    if offset < chunk_end || offset >= end {
       break
     }
-    let blocks_end = skip_clean_blocks(s, offset, length, slow_mask >> 7)
+    let blocks_end = skip_clean_blocks(s, offset, end, slow_mask >> 7)
     if blocks_end > offset {
       stretch = MinUnitStretch
     } else if stretch < MaxUnitStretch {
@@ -344,17 +355,16 @@ fn clean_unit_limit(scan_mask : Int32) -> Int32 {
 // them, so the alert is silenced here and not for the whole package.
 #warnings("-alert_experimental")
 fn skip_clean_blocks(
-  s : StringView,
+  s : String,
   start : Int32,
-  length : Int32,
+  end : Int32,
   scan_mask : Int32,
 ) -> Int32 {
   let limit = @v128.i16x8_splat(clean_unit_limit(scan_mask).to_uint16())
   let mut offset = start
-  while offset + 8 <= length {
-    // SAFETY: offset + 8 <= the view length, so the backing-string load
-    // at the view start plus offset stays entirely inside this view.
-    let block = @v128.v128_load_i16x8(s.data(), s.start_offset() + offset)
+  while end - offset >= 8 {
+    // SAFETY: offset is absolute and eight units remain before the view's end.
+    let block = @v128.v128_load_i16x8(s, offset)
     if @v128.v128_any_true(@v128.i16x8_ge_u(block, limit)) {
       break
     }
@@ -379,23 +389,25 @@ fn process_spans(
   compose~ : Bool,
   check_only~ : Bool,
 ) -> String? {
-  let length = s.length()
+  let data = s.data()
+  let start = s.start_offset()
+  let end = start + s.length()
   let slow_mask = 255 | (mask << shift)
-  let mut offset = 0
-  let mut span_start = 0
+  let mut offset = start
+  let mut span_start = start
   let mut previous_ccc = 0
-  while offset < length {
+  while offset < end {
     let run_start = offset
-    offset = scan_clean_run(s, offset, slow_mask)
-    if offset == length {
+    offset = scan_clean_run(data, offset, end, slow_mask)
+    if offset == end {
       return Some(if check_only { "" } else { s.to_owned() })
     }
-    // SAFETY: offset < length is checked above.
-    let mut cp = s.unsafe_get(offset).to_int()
+    // SAFETY: start <= offset < end <= data.length().
+    let mut cp = data.unsafe_get(offset).to_int()
     let mut width = 1
     if cp >= 0xD800 && cp <= 0xDBFF {
       // The scan stops on a leading surrogate only when a trailing one follows.
-      cp = 0x10000 + ((cp - 0xD800) << 10) + s[offset + 1].to_int() - 0xDC00
+      cp = 0x10000 + ((cp - 0xD800) << 10) + data[offset + 1].to_int() - 0xDC00
       width = 2
     }
     let properties = @ccc.lookup_normalization_properties(cp.unsafe_to_char())
@@ -403,9 +415,9 @@ fn process_spans(
       // All skipped characters are CCC=0 and Quick_Check=Yes. Recover only
       // the last one's start, including its leading surrogate when present.
       span_start = offset - 1
-      if s[span_start].is_trailing_surrogate() &&
+      if data[span_start].is_trailing_surrogate() &&
         span_start > run_start &&
-        s[span_start - 1].is_leading_surrogate() {
+        data[span_start - 1].is_leading_surrogate() {
         span_start -= 1
       }
       previous_ccc = 0
@@ -419,8 +431,8 @@ fn process_spans(
     if check != 0 || out_of_order {
       return process_remaining_spans(
         s,
-        span_start,
-        offset,
+        span_start - start,
+        offset - start,
         shift,
         mask,
         compatibility~,
@@ -459,6 +471,9 @@ fn process_remaining_spans(
     needs_order: false,
   }
   let length = s.length()
+  let data = s.data()
+  let view_start = s.start_offset()
+  let view_end = view_start + length
   let slow_mask = 255 | (mask << shift)
   let mut offset = problem_offset
   let mut span_start = start
@@ -480,7 +495,10 @@ fn process_remaining_spans(
     // The helper stopped before a clean starter (or at the end). Scan the
     // following run without carrying scratch/output state through its loop.
     let run_start = offset
-    offset = scan_clean_run(s, offset, slow_mask)
+    // Suspect-segment processing uses view-relative offsets; convert only
+    // at the handoff to the scanner, whose hot loop uses absolute offsets.
+    offset = scan_clean_run(data, view_start + offset, view_end, slow_mask) -
+      view_start
     if offset == length {
       break
     }
