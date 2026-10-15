@@ -16,6 +16,7 @@ import {
   "moonbit-community/punycode@0.6.0",
   "moonbit-community/unicode-bidi@0.6.0",
   "moonbit-community/unicode-idna@0.6.0",
+  "moonbit-community/unicode-casefold@0.6.0",
 }
 
 keywords = [

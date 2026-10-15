@@ -21,6 +21,22 @@ test "legacy normalization package surface" {
 }
 
 ///|
+test "case folding through compatibility packages" {
+  inspect(@unicode/casefold.case_fold("Straße"), content="strasse")
+  inspect(@unicode/casefold.caseless_match("Σ", "ς"), content="true")
+  inspect(@unicode/casefold.canonical_case_fold("Å"), content="a\u{030A}")
+  inspect(
+    @unicode/casefold.canonical_caseless_match("Å", "a\u{030A}"),
+    content="true",
+  )
+  inspect(@unicode/casefold.nfkc_casefold("Ａ\u{00AD}"), content="a")
+  inspect(
+    @unicode/casefold.identifier_caseless_match("Ａ", "a"),
+    content="true",
+  )
+}
+
+///|
 test "legacy Punycode package surface" {
   let error : @unicode/punycode.PunycodeError = @unicode/punycode.BadInput
   inspect(error, content="BadInput")

@@ -142,14 +142,26 @@ test "manifest version declarations must be unique" {
 ///|
 test "published modules follow dependency order" {
   guard published_modules
-    is [ucd, punycode, bidi, segmentation, normalization, idna, unicode] else {
-    fail("expected seven published modules")
+    is [
+      ucd,
+      punycode,
+      bidi,
+      segmentation,
+      normalization,
+      casefold,
+      idna,
+      unicode,
+    ] else {
+    fail("expected eight published modules")
   }
   assert_false(ucd.requires_published_dependencies)
   assert_false(punycode.requires_published_dependencies)
   assert_false(bidi.requires_published_dependencies)
   assert_true(segmentation.requires_published_dependencies)
   assert_true(normalization.requires_published_dependencies)
+  assert_true(casefold.requires_published_dependencies)
+  inspect(casefold.directory, content="casefold")
+  inspect(casefold.name, content="unicode-casefold")
   assert_true(idna.requires_published_dependencies)
   assert_true(unicode.requires_published_dependencies)
   inspect(unicode.directory, content="unicode")

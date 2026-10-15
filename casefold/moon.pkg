@@ -1,0 +1,7 @@
+import {
+  "moonbit-community/unicode-normalization" @normalization,
+}
+
+import {
+  "moonbit-community/unicode-casefold" @casefold,
+} for "test"
