@@ -62,6 +62,10 @@ preserves the old package paths.
 
 ## Usage
 
+Normalization and case folding accept `StringView`, so callers can pass slices
+without copying them first. `String` arguments convert automatically;
+text-producing operations still return `String`.
+
 ### Normalization
 
 ```moonbit
@@ -254,12 +258,12 @@ Where the type is not known from the context, write `@ucd.JoiningGroup::Pe` or
 
 | API | Description |
 | --- | --- |
-| `nfd(String) -> String` | Canonical decomposition. |
-| `nfc(String) -> String` | Canonical decomposition followed by canonical composition. |
-| `nfkd(String) -> String` | Compatibility decomposition. |
-| `nfkc(String) -> String` | Compatibility decomposition followed by canonical composition. |
-| `normalize(String, NormalizationForm) -> String` | Normalize with a selected form. |
-| `is_normalized(String, NormalizationForm) -> Bool` | Check whether text is already in a selected form. |
+| `nfd(StringView) -> String` | Canonical decomposition. |
+| `nfc(StringView) -> String` | Canonical decomposition followed by canonical composition. |
+| `nfkd(StringView) -> String` | Compatibility decomposition. |
+| `nfkc(StringView) -> String` | Compatibility decomposition followed by canonical composition. |
+| `normalize(StringView, NormalizationForm) -> String` | Normalize with a selected form. |
+| `is_normalized(StringView, NormalizationForm) -> Bool` | Check whether text is already in a selected form. |
 
 The available forms are `NFD`, `NFC`, `NFKD`, and `NFKC`.
 
@@ -267,12 +271,12 @@ The available forms are `NFD`, `NFC`, `NFKD`, and `NFKC`.
 
 | API | Description |
 | --- | --- |
-| `case_fold(String) -> String` | Default full case folding (R4). |
-| `caseless_match(String, String) -> Bool` | Default caseless equality, without normalization (D144). |
-| `canonical_case_fold(String) -> String` | Canonical caseless comparison/search key (D145). |
-| `canonical_caseless_match(String, String) -> Bool` | Caseless equality under canonical equivalence (D145). |
-| `nfkc_casefold(String) -> String` | Official NFKC_CF mapping followed by NFC (R5). |
-| `identifier_caseless_match(String, String) -> Bool` | Identifier caseless equality after initial NFD (D147). |
+| `case_fold(StringView) -> String` | Default full case folding (R4). |
+| `caseless_match(StringView, StringView) -> Bool` | Default caseless equality, without normalization (D144). |
+| `canonical_case_fold(StringView) -> String` | Canonical caseless comparison/search key (D145). |
+| `canonical_caseless_match(StringView, StringView) -> Bool` | Caseless equality under canonical equivalence (D145). |
+| `nfkc_casefold(StringView) -> String` | Official NFKC_CF mapping followed by NFC (R5). |
+| `identifier_caseless_match(StringView, StringView) -> Bool` | Identifier caseless equality after initial NFD (D147). |
 
 ### `moonbit-community/punycode`
 

@@ -47,9 +47,13 @@ equality; identifier validation and confusable detection are separate operations
 
 | API | Description |
 | --- | --- |
-| `case_fold(String) -> String` | Default full case folding (R4). |
-| `caseless_match(String, String) -> Bool` | Default caseless equality, without normalization (D144). |
-| `canonical_case_fold(String) -> String` | Canonical caseless comparison/search key (D145). |
-| `canonical_caseless_match(String, String) -> Bool` | Caseless equality under canonical equivalence (D145). |
-| `nfkc_casefold(String) -> String` | Official NFKC_CF mapping followed by NFC (R5). |
-| `identifier_caseless_match(String, String) -> Bool` | Identifier caseless equality after initial NFD (D147). |
+| `case_fold(StringView) -> String` | Default full case folding (R4). |
+| `caseless_match(StringView, StringView) -> Bool` | Default caseless equality, without normalization (D144). |
+| `canonical_case_fold(StringView) -> String` | Canonical caseless comparison/search key (D145). |
+| `canonical_caseless_match(StringView, StringView) -> Bool` | Caseless equality under canonical equivalence (D145). |
+| `nfkc_casefold(StringView) -> String` | Official NFKC_CF mapping followed by NFC (R5). |
+| `identifier_caseless_match(StringView, StringView) -> Bool` | Identifier caseless equality after initial NFD (D147). |
+
+All text inputs accept `StringView`, including slices of larger strings.
+Existing calls with `String` arguments work through automatic view conversion.
+Text-producing operations still return `String`.

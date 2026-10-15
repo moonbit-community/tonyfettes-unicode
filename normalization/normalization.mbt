@@ -37,7 +37,7 @@ pub impl Show for NormalizationForm with fn output(self, logger) {
 ///
 /// Characters are decomposed to their canonical equivalents and
 /// combining marks are reordered by Canonical Combining Class.
-pub fn nfd(s : String) -> String {
+pub fn nfd(s : StringView) -> String {
   normalize_spans(s, 12, 1, compatibility=false, compose=false)
 }
 
@@ -47,7 +47,7 @@ pub fn nfd(s : String) -> String {
 /// Characters are first decomposed canonically, reordered, then
 /// recomposed using canonical composition rules.
 /// This is the most commonly used normalization form.
-pub fn nfc(s : String) -> String {
+pub fn nfc(s : StringView) -> String {
   normalize_spans(s, 8, 3, compatibility=false, compose=true)
 }
 
@@ -57,7 +57,7 @@ pub fn nfc(s : String) -> String {
 /// Characters are decomposed to their compatibility equivalents
 /// (including formatting variants like superscripts, fractions, etc.)
 /// and combining marks are reordered.
-pub fn nfkd(s : String) -> String {
+pub fn nfkd(s : StringView) -> String {
   normalize_spans(s, 13, 1, compatibility=true, compose=false)
 }
 
@@ -66,13 +66,13 @@ pub fn nfkd(s : String) -> String {
 ///
 /// Characters are decomposed to compatibility equivalents, reordered,
 /// then recomposed. Often used for identifier comparison.
-pub fn nfkc(s : String) -> String {
+pub fn nfkc(s : StringView) -> String {
   normalize_spans(s, 10, 3, compatibility=true, compose=true)
 }
 
 ///|
 /// Normalize a string to the specified form
-pub fn normalize(s : String, form : NormalizationForm) -> String {
+pub fn normalize(s : StringView, form : NormalizationForm) -> String {
   match form {
     NFD => nfd(s)
     NFC => nfc(s)
@@ -83,7 +83,7 @@ pub fn normalize(s : String, form : NormalizationForm) -> String {
 
 ///|
 /// Check if a string is in the specified normalization form
-pub fn is_normalized(s : String, form : NormalizationForm) -> Bool {
+pub fn is_normalized(s : StringView, form : NormalizationForm) -> Bool {
   let result = match form {
     NFC =>
       process_spans(s, 8, 3, compatibility=false, compose=true, check_only=true)

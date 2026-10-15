@@ -2,17 +2,17 @@
 package "moonbit-community/unicode-normalization"
 
 // Values
-pub fn is_normalized(String, NormalizationForm) -> Bool
+pub fn is_normalized(StringView, NormalizationForm) -> Bool
 
-pub fn nfc(String) -> String
+pub fn nfc(StringView) -> String
 
-pub fn nfd(String) -> String
+pub fn nfd(StringView) -> String
 
-pub fn nfkc(String) -> String
+pub fn nfkc(StringView) -> String
 
-pub fn nfkd(String) -> String
+pub fn nfkd(StringView) -> String
 
-pub fn normalize(String, NormalizationForm) -> String
+pub fn normalize(StringView, NormalizationForm) -> String
 
 // Errors
 
