@@ -279,7 +279,6 @@ deprecated compatibility wrappers.
 | `graphemes(StringView) -> Graphemes` | Create a single-pass cursor over the extended grapheme clusters of a text. |
 | `Graphemes::iter() -> Iter[StringView]` | Iterate over the remaining clusters, each a view into the input; enables `for .. in`. |
 | `Graphemes::next() -> StringView` | Return the next cluster, or an empty view at the end. |
-| `grapheme_cluster_break(Char) -> GraphemeClusterBreak` | Return the UAX #29 Grapheme_Cluster_Break value of a single character. |
 
 ## Development
 
