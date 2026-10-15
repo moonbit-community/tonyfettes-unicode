@@ -4,6 +4,10 @@ package "moonbit-community/unicode-tools/segmentation_data"
 // Values
 pub fn generate_grapheme_break_source(String, String, String) -> String raise
 
+pub fn generate_sentence_break_source(String) -> String raise
+
+pub fn generate_word_break_source(String) -> String raise
+
 // Errors
 
 // Types and methods

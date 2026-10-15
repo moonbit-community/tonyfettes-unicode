@@ -16,7 +16,7 @@ segmentation. The generated tables target Unicode 18.0.0.
   joiner checks, and DNS length checks
 - Unicode Bidirectional Algorithm support from UAX #9
 - Default line breaking opportunities from UAX #14
-- Extended grapheme cluster segmentation from UAX #29
+- Extended grapheme cluster, word, and sentence segmentation from UAX #29
 - General_Category, East_Asian_Width, Line_Break, Joining_Type, Joining_Group,
   and Hangul_Syllable_Type lookup, binary property predicates (White_Space,
   Alphabetic, Lowercase, Uppercase, XID_Start, XID_Continue,
@@ -325,13 +325,23 @@ deprecated compatibility wrappers.
 | `Graphemes::iter() -> Iter[StringView]` | Iterate over remaining clusters; enables `for .. in`. |
 | `Graphemes::next() -> StringView` | Return the next cluster, or an empty view at the end. |
 | `Graphemes::line_break() -> BreakOpportunity` | Query `Prohibited`, `Allowed`, or `Mandatory` after the last returned cluster. Initializes line breaking context only when queried. |
+| `word_segments(StringView) -> WordSegments` | All default UAX #29 word segments, retaining whitespace and punctuation. |
+| `words(StringView) -> Words` | Word segments containing at least one Unicode Alphabetic or Number character. |
+| `sentences(StringView) -> Sentences` | Default UAX #29 sentence segments, retaining trailing whitespace and punctuation. |
 | `line_breaks(StringView) -> LineBreaks` | Create a cursor over segments ending at default UAX #14 opportunities. |
 | `LineBreaks::next() -> StringView` | Return the next segment, or an empty view at the end. |
 | `LineBreaks::iter() -> Iter[StringView]` | Iterate over remaining segments; enables `for .. in`. |
 | `LineBreaks::opportunity() -> BreakOpportunity` | Query the break kind at the end of the last returned segment. |
 
-Both cursors retain spaces, newlines, and the views' offsets in the backing
-string. Before the first result their break queries return `Prohibited`;
+All cursors expose `next() -> StringView` and `iter() -> Iter[StringView]`,
+which consume the same cursor. Returned views retain UTF-16 offsets in the
+backing string; `next()` returns an empty view at the input's end on
+exhaustion. `word_segments` and `sentences` retain all input characters;
+`words` filters complete word segments. They use default rules without
+locale or dictionary tailoring and prepare boundaries in O(n) time and space.
+
+The grapheme and line cursors retain spaces and newlines.
+Before the first result their break queries return `Prohibited`;
 after exhaustion they preserve the last kind. Nonempty text ends with
 `Mandatory`, even without a newline. Empty text has no results.
 
@@ -340,7 +350,8 @@ grapheme clusters. `Graphemes::line_break()` queries only complete cluster ends,
 without moving internal opportunities to those ends. See
 [segmentation](segmentation/README.md) for examples and complexity.
 The workspace conformance suite runs every Unicode 18.0.0 `LineBreakTest.txt`
-case directly from `tests/data/`.
+case directly from `tests/data/`, along with all 1,944 word and 512 sentence
+boundary cases in `WordBreakTest.txt` and `SentenceBreakTest.txt`.
 
 ## Development
 

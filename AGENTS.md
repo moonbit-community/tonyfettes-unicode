@@ -34,6 +34,11 @@ moon info           # Regenerate pkg.generated.mbti files
 - **segmentation/** (`moonbit-community/unicode-segmentation`): UAX #29 text segmentation
   - `graphemes(StringView) -> Graphemes` - cursor over extended grapheme clusters
     (`iter()` for `for .. in`, `next()` returning an empty view at the end)
+  - `word_segments(StringView) -> WordSegments` - all default word segments
+  - `words(StringView) -> Words` - word segments containing Alphabetic or Number characters
+  - `sentences(StringView) -> Sentences` - all default sentence segments
+  - `line_breaks(StringView) -> LineBreaks` - default UAX #14 break opportunities
+  - All cursors provide `next()` and `iter()` consuming the same state
 - **idna/** (`moonbit-community/unicode-idna`): UTS #46 IDNA processing
   - `to_ascii()` - convert domain to ASCII (Punycode)
   - `to_unicode()` - convert domain from Punycode
@@ -60,6 +65,8 @@ moon info           # Regenerate pkg.generated.mbti files
   `unicode-data`)
 - **bidi/internal/bidi/**: Bidi mirroring and bracket tables
 - **segmentation/grapheme_break_property.mbt**: grapheme cluster break properties
+- **segmentation/word_break_property.mbt**, **segmentation/sentence_break_property.mbt**:
+  word and sentence break properties
 
 ### Dependencies
 
@@ -89,7 +96,8 @@ Unicode data is cached per version in `tools/.cache/<version>/`.
 
 Conformance tests live in the workspace-only `tests/` module and read the
 official Unicode test files (`BidiTest.txt`, `BidiCharacterTest.txt`,
-`NormalizationTest.txt`, `IdnaTestV2.txt`, `GraphemeBreakTest.txt`) directly at
+`NormalizationTest.txt`, `IdnaTestV2.txt`, `GraphemeBreakTest.txt`,
+`WordBreakTest.txt`, `SentenceBreakTest.txt`, `LineBreakTest.txt`) directly at
 test time via
 `moonbitlang/async`. The data files are committed under `tests/data/`, so the
 test module keeps its `moonbitlang/async` dependency separate from the
