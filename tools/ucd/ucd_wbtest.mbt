@@ -130,6 +130,7 @@ test "parse emoji-data properties" {
     #|1F44D         ; Emoji_Modifier_Base  # E0.6   [1] (👍)       thumbs up
     #|00A9          ; Extended_Pictographic# E0.6   [1] (©️)       copyright
   let properties = parse_emoji_data(input)
+  inspect(properties.extended_pictographic[0].start, content="169")
   inspect(properties.emoji_presentation.length(), content="2")
   inspect(properties.emoji_presentation[0].end, content="8987")
   inspect(properties.emoji_modifier.length(), content="1")
@@ -413,6 +414,7 @@ test "emit Emoji tables" {
         #|231A..231B ; Emoji_Presentation
         #|1F3FB..1F3FF ; Emoji_Modifier
         #|1F44D ; Emoji_Modifier_Base
+        #|00A9 ; Extended_Pictographic
       ),
     ),
     parse_emoji_variation_sequences(
@@ -427,7 +429,7 @@ test "emit Emoji tables" {
       "/// Generated from emoji-data.txt and emoji-variation-sequences.txt\n", "let emoji_presentation_trie_top : Bytes = [",
       "pub fn is_emoji_presentation(c : Char) -> Bool", "let emoji_modifier_trie_leaf : Bytes = [",
       "pub fn is_emoji_modifier(c : Char) -> Bool", "pub fn is_emoji_modifier_base(c : Char) -> Bool",
-      "/// Check whether a character starts an emoji variation sequence\npub fn has_emoji_variation_sequence(c : Char) -> Bool",
+      "pub fn is_extended_pictographic(c : Char) -> Bool", "/// Check whether a character starts an emoji variation sequence\npub fn has_emoji_variation_sequence(c : Char) -> Bool",
     ] {
     guard source.contains(expected) else {
       fail("Generated source is missing: \{expected}")

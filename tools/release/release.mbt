@@ -34,7 +34,7 @@ let published_modules : Array[ReleaseModule] = [
   {
     name: "unicode-segmentation",
     directory: "segmentation",
-    requires_published_dependencies: false,
+    requires_published_dependencies: true,
   },
   {
     name: "unicode-normalization",

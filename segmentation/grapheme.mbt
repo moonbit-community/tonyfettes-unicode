@@ -142,6 +142,8 @@ struct Graphemes {
   text : StringView
   /// Offset in `text` of the next cluster to return.
   mut offset : Int32
+  // Initialized only when line_break is queried.
+  mut breaks : LineBreaks?
 }
 
 ///|
@@ -167,7 +169,7 @@ struct Graphemes {
 /// }
 /// ```
 pub fn graphemes(text : StringView) -> Graphemes {
-  { text, offset: 0, }
+  { text, offset: 0, breaks: None, }
 }
 
 ///|

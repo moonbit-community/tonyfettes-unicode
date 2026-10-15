@@ -13,13 +13,14 @@ segmentation. The generated tables target Unicode 18.0.0.
 - IDNA processing from UTS #46, including mapping, validation, Bidi checks,
   joiner checks, and DNS length checks
 - Unicode Bidirectional Algorithm support from UAX #9
+- Default line breaking opportunities from UAX #14
 - Extended grapheme cluster segmentation from UAX #29
 - General_Category, East_Asian_Width, Line_Break, Joining_Type, Joining_Group,
   and Hangul_Syllable_Type lookup, binary property predicates (White_Space,
   Alphabetic, Lowercase, Uppercase, XID_Start, XID_Continue,
   Default_Ignorable_Code_Point, Grapheme_Extend, Regional_Indicator,
   Prepended_Concatenation_Mark, Emoji_Presentation, Emoji_Modifier,
-  Emoji_Modifier_Base), emoji variation sequences, and simple/full case mapping
+  Emoji_Modifier_Base, Extended_Pictographic), emoji variation sequences, and simple/full case mapping
   from the Unicode Character Database
 
 ## Installation
@@ -204,7 +205,8 @@ Root package for Unicode Character Database helpers.
 | `joining_type(Char) -> JoiningType` | Return the Joining_Type value: `NonJoining`, `JoinCausing`, `DualJoining`, `LeftJoining`, `RightJoining`, or `Transparent`. |
 | `joining_group(Char) -> JoiningGroup` | Return the Joining_Group value, such as `Beh`, `Alef`, or `Lam`; `NoJoiningGroup` for characters outside the groups. |
 | `hangul_syllable_type(Char) -> HangulSyllableType` | Return the Hangul_Syllable_Type value: `NotApplicable`, `LeadingJamo`, `VowelJamo`, `TrailingJamo`, `LVSyllable`, or `LVTSyllable`. |
-| `line_break(Char) -> LineBreak` | Return the UAX #14 Line_Break class, such as `AL`, `ID`, or `OP`, as the Unicode Character Database assigns it. Rule LB1 is not applied, and the line breaking algorithm itself is not implemented. |
+| `is_extended_pictographic(Char) -> Bool` | Test Extended_Pictographic, including reserved potential emoji. |
+| `line_break(Char) -> LineBreak` | Return the UAX #14 Line_Break class, such as `AL`, `ID`, or `OP`, as the Unicode Character Database assigns it. Rule LB1 is not applied here; use `unicode-segmentation` for the default line breaking algorithm. |
 | `to_simple_uppercase(Char) -> Char` | Simple uppercase mapping. |
 | `to_simple_lowercase(Char) -> Char` | Simple lowercase mapping. |
 | `to_simple_titlecase(Char) -> Char` | Simple titlecase mapping. |
@@ -276,9 +278,26 @@ deprecated compatibility wrappers.
 
 | API | Description |
 | --- | --- |
-| `graphemes(StringView) -> Graphemes` | Create a single-pass cursor over the extended grapheme clusters of a text. |
-| `Graphemes::iter() -> Iter[StringView]` | Iterate over the remaining clusters, each a view into the input; enables `for .. in`. |
+| `graphemes(StringView) -> Graphemes` | Create a cursor over extended grapheme clusters (UAX #29). |
+| `Graphemes::iter() -> Iter[StringView]` | Iterate over remaining clusters; enables `for .. in`. |
 | `Graphemes::next() -> StringView` | Return the next cluster, or an empty view at the end. |
+| `Graphemes::line_break() -> BreakOpportunity` | Query `Prohibited`, `Allowed`, or `Mandatory` after the last returned cluster. Initializes line breaking context only when queried. |
+| `line_breaks(StringView) -> LineBreaks` | Create a cursor over segments ending at default UAX #14 opportunities. |
+| `LineBreaks::next() -> StringView` | Return the next segment, or an empty view at the end. |
+| `LineBreaks::iter() -> Iter[StringView]` | Iterate over remaining segments; enables `for .. in`. |
+| `LineBreaks::opportunity() -> BreakOpportunity` | Query the break kind at the end of the last returned segment. |
+
+Both cursors retain spaces, newlines, and the views' offsets in the backing
+string. Before the first result their break queries return `Prohibited`;
+after exhaustion they preserve the last kind. Nonempty text ends with
+`Mandatory`, even without a newline. Empty text has no results.
+
+`LineBreaks` exposes every default UAX #14 opportunity, including ones inside
+grapheme clusters. `Graphemes::line_break()` queries only complete cluster ends,
+without moving internal opportunities to those ends. See
+[segmentation](segmentation/README.md) for examples and complexity.
+The workspace conformance suite runs every Unicode 18.0.0 `LineBreakTest.txt`
+case directly from `tests/data/`.
 
 ## Development
 
@@ -373,6 +392,7 @@ version, so fix the problem and release the whole set again at a new version.
 ## Standards
 
 - [UAX #9: Unicode Bidirectional Algorithm](https://unicode.org/reports/tr9/)
+- [UAX #14: Unicode Line Breaking Algorithm](https://unicode.org/reports/tr14/)
 - [UAX #15: Unicode Normalization Forms](https://unicode.org/reports/tr15/)
 - [UAX #29: Unicode Text Segmentation](https://unicode.org/reports/tr29/)
 - [UAX #44: Unicode Character Database](https://unicode.org/reports/tr44/)

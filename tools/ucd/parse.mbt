@@ -279,6 +279,9 @@ pub fn parse_prop_list(content : String) -> PropList raise {
 ///|
 pub fn parse_emoji_data(content : String) -> EmojiData raise {
   {
+    extended_pictographic: parse_property_ranges(
+      content, "Extended_Pictographic",
+    ),
     emoji_presentation: parse_property_ranges(content, "Emoji_Presentation"),
     emoji_modifier: parse_property_ranges(content, "Emoji_Modifier"),
     emoji_modifier_base: parse_property_ranges(content, "Emoji_Modifier_Base"),
