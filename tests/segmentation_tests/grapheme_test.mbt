@@ -8,7 +8,7 @@
 /// `÷` marks a boundary and `×` joins the surrounding code points. Returns
 /// `None` if a cluster contains a surrogate, which MoonBit strings cannot
 /// represent.
-fn parse_clusters(line : StringView) -> Array[String]? raise {
+fn parse_boundary_segments(line : StringView) -> Array[String]? raise {
   let clusters : Array[String] = []
   let code_points : Array[Int32] = []
   for token in line.split(" ") {
@@ -40,7 +40,7 @@ async test "GraphemeBreakTest.txt conformance" {
     if line.is_empty() {
       continue
     }
-    guard parse_clusters(line) is Some(expected) else { continue }
+    guard parse_boundary_segments(line) is Some(expected) else { continue }
     let input = expected.join("")
     let actual = @segmentation.graphemes(input)
       .iter()

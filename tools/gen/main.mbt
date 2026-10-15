@@ -363,6 +363,30 @@ async fn generate_segmentation_data(root : StringView) -> Unit {
     ),
   )
   format_file(root, "segmentation/grapheme_break_property.mbt")
+  write_source(
+    root,
+    "segmentation/word_break_property.mbt",
+    @segmentation_data.generate_word_break_source(
+      read_source(
+        root,
+        "WordBreakProperty.txt",
+        "\{base}/auxiliary/WordBreakProperty.txt",
+      ),
+    ),
+  )
+  write_source(
+    root,
+    "segmentation/sentence_break_property.mbt",
+    @segmentation_data.generate_sentence_break_source(
+      read_source(
+        root,
+        "SentenceBreakProperty.txt",
+        "\{base}/auxiliary/SentenceBreakProperty.txt",
+      ),
+    ),
+  )
+  format_file(root, "segmentation/word_break_property.mbt")
+  format_file(root, "segmentation/sentence_break_property.mbt")
   generate_interfaces(root, "segmentation")
 }
 

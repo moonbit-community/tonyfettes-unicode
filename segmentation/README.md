@@ -1,13 +1,62 @@
 # unicode-segmentation
 
-Unicode 18.0.0 text segmentation for MoonBit: extended grapheme clusters
-(UAX #29) and default line break opportunities (UAX #14, revision 57).
+Unicode 18.0.0 text segmentation for MoonBit: extended grapheme clusters,
+word and sentence boundaries (UAX #29), and default line break opportunities
+(UAX #14, revision 57).
 
 ```bash
 moon add moonbit-community/unicode-segmentation
 ```
 
 Import `"moonbit-community/unicode-segmentation" @segmentation` in `moon.pkg`.
+
+## Words and sentences
+
+```moonbit
+for segment in @segmentation.word_segments("Hello, world! 42") {
+  // "Hello", ",", " ", "world", "!", " ", "42"
+}
+for word in @segmentation.words("Hello, world! 42") {
+  // "Hello", "world", "42"
+}
+for sentence in @segmentation.sentences("Hello! Next.") {
+  // "Hello! ", "Next."
+}
+```
+
+| Entry point | Cursor | Contents |
+| --- | --- | --- |
+| `word_segments(StringView)` | `WordSegments` | All default UAX #29 word segments, including whitespace and punctuation. |
+| `words(StringView)` | `Words` | Word segments containing at least one Unicode `Alphabetic` character or `General_Category=Number` character (`Nd`, `Nl`, or `No`). |
+| `sentences(StringView)` | `Sentences` | All default UAX #29 sentence segments, retaining closing punctuation, trailing whitespace, and paragraph separators as specified by the rules. |
+
+Each opaque cursor provides `next() -> StringView` and
+`iter() -> Iter[StringView]`. Both consume the same cursor and can be
+interleaved. `next()` returns an empty view at the input's end on every call
+after exhaustion; empty input produces no segments. Returned views retain
+UTF-16 offsets in the backing string and do not copy the text.
+
+`word_segments` and `sentences` cover the input exactly. `words` filters whole
+segments, so it retains internal punctuation in words such as `can't` and
+numbers such as `3.14`, while omitting punctuation, whitespace, and emoji
+segments without Alphabetic or Number characters. A digit keycap such as
+`1️⃣` is retained because it contains a digit. This filter is a convenience
+policy, not a linguistic test for whether a segment is a dictionary word.
+
+The input view is segmented independently of surrounding text. Valid
+surrogate pairs stay together; unpaired surrogates use the default `Other`
+property. Word and sentence rules are evaluated independently of grapheme
+segmentation; their boundaries are not forced to cluster ends.
+
+Construction takes O(n) time and space to prepare boundary context and store
+segment ends. Complete traversal takes O(n) time; `words` additionally scans
+each segment to apply its filter, still in O(n) total time. No locale
+tailoring, abbreviation dictionary, or dictionary-based word segmentation
+is applied. In particular, default word boundaries do not provide linguistic
+Chinese or Thai word recognition.
+
+All 1,944 `WordBreakTest.txt` and 512 `SentenceBreakTest.txt` cases from
+Unicode 18.0.0 run directly from `tests/data/` in `tests/segmentation_tests`.
 
 ## Graphemes with line break information
 
@@ -82,6 +131,11 @@ All 19,346 cases in the official Unicode 18.0.0 `LineBreakTest.txt` run in the
 workspace-only `tests/linebreak_tests` package. The same cases also check the
 combined grapheme cursor against the opportunities at its cluster ends.
 The existing `GraphemeBreakTest.txt` suite checks UAX #29 independently.
+
+Stateless boundary queries are deferred. The repository's
+[boundary API design note](../docs/plans/2026-10-16-segmentation-boundary-api.md)
+records the proposed signatures, context requirements, and representation
+experiments for future work.
 
 ```bash
 moon test --target native segmentation tests/linebreak_tests tests/segmentation_tests

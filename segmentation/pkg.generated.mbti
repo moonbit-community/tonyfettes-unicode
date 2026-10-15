@@ -10,6 +10,12 @@ pub fn graphemes(StringView) -> Graphemes
 
 pub fn line_breaks(StringView) -> LineBreaks
 
+pub fn sentences(StringView) -> Sentences
+
+pub fn word_segments(StringView) -> WordSegments
+
+pub fn words(StringView) -> Words
+
 // Errors
 
 // Types and methods
@@ -29,6 +35,18 @@ type LineBreaks
 pub fn LineBreaks::iter(Self) -> Iter[StringView]
 pub fn LineBreaks::next(Self) -> StringView
 pub fn LineBreaks::opportunity(Self) -> BreakOpportunity
+
+type Sentences
+pub fn Sentences::iter(Self) -> Iter[StringView]
+pub fn Sentences::next(Self) -> StringView
+
+type WordSegments
+pub fn WordSegments::iter(Self) -> Iter[StringView]
+pub fn WordSegments::next(Self) -> StringView
+
+type Words
+pub fn Words::iter(Self) -> Iter[StringView]
+pub fn Words::next(Self) -> StringView
 
 // Type aliases
 
