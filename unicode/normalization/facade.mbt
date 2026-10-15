@@ -38,11 +38,11 @@ fn NormalizationForm::to_impl(
 }
 
 ///|
-pub fn normalize(s : String, form : NormalizationForm) -> String {
+pub fn normalize(s : StringView, form : NormalizationForm) -> String {
   @impl.normalize(s, form.to_impl())
 }
 
 ///|
-pub fn is_normalized(s : String, form : NormalizationForm) -> Bool {
+pub fn is_normalized(s : StringView, form : NormalizationForm) -> Bool {
   @impl.is_normalized(s, form.to_impl())
 }

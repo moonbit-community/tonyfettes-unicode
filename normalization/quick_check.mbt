@@ -72,7 +72,7 @@ fn span_equals(chars : Array[Char], span : StringView) -> Bool {
 /// the scan immediately; otherwise append only changed segments to the output.
 fn NormalizationBuffer::finish(
   self : NormalizationBuffer,
-  s : String,
+  s : StringView,
   start : Int32,
   end : Int32,
   compose~ : Bool,
@@ -115,7 +115,7 @@ fn NormalizationBuffer::finish(
 /// Return its next unconsumed boundary, or -1 if checking fails.
 fn process_suspect_spans(
   buffer : NormalizationBuffer,
-  s : String,
+  s : StringView,
   start : Int32,
   problem_offset : Int32,
   shift : Int32,
@@ -194,7 +194,7 @@ fn process_suspect_spans(
 /// shape: trying blocks inside it instead of around it costs an extra taken
 /// branch per character.
 fn scan_clean_units(
-  s : String,
+  s : StringView,
   start : Int32,
   end : Int32,
   slow_mask : Int32,
@@ -276,7 +276,7 @@ fn scan_clean_units(
 ///|
 /// Return the end of the run of clean characters starting at `start`.
 #cfg(not(any(target="native", target="wasm")))
-fn scan_clean_run(s : String, start : Int32, slow_mask : Int32) -> Int32 {
+fn scan_clean_run(s : StringView, start : Int32, slow_mask : Int32) -> Int32 {
   scan_clean_units(s, start, s.length(), slow_mask)
 }
 
@@ -289,7 +289,7 @@ fn scan_clean_run(s : String, start : Int32, slow_mask : Int32) -> Int32 {
 /// never reaches a block, and grows while no block is clean, so that text
 /// above the limit pays for few tries and few calls.
 #cfg(any(target="native", target="wasm"))
-fn scan_clean_run(s : String, start : Int32, slow_mask : Int32) -> Int32 {
+fn scan_clean_run(s : StringView, start : Int32, slow_mask : Int32) -> Int32 {
   let length = s.length()
   let mut offset = start
   let mut stretch = MinUnitStretch
@@ -344,7 +344,7 @@ fn clean_unit_limit(scan_mask : Int32) -> Int32 {
 // them, so the alert is silenced here and not for the whole package.
 #warnings("-alert_experimental")
 fn skip_clean_blocks(
-  s : String,
+  s : StringView,
   start : Int32,
   length : Int32,
   scan_mask : Int32,
@@ -352,8 +352,9 @@ fn skip_clean_blocks(
   let limit = @v128.i16x8_splat(clean_unit_limit(scan_mask).to_uint16())
   let mut offset = start
   while offset + 8 <= length {
-    // SAFETY: offset is nonnegative and offset + 8 <= length is checked above.
-    let block = @v128.v128_load_i16x8(s, offset)
+    // SAFETY: offset + 8 <= the view length, so the backing-string load
+    // at the view start plus offset stays entirely inside this view.
+    let block = @v128.v128_load_i16x8(s.data(), s.start_offset() + offset)
     if @v128.v128_any_true(@v128.i16x8_ge_u(block, limit)) {
       break
     }
@@ -367,14 +368,15 @@ fn skip_clean_blocks(
 /// CCC=0 characters; CCC ordering and boundary recovery live outside that loop.
 /// When it stops, the last skipped code point is the preceding safe boundary.
 /// None means the checking mode found a difference; normalization returns Some.
+/// Unchanged input stays a view so checking never copies a substring.
 fn process_spans(
-  s : String,
+  s : StringView,
   shift : Int32,
   mask : Int32,
   compatibility~ : Bool,
   compose~ : Bool,
   check_only~ : Bool,
-) -> String? {
+) -> StringView? {
   let length = s.length()
   let slow_mask = 255 | (mask << shift)
   let mut offset = 0
@@ -437,7 +439,7 @@ fn process_spans(
 /// Normal runs resume the tight scanner; the allocation-free entry path above
 /// keeps this scratch/output state out of its hot loop.
 fn process_remaining_spans(
-  s : String,
+  s : StringView,
   start : Int32,
   problem_offset : Int32,
   shift : Int32,
@@ -445,7 +447,7 @@ fn process_remaining_spans(
   compatibility~ : Bool,
   compose~ : Bool,
   check_only~ : Bool,
-) -> String? {
+) -> StringView? {
   let buffer : NormalizationBuffer = {
     chars: [],
     output: None,
@@ -492,7 +494,7 @@ fn process_remaining_spans(
     if buffer.copied_until < length {
       out.write_view(s[buffer.copied_until:])
     }
-    Some(out.to_string())
+    Some(out.to_string().view())
   } else {
     Some(s)
   }
@@ -500,13 +502,13 @@ fn process_remaining_spans(
 
 ///|
 fn normalize_spans(
-  s : String,
+  s : StringView,
   shift : Int32,
   mask : Int32,
   compatibility~ : Bool,
   compose~ : Bool,
 ) -> String {
-  process_spans(s, shift, mask, compatibility~, compose~, check_only=false).unwrap_or(
-    s,
-  )
+  process_spans(s, shift, mask, compatibility~, compose~, check_only=false)
+  .unwrap_or(s)
+  .to_owned()
 }

@@ -59,3 +59,25 @@ test "legacy IDNA package surface" {
   inspect(error, content="EmptyLabel")
   inspect(@unicode/idna.to_ascii("example.com"), content="example.com")
 }
+
+///|
+test "normalization and casefold facades accept string views" {
+  let view = "!e\u{0301}?"[1:3]
+  inspect(@unicode/normalization.nfc(view), content="é")
+  inspect(@unicode/normalization.nfd(view), content="e\u{0301}")
+  inspect(@unicode/normalization.nfkc(view), content="é")
+  inspect(@unicode/normalization.nfkd(view), content="e\u{0301}")
+  inspect(
+    @unicode/normalization.normalize(view, @unicode/normalization.NFC),
+    content="é",
+  )
+  assert_true(
+    @unicode/normalization.is_normalized(view, @unicode/normalization.NFD),
+  )
+  inspect(@unicode/casefold.case_fold(view), content="e\u{0301}")
+  inspect(@unicode/casefold.canonical_case_fold(view), content="e\u{0301}")
+  inspect(@unicode/casefold.nfkc_casefold(view), content="é")
+  assert_true(@unicode/casefold.caseless_match(view, "!E\u{0301}?"[1:3]))
+  assert_true(@unicode/casefold.canonical_caseless_match(view, "!É?"[1:2]))
+  assert_true(@unicode/casefold.identifier_caseless_match(view, "!É?"[1:2]))
+}
