@@ -12,6 +12,8 @@ pub(all) enum GeneralCategoryGroup {
 } derive(Debug, Eq)
 
 ///|
+#deprecated("Use `Debug::to_repr` instead", skip_current_package=true)
+#doc(hidden)
 pub extend GeneralCategoryGroup with Debug::{to_repr}
 
 ///|
@@ -74,7 +76,12 @@ pub(all) enum GeneralCategory {
   Cs // Surrogate
   Co // Private_Use
   Cn // Unassigned
-} derive(Eq)
+} derive(Debug, Eq)
+
+///|
+#deprecated("Use `Debug::to_repr` instead", skip_current_package=true)
+#doc(hidden)
+pub extend GeneralCategory with Debug::{to_repr}
 
 ///|
 pub extend GeneralCategory with Eq::{not_equal, equal}

@@ -123,7 +123,12 @@ pub(all) enum JoiningGroup {
   YudhHe // Yudh_He
   Zain // Zain
   Zhain // Zhain
-} derive(Eq)
+} derive(Debug, Eq)
+
+///|
+#deprecated("Use `Debug::to_repr` instead", skip_current_package=true)
+#doc(hidden)
+pub extend JoiningGroup with Debug::{to_repr}
 
 ///|
 pub extend JoiningGroup with Eq::{not_equal, equal}

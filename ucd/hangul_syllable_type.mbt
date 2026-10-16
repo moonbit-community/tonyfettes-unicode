@@ -9,7 +9,12 @@ pub(all) enum HangulSyllableType {
   TrailingJamo // T
   LVSyllable // LV
   LVTSyllable // LVT
-} derive(Eq)
+} derive(Debug, Eq)
+
+///|
+#deprecated("Use `Debug::to_repr` instead", skip_current_package=true)
+#doc(hidden)
+pub extend HangulSyllableType with Debug::{to_repr}
 
 ///|
 pub extend HangulSyllableType with Eq::{not_equal, equal}

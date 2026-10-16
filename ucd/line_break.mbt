@@ -55,7 +55,12 @@ pub(all) enum LineBreak {
   XX // Unknown
   ZW // Zero Width Space
   ZWJ // Zero Width Joiner
-} derive(Eq)
+} derive(Debug, Eq)
+
+///|
+#deprecated("Use `Debug::to_repr` instead", skip_current_package=true)
+#doc(hidden)
+pub extend LineBreak with Debug::{to_repr}
 
 ///|
 pub extend LineBreak with Eq::{not_equal, equal}

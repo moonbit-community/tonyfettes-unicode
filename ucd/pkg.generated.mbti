@@ -70,7 +70,7 @@ pub(all) enum EastAsianWidth {
   N
   Na
   W
-} derive(Eq)
+} derive(Eq, @debug.Debug)
 pub fn EastAsianWidth::equal(Self, Self) -> Bool
 pub fn EastAsianWidth::not_equal(Self, Self) -> Bool
 pub fn EastAsianWidth::output(Self, &Logger) -> Unit
@@ -108,7 +108,7 @@ pub(all) enum GeneralCategory {
   Cs
   Co
   Cn
-} derive(Eq)
+} derive(Eq, @debug.Debug)
 pub fn GeneralCategory::equal(Self, Self) -> Bool
 pub fn GeneralCategory::group(Self) -> GeneralCategoryGroup
 pub fn GeneralCategory::not_equal(Self, Self) -> Bool
@@ -128,7 +128,6 @@ pub(all) enum GeneralCategoryGroup {
 pub fn GeneralCategoryGroup::equal(Self, Self) -> Bool
 pub fn GeneralCategoryGroup::not_equal(Self, Self) -> Bool
 pub fn GeneralCategoryGroup::output(Self, &Logger) -> Unit
-pub fn GeneralCategoryGroup::to_repr(Self) -> @debug.Repr
 pub fn GeneralCategoryGroup::to_string(Self) -> String
 pub impl Show for GeneralCategoryGroup
 
@@ -139,7 +138,7 @@ pub(all) enum HangulSyllableType {
   TrailingJamo
   LVSyllable
   LVTSyllable
-} derive(Eq)
+} derive(Eq, @debug.Debug)
 pub fn HangulSyllableType::equal(Self, Self) -> Bool
 pub fn HangulSyllableType::not_equal(Self, Self) -> Bool
 pub fn HangulSyllableType::output(Self, &Logger) -> Unit
@@ -263,7 +262,7 @@ pub(all) enum JoiningGroup {
   YudhHe
   Zain
   Zhain
-} derive(Eq)
+} derive(Eq, @debug.Debug)
 pub fn JoiningGroup::equal(Self, Self) -> Bool
 pub fn JoiningGroup::not_equal(Self, Self) -> Bool
 pub fn JoiningGroup::output(Self, &Logger) -> Unit
@@ -277,7 +276,7 @@ pub(all) enum JoiningType {
   LeftJoining
   RightJoining
   Transparent
-} derive(Eq)
+} derive(Eq, @debug.Debug)
 pub fn JoiningType::equal(Self, Self) -> Bool
 pub fn JoiningType::not_equal(Self, Self) -> Bool
 pub fn JoiningType::output(Self, &Logger) -> Unit
@@ -334,7 +333,7 @@ pub(all) enum LineBreak {
   XX
   ZW
   ZWJ
-} derive(Eq)
+} derive(Eq, @debug.Debug)
 pub fn LineBreak::equal(Self, Self) -> Bool
 pub fn LineBreak::not_equal(Self, Self) -> Bool
 pub fn LineBreak::output(Self, &Logger) -> Unit

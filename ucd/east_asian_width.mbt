@@ -8,7 +8,12 @@ pub(all) enum EastAsianWidth {
   N // Neutral
   Na // Narrow
   W // Wide
-} derive(Eq)
+} derive(Debug, Eq)
+
+///|
+#deprecated("Use `Debug::to_repr` instead", skip_current_package=true)
+#doc(hidden)
+pub extend EastAsianWidth with Debug::{to_repr}
 
 ///|
 pub extend EastAsianWidth with Eq::{not_equal, equal}

@@ -7,9 +7,9 @@ priv struct EnumValue {
 }
 
 ///|
-/// Write the enum of an enumerated property, a `Show` implementation printing
-/// the constructor names, and the function `converter` turning a table
-/// ordinal into the enum.
+/// Write the enum of an enumerated property with `Debug` and `Eq`, a `Show`
+/// implementation printing the constructor names, and the function
+/// `converter` turning a table ordinal into the enum.
 ///
 /// The ordinal of a value is its index in `values`. Ordinals outside the
 /// table convert to `fallback`, which must be one of the constructors.
@@ -34,7 +34,12 @@ fn write_property_enum(
   }
   out.write(
     (
-      $|} derive(Eq)
+      $|} derive(Debug, Eq)
+      $|
+      $|///|
+      $|#deprecated("Use `Debug::to_repr` instead", skip_current_package=true)
+      $|#doc(hidden)
+      $|pub extend \{type_name} with Debug::{to_repr}
       $|
       $|///|
       $|pub extend \{type_name} with Eq::{not_equal, equal}

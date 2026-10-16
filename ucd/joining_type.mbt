@@ -9,7 +9,12 @@ pub(all) enum JoiningType {
   LeftJoining // L
   RightJoining // R
   Transparent // T
-} derive(Eq)
+} derive(Debug, Eq)
+
+///|
+#deprecated("Use `Debug::to_repr` instead", skip_current_package=true)
+#doc(hidden)
+pub extend JoiningType with Debug::{to_repr}
 
 ///|
 pub extend JoiningType with Eq::{not_equal, equal}
