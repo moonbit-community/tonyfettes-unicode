@@ -11,6 +11,8 @@ pub(all) enum EastAsianWidth {
 } derive(Debug, Eq)
 
 ///|
+#deprecated("Use `Debug::to_repr` instead", skip_current_package=true)
+#doc(hidden)
 pub extend EastAsianWidth with Debug::{to_repr}
 
 ///|

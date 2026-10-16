@@ -126,6 +126,8 @@ pub(all) enum JoiningGroup {
 } derive(Debug, Eq)
 
 ///|
+#deprecated("Use `Debug::to_repr` instead", skip_current_package=true)
+#doc(hidden)
 pub extend JoiningGroup with Debug::{to_repr}
 
 ///|

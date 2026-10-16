@@ -37,6 +37,8 @@ fn write_property_enum(
       $|} derive(Debug, Eq)
       $|
       $|///|
+      $|#deprecated("Use `Debug::to_repr` instead", skip_current_package=true)
+      $|#doc(hidden)
       $|pub extend \{type_name} with Debug::{to_repr}
       $|
       $|///|

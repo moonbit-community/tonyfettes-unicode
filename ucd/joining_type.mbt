@@ -12,6 +12,8 @@ pub(all) enum JoiningType {
 } derive(Debug, Eq)
 
 ///|
+#deprecated("Use `Debug::to_repr` instead", skip_current_package=true)
+#doc(hidden)
 pub extend JoiningType with Debug::{to_repr}
 
 ///|
