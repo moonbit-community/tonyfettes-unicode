@@ -40,7 +40,7 @@ async test "LineBreakTest.txt conformance" {
       expect_marker = !expect_marker
     }
     assert_false(expect_marker, msg="Missing final boundary marker")
-    let text = out.to_string().view()
+    let text = out.to_string()[:]
     let breaks = @segmentation.line_breaks(text)
     let actual = []
     let kinds = []

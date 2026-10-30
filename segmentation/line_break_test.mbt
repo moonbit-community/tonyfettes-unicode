@@ -70,7 +70,7 @@ test "cursor exhaustion and shared iteration" {
 ///|
 test "UTF-16 offsets relative to an independent view" {
   let source = "x😀 中z"
-  let text = source.view(start_offset=1, end_offset=5)
+  let text = source.unsafe_view(start=1, end=5)
   let cursor = @segmentation.line_breaks(text)
   let first = cursor.next()
   inspect(first, content="😀 ")
@@ -91,7 +91,7 @@ test "UTF-16 offsets relative to an independent view" {
   // A quote at the start of the view must not inherit the preceding CJK.
   let quoted = "中’中"
   debug_inspect(
-    line_break_points(quoted.view(start_offset=1)),
+    line_break_points(quoted.unsafe_view(start=1, end=quoted.length())),
     content="[(2, Mandatory)]",
   )
   debug_inspect(
@@ -121,11 +121,11 @@ test "default rules do not impose grapheme boundaries or trim whitespace" {
 test "unpaired surrogate halves resolve to alphabetic" {
   let text = "a😀b"
   debug_inspect(
-    line_break_points(text.view(end_offset=2)),
+    line_break_points(text.unsafe_view(start=0, end=2)),
     content="[(2, Mandatory)]",
   )
   debug_inspect(
-    line_break_points(text.view(start_offset=2)),
+    line_break_points(text.unsafe_view(start=2, end=text.length())),
     content="[(2, Mandatory)]",
   )
   // A complete pair is an ideograph-like emoji instead of two alphabetics.

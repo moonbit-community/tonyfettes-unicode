@@ -209,7 +209,7 @@ pub fn Graphemes::next(self : Graphemes) -> StringView {
     start
   }
   self.offset = end
-  text.view(start_offset=start, end_offset=end)
+  text.clamped_view(start~, end~)
 }
 
 ///|
