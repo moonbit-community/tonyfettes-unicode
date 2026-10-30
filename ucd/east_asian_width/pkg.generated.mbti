@@ -2,7 +2,7 @@
 package "moonbit-community/unicode-data/east_asian_width"
 
 // Values
-pub fn lookup_east_asian_width(Char) -> Int
+pub fn lookup_east_asian_width(Char) -> Int32
 
 // Errors
 

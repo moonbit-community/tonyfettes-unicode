@@ -2,7 +2,7 @@
 package "moonbit-community/unicode-data/line_break"
 
 // Values
-pub fn lookup_line_break(Char) -> Int
+pub fn lookup_line_break(Char) -> Int32
 
 // Errors
 

@@ -4,7 +4,7 @@ package "moonbit-community/unicode-data/general_category"
 // Values
 pub fn is_mark(Char) -> Bool
 
-pub fn lookup_general_category(Char) -> Int
+pub fn lookup_general_category(Char) -> Int32
 
 // Errors
 
