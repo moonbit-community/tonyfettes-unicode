@@ -115,18 +115,22 @@ test "grapheme line breaking preserves whole clusters and default rule context" 
 ///|
 test "grapheme line breaking uses independent UTF-16 views" {
   let source = "x😀 中z"
-  let text = source.view(start_offset=1, end_offset=5)
+  let text = source.unsafe_view(start=1, end=5)
   debug_inspect(
     grapheme_breaks(text),
     content="[(\"😀\", Prohibited), (\" \", Allowed), (\"中\", Mandatory)]",
   )
   let quoted = "中’中"
   debug_inspect(
-    grapheme_breaks(quoted.view(start_offset=1)),
+    grapheme_breaks(quoted.unsafe_view(start=1, end=quoted.length())),
     content="[(\"’\", Prohibited), (\"中\", Mandatory)]",
   )
   let pair = "😀"
-  for half in [pair.view(end_offset=1), pair.view(start_offset=1)] {
+  for
+    half in [
+      pair.unsafe_view(start=0, end=1),
+      pair.unsafe_view(start=1, end=pair.length()),
+    ] {
     let cursor = @segmentation.graphemes(half)
     let cluster = cursor.next()
     assert_eq(cluster.start_offset(), half.start_offset())

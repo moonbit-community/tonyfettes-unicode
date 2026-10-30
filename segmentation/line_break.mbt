@@ -82,10 +82,10 @@ pub fn LineBreaks::next(self : LineBreaks) -> StringView {
       let start = self.offset
       self.offset = self.units[index - 1].end
       self.opportunity = kind
-      return self.text.view(start_offset=start, end_offset=self.offset)
+      return self.text.clamped_view(start~, end=self.offset)
     }
   }
-  self.text.view(start_offset=self.offset, end_offset=self.offset)
+  self.text.clamped_view(start=self.offset, end=self.offset)
 }
 
 ///|

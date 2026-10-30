@@ -2,7 +2,7 @@
 package "moonbit-community/unicode-tools/emitter"
 
 // Values
-pub fn hex_upper(Int, min_width? : Int) -> String
+pub fn hex_upper(Int32, min_width? : Int32) -> String
 
 // Errors
 
@@ -11,13 +11,13 @@ type Emitter
 pub fn Emitter::finish(Self) -> String
 pub fn Emitter::new() -> Self
 pub fn Emitter::write(Self, String) -> Unit
-pub fn Emitter::write_byte_array(Self, String, String, Array[Int]) -> Unit
+pub fn Emitter::write_byte_array(Self, String, String, Array[Int32]) -> Unit
 pub fn Emitter::write_char(Self, Char) -> Unit
 pub fn Emitter::write_file_header(Self, String, String) -> Unit
-pub fn Emitter::write_int(Self, Int) -> Unit
-pub fn Emitter::write_int_array(Self, String, String, Array[Int], hex~ : Bool) -> Unit
+pub fn Emitter::write_int(Self, Int32) -> Unit
+pub fn Emitter::write_int_array(Self, String, String, Array[Int32], hex~ : Bool) -> Unit
 pub fn Emitter::write_line(Self, String) -> Unit
-pub fn Emitter::write_value_trie(Self, property~ : String, prefix~ : String, lookup~ : String, lookup_doc~ : Array[String], value_bits~ : Int, FixedArray[Int]) -> Unit raise
+pub fn Emitter::write_value_trie(Self, property~ : String, prefix~ : String, lookup~ : String, lookup_doc~ : Array[String], value_bits~ : Int32, FixedArray[Int32]) -> Unit raise
 
 // Type aliases
 

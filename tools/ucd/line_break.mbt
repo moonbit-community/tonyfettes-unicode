@@ -61,7 +61,7 @@ const LineBreakBits : Int32 = 6
 ///|
 fn line_break_ordinal(value : StringView) -> Int32? {
   for ordinal, entry in line_break_values {
-    if entry.0.view() == value {
+    if entry.0[:] == value {
       return Some(ordinal)
     }
   }

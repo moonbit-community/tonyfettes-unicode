@@ -103,7 +103,7 @@ pub fn requires_bidi(text : String) -> Bool {
       // Keep a surrogate pair that crosses the end of the stretch together.
       end += 1
     }
-    for c in text.view(start_offset=offset, end_offset=end) {
+    for c in text.clamped_view(start=offset, end~) {
       let bc = lookup_bidi_class(c)
       if bc.is_strong_rtl() || bc.is_explicit() {
         return true

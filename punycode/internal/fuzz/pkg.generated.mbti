@@ -10,15 +10,15 @@ pub fn random_any_codepoint(@random.Rand) -> Char
 
 pub fn random_codepoint(@random.Rand, CodePointCategory) -> Char
 
-pub fn random_combining_sequence(@random.Rand, base_count? : Int, mark_count? : Int) -> String
+pub fn random_combining_sequence(@random.Rand, base_count? : Int32, mark_count? : Int32) -> String
 
-pub fn random_deep_decomposition_string(@random.Rand, max_len? : Int) -> String
+pub fn random_deep_decomposition_string(@random.Rand, max_len? : Int32) -> String
 
-pub fn random_hangul_string(@random.Rand, max_len? : Int) -> String
+pub fn random_hangul_string(@random.Rand, max_len? : Int32) -> String
 
 pub fn random_non_ascii_codepoint(@random.Rand) -> Char
 
-pub fn random_unicode_string(@random.Rand, max_len? : Int) -> String
+pub fn random_unicode_string(@random.Rand, max_len? : Int32) -> String
 
 // Errors
 

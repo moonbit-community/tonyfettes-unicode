@@ -2,7 +2,7 @@
 package "moonbit-community/unicode-data/joining_group"
 
 // Values
-pub fn lookup_joining_group(Char) -> Int
+pub fn lookup_joining_group(Char) -> Int32
 
 // Errors
 

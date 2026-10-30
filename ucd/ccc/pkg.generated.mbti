@@ -2,9 +2,9 @@
 package "moonbit-community/unicode-data/ccc"
 
 // Values
-pub fn lookup_ccc(Char) -> Int
+pub fn lookup_ccc(Char) -> Int32
 
-pub fn lookup_normalization_properties(Char) -> Int
+pub fn lookup_normalization_properties(Char) -> Int32
 
 // Errors
 

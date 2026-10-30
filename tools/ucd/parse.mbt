@@ -237,7 +237,7 @@ fn parse_property_ranges(
   for raw_line in content.split("\n") {
     let line = @parsing.strip_comment(raw_line)
     if line.split_once(";") is Some((range_text, property_text)) &&
-      property_text.trim() == property.view() {
+      property_text.trim() == property[:] {
       ranges.push(@parsing.parse_code_point_range(range_text))
     }
   }

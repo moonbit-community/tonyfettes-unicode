@@ -15,7 +15,9 @@ fn TextSegments::next(self : TextSegments) -> StringView {
     self.offset = self.ends[self.index]
     self.index += 1
   }
-  self.text.view(start_offset=start, end_offset=self.offset)
+  // Cursor ends are raw UTF-16 offsets; retain split surrogate fixtures.
+  guard! 0 <= start && start <= self.offset && self.offset <= self.text.length()
+  self.text.unsafe_view(start~, end=self.offset)
 }
 
 ///|

@@ -6,19 +6,19 @@ import {
 }
 
 // Values
-pub fn code_points_to_string(ArrayView[Int]) -> String?
+pub fn code_points_to_string(ArrayView[Int32]) -> String?
 
-pub fn parse_code_point_sequence(StringView) -> Array[Int] raise
+pub fn parse_code_point_sequence(StringView) -> Array[Int32] raise
 
-pub fn parse_decimal_int(StringView) -> Int raise
+pub fn parse_decimal_int(StringView) -> Int32 raise
 
 pub fn parse_escaped_text(StringView) -> ParsedText
 
-pub fn parse_hex_int(StringView) -> Int raise
+pub fn parse_hex_int(StringView) -> Int32 raise
 
-pub fn parse_levels(StringView) -> Array[Int] raise
+pub fn parse_levels(StringView) -> Array[Int32] raise
 
-pub fn parse_reorder(StringView) -> Array[Int] raise
+pub fn parse_reorder(StringView) -> Array[Int32] raise
 
 pub fn parse_status(StringView) -> Array[String]?
 

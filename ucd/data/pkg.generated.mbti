@@ -33,7 +33,7 @@ pub fn is_xid_continue(Char) -> Bool
 pub fn is_xid_start(Char) -> Bool
 
 #deprecated
-pub fn lookup_ccc(Char) -> Int
+pub fn lookup_ccc(Char) -> Int32
 
 #deprecated
 pub fn lookup_composition(Char, Char) -> Char?
@@ -48,9 +48,9 @@ pub fn lookup_full_titlecase(Char) -> Array[Char]?
 pub fn lookup_full_uppercase(Char) -> Array[Char]?
 
 #deprecated
-pub fn lookup_general_category(Char) -> Int
+pub fn lookup_general_category(Char) -> Int32
 
-pub fn lookup_normalization_properties(Char) -> Int
+pub fn lookup_normalization_properties(Char) -> Int32
 
 #deprecated
 pub fn lookup_simple_lowercase(Char) -> Char
