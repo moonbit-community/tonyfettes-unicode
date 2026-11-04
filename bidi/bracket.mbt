@@ -209,7 +209,7 @@ fn find_bracket_pairs(
           let matching_canonical = canonical_bracket(matching_open)
           // Search stack from top for matching open bracket
           let mut found = -1
-          for j = stack.length() - 1; j >= 0; j = j - 1 {
+          for j in (stack.length() - 1)>=..0 {
             if canonical_bracket(stack[j].bracket) == matching_canonical {
               found = j
               break

@@ -21,7 +21,7 @@ fn resolve_neutral_types(
   while i < indices.length() {
     let idx = indices[i]
     let bc = types[idx]
-    if is_neutral_or_isolate(bc) {
+    if bc.is_neutral_or_isolate() {
       // Found start of a neutral run
       let run_start = i
 
@@ -29,7 +29,7 @@ fn resolve_neutral_types(
       let mut run_end = i
       while run_end + 1 < indices.length() {
         let next_bc = types[indices[run_end + 1]]
-        if is_neutral_or_isolate(next_bc) {
+        if next_bc.is_neutral_or_isolate() {
           run_end += 1
         } else {
           break
@@ -61,22 +61,13 @@ fn resolve_neutral_types(
       }
 
       // Apply resolved type to all neutrals in the run
-      for j = run_start; j <= run_end; j = j + 1 {
+      for j in run_start..<=run_end {
         types[indices[j]] = resolved
       }
       i = run_end + 1
     } else {
       i += 1
     }
-  }
-}
-
-///|
-/// Check if type is neutral or isolate (for N rules)
-fn is_neutral_or_isolate(bc : BidiClass) -> Bool {
-  match bc {
-    B | S | WS | ON | LRI | RLI | FSI | PDI => true
-    _ => false
   }
 }
 
