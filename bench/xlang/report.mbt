@@ -210,10 +210,9 @@ fn Results::check_mismatches(self : Results) -> Array[String] {
   let mismatches = []
   for name, values in by_case {
     guard values.length() > 1 else { continue }
-    let parts = []
-    for value, columns in values {
-      parts.push("\{value} from \{columns.join(", ")}")
-    }
+    let parts = [
+      for value, columns in values => "\{value} from \{columns.join(", ")}"
+    ]
     mismatches.push("\{name}: \{parts.join("; ")}")
   }
   mismatches
@@ -223,10 +222,7 @@ fn Results::check_mismatches(self : Results) -> Array[String] {
 /// The median over a column's cases of slowest round / fastest round.
 fn Results::spread(self : Results, column : String) -> Double? {
   guard self.0.get(column) is Some(cases) else { return None }
-  let ratios = []
-  for _, cell in cases {
-    ratios.push(cell.slowest / cell.fastest)
-  }
+  let ratios = [ for _, cell in cases => cell.slowest / cell.fastest ]
   guard ratios.length() > 0 else { return None }
   ratios.sort_by((a, b) => a.compare(b))
   Some(ratios[ratios.length() / 2])
@@ -249,10 +245,7 @@ fn Results::report(self : Results, rounds~ : Int32, detail~ : Bool) -> String {
     ).replace(old="$rounds", new=rounds.to_string()),
   )
   for group, operations in self.groups() {
-    let summary = []
-    for operation, names in operations {
-      summary.push((operation, names))
-    }
+    let summary = operations.to_array()
     self.write_table(
       out,
       "\{group}: geometric mean over inputs",
