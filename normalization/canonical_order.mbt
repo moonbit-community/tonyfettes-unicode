@@ -44,8 +44,7 @@ fn canonical_order(chars : Array[Char]) -> Unit {
 ///|
 /// Stable insertion sort by CCC for a range [start, end)
 fn stable_sort_by_ccc(arr : Array[Char], start : Int32, end : Int32) -> Unit {
-  let mut i = start + 1
-  while i < end {
+  for i in (start + 1)..<end {
     let key = arr[i]
     let key_ccc = @ccc.lookup_ccc(key)
     let mut j = i - 1
@@ -56,6 +55,5 @@ fn stable_sort_by_ccc(arr : Array[Char], start : Int32, end : Int32) -> Unit {
       j = j - 1
     }
     arr[j + 1] = key
-    i = i + 1
   }
 }
