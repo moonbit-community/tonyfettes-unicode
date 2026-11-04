@@ -7,7 +7,6 @@ fn validate_label(
   label : String,
   use_std3_ascii_rules~ : Bool,
   check_hyphens~ : Bool,
-  check_bidi~ : Bool,
   check_joiners~ : Bool,
 ) -> Unit raise IdnaError {
   // Empty labels should raise an error - they indicate either intentional empty
@@ -43,21 +42,6 @@ fn validate_label(
   if check_joiners {
     validate_contextj(label)
   }
-
-  // Check 8: Bidi rules (when check_bidi)
-  if check_bidi {
-    validate_bidi(label)
-  }
-}
-
-///|
-/// Convert a label string to array of characters
-fn label_to_chars(label : String) -> Array[Char] {
-  let result : Array[Char] = []
-  for c in label {
-    result.push(c)
-  }
-  result
 }
 
 ///|
@@ -141,17 +125,10 @@ fn validate_char_status(
 /// Validate ContextJ rules for ZWNJ (U+200C) and ZWJ (U+200D)
 fn validate_contextj(label : String) -> Unit raise IdnaError {
   // Joiners are rare; only a label containing one needs random access.
-  let mut has_joiner = false
-  for c in label {
-    if c is ('\u{200C}' | '\u{200D}') {
-      has_joiner = true
-      break
-    }
-  }
-  if !has_joiner {
+  if !label.any(c => c is ('\u{200C}' | '\u{200D}')) {
     return
   }
-  let chars = label_to_chars(label)
+  let chars = label.to_array()
   for i, c in chars {
     if c == '\u{200C}' {
       // ZWNJ: Zero Width Non-Joiner
@@ -203,7 +180,7 @@ fn is_virama(c : Char) -> Bool {
 ///|
 /// Check if there's a left-joining or dual-joining character before position
 fn has_left_joining_before(chars : Array[Char], pos : Int32) -> Bool {
-  for i = pos - 1; i >= 0; i = i - 1 {
+  for i in pos>..0 {
     let jt = @ucd.joining_type(chars[i])
     match jt {
       @ucd.LeftJoining | @ucd.DualJoining => return true
@@ -217,7 +194,7 @@ fn has_left_joining_before(chars : Array[Char], pos : Int32) -> Bool {
 ///|
 /// Check if there's a right-joining or dual-joining character after position
 fn has_right_joining_after(chars : Array[Char], pos : Int32) -> Bool {
-  for i = pos + 1; i < chars.length(); i = i + 1 {
+  for i in (pos + 1)..<chars.length() {
     let jt = @ucd.joining_type(chars[i])
     match jt {
       @ucd.RightJoining | @ucd.DualJoining => return true
@@ -226,23 +203,6 @@ fn has_right_joining_after(chars : Array[Char], pos : Int32) -> Bool {
     }
   }
   false
-}
-
-///|
-/// Validate Bidi rules (RFC 5893) for a single label
-/// Note: For proper RFC 5893 compliance, use validate_domain_bidi() at domain level
-fn validate_bidi(label : String) -> Unit raise IdnaError {
-  if label.length() == 0 {
-    return
-  }
-
-  // Determine if this is an RTL label
-  let is_rtl_label = is_rtl_label_check(label)
-  if is_rtl_label {
-    validate_rtl_label(label)
-  } else {
-    validate_ltr_label(label)
-  }
 }
 
 ///|
@@ -335,7 +295,7 @@ fn is_rtl_label_check(label : String) -> Bool {
 fn validate_rtl_label(label : String) -> Unit raise IdnaError {
   // Track last non-NSM character for ending check (B3), starting as the
   // first character's class, and whether EN/AN appear (B4)
-  let mut last_non_nsm_bc : @bidi.BidiClass = @bidi.L
+  let mut last_non_nsm_bc = @bidi.L
   let mut is_first = true
   let mut has_en = false
   let mut has_an = false
@@ -383,58 +343,5 @@ fn validate_rtl_label(label : String) -> Unit raise IdnaError {
   // Rule 4 (B4): EN and AN cannot both appear
   if has_en && has_an {
     raise InvalidBidi
-  }
-}
-
-///|
-/// Validate an LTR label according to RFC 5893
-fn validate_ltr_label(label : String) -> Unit raise IdnaError {
-  // Track last non-NSM character for ending check (B6), starting as the
-  // first character's class
-  let mut last_non_nsm_bc = @bidi.L
-  let mut is_first = true
-
-  // Rule 5: Only certain Bidi classes allowed in LTR label
-  for c in label {
-    let bc = @bidi.bidi_class(c)
-    if is_first {
-      // Rule 5 (B5): First character must be L
-      // (Relaxed for pure ASCII/neutral labels in pure LTR domains)
-      guard bc
-        is (@bidi.L
-        | @bidi.EN
-        | @bidi.ES
-        | @bidi.CS
-        | @bidi.ET
-        | @bidi.ON
-        | @bidi.BN
-        | @bidi.NSM) else {
-        raise InvalidBidi
-      }
-      last_non_nsm_bc = bc
-      is_first = false
-    }
-    match bc {
-      @bidi.L
-      | @bidi.EN
-      | @bidi.ES
-      | @bidi.CS
-      | @bidi.ET
-      | @bidi.ON
-      | @bidi.BN
-      | @bidi.NSM =>
-        // Allowed in LTR label
-        if !(bc is @bidi.NSM) {
-          last_non_nsm_bc = bc
-        }
-      @bidi.R | @bidi.AL | @bidi.AN => raise InvalidBidi // RTL chars not allowed
-      _ => ()
-    }
-  }
-
-  // Rule 6 (B6): Last non-NSM character must be L or EN
-  match last_non_nsm_bc {
-    @bidi.L | @bidi.EN => ()
-    _ => raise InvalidBidi // B6 - ending violation
   }
 }
