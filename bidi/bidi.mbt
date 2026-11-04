@@ -264,13 +264,9 @@ fn process_at_base_level(text : String, base_level : Int32) -> BidiParagraph {
 /// X9-removed characters (LRE, RLE, LRO, RLO, PDF, BN) are excluded
 pub fn reorder(para : BidiParagraph) -> Array[Int32] {
   // X9: remove explicit formatting and BN before reordering.
-  let indices : Array[Int32] = []
-  for i = 0; i < para.levels.length(); i = i + 1 {
-    let bc = para.original_classes[i]
-    if !bc.is_x9_removed() {
-      indices.push(i)
-    }
-  }
+  let indices : Array[Int32] = [
+    for i, bc in para.original_classes if !bc.is_x9_removed() => i
+  ]
   apply_reordering(indices, para.levels, para.base_level)
 }
 

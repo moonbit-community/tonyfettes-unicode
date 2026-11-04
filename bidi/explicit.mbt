@@ -35,7 +35,7 @@ fn process_explicit(
   // Track isolate pairs for later run sequence computation
   let isolate_pairs : Array[(Int32, Int32)] = []
   let isolate_stack : Array[Int32] = [] // Stack of isolate initiator indices
-  for i = 0; i < types.length(); i = i + 1 {
+  for i in 0..<types.length() {
     let bc = types[i]
     match bc {
       // X2: RLE - Right-to-Left Embedding
@@ -202,11 +202,8 @@ fn process_explicit(
           }
           valid_isolate_count -= 1
           // Record isolate pair
-          if isolate_stack.length() > 0 {
-            match isolate_stack.pop() {
-              Some(start) => isolate_pairs.push((start, i))
-              None => ()
-            }
+          if isolate_stack.pop() is Some(start) {
+            isolate_pairs.push((start, i))
           }
         }
         levels[i] = stack[stack.length() - 1].level
@@ -251,8 +248,7 @@ fn adjust_nsm_levels(
 ) -> Unit {
   let mut last_idx = -1
   let mut saw_explicit = false
-  for i = 0; i < original_classes.length(); i = i + 1 {
-    let bc = original_classes[i]
+  for i, bc in original_classes {
     if bc is LRE ||
       bc is LRO ||
       bc is RLE ||
@@ -281,7 +277,7 @@ fn determine_isolate_direction(
   start : Int32,
 ) -> Direction {
   let mut isolate_count = 0
-  for i = start; i < types.length(); i = i + 1 {
+  for i in start..<types.length() {
     let bc = types[i]
     if bc.is_isolate_initiator() {
       isolate_count += 1
@@ -347,7 +343,7 @@ fn compute_isolating_run_sequences(
   let processed : Array[Bool] = Array::make(len, false)
 
   // Find level runs and connect them via isolate pairs
-  for i = 0; i < len; i = i + 1 {
+  for i in 0..<len {
     if processed[i] {
       continue
     }

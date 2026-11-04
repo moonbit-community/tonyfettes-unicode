@@ -9,8 +9,7 @@ fn apply_implicit_levels(
   types : Array[BidiClass],
   levels : Array[Int32],
 ) -> Unit {
-  for i = 0; i < types.length(); i = i + 1 {
-    let bc = types[i]
+  for i, bc in types {
     let level = levels[i]
 
     // Skip removed characters (BN)
