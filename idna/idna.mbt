@@ -171,7 +171,6 @@ fn process_label_for_ascii(
       normalized,
       use_std3_ascii_rules~,
       check_hyphens~,
-      check_bidi=false, // Bidi done at domain level
       check_joiners~,
     )
 
@@ -188,13 +187,7 @@ fn process_label_for_ascii(
 
   // Validate non-ACE labels here. Raw A-labels must not be subjected to the
   // hyphen checks before decoding, because the xn-- prefix is intentional.
-  validate_label(
-    label,
-    use_std3_ascii_rules~,
-    check_hyphens~,
-    check_bidi=false, // Bidi done at domain level
-    check_joiners~,
-  )
+  validate_label(label, use_std3_ascii_rules~, check_hyphens~, check_joiners~)
   let ascii_label = encode_label_to_ascii(label)
   (label, ascii_label)
 }
@@ -311,7 +304,6 @@ fn label_to_unicode(
     normalized,
     use_std3_ascii_rules~,
     check_hyphens~,
-    check_bidi=false, // Bidi is validated across the complete domain
     check_joiners~,
   )
   normalized
@@ -333,12 +325,7 @@ fn decode_ace_label(label : String) -> String raise IdnaError {
 
 ///|
 fn is_all_ascii(label : String) -> Bool {
-  for i in 0..<label.length() {
-    if label[i] >= 0x80 {
-      return false
-    }
-  }
-  true
+  label.all(c => c.to_int() < 0x80)
 }
 
 ///|

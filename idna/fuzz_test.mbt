@@ -37,11 +37,9 @@ test "fuzz: pure ASCII domain passthrough" {
   for _ in 0..<fuzz_iterations {
     // Generate pure ASCII domain
     let num_labels = rng.int(limit=3) + 1
-    let labels : Array[String] = []
-    for _ in 0..<num_labels {
-      labels.push(@idna_fuzz.random_ascii_label(rng))
-    }
-    let domain = labels.join(".")
+    let domain = [
+      for _ in 0..<num_labels => @idna_fuzz.random_ascii_label(rng)
+    ].join(".")
     try
       @idna.to_ascii(
         domain,
@@ -154,10 +152,7 @@ test "fuzz: to_ascii produces pure ASCII for any Unicode input" {
       ascii =>
         // DETERMINISTIC ASSERTION:
         // to_ascii output must be pure ASCII (code points < 0x80)
-        for c in ascii {
-          let code = c.to_int()
-          assert_true(code < 0x80)
-        }
+        assert_true(@idna_fuzz.is_ascii_string(ascii))
     }
   }
 }
@@ -234,7 +229,7 @@ test "fuzz: multiple dot handling" {
     // Generate domain with various separators
     let label1 = @idna_fuzz.random_ascii_label(rng)
     let label2 = @idna_fuzz.random_ascii_label(rng)
-    let domain = label1 + "." + label2
+    let domain = "\{label1}.\{label2}"
     try
       @idna.to_ascii(
         domain,

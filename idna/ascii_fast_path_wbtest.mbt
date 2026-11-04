@@ -1,7 +1,7 @@
 ///|
 /// A label the fast path always hands to the general algorithm.
 fn has_ace_label(domain : String) -> Bool {
-  domain.split(".").any(label => label.to_owned().to_lower().has_prefix("xn--"))
+  domain.split(".").any(label => label.to_lower().has_prefix("xn--"))
 }
 
 ///|
