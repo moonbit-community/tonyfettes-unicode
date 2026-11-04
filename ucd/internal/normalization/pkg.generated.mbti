@@ -2,11 +2,11 @@
 package "moonbit-community/unicode-data/internal/normalization"
 
 // Values
-pub fn lookup_normalization_properties(Char) -> Int
+pub fn lookup_normalization_properties(Char) -> Int32
 
-pub fn normalization_composition_group(Char) -> Int
+pub fn normalization_composition_group(Char) -> Int32
 
-pub fn normalization_decomposition_index(Char) -> Int
+pub fn normalization_decomposition_index(Char) -> Int32
 
 // Errors
 

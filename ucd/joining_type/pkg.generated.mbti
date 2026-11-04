@@ -2,7 +2,7 @@
 package "moonbit-community/unicode-data/joining_type"
 
 // Values
-pub fn lookup_joining_type(Char) -> Int
+pub fn lookup_joining_type(Char) -> Int32
 
 // Errors
 

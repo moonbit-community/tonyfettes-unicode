@@ -19,11 +19,12 @@ pub fn paired_bracket(Char) -> Char?
 // Errors
 
 // Types and methods
+#derive(Eq)
 pub(all) enum BracketType {
   Open
   Close
   None
-} derive(Eq)
+}
 pub fn BracketType::equal(Self, Self) -> Bool
 pub fn BracketType::not_equal(Self, Self) -> Bool
 pub fn BracketType::output(Self, &Logger) -> Unit

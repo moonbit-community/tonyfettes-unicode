@@ -2,14 +2,14 @@
 package "moonbit-community/unicode-tools/internal/trie"
 
 // Values
-pub fn deduplicate_blocks(Array[Int], Int) -> DedupedBlocks
+pub fn deduplicate_blocks(Array[Int32], Int32) -> DedupedBlocks
 
 // Errors
 
 // Types and methods
 pub struct DedupedBlocks {
-  ids : Array[Int]
-  blocks : Array[Int]
+  ids : Array[Int32]
+  blocks : Array[Int32]
 }
 
 // Type aliases
