@@ -1,6 +1,6 @@
 name = "moonbit-community/unicode-casefold"
 
-version = "0.6.0"
+version = "0.7.0"
 
 license = "Apache-2.0"
 
@@ -13,5 +13,5 @@ description = "Unicode case folding and caseless matching for MoonBit"
 keywords = [ "unicode", "casefold", "caseless" ]
 
 import {
-  "moonbit-community/unicode-normalization@0.6.0",
+  "moonbit-community/unicode-normalization@0.7.0",
 }
