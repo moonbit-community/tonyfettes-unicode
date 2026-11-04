@@ -152,7 +152,8 @@ struct Graphemes {
 /// Each cluster is a view into `text`, so `StringView::start_offset` gives its
 /// position in the underlying string. The clusters are contiguous and cover
 /// `text` exactly. `text` is segmented on its own: its start is a boundary
-/// even if the underlying string continues before it.
+/// even if the underlying string continues before it. Unpaired surrogates have
+/// Grapheme_Cluster_Break=Other; valid pairs stay together.
 ///
 /// ```mbt check
 /// test {
