@@ -7,10 +7,11 @@
 
 ///|
 /// Direction of text
+#derive(Eq)
 pub(all) enum Direction {
   LTR // Left-to-Right (base level 0)
   RTL // Right-to-Left (base level 1)
-} derive(Eq)
+}
 
 ///|
 pub extend Direction with Eq::{not_equal, equal}

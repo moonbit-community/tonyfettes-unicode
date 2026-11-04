@@ -1,11 +1,12 @@
 ///|
 /// Whether a line may end at a text boundary. Mandatory includes the end of
 /// nonempty text, even when the text does not end in a newline character.
+#derive(Eq, Debug)
 pub(all) enum BreakOpportunity {
   Prohibited
   Allowed
   Mandatory
-} derive(Eq, Debug)
+}
 
 ///|
 pub extend BreakOpportunity with Eq::{equal}

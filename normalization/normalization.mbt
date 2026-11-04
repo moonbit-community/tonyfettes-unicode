@@ -9,12 +9,13 @@
 
 ///|
 /// Normalization form enumeration
+#derive(Eq)
 pub(all) enum NormalizationForm {
   NFD // Canonical Decomposition
   NFC // Canonical Decomposition + Composition
   NFKD // Compatibility Decomposition
   NFKC // Compatibility Decomposition + Composition
-} derive(Eq)
+}
 
 ///|
 pub extend NormalizationForm with Eq::{not_equal, equal}

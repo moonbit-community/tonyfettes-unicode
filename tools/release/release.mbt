@@ -2,9 +2,10 @@
 const ReleaseVersionPattern : Regex = re"^(0|[1-9][0-9]*)[.](0|[1-9][0-9]*)[.](0|[1-9][0-9]*)$"
 
 ///|
+#derive(Debug, Eq)
 suberror ReleaseError {
   ReleaseError(String)
-} derive(Debug, Eq)
+}
 
 ///|
 priv struct ReleaseModule {

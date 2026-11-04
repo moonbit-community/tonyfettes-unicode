@@ -6,6 +6,7 @@
 /// Unicode Joining_Group values
 /// See the Unicode Standard, section 9.2, Arabic:
 /// https://www.unicode.org/versions/latest/core-spec/chapter-9/#G7480
+#derive(Debug, Eq)
 pub(all) enum JoiningGroup {
   AfricanFeh // African_Feh
   AfricanNoon // African_Noon
@@ -123,7 +124,7 @@ pub(all) enum JoiningGroup {
   YudhHe // Yudh_He
   Zain // Zain
   Zhain // Zhain
-} derive(Debug, Eq)
+}
 
 ///|
 #deprecated("Use `Debug::to_repr` instead", skip_current_package=true)

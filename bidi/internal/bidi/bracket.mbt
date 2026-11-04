@@ -3,11 +3,12 @@
 /// Generated from BidiBrackets.txt
 
 ///|
+#derive(Eq)
 pub(all) enum BracketType {
   Open
   Close
   None
-} derive(Eq)
+}
 
 ///|
 pub extend BracketType with Eq::{not_equal, equal}

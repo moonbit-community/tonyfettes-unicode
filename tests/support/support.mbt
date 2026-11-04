@@ -91,10 +91,11 @@ pub fn parse_reorder(text : StringView) -> Array[Int32] raise {
 }
 
 ///|
+#derive(Debug, Eq)
 pub struct ParsedText {
   text : String
   has_surrogate : Bool
-} derive(Debug, Eq)
+}
 
 ///|
 pub extend ParsedText with Debug::{to_repr}

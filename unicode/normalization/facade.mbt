@@ -2,12 +2,13 @@
 pub using @impl {nfc, nfd, nfkc, nfkd}
 
 ///|
+#derive(Eq)
 pub(all) enum NormalizationForm {
   NFD
   NFC
   NFKD
   NFKC
-} derive(Eq)
+}
 
 ///|
 pub extend NormalizationForm with Eq::{not_equal, equal}
