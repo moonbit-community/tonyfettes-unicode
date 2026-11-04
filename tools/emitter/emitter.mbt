@@ -80,8 +80,8 @@ pub fn Emitter::write_file_header(
   generated_from : String,
 ) -> Unit {
   self.write("///|\n")
-  self.write("/// " + title + "\n")
-  self.write("/// Generated from " + generated_from + "\n\n")
+  self.write("/// \{title}\n")
+  self.write("/// Generated from \{generated_from}\n\n")
 }
 
 ///|
@@ -93,8 +93,8 @@ pub fn Emitter::write_int_array(
   hex~ : Bool,
 ) -> Unit {
   self.write("///|\n")
-  self.write("/// " + doc + "\n")
-  self.write("let " + name + " : ReadOnlyArray[Int] = [\n")
+  self.write("/// \{doc}\n")
+  self.write("let \{name} : ReadOnlyArray[Int] = [\n")
   for value in values {
     self.write("  ")
     if hex {
@@ -115,12 +115,10 @@ pub fn Emitter::write_byte_array(
   values : Array[Int32],
 ) -> Unit {
   self.write("///|\n")
-  self.write("/// " + doc + "\n")
-  self.write("let " + name + " : Bytes = [\n")
+  self.write("/// \{doc}\n")
+  self.write("let \{name} : Bytes = [\n")
   for value in values {
-    self.write("  ")
-    self.write(value.to_string())
-    self.write(",\n")
+    self.write("  \{value},\n")
   }
   self.write("]\n\n")
 }

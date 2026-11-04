@@ -42,7 +42,7 @@ pub fn Emitter::write_value_trie(
   guard values.length() == MaxCodePoint + 1 else {
     fail("\{property} table must hold one value per code point")
   }
-  guard values.iter().all(value => value >= 0 && value < 1 << value_bits) else {
+  guard values.all(value => value >= 0 && value < 1 << value_bits) else {
     fail("\{property} value does not fit in \{value_bits} bits")
   }
   // `start << value_bits | value`, so the packed values sort by start code
@@ -63,10 +63,10 @@ pub fn Emitter::write_value_trie(
     leaf.ids,
     1 << (ValueTrieTopShift - ValueTrieLeafShift),
   )
-  guard mid.ids.iter().all(id => id < 0x100) else {
+  guard mid.ids.all(id => id < 0x100) else {
     fail("\{property} trie has too many mid blocks for one byte")
   }
-  guard mid.blocks.iter().all(id => id < 0x10000) else {
+  guard mid.blocks.all(id => id < 0x10000) else {
     fail("\{property} trie has too many leaf blocks for two bytes")
   }
   let mid_bytes = []
