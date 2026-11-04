@@ -39,9 +39,9 @@ fn parse_fold_mappings(
       fail("Folding ranges must be valid, sorted and non-overlapping")
     }
     let targets = @parsing.parse_code_point_sequence(mapping)
-    guard targets
-      .iter()
-      .all(cp => cp >= 0 && cp <= 0x10FFFF && !(cp >= 0xD800 && cp <= 0xDFFF)) else {
+    guard targets.all(cp => {
+      cp >= 0 && cp <= 0x10FFFF && !(cp >= 0xD800 && cp <= 0xDFFF)
+    }) else {
       fail("Invalid folding target")
     }
     if !nfkc && (range.start != range.end || targets.is_empty()) {

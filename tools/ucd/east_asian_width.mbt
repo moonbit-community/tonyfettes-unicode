@@ -17,14 +17,11 @@ fn east_asian_width_ordinal(value : StringView) -> Int32? {
 /// Emit East_Asian_Width data from `EastAsianWidth.txt` as a three-level trie
 /// for planes 0-3, with packed ranges for the remaining planes.
 pub fn emit_east_asian_width(content : String) -> String raise {
-  let names = @parsing.parse_enumerated_property(content, default="N")
-  let values = FixedArray::make(names.length(), 0)
-  for cp, name in names {
-    guard east_asian_width_ordinal(name) is Some(ordinal) else {
-      fail("Unknown East_Asian_Width: \{name}")
-    }
-    values[cp] = ordinal
-  }
+  let values = property_ordinals(
+    property="East_Asian_Width",
+    @parsing.parse_enumerated_property(content, default="N"),
+    east_asian_width_ordinal,
+  )
   let out = @emitter.Emitter::new()
   out.write_file_header("East_Asian_Width lookup data", "EastAsianWidth.txt")
   out.write_value_trie(

@@ -196,10 +196,7 @@ pub fn build_full_composition_exclusions(
 ///|
 /// Shared row order for the decomposition arrays and norm16 record indices.
 fn decomposition_entries(data : UnicodeData) -> Array[DecompositionEntry] {
-  let entries : Array[DecompositionEntry] = []
-  for entry in data.canonical_decompositions {
-    entries.push(entry)
-  }
+  let entries = data.canonical_decompositions.copy()
   for compat in data.compatibility_decompositions {
     if entries.search_by(entry => entry.code_point == compat.code_point) is None {
       entries.push({ code_point: compat.code_point, code_points: [], })

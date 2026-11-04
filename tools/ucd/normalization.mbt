@@ -77,9 +77,7 @@ fn normalization_values(
       values[cp] = values[cp] | (value << shift)
     }
   }
-  guard seen.iter().all(value => value) else {
-    fail("Missing Quick_Check properties")
-  }
+  guard seen.all(value => value) else { fail("Missing Quick_Check properties") }
   values
 }
 
@@ -141,7 +139,7 @@ pub fn emit_normalization(
     leaf.ids,
     1 << (NormalizationTopShift - NormalizationLeafShift),
   )
-  guard mid.ids.iter().all(id => id >= 0 && id < 256) else {
+  guard mid.ids.all(id => id >= 0 && id < 256) else {
     fail("Normalization trie top indices exceed their encoded width")
   }
   let mid_shift = NormalizationTopShift - NormalizationLeafShift

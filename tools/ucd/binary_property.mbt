@@ -60,10 +60,10 @@ fn write_binary_property_trie(
     leaf.ids,
     1 << (BinaryTrieTopShift - BinaryTrieLeafShift),
   )
-  guard mid.ids.iter().all(id => id < 0x100) else {
+  guard mid.ids.all(id => id < 0x100) else {
     fail("\{property} trie has too many mid blocks for one byte")
   }
-  guard mid.blocks.iter().all(id => id < 0x100) else {
+  guard mid.blocks.all(id => id < 0x100) else {
     fail("\{property} trie has too many leaf blocks for one byte")
   }
   let high_check = if high_ranges.is_empty() {

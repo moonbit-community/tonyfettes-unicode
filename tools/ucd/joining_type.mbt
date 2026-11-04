@@ -17,14 +17,11 @@ fn joining_type_ordinal(value : StringView) -> Int32? {
 /// Emit Joining_Type data from `DerivedJoiningType.txt` as a three-level trie
 /// for planes 0-3, with packed ranges for the remaining planes.
 pub fn emit_joining_type(content : String) -> String raise {
-  let names = @parsing.parse_enumerated_property(content, default="U")
-  let values = FixedArray::make(names.length(), 0)
-  for cp, name in names {
-    guard joining_type_ordinal(name) is Some(ordinal) else {
-      fail("Unknown Joining_Type: \{name}")
-    }
-    values[cp] = ordinal
-  }
+  let values = property_ordinals(
+    property="Joining_Type",
+    @parsing.parse_enumerated_property(content, default="U"),
+    joining_type_ordinal,
+  )
   let out = @emitter.Emitter::new()
   out.write_file_header("Joining_Type lookup data", "DerivedJoiningType.txt")
   out.write_value_trie(
