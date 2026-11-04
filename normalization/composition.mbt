@@ -7,9 +7,8 @@
 /// Handles both Hangul and general composition
 fn try_compose(first : Char, second : Char) -> Char? {
   // Try Hangul composition first (algorithmic, no table lookup)
-  match try_compose_hangul(first, second) {
-    Some(h) => return Some(h)
-    None => ()
+  if try_compose_hangul(first, second) is Some(h) {
+    return Some(h)
   }
 
   // Look up in composition table
@@ -49,15 +48,12 @@ fn canonical_compose(chars : Array[Char]) -> Unit {
     let not_blocked = last_ccc == 0 || (ccc != 0 && last_ccc < ccc)
     if last_starter_idx >= 0 && not_blocked {
       let starter = chars[last_starter_idx]
-      match try_compose(starter, c) {
-        Some(composed) => {
-          // Successfully composed - update the starter in the compacted prefix
-          chars[last_starter_idx] = composed
-          // The composed character is still a starter, don't update last_ccc
-          // This allows further composition with subsequent marks
-          continue
-        }
-        None => ()
+      if try_compose(starter, c) is Some(composed) {
+        // Successfully composed - update the starter in the compacted prefix
+        chars[last_starter_idx] = composed
+        // The composed character is still a starter, don't update last_ccc
+        // This allows further composition with subsequent marks
+        continue
       }
     }
 

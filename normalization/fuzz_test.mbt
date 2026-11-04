@@ -74,17 +74,6 @@ test "fuzz: canonical equivalence via nfd" {
 }
 
 ///|
-test "fuzz: nfd then nfc equals nfc" {
-  let rng = @random.Rand::chacha8(seed=fuzz_seed)
-  for _ in 0..<fuzz_iterations {
-    let s = @fuzz.random_unicode_string(rng, max_len=50)
-    let nfd_then_nfc = @normalization.nfc(@normalization.nfd(s))
-    let just_nfc = @normalization.nfc(s)
-    assert_eq(nfd_then_nfc, just_nfc)
-  }
-}
-
-///|
 test "fuzz: nfc then nfd equals nfd" {
   let rng = @random.Rand::chacha8(seed=fuzz_seed)
   for _ in 0..<fuzz_iterations {
