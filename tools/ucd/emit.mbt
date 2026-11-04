@@ -67,8 +67,8 @@ pub fn emit_decomposition(data : UnicodeData) -> String raise {
       None => compat_lens.push(0)
     }
   }
-  guard canonical_lens.iter().all(len => len <= 255) &&
-    compat_lens.iter().all(len => len <= 255) else {
+  guard canonical_lens.all(len => len <= 255) &&
+    compat_lens.all(len => len <= 255) else {
     fail("Decomposition length exceeds its encoded byte width")
   }
   let out = @emitter.Emitter::new()

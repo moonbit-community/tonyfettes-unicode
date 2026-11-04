@@ -85,7 +85,7 @@ pub fn emit_normalization_scan(
   }
   let block_size = 1 << NormalizationScanShift
   let bmp = @trie.deduplicate_blocks(bmp_values, block_size)
-  guard bmp.ids.iter().all(id => id >= 0 && id < 256) else {
+  guard bmp.ids.all(id => id >= 0 && id < 256) else {
     fail("Normalization scan block indices exceed their encoded width")
   }
   // The scan reads both tables unchecked for every UTF-16 code unit.
@@ -116,8 +116,8 @@ pub fn emit_normalization_scan(
     }
   }
   let pairs = @trie.deduplicate_blocks(pair_values, pair_block_size)
-  guard lead_slots.iter().all(slot => slot < 256) &&
-    pairs.ids.iter().all(id => id >= 0 && id < 256) else {
+  guard lead_slots.all(slot => slot < 256) &&
+    pairs.ids.all(id => id >= 0 && id < 256) else {
     fail("Normalization pair indices exceed their encoded width")
   }
   // The scan reads these tables unchecked for every pair below the tail.

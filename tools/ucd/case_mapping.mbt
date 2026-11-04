@@ -119,10 +119,10 @@ pub fn emit_case_mapping(
     leaf.ids,
     1 << (CaseTrieTopShift - CaseTrieLeafShift),
   )
-  guard mid.ids.iter().all(id => id < 0x100) else {
+  guard mid.ids.all(id => id < 0x100) else {
     fail("Case mapping trie has too many mid blocks for one byte")
   }
-  guard mid.blocks.iter().all(id => id < 0x100) else {
+  guard mid.blocks.all(id => id < 0x100) else {
     fail("Case mapping trie has too many leaf blocks for one byte")
   }
   let mid_mask = (1 << (CaseTrieTopShift - CaseTrieLeafShift)) - 1

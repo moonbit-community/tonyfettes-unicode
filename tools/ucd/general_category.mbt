@@ -74,10 +74,10 @@ pub fn emit_general_category(
     leaf.ids,
     1 << (GcTrieTopShift - GcTrieLeafShift),
   )
-  guard mid.ids.iter().all(id => id < 0x100) else {
+  guard mid.ids.all(id => id < 0x100) else {
     fail("General_Category trie has too many mid blocks for one byte")
   }
-  guard mid.blocks.iter().all(id => id < 0x10000) else {
+  guard mid.blocks.all(id => id < 0x10000) else {
     fail("General_Category trie has too many leaf blocks for two bytes")
   }
   let mid_bytes = []
