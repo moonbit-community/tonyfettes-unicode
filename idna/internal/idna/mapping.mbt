@@ -4,6 +4,7 @@
 
 ///|
 /// IDNA status values
+#derive(Eq)
 pub(all) enum IdnaStatus {
   Valid // 0: Valid character
   Ignored // 1: Character is removed
@@ -12,7 +13,7 @@ pub(all) enum IdnaStatus {
   Disallowed // 4: Character is not allowed
   DisallowedSTD3Valid // 5: Valid only without UseSTD3ASCIIRules
   DisallowedSTD3Mapped // 6: Mapped only without UseSTD3ASCIIRules
-} derive(Eq)
+}
 
 ///|
 pub extend IdnaStatus with Eq::{not_equal, equal}

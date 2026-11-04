@@ -1,11 +1,12 @@
 ///|
 /// Whether a line may end at a text boundary. Mandatory includes the end of
 /// nonempty text, even when the text does not end in a newline character.
+#derive(Eq, Debug)
 pub(all) enum BreakOpportunity {
   Prohibited
   Allowed
   Mandatory
-} derive(Eq, Debug)
+}
 
 ///|
 pub extend BreakOpportunity with Eq::{equal}
@@ -82,10 +83,12 @@ pub fn LineBreaks::next(self : LineBreaks) -> StringView {
       let start = self.offset
       self.offset = self.units[index - 1].end
       self.opportunity = kind
-      return self.text.view(start_offset=start, end_offset=self.offset)
+      // `units` carry the UTF-16 end of every code point, so both offsets are
+      // in range and on character boundaries: a raw view needs no checking.
+      return self.text.unsafe_view(start~, end=self.offset)
     }
   }
-  self.text.view(start_offset=self.offset, end_offset=self.offset)
+  self.text.unsafe_view(start=self.offset, end=self.offset)
 }
 
 ///|

@@ -11,6 +11,7 @@ type IdnaEntry
 pub fn IdnaEntry::status(Self) -> IdnaStatus
 pub fn IdnaEntry::write_mapping(Self, StringBuilder) -> Unit
 
+#derive(Eq)
 pub(all) enum IdnaStatus {
   Valid
   Ignored
@@ -19,7 +20,7 @@ pub(all) enum IdnaStatus {
   Disallowed
   DisallowedSTD3Valid
   DisallowedSTD3Mapped
-} derive(Eq)
+}
 pub fn IdnaStatus::equal(Self, Self) -> Bool
 pub fn IdnaStatus::not_equal(Self, Self) -> Bool
 pub fn IdnaStatus::output(Self, &Logger) -> Unit

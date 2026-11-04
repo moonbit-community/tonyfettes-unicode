@@ -6,19 +6,19 @@ pub fn bidi_class(Char) -> BidiClass
 
 pub fn detect_direction(String) -> Direction
 
-pub fn direction_from_level(Int) -> Direction
+pub fn direction_from_level(Int32) -> Direction
 
-pub fn get_mirrored(Char, Int) -> Char
+pub fn get_mirrored(Char, Int32) -> Char
 
 pub fn process(String, direction? : Direction) -> BidiParagraph
 
 #deprecated
-pub fn process_with_base_level(String, Int) -> BidiParagraph
+pub fn process_with_base_level(String, Int32) -> BidiParagraph
 
 #deprecated
 pub fn process_with_direction(String, Direction) -> BidiParagraph
 
-pub fn reorder(BidiParagraph) -> Array[Int]
+pub fn reorder(BidiParagraph) -> Array[Int32]
 
 pub fn reorder_string(BidiParagraph) -> String
 
@@ -27,6 +27,7 @@ pub fn requires_bidi(String) -> Bool
 // Errors
 
 // Types and methods
+#derive(Eq)
 pub(all) enum BidiClass {
   L
   R
@@ -51,7 +52,7 @@ pub(all) enum BidiClass {
   RLI
   FSI
   PDI
-} derive(Eq)
+}
 pub fn BidiClass::equal(Self, Self) -> Bool
 pub fn BidiClass::is_explicit(Self) -> Bool
 pub fn BidiClass::is_isolate_initiator(Self) -> Bool
@@ -70,16 +71,17 @@ pub(all) struct BidiParagraph {
   chars : Array[Char]
   original_classes : Array[BidiClass]
   resolved_classes : Array[BidiClass]
-  levels : Array[Int]
-  base_level : Int
+  levels : Array[Int32]
+  base_level : Int32
 }
 
+#derive(Eq)
 pub(all) enum Direction {
   LTR
   RTL
-} derive(Eq)
+}
 pub fn Direction::equal(Self, Self) -> Bool
-pub fn Direction::level(Self) -> Int
+pub fn Direction::level(Self) -> Int32
 pub fn Direction::not_equal(Self, Self) -> Bool
 pub fn Direction::output(Self, &Logger) -> Unit
 pub fn Direction::to_string(Self) -> String

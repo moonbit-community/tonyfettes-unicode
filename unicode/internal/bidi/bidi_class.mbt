@@ -1,4 +1,5 @@
 ///|
+#derive(Eq)
 pub(all) enum BidiClass {
   L
   R
@@ -23,7 +24,7 @@ pub(all) enum BidiClass {
   RLI
   FSI
   PDI
-} derive(Eq)
+}
 
 ///|
 pub extend BidiClass with Eq::{not_equal, equal}

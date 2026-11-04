@@ -1,6 +1,7 @@
 ///|
 /// Unicode General_Category major class (single-letter categories)
 /// See UAX #44: https://www.unicode.org/reports/tr44/#General_Category_Values
+#derive(Debug, Eq)
 pub(all) enum GeneralCategoryGroup {
   L // Letter
   M // Mark
@@ -9,7 +10,7 @@ pub(all) enum GeneralCategoryGroup {
   P // Punctuation
   S // Symbol
   C // Other
-} derive(Debug, Eq)
+}
 
 ///|
 #deprecated("Use `Debug::to_repr` instead", skip_current_package=true)
@@ -38,6 +39,7 @@ pub impl Show for GeneralCategoryGroup with fn output(self, logger) {
 ///|
 /// Unicode General_Category values (two-letter categories)
 /// See UAX #44: https://www.unicode.org/reports/tr44/#General_Category_Values
+#derive(Debug, Eq)
 pub(all) enum GeneralCategory {
   // Letter (L)
   Lu // Uppercase_Letter
@@ -76,7 +78,7 @@ pub(all) enum GeneralCategory {
   Cs // Surrogate
   Co // Private_Use
   Cn // Unassigned
-} derive(Debug, Eq)
+}
 
 ///|
 #deprecated("Use `Debug::to_repr` instead", skip_current_package=true)

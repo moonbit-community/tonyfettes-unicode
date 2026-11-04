@@ -1,15 +1,17 @@
 ///|
+#derive(@json.FromJson)
 priv struct CorpusFile {
   name : String
   bytes : Int32
   sha256 : String
   encoding : String
-} derive(@json.FromJson)
+}
 
 ///|
+#derive(@json.FromJson)
 priv struct Corpus {
   files : Array[CorpusFile]
-} derive(@json.FromJson)
+}
 
 ///|
 priv struct Fixture {

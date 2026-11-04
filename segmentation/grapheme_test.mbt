@@ -188,7 +188,7 @@ test "unpaired surrogates behave like ordinary characters" {
   // base character of its own, so the low half takes the combining mark.
   let text = "a😀\u{301}"
   debug_inspect(
-    @segmentation.graphemes(text.view(start_offset=0, end_offset=2))
+    @segmentation.graphemes(text.unsafe_view(start=0, end=2))
     .iter()
     .map(cluster => cluster.length())
     .collect(),
@@ -197,7 +197,7 @@ test "unpaired surrogates behave like ordinary characters" {
     ),
   )
   debug_inspect(
-    @segmentation.graphemes(text.view(start_offset=2))
+    @segmentation.graphemes(text.unsafe_view(start=2, end=text.length()))
     .iter()
     .map(cluster => cluster.length())
     .collect(),

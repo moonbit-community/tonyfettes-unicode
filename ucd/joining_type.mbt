@@ -2,6 +2,7 @@
 /// Unicode Joining_Type values
 /// See the Unicode Standard, section 9.2, Arabic:
 /// https://www.unicode.org/versions/latest/core-spec/chapter-9/#G7480
+#derive(Debug, Eq)
 pub(all) enum JoiningType {
   NonJoining // U
   JoinCausing // C
@@ -9,7 +10,7 @@ pub(all) enum JoiningType {
   LeftJoining // L
   RightJoining // R
   Transparent // T
-} derive(Debug, Eq)
+}
 
 ///|
 #deprecated("Use `Debug::to_repr` instead", skip_current_package=true)

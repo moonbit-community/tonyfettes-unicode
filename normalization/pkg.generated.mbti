@@ -17,12 +17,13 @@ pub fn normalize(StringView, NormalizationForm) -> String
 // Errors
 
 // Types and methods
+#derive(Eq)
 pub(all) enum NormalizationForm {
   NFD
   NFC
   NFKD
   NFKC
-} derive(Eq)
+}
 pub fn NormalizationForm::equal(Self, Self) -> Bool
 pub fn NormalizationForm::not_equal(Self, Self) -> Bool
 pub fn NormalizationForm::output(Self, &Logger) -> Unit

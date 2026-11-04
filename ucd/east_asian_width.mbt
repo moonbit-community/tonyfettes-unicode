@@ -1,6 +1,7 @@
 ///|
 /// Unicode East_Asian_Width values
 /// See UAX #11: https://www.unicode.org/reports/tr11/
+#derive(Debug, Eq)
 pub(all) enum EastAsianWidth {
   A // Ambiguous
   F // Fullwidth
@@ -8,7 +9,7 @@ pub(all) enum EastAsianWidth {
   N // Neutral
   Na // Narrow
   W // Wide
-} derive(Debug, Eq)
+}
 
 ///|
 #deprecated("Use `Debug::to_repr` instead", skip_current_package=true)

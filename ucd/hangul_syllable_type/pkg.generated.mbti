@@ -2,7 +2,7 @@
 package "moonbit-community/unicode-data/hangul_syllable_type"
 
 // Values
-pub fn lookup_hangul_syllable_type(Char) -> Int
+pub fn lookup_hangul_syllable_type(Char) -> Int32
 
 // Errors
 

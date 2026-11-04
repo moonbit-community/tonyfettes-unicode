@@ -237,6 +237,7 @@ pub fn generate_bidi_class_source(content : String) -> String raise {
       #|
       #|///|
       #|/// All 23 Bidi_Class values from UAX #9
+      #|#derive(Eq)
       #|pub(all) enum BidiClass {
       #|  L
       #|  R
@@ -261,7 +262,7 @@ pub fn generate_bidi_class_source(content : String) -> String raise {
       #|  RLI
       #|  FSI
       #|  PDI
-      #|} derive(Eq)
+      #|}
       #|
       #|///|
       #|pub extend BidiClass with Eq::{not_equal, equal}
@@ -499,11 +500,12 @@ pub fn generate_bracket_source(content : String) -> String raise {
       #|/// Generated from BidiBrackets.txt
       #|
       #|///|
+      #|#derive(Eq)
       #|pub(all) enum BracketType {
       #|  Open
       #|  Close
       #|  None
-      #|} derive(Eq)
+      #|}
       #|
       #|///|
       #|pub extend BracketType with Eq::{not_equal, equal}

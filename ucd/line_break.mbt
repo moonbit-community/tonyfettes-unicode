@@ -5,6 +5,7 @@
 ///|
 /// Unicode Line_Break values
 /// See UAX #14: https://www.unicode.org/reports/tr14/#Table1
+#derive(Debug, Eq)
 pub(all) enum LineBreak {
   AI // Ambiguous (Alphabetic or Ideographic)
   AK // Aksara
@@ -55,7 +56,7 @@ pub(all) enum LineBreak {
   XX // Unknown
   ZW // Zero Width Space
   ZWJ // Zero Width Joiner
-} derive(Debug, Eq)
+}
 
 ///|
 #deprecated("Use `Debug::to_repr` instead", skip_current_package=true)

@@ -1,8 +1,9 @@
 ///|
+#derive(Debug, Eq)
 pub(all) struct GeneratedFile {
   relative_path : String
   source : String
-} derive(Debug, Eq)
+}
 
 ///|
 pub extend GeneratedFile with Debug::{to_repr}
@@ -11,10 +12,11 @@ pub extend GeneratedFile with Debug::{to_repr}
 pub extend GeneratedFile with Eq::{not_equal, equal}
 
 ///|
+#derive(Debug, Eq)
 pub(all) struct CodePointRange {
   start : Int32
   end : Int32
-} derive(Debug, Eq)
+}
 
 ///|
 pub extend CodePointRange with Debug::{to_repr}
@@ -23,10 +25,11 @@ pub extend CodePointRange with Debug::{to_repr}
 pub extend CodePointRange with Eq::{not_equal, equal}
 
 ///|
+#derive(Debug, Eq)
 pub(all) struct ParsedText {
   text : String
   has_surrogate : Bool
-} derive(Debug, Eq)
+}
 
 ///|
 pub extend ParsedText with Debug::{to_repr}

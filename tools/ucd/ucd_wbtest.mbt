@@ -581,7 +581,7 @@ test "emit Joining_Group table and enum in dictionary order" {
   for
     expected in [
       // Dictionary order, not the length-first order of `String::compare`.
-      "pub(all) enum JoiningGroup {\n  Beh // Beh\n  Hah // Hah\n  Heh // Heh\n  NoJoiningGroup // No_Joining_Group\n  TehMarbuta // Teh_Marbuta\n  TehMarbutaGoal // Teh_Marbuta_Goal\n} derive(Debug, Eq)",
+      "#derive(Debug, Eq)\npub(all) enum JoiningGroup {\n  Beh // Beh\n  Hah // Hah\n  Heh // Heh\n  NoJoiningGroup // No_Joining_Group\n  TehMarbuta // Teh_Marbuta\n  TehMarbutaGoal // Teh_Marbuta_Goal\n}",
       "#deprecated(\"Use `Debug::to_repr` instead\", skip_current_package=true)\n#doc(hidden)\npub extend JoiningGroup with Debug::{to_repr}\n",
       "      TehMarbutaGoal => \"TehMarbutaGoal\"\n", "    0 => Beh\n    1 => Hah\n    2 => Heh\n    4 => TehMarbuta\n    5 => TehMarbutaGoal\n    _ => NoJoiningGroup // 3 or any unknown\n",
       "  ordinal_to_joining_group(@joining_group.lookup_joining_group(c))\n",
@@ -612,8 +612,8 @@ test "emit Line_Break table and enum" {
   let api = emit_line_break_enum()
   for
     expected in [
-      "pub(all) enum LineBreak {\n  AI // Ambiguous (Alphabetic or Ideographic)\n",
-      "  ZWJ // Zero Width Joiner\n} derive(Debug, Eq)", "#deprecated(\"Use `Debug::to_repr` instead\", skip_current_package=true)\n#doc(hidden)\npub extend LineBreak with Debug::{to_repr}\n",
+      "#derive(Debug, Eq)\npub(all) enum LineBreak {\n  AI // Ambiguous (Alphabetic or Ideographic)\n",
+      "  ZWJ // Zero Width Joiner\n}", "#deprecated(\"Use `Debug::to_repr` instead\", skip_current_package=true)\n#doc(hidden)\npub extend LineBreak with Debug::{to_repr}\n",
       "    45 => WJ\n    47 => ZW\n    48 => ZWJ\n    _ => XX // 46 or any unknown\n",
       "  ordinal_to_line_break(@line_break.lookup_line_break(c))\n",
     ] {

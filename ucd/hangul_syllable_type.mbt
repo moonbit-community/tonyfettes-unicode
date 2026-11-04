@@ -2,6 +2,7 @@
 /// Unicode Hangul_Syllable_Type values
 /// See the Unicode Standard, section 3.12, Conjoining Jamo Behavior:
 /// https://www.unicode.org/versions/latest/core-spec/chapter-3/#G24646
+#derive(Debug, Eq)
 pub(all) enum HangulSyllableType {
   NotApplicable // NA
   LeadingJamo // L
@@ -9,7 +10,7 @@ pub(all) enum HangulSyllableType {
   TrailingJamo // T
   LVSyllable // LV
   LVTSyllable // LVT
-} derive(Debug, Eq)
+}
 
 ///|
 #deprecated("Use `Debug::to_repr` instead", skip_current_package=true)

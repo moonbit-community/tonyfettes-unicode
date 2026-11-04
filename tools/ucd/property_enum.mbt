@@ -28,13 +28,14 @@ fn write_property_enum(
   for line in doc {
     out.write_line("/// \{line}")
   }
+  out.write_line("#derive(Debug, Eq)")
   out.write_line("pub(all) enum \{type_name} {")
   for value in values {
     out.write_line("  \{value.name} // \{value.comment}")
   }
   out.write(
     (
-      $|} derive(Debug, Eq)
+      $|}
       $|
       $|///|
       $|#deprecated("Use `Debug::to_repr` instead", skip_current_package=true)
