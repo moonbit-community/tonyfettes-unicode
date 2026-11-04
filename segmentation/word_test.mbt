@@ -66,7 +66,7 @@ test "word cursor exhaustion and interleaved iterators" {
 ///|
 test "word views retain UTF-16 offsets and use independent context" {
   let backing = "xa.b😀z"
-  let text = backing.view(start_offset=2, end_offset=6)
+  let text = backing.unsafe_view(start=2, end=6)
   let cursor = @segmentation.word_segments(text)
   @debug.assert_eq(
     cursor
@@ -78,7 +78,7 @@ test "word views retain UTF-16 offsets and use independent context" {
   assert_eq(cursor.next().start_offset(), 6)
   let flags = "🇦🇧🇨🇩🇪"
   @debug.assert_eq(
-    @segmentation.word_segments(flags.view(start_offset=2))
+    @segmentation.word_segments(flags.unsafe_view(start=2, end=flags.length()))
     .iter()
     .map(s => s.to_owned())
     .collect(),
@@ -125,12 +125,12 @@ test "word boundaries can split an extended grapheme" {
 ///|
 test "word cursors preserve unpaired surrogates" {
   let text = "a😀\u{301}b"
-  let leading = text.view(end_offset=2)
+  let leading = text.unsafe_view(start=0, end=2)
   @debug.assert_eq(
     @segmentation.word_segments(leading).iter().map(s => s.length()).collect(),
     [1, 1],
   )
-  let trailing = text.view(start_offset=2)
+  let trailing = text.unsafe_view(start=2, end=text.length())
   @debug.assert_eq(
     @segmentation.word_segments(trailing).iter().map(s => s.length()).collect(),
     [2, 1],

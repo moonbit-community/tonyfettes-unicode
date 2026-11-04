@@ -209,7 +209,9 @@ pub fn Graphemes::next(self : Graphemes) -> StringView {
     start
   }
   self.offset = end
-  text.view(start_offset=start, end_offset=end)
+  // `start` and `end` come from `next_grapheme_boundary`, so they are in range
+  // and on cluster boundaries: this needs no check or clamping per cluster.
+  text.unsafe_view(start~, end~)
 }
 
 ///|

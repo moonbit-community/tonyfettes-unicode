@@ -103,7 +103,10 @@ pub fn requires_bidi(text : String) -> Bool {
       // Keep a surrogate pair that crosses the end of the stretch together.
       end += 1
     }
-    for c in text.view(start_offset=offset, end_offset=end) {
+    // This range is already `0 <= offset < end <= length`, which is all the
+    // old bounds-checked view verified: a raw view needs no clamping, and it
+    // also keeps a lone surrogate that a block boundary may land on.
+    for c in text.unsafe_view(start=offset, end~) {
       let bc = lookup_bidi_class(c)
       if bc.is_strong_rtl() || bc.is_explicit() {
         return true

@@ -15,7 +15,9 @@ fn TextSegments::next(self : TextSegments) -> StringView {
     self.offset = self.ends[self.index]
     self.index += 1
   }
-  self.text.view(start_offset=start, end_offset=self.offset)
+  // Every entry of `ends` is a boundary recorded by the analysis, so the slice
+  // is in range and never splits a character: no clamping is needed.
+  self.text.unsafe_view(start~, end=self.offset)
 }
 
 ///|

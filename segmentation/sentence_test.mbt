@@ -58,7 +58,7 @@ test "sentence cursor exhaustion and shared iteration" {
 ///|
 test "sentence views retain offsets and do not read preceding punctuation" {
   let backing = "Done!   Next.😀"
-  let text = backing.view(start_offset=6)
+  let text = backing.unsafe_view(start=6, end=backing.length())
   let cursor = @segmentation.sentences(text)
   @debug.assert_eq(
     cursor.iter().map(s => (s.to_owned(), s.start_offset())).collect(),
@@ -87,7 +87,7 @@ test "sentence ignore exceptions and non-nested word boundaries" {
 ///|
 test "sentence cursors preserve unpaired surrogates" {
   let text = "😀!😀"
-  let view = text.view(start_offset=1, end_offset=4)
+  let view = text.unsafe_view(start=1, end=4)
   @debug.assert_eq(
     @segmentation.sentences(view)
     .iter()
