@@ -10,6 +10,10 @@ test "legacy UCD package surface" {
   inspect(@unicode.is_alphabetic('A'), content="true")
   inspect(@unicode.is_lowercase('a'), content="true")
   inspect(@unicode.is_uppercase('A'), content="true")
+  inspect(@unicode.is_punctuation('!'), content="true")
+  inspect(@unicode.is_punctuation('A'), content="false")
+  let punctuation_predicate : (Char) -> Bool = @unicode.is_punctuation
+  inspect(punctuation_predicate(','), content="true")
   let width : @unicode.EastAsianWidth = @unicode.east_asian_width('\u{4E2D}')
   inspect(width, content="W")
 }

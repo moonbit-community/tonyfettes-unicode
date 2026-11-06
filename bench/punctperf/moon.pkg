@@ -1,0 +1,4 @@
+import {
+  "moonbit-community/unicode",
+  "moonbitlang/core/bench",
+} for "test"

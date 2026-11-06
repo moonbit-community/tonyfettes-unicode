@@ -239,3 +239,23 @@ pub fn emit_emoji(
   )
   out.finish()
 }
+
+///|
+/// Emit an independent punctuation table (General_Category group P). Keeping
+/// it separate means code that only tests punctuation does not link the
+/// General_Category trie.
+pub fn emit_punctuation(
+  ranges : Array[@parsing.CodePointRange],
+) -> String raise {
+  let out = @emitter.Emitter::new()
+  out.write_file_header(
+    "Punctuation (General_Category group P) lookup data", "UnicodeData.txt",
+  )
+  write_binary_property_trie(
+    out,
+    property="Punctuation",
+    lookup_doc="Check whether a character is punctuation (General_Category group P)",
+    ranges,
+  )
+  out.finish()
+}
