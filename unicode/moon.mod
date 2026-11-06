@@ -1,6 +1,6 @@
 name = "moonbit-community/unicode"
 
-version = "0.7.0"
+version = "0.7.1"
 
 license = "Apache-2.0"
 
@@ -11,12 +11,12 @@ readme = "README.md"
 description = "Unicode in MoonBit"
 
 import {
-  "moonbit-community/unicode-data@0.7.0",
-  "moonbit-community/unicode-normalization@0.7.0",
-  "moonbit-community/punycode@0.7.0",
-  "moonbit-community/unicode-bidi@0.7.0",
-  "moonbit-community/unicode-idna@0.7.0",
-  "moonbit-community/unicode-casefold@0.7.0",
+  "moonbit-community/unicode-data@0.7.1",
+  "moonbit-community/unicode-normalization@0.7.1",
+  "moonbit-community/punycode@0.7.1",
+  "moonbit-community/unicode-bidi@0.7.1",
+  "moonbit-community/unicode-idna@0.7.1",
+  "moonbit-community/unicode-casefold@0.7.1",
 }
 
 keywords = [
