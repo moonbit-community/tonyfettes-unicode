@@ -12,6 +12,7 @@ import {
   "moonbit-community/unicode-data/line_break",
   "moonbit-community/unicode-data/lowercase",
   "moonbit-community/unicode-data/prepended_concatenation_mark",
+  "moonbit-community/unicode-data/punctuation",
   "moonbit-community/unicode-data/regional_indicator",
   "moonbit-community/unicode-data/uppercase",
   "moonbit-community/unicode-data/white_space",

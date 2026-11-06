@@ -5,6 +5,7 @@ version = "0.0.0"
 preferred_target = "native"
 
 import {
+  "moonbit-community/unicode@0.7.1",
   "moonbit-community/unicode-normalization@0.7.1",
   "moonbit-community/unicode-data@0.7.1",
   "moonbit-community/unicode-bidi@0.7.1",

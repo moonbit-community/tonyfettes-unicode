@@ -193,6 +193,7 @@ while clusters.next() is cluster && !cluster.is_empty() {
 ```moonbit
 let category = @ucd.general_category('A') // Lu
 let group = category.group() // L
+let is_punct = @ucd.is_punctuation('!') // true: General_Category group P
 let width = @ucd.east_asian_width('世') // W
 let can_start = @ucd.is_xid_start('A') // true
 let can_continue = @ucd.is_xid_continue('0') // true
@@ -223,6 +224,7 @@ Root package for Unicode Character Database helpers.
 | --- | --- |
 | `general_category(Char) -> GeneralCategory` | Return the two-letter Unicode General_Category value. |
 | `GeneralCategory::group() -> GeneralCategoryGroup` | Return the one-letter category group. |
+| `is_punctuation(Char) -> Bool` | Test whether the character is punctuation (General_Category group P), using a compact table independent of the General_Category trie. |
 | `east_asian_width(Char) -> EastAsianWidth` | Return the UAX #11 East_Asian_Width value: `A`, `F`, `H`, `N`, `Na`, or `W`. |
 | `is_white_space(Char) -> Bool` | Test the Unicode White_Space property. |
 | `is_alphabetic(Char) -> Bool` | Test the Unicode Alphabetic property. |

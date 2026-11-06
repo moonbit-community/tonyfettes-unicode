@@ -145,6 +145,29 @@ pub fn compress_general_category_ranges(
 }
 
 ///|
+/// General_Category ordinals of the punctuation group: Pc (14) through
+/// Po (20).
+const GcPunctuationFirst : Int32 = 14
+
+///|
+const GcPunctuationLast : Int32 = 20
+
+///|
+/// Collect the General_Category group P ranges from a compressed
+/// General_Category range list, preserving their sorted order.
+pub fn compress_punctuation_ranges(
+  ranges : Array[GeneralCategoryRange],
+) -> Array[@parsing.CodePointRange] {
+  let punctuation : Array[@parsing.CodePointRange] = []
+  for range in ranges {
+    if range.value >= GcPunctuationFirst && range.value <= GcPunctuationLast {
+      punctuation.push({ start: range.start, end: range.end, })
+    }
+  }
+  punctuation
+}
+
+///|
 pub fn build_composition_table(
   data : UnicodeData,
   exclusions : Array[Int32],

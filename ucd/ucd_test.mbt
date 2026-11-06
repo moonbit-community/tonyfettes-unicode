@@ -106,6 +106,32 @@ test "GeneralCategory::group" {
 }
 
 ///|
+test "is_punctuation" {
+  // Pc: connector punctuation
+  inspect(@ucd.is_punctuation('_'), content="true")
+  // Pd: dash punctuation
+  inspect(@ucd.is_punctuation('-'), content="true")
+  // Ps / Pe: open and close punctuation
+  inspect(@ucd.is_punctuation('('), content="true")
+  inspect(@ucd.is_punctuation(')'), content="true")
+  // Pi / Pf: initial and final punctuation
+  inspect(@ucd.is_punctuation('\u{2018}'), content="true") // LEFT SINGLE QUOTATION MARK
+  inspect(@ucd.is_punctuation('\u{2019}'), content="true") // RIGHT SINGLE QUOTATION MARK
+  // Po: other punctuation
+  inspect(@ucd.is_punctuation('!'), content="true")
+  inspect(@ucd.is_punctuation(','), content="true")
+  inspect(@ucd.is_punctuation('\u{3002}'), content="true") // IDEOGRAPHIC FULL STOP
+  // Letters, numbers, separators, symbols, and controls are not punctuation.
+  inspect(@ucd.is_punctuation('A'), content="false")
+  inspect(@ucd.is_punctuation('中'), content="false")
+  inspect(@ucd.is_punctuation('0'), content="false")
+  inspect(@ucd.is_punctuation(' '), content="false")
+  inspect(@ucd.is_punctuation('$'), content="false") // Sc
+  inspect(@ucd.is_punctuation('+'), content="false") // Sm
+  inspect(@ucd.is_punctuation('\u{00}'), content="false") // Cc
+}
+
+///|
 test "XID_Start and XID_Continue" {
   inspect(@ucd.is_xid_start('A'), content="true")
   inspect(@ucd.is_xid_continue('A'), content="true")

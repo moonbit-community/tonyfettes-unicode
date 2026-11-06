@@ -19,6 +19,7 @@ pub using @impl {
   is_grapheme_extend,
   is_lowercase,
   is_prepended_concatenation_mark,
+  is_punctuation,
   is_regional_indicator,
   is_uppercase,
   is_white_space,

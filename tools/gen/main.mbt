@@ -114,6 +114,9 @@ async fn generate_ucd(root : StringView) -> Unit {
   let general_category_ranges = @ucd.compress_general_category_ranges(
     unicode_data,
   )
+  let punctuation_ranges = @ucd.compress_punctuation_ranges(
+    general_category_ranges,
+  )
   let compositions = @ucd.build_composition_table(unicode_data, exclusions)
   let full_exclusions = @ucd.build_full_composition_exclusions(
     unicode_data, exclusions,
@@ -151,6 +154,11 @@ async fn generate_ucd(root : StringView) -> Unit {
     root,
     "ucd/general_category/general_category.mbt",
     @ucd.emit_general_category(general_category_ranges),
+  )
+  write_source(
+    root,
+    "ucd/punctuation/punctuation.mbt",
+    @ucd.emit_punctuation(punctuation_ranges),
   )
   write_source(
     root,
@@ -271,9 +279,10 @@ async fn generate_ucd(root : StringView) -> Unit {
     "ucd/joining_group/joining_group.mbt", "ucd/joining_group.mbt", "ucd/line_break/line_break.mbt",
     "ucd/line_break.mbt", "ucd/internal/normalization/normalization.mbt", "ucd/general_category/mark.mbt",
     "ucd/ccc/ccc.mbt", "ucd/decomposition/decomposition.mbt", "ucd/composition/composition.mbt",
-    "ucd/general_category/general_category.mbt", "ucd/case_mapping/case_mapping.mbt",
-    "ucd/xid/xid.mbt", "ucd/alphabetic/alphabetic.mbt", "ucd/lowercase/lowercase.mbt",
-    "ucd/uppercase/uppercase.mbt", "ucd/white_space/white_space.mbt", "ucd/east_asian_width/east_asian_width.mbt",
+    "ucd/general_category/general_category.mbt", "ucd/punctuation/punctuation.mbt",
+    "ucd/case_mapping/case_mapping.mbt", "ucd/xid/xid.mbt", "ucd/alphabetic/alphabetic.mbt",
+    "ucd/lowercase/lowercase.mbt", "ucd/uppercase/uppercase.mbt", "ucd/white_space/white_space.mbt",
+    "ucd/east_asian_width/east_asian_width.mbt",
   ]
   for file in generated_files {
     format_file(root, file)

@@ -30,6 +30,8 @@ pub fn is_lowercase(Char) -> Bool
 
 pub fn is_prepended_concatenation_mark(Char) -> Bool
 
+pub fn is_punctuation(Char) -> Bool
+
 pub fn is_regional_indicator(Char) -> Bool
 
 pub fn is_uppercase(Char) -> Bool

@@ -645,3 +645,35 @@ test "Line_Break values must match the data" {
       fail("expected a Line_Break value missing from the data to be rejected")
   }
 }
+
+///|
+test "compress punctuation ranges and emit punctuation table" {
+  let data = parse_unicode_data(
+    (
+      #|0021;EXCLAMATION MARK;Po;0;ON;;;;;N;;;;;
+      #|002C;COMMA;Po;0;CS;;;;;N;;;;;
+      #|002D;HYPHEN-MINUS;Pd;0;ES;;;;;N;;;;;
+      #|0028;LEFT PARENTHESIS;Ps;0;ON;;;;;N;;;;;
+      #|0029;RIGHT PARENTHESIS;Pe;0;ON;;;;;N;;;;;
+      #|0030;DIGIT ZERO;Nd;0;EN;;0;0;0;N;;;;;
+      #|0041;LATIN CAPITAL LETTER A;Lu;0;L;;;;;N;;;;0061;
+    ),
+  )
+  let ranges = compress_punctuation_ranges(
+    compress_general_category_ranges(data),
+  )
+  inspect(ranges.length(), content="5")
+  inspect(ranges[0].start, content="33")
+  inspect(ranges[0].end, content="33")
+  inspect(ranges[1].start, content="40")
+  inspect(ranges[1].end, content="40")
+  inspect(ranges[2].start, content="41")
+  inspect(ranges[2].end, content="41")
+  inspect(ranges[3].start, content="44")
+  inspect(ranges[3].end, content="44")
+  inspect(ranges[4].start, content="45")
+  inspect(ranges[4].end, content="45")
+  let source = emit_punctuation(ranges)
+  assert_true(source.contains("pub fn is_punctuation(c : Char) -> Bool"))
+  assert_true(source.contains("punctuation_trie_top"))
+}
