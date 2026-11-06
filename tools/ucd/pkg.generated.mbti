@@ -16,6 +16,8 @@ pub fn compress_general_category_ranges(UnicodeData) -> Array[GeneralCategoryRan
 
 pub fn compress_mark_ranges(UnicodeData) -> Array[@parsing.CodePointRange]
 
+pub fn compress_punctuation_ranges(Array[GeneralCategoryRange]) -> Array[@parsing.CodePointRange]
+
 pub fn emit_alphabetic(DerivedCoreProperties) -> String raise
 
 pub fn emit_case_folding(String) -> String raise
@@ -61,6 +63,8 @@ pub fn emit_normalization(UnicodeData, Array[CompositionEntry], String) -> Strin
 pub fn emit_normalization_scan(UnicodeData, String) -> String raise
 
 pub fn emit_prepended_concatenation_mark(PropList) -> String raise
+
+pub fn emit_punctuation(Array[@parsing.CodePointRange]) -> String raise
 
 pub fn emit_regional_indicator(PropList) -> String raise
 
