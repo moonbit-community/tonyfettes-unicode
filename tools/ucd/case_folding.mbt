@@ -55,36 +55,74 @@ fn parse_fold_mappings(
 }
 
 ///|
+/// Emit folding data as sorted range starts (plus range ends when some range
+/// covers more than one code point) and all targets packed into one string,
+/// sliced by 16-bit offsets. One string instead of a string per mapping keeps
+/// the table free of pointers and per-literal headers.
 fn emit_fold_mappings(
   entries : Array[FoldMapping],
   prefix : String,
   source : String,
-) -> String {
+) -> String raise {
+  let has_ranges = entries.any(e => e.start != e.end)
+  let text : Array[Int32] = []
+  let offsets = [0]
+  let mut units = 0
+  for entry in entries {
+    for target in entry.targets {
+      text.push(target)
+      units += if target > 0xFFFF { 2 } else { 1 }
+    }
+    offsets.push(units)
+  }
   let out = @emitter.Emitter::new()
   out.write_file_header("\{prefix} mapping data", source)
   out.write_int_array(
-    "Sorted inclusive range starts",
+    if has_ranges {
+      "Sorted inclusive range starts"
+    } else {
+      "Sorted code points"
+    },
     "\{prefix}_starts",
     entries.map(e => e.start),
     hex=true,
   )
-  out.write_int_array(
-    "Inclusive range ends",
-    "\{prefix}_ends",
-    entries.map(e => e.end),
-    hex=true,
+  if has_ranges {
+    out.write_int_array(
+      "Inclusive range ends",
+      "\{prefix}_ends",
+      entries.map(e => e.end),
+      hex=true,
+    )
+  }
+  out.write_uint16_array(
+    "UTF-16 offsets into `\{prefix}_text`: entry `i` maps to `[offsets[i], offsets[i + 1])`",
+    "\{prefix}_offsets",
+    offsets,
   )
-  out.write("///|\nlet \{prefix}_mappings : ReadOnlyArray[String] = [\n")
-  for entry in entries {
-    out.write("  \{string_literal(entry.targets)},\n")
+  out.write("///|\n/// Targets of all entries, concatenated\n")
+  out.write("let \{prefix}_text : String = \{string_literal(text)}\n\n")
+  let (found_test, found_doc) = if has_ranges {
+    (
+      (
+        $|    } else if cp > \{prefix}_ends[mid] {
+      ),
+      "the range holding `c`",
+    )
+  } else {
+    (
+      (
+        $|    } else if cp > \{prefix}_starts[mid] {
+      ),
+      "`c`",
+    )
   }
   out.write(
     (
-      $|]
-      $|
       $|///|
-      $|/// None means identity; Some("") means removal.
-      $|fn lookup_\{prefix}(c : Char) -> String? {
+      $|/// The mapping of \{found_doc}, as a view of
+      $|/// `\{prefix}_text`. None means identity; an empty view means removal.
+      $|fn lookup_\{prefix}(c : Char) -> StringView? {
       $|  let cp = c.to_int()
       $|  let mut low = 0
       $|  let mut high = \{prefix}_starts.length()
@@ -92,10 +130,15 @@ fn emit_fold_mappings(
       $|    let mid = (low + high) / 2
       $|    if cp < \{prefix}_starts[mid] {
       $|      high = mid
-      $|    } else if cp > \{prefix}_ends[mid] {
+      $|\{found_test}
       $|      low = mid + 1
       $|    } else {
-      $|      return Some(\{prefix}_mappings[mid])
+      $|      return Some(
+      $|        \{prefix}_text.unsafe_view(
+      $|          start=\{prefix}_offsets[mid].to_int(),
+      $|          end=\{prefix}_offsets[mid + 1].to_int(),
+      $|        ),
+      $|      )
       $|    }
       $|  }
       $|  None

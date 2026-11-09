@@ -108,6 +108,27 @@ pub fn Emitter::write_int_array(
 }
 
 ///|
+/// Emit a `ReadOnlyArray[UInt16]`, half the size of `write_int_array` for
+/// values that fit in 16 bits.
+pub fn Emitter::write_uint16_array(
+  self : Emitter,
+  doc : String,
+  name : String,
+  values : Array[Int32],
+) -> Unit raise {
+  guard values.all(value => value >= 0 && value <= 0xFFFF) else {
+    fail("\{name} has a value outside UInt16")
+  }
+  self.write("///|\n")
+  self.write("/// \{doc}\n")
+  self.write("let \{name} : ReadOnlyArray[UInt16] = [\n")
+  for value in values {
+    self.write("  \{value},\n")
+  }
+  self.write("]\n\n")
+}
+
+///|
 pub fn Emitter::write_byte_array(
   self : Emitter,
   doc : String,
