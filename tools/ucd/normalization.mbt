@@ -25,16 +25,11 @@ fn normalization_values(
   // Properties can have separate No and Maybe sections, so track duplicates
   // per code point rather than requiring globally sorted ranges.
   let assigned = Array::make(@emitter.MaxCodePoint + 1, 0)
-  for raw_line in derived_properties.split("\n") {
-    let line = @parsing.strip_comment(raw_line)
-    if line.is_empty() {
-      continue
-    }
-    let fields = line.split(";").to_array()
+  for fields in @parsing.data_lines(derived_properties) {
     if fields.length() < 2 {
       continue
     }
-    let (index, shift, mask) = match fields[1].trim() {
+    let (index, shift, mask) = match fields[1] {
       "NFC_QC" => (0, 8, 3)
       "NFKC_QC" => (1, 10, 3)
       "NFD_QC" => (2, 12, 1)
@@ -44,7 +39,7 @@ fn normalization_values(
     guard fields.length() == 3 else {
       fail("Quick_Check record must contain a range, property, and value")
     }
-    let value = match fields[2].trim() {
+    let value = match fields[2] {
       "Y" => 0
       "N" => 1
       "M" if mask == 3 => 2
@@ -84,7 +79,7 @@ pub fn emit_normalization(
   let compositions = build_composition_table(data, exclusions)
   let values = normalization_values(data.ccc, derived_properties)
   let decomp_indices = Array::make(@emitter.MaxCodePoint + 1, 0)
-  for index, entry in decomposition_entries(data) {
+  for index, entry in data.decompositions {
     guard index < 65535 else { fail("Too many decomposition rows for norm16") }
     decomp_indices[entry.code_point] = index + 1
   }

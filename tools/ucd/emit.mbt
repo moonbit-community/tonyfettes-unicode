@@ -22,35 +22,16 @@ pub fn emit_ccc() -> String {
 
 ///|
 pub fn emit_decomposition(data : UnicodeData) -> String raise {
-  let entries = decomposition_entries(data)
   let starts : Array[Int32] = []
   let canonical_lens : Array[Int32] = []
   let compat_lens : Array[Int32] = []
   let flattened : Array[Int32] = []
-  for entry in entries {
+  for entry in data.decompositions {
+    let length = entry.code_points.length()
     starts.push(flattened.length())
-    match
-      data.canonical_decompositions.search_by(item => {
-        item.code_point == entry.code_point
-      }) {
-      Some(index) => {
-        let canonical = data.canonical_decompositions[index].code_points
-        canonical_lens.push(canonical.length())
-        flattened.append(canonical)
-      }
-      None => canonical_lens.push(0)
-    }
-    match
-      data.compatibility_decompositions.search_by(item => {
-        item.code_point == entry.code_point
-      }) {
-      Some(index) => {
-        let compat = data.compatibility_decompositions[index].code_points
-        compat_lens.push(compat.length())
-        flattened.append(compat)
-      }
-      None => compat_lens.push(0)
-    }
+    canonical_lens.push(if entry.compatibility { 0 } else { length })
+    compat_lens.push(if entry.compatibility { length } else { 0 })
+    flattened.append(entry.code_points)
   }
   guard canonical_lens.all(len => len <= 255) &&
     compat_lens.all(len => len <= 255) else {
@@ -130,10 +111,10 @@ pub fn emit_decomposition(data : UnicodeData) -> String raise {
     ),
   )
   // Lets the lookup skip everything below the first character with a mapping.
-  let first_decomposable = entries.fold(init=@emitter.MaxCodePoint + 1, (
-    first,
-    entry,
-  ) => Int32::min(first, entry.code_point))
+  let first_decomposable = data.decompositions.fold(
+    init=@emitter.MaxCodePoint + 1,
+    (first, entry) => Int32::min(first, entry.code_point),
+  )
   out.write(
     (
       $|///|

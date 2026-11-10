@@ -1,7 +1,10 @@
 ///|
-priv struct DecompositionEntry {
+/// The decomposition mapping of one code point. UnicodeData.txt gives a
+/// code point either a canonical or a compatibility mapping, never both.
+priv struct Decomposition {
   code_point : Int32
   code_points : Array[Int32]
+  compatibility : Bool
 }
 
 ///|
@@ -23,8 +26,9 @@ struct UnicodeData {
   general_categories : FixedArray[Int32]
   /// Canonical_Combining_Class of every code point.
   ccc : FixedArray[Int32]
-  canonical_decompositions : Array[DecompositionEntry]
-  compatibility_decompositions : Array[DecompositionEntry]
+  /// Decomposition mappings, sorted by code point. Their order is the row
+  /// order of the decomposition arrays and the norm16 records.
+  decompositions : Array[Decomposition]
   simple_uppercase : Array[SimpleMappingEntry]
   simple_lowercase : Array[SimpleMappingEntry]
   simple_titlecase : Array[SimpleMappingEntry]

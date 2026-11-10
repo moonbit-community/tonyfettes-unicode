@@ -30,23 +30,12 @@ priv struct MappingEntry {
 ///|
 fn parse_mapping_table(content : String) -> Array[MappingEntry] raise {
   let entries : Array[MappingEntry] = []
-  for raw_line in content.split("\n") {
-    let line = @parsing.strip_comment(raw_line)
-    if line.is_empty() {
-      continue
-    }
-    let fields = line.split(";").collect()
-    if fields.length() < 2 {
-      continue
-    }
-    let range = @parsing.parse_code_point_range(fields[0])
-    let status = fields[1]
-      .trim()
-      .to_owned()
-      .to_lower()
-      .replace_all(old=" ", new="_")
-    let mapping = if fields.length() > 2 {
-      @parsing.parse_code_point_sequence(fields[2])
+  for fields in @parsing.data_lines(content) {
+    guard fields is [range, status, .. rest] else { continue }
+    let range = @parsing.parse_code_point_range(range)
+    let status = status.to_owned().to_lower().replace_all(old=" ", new="_")
+    let mapping = if rest is [mapping, ..] {
+      @parsing.parse_code_point_sequence(mapping)
     } else {
       []
     }

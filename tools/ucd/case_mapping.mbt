@@ -57,18 +57,6 @@ fn CaseTable::new(
 }
 
 ///|
-/// A MoonBit string literal of the given code points.
-fn string_literal(code_points : Array[Int32]) -> String {
-  let literal = StringBuilder()
-  literal.write_char('"')
-  for code_point in code_points {
-    literal.write_string("\\u{\{@emitter.hex_upper(code_point, min_width=4)}}")
-  }
-  literal.write_char('"')
-  literal.to_string()
-}
-
-///|
 /// Emit case mapping data as a three-level trie from code points to shared
 /// records, plus the few full mappings that are not a single character.
 ///
@@ -168,25 +156,17 @@ pub fn emit_case_mapping(
       code_points,
       hex=true,
     )
-    out.write("///|\n")
-    out.write("/// Full \{table.name}case mapping of each such code point\n")
-    out.write("let special_\{table.name}_strings : ReadOnlyArray[String] = [\n")
-    for code_point in code_points {
-      if table.special.get(code_point) is Some(targets) {
-        out.write("  \{string_literal(targets)},\n")
-      }
-    }
-    out.write("]\n\n")
+    out.write_string_array(
+      "Full \{table.name}case mapping of each such code point",
+      "special_\{table.name}_strings",
+      code_points.map(code_point => table.special[code_point]),
+    )
   }
-  out.write("///|\n")
-  out.write(
-    "/// One-character strings of the ASCII characters, so that mapping to one allocates nothing\n",
+  out.write_string_array(
+    "One-character strings of the ASCII characters, so that mapping to one allocates nothing",
+    "ascii_strings",
+    Array::makei(0x80, code_point => [code_point]),
   )
-  out.write("let ascii_strings : ReadOnlyArray[String] = [\n")
-  for code_point in 0..<0x80 {
-    out.write("  \{string_literal([code_point])},\n")
-  }
-  out.write("]\n\n")
   out.write(
     (
       $|///|

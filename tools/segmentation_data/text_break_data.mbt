@@ -25,7 +25,7 @@ fn emit_text_break(
     source,
     property~,
     default="Other",
-    name => name_code(names, name),
+    name => names.search_by(n => name == n),
   )
   let out = @emitter.Emitter::new()
   out.write_file_header(

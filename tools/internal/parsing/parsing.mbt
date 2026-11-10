@@ -21,6 +21,23 @@ pub fn strip_comment(line : StringView) -> StringView {
 }
 
 ///|
+/// The fields of every data line of a UCD file: the text before any `#`
+/// comment, split at `;`, with every field trimmed. Blank and comment-only
+/// lines are skipped.
+pub fn data_lines(content : StringView) -> Iter[Array[StringView]] {
+  content
+  .split("\n")
+  .filter_map(line => {
+    let line = strip_comment(line)
+    if line.is_empty() {
+      None
+    } else {
+      Some(line.split(";").map(field => field.trim()).collect())
+    }
+  })
+}
+
+///|
 pub fn parse_hex_int(text : StringView) -> Int32 raise {
   @string.parse_int(text.trim(), base=16)
 }
@@ -54,25 +71,22 @@ pub fn parse_enumerated_property(
   default~ : String,
 ) -> FixedArray[String] raise {
   let values = FixedArray::make(@emitter.MaxCodePoint + 1, default)
-  let fill = (fields : StringView) => {
-    guard fields.split_once(";") is Some((range_text, value_text)) else {
-      return
-    }
+  let fill = (range_text : StringView, value : StringView) => {
     let range = parse_code_point_range(range_text)
-    let value = value_text.trim().to_owned()
+    let value = value.trim().to_owned()
     for code_point in range.start..<=range.end {
       values[code_point] = value
     }
   }
   for raw_line in content.split("\n") {
-    if raw_line.trim().strip_prefix("# @missing:") is Some(declaration) {
-      fill(declaration)
+    if raw_line.trim().strip_prefix("# @missing:") is Some(declaration) &&
+      declaration.split_once(";") is Some((range, value)) {
+      fill(range, value)
     }
   }
-  for raw_line in content.split("\n") {
-    let line = strip_comment(raw_line)
-    if !line.is_empty() {
-      fill(line)
+  for fields in data_lines(content) {
+    if fields is [range, value, ..] {
+      fill(range, value)
     }
   }
   values

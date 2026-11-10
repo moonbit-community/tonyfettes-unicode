@@ -95,7 +95,6 @@ fn push_simple_mapping(
   code_point : Int32,
   field : StringView,
 ) -> Unit raise {
-  let field = field.trim()
   if field.is_empty() {
     return
   }
@@ -112,25 +111,19 @@ pub fn parse_unicode_data(content : String) -> UnicodeData raise {
     GcUnassigned,
   )
   let ccc = FixedArray::make(@emitter.MaxCodePoint + 1, 0)
-  let canonical_decompositions : Array[DecompositionEntry] = []
-  let compatibility_decompositions : Array[DecompositionEntry] = []
+  let decompositions : Array[Decomposition] = []
   let simple_uppercase : Array[SimpleMappingEntry] = []
   let simple_lowercase : Array[SimpleMappingEntry] = []
   let simple_titlecase : Array[SimpleMappingEntry] = []
   // Start and category of an open `<..., First>` range.
   let mut range_start : (Int32, StringView)? = None
-  for raw_line in content.split("\n") {
-    let line = raw_line.trim()
-    if line.is_empty() || line.has_prefix("#") {
-      continue
-    }
-    let fields = line.split(";").to_array()
+  for fields in @parsing.data_lines(content) {
     if fields.length() < 15 {
       continue
     }
     let cp = @parsing.parse_hex_int(fields[0])
-    let name = fields[1].trim()
-    let category = fields[2].trim()
+    let name = fields[1]
+    let category = fields[2]
     if name.has_suffix(", First>") {
       if range_start is Some(_) {
         fail("Nested UnicodeData First range")
@@ -150,27 +143,21 @@ pub fn parse_unicode_data(content : String) -> UnicodeData raise {
       continue
     }
     general_categories[cp] = gc_ordinal(category)
-    let ccc_text = fields[3].trim()
-    if !ccc_text.is_empty() {
-      let value = @parsing.parse_decimal_int(ccc_text)
+    if !fields[3].is_empty() {
+      let value = @parsing.parse_decimal_int(fields[3])
       guard value >= 0 && value <= 255 else {
         fail("Invalid Canonical_Combining_Class")
       }
       ccc[cp] = value
     }
-    let decomp = fields[5].trim()
-    if decomp.has_prefix("<") {
-      if decomp.split_once(">") is Some((_, rest)) {
-        let code_points = @parsing.parse_code_point_sequence(rest)
-        if !code_points.is_empty() {
-          compatibility_decompositions.push({ code_point: cp, code_points, })
-        }
-      }
-    } else {
-      let code_points = @parsing.parse_code_point_sequence(decomp)
-      if !code_points.is_empty() {
-        canonical_decompositions.push({ code_point: cp, code_points, })
-      }
+    // A compatibility mapping starts with a `<tag>`.
+    let (mapping, compatibility) = match fields[5].split_once(">") {
+      Some((_, rest)) => (rest, true)
+      None => (fields[5], false)
+    }
+    let code_points = @parsing.parse_code_point_sequence(mapping)
+    if !code_points.is_empty() {
+      decompositions.push({ code_point: cp, code_points, compatibility, })
     }
     push_simple_mapping(simple_uppercase, cp, fields[12])
     push_simple_mapping(simple_lowercase, cp, fields[13])
@@ -179,11 +166,11 @@ pub fn parse_unicode_data(content : String) -> UnicodeData raise {
   if range_start is Some(_) {
     fail("Unterminated UnicodeData First range")
   }
+  decompositions.sort_by((left, right) => left.code_point - right.code_point)
   {
     general_categories,
     ccc,
-    canonical_decompositions,
-    compatibility_decompositions,
+    decompositions,
     simple_uppercase,
     simple_lowercase,
     simple_titlecase,
@@ -193,12 +180,8 @@ pub fn parse_unicode_data(content : String) -> UnicodeData raise {
 ///|
 pub fn parse_composition_exclusions(content : String) -> Array[Int32] raise {
   let exclusions : Array[Int32] = []
-  for raw_line in content.split("\n") {
-    let line = @parsing.strip_comment(raw_line)
-    if line.length() == 0 {
-      continue
-    }
-    let range = @parsing.parse_code_point_range(line)
+  for fields in @parsing.data_lines(content) {
+    let range = @parsing.parse_code_point_range(fields[0])
     for cp in range.start..<=range.end {
       exclusions.push(cp)
     }
@@ -211,22 +194,16 @@ pub fn parse_special_casing(content : String) -> SpecialCasingData raise {
   let lower_mapping : Array[FullMappingEntry] = []
   let title_mapping : Array[FullMappingEntry] = []
   let upper_mapping : Array[FullMappingEntry] = []
-  for raw_line in content.split("\n") {
-    let line = @parsing.strip_comment(raw_line)
-    if line.length() == 0 {
+  for fields in @parsing.data_lines(content) {
+    // A fifth field holds the conditions of a conditional mapping.
+    guard fields is [cp, lower, title, upper, .. rest] &&
+      !(rest is [condition, ..] && !condition.is_empty()) else {
       continue
     }
-    let fields = line.split(";").to_array()
-    if fields.length() < 4 {
-      continue
-    }
-    if fields.length() > 4 && fields[4].trim().length() > 0 {
-      continue
-    }
-    let cp = @parsing.parse_hex_int(fields[0])
-    let lower = @parsing.parse_code_point_sequence(fields[1])
-    let title = @parsing.parse_code_point_sequence(fields[2])
-    let upper = @parsing.parse_code_point_sequence(fields[3])
+    let cp = @parsing.parse_hex_int(cp)
+    let lower = @parsing.parse_code_point_sequence(lower)
+    let title = @parsing.parse_code_point_sequence(title)
+    let upper = @parsing.parse_code_point_sequence(upper)
     if !is_identity_or_empty(cp, lower) {
       lower_mapping.push({ code_point: cp, targets: lower, })
     }
@@ -248,11 +225,9 @@ fn parse_property_ranges(
   property : String,
 ) -> Array[@parsing.CodePointRange] raise {
   let ranges : Array[@parsing.CodePointRange] = []
-  for raw_line in content.split("\n") {
-    let line = @parsing.strip_comment(raw_line)
-    if line.split_once(";") is Some((range_text, property_text)) &&
-      property_text.trim() == property.to_string_view() {
-      ranges.push(@parsing.parse_code_point_range(range_text))
+  for fields in @parsing.data_lines(content) {
+    if fields is [range, value, ..] && value == property {
+      ranges.push(@parsing.parse_code_point_range(range))
     }
   }
   validate_property_ranges(property, ranges)
@@ -271,13 +246,14 @@ fn parse_emoji_variation_sequences(
 ) -> Array[@parsing.CodePointRange] raise {
   let text_style : Array[Int32] = []
   let emoji_style : Array[Int32] = []
-  for raw_line in content.split("\n") {
-    let line = @parsing.strip_comment(raw_line)
-    guard line.split(";").collect() is [sequence, style, ..] else { continue }
-    match (@parsing.parse_code_point_sequence(sequence), style.trim()) {
+  for fields in @parsing.data_lines(content) {
+    guard fields is [sequence, style, ..] else {
+      fail("Unexpected emoji variation sequence: \{fields[0]}")
+    }
+    match (@parsing.parse_code_point_sequence(sequence), style) {
       ([base, 0xFE0E], "text style") => text_style.push(base)
       ([base, 0xFE0F], "emoji style") => emoji_style.push(base)
-      _ => fail("Unexpected emoji variation sequence: \{line}")
+      _ => fail("Unexpected emoji variation sequence: \{sequence}")
     }
   }
   text_style.sort()

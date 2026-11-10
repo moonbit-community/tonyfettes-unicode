@@ -12,15 +12,10 @@ fn parse_fold_mappings(
 ) -> Array[FoldMapping] raise {
   let entries : Array[FoldMapping] = []
   let mut previous_end = -1
-  for raw_line in content.split("\n") {
-    let line = @parsing.strip_comment(raw_line).trim()
-    if line.is_empty() {
-      continue
+  for record in @parsing.data_lines(content) {
+    guard record is [range, status, .. fields] else {
+      fail("Invalid folding record: \{record[0]}")
     }
-    guard line.split(";").collect() is [range, status, .. fields] else {
-      fail("Invalid folding record: \{line}")
-    }
-    let status = status.trim()
     if nfkc {
       if status != "NFKC_CF" {
         continue
@@ -30,7 +25,7 @@ fn parse_fold_mappings(
       continue
     }
     guard fields is [mapping, ..] else {
-      fail("Missing folding target: \{line}")
+      fail("Missing folding target: \{range}")
     }
     let range = @parsing.parse_code_point_range(range)
     guard range.start > previous_end &&
@@ -101,7 +96,9 @@ fn emit_fold_mappings(
     offsets,
   )
   out.write("///|\n/// Targets of all entries, concatenated\n")
-  out.write("let \{prefix}_text : String = \{string_literal(text)}\n\n")
+  out.write(
+    "let \{prefix}_text : String = \{@emitter.string_literal(text)}\n\n",
+  )
   let (found_test, found_doc) = if has_ranges {
     (
       (
