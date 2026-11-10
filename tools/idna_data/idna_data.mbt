@@ -94,7 +94,7 @@ pub fn emit_mapping(content : String) -> String raise {
     converter="idna_status_from_ordinal",
     values=idna_statuses
       .iter()
-      .map(entry => @emitter.EnumValue::{ name: entry.0, comment: entry.2 })
+      .map(entry => @emitter.EnumValue::{ name: entry.0, comment: entry.2, })
       .collect(),
     fallback="Disallowed",
   )

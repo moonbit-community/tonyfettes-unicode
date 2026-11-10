@@ -108,7 +108,7 @@ pub fn emit_line_break_enum() -> String raise {
     converter="ordinal_to_line_break",
     values=line_break_values
       .iter()
-      .map(entry => @emitter.EnumValue::{ name: entry.0, comment: entry.1 })
+      .map(entry => @emitter.EnumValue::{ name: entry.0, comment: entry.1, })
       .collect(),
     fallback="XX",
   )
