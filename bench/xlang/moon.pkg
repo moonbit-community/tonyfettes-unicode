@@ -3,13 +3,17 @@ supported_targets = "native"
 import {
   "moonbit-community/unicode-normalization" @normalization,
   "moonbitlang/core/argparse",
+  "moonbitlang/core/async",
+  "moonbitlang/core/async/fs",
+  "moonbitlang/core/async/shell",
   "moonbitlang/core/encoding/utf8",
   "moonbitlang/core/env",
   "moonbitlang/core/math",
   "moonbitlang/core/string",
-  "moonbitlang/async",
-  "moonbitlang/async/fs",
-  "moonbitlang/async/process",
 }
 
 pkgtype(kind: "executable")
+
+options(
+  "allow-experimental-packages": true,
+)

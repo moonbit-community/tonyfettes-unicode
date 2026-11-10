@@ -1,12 +1,7 @@
 ///|
 /// Write `text` as UTF-8, without a BOM and without touching line endings.
 async fn write_text(path : String, text : String) -> Unit {
-  @fs.write_file(
-    path,
-    @utf8.encode(text),
-    create_mode=CreateOrTruncate,
-    permission=0o644,
-  )
+  @fs.write_text(path, text, permission=0o644)
 }
 
 ///|
@@ -29,10 +24,7 @@ async fn prepare_inputs(root : String, directory : String) -> Unit {
   let data = "\{root}/bench/normperf/data"
   for file in @fs.readdir(data, sort=true) {
     guard file.strip_suffix(".txt") is Some(name) else { continue }
-    let text = @utf8.decode(
-      @fs.read_file("\{data}/\{file}").binary(),
-      ignore_bom=true,
-    )
+    let text = @utf8.decode(@fs.read_binary("\{data}/\{file}"), ignore_bom=true)
     corpora[name.to_owned()] = text
     write_text("\{directory}/norm/\{file}", text)
     write_text(

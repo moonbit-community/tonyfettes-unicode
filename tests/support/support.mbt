@@ -2,8 +2,8 @@
 /// Shared helpers for the workspace conformance test packages.
 ///
 /// The official Unicode test data files live in the `data` directory of this
-/// module. Tests read them at run time with `moonbitlang/async/fs`, so no test
-/// code is generated from these files.
+/// module. Tests read them at run time with `moonbitlang/core/async/fs`, so no
+/// test code is generated from these files.
 
 ///|
 /// Read a test data file by name, locating the module's `data` directory
@@ -12,7 +12,7 @@ pub async fn read_data_file(name : String) -> String {
   for prefix in ["tests/data/", "data/", "../data/", "../../data/"] {
     let path = "\{prefix}\{name}"
     if @fs.exists(path) {
-      return @fs.read_file(path).text()
+      return @fs.read_text(path)
     }
   }
   fail(

@@ -389,8 +389,8 @@ Downloaded Unicode source files are cached per version in `tools/.cache/<version
 
 Conformance tests live in the workspace-only `moonbit-community/unicode-tests`
 module (`tests/`). They read the official Unicode test data files committed
-under `tests/data/` directly at test time with `moonbitlang/async`, keeping the
-test dependency separate from the published modules. Verify a module's contents
+under `tests/data/` directly at test time with `moonbitlang/core/async`, so no
+test code is generated from those files. Verify a module's contents
 from its directory, for example:
 
 ```bash

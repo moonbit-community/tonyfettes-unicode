@@ -13,5 +13,4 @@ import {
   "moonbit-community/unicode-idna@0.7.1",
   "moonbit-community/punycode@0.7.1",
   "moonbitlang/x@0.4.45",
-  "moonbitlang/async@0.22.4",
 }

@@ -14,6 +14,5 @@ import {
   "moonbit-community/unicode-bidi@0.7.1",
   "moonbit-community/unicode-segmentation@0.7.1",
   "moonbit-community/unicode-idna@0.7.1",
-  "moonbitlang/async@0.22.4",
   "moonbit-community/unicode-casefold@0.7.1",
 }

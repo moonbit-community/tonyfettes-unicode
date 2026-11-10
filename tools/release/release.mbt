@@ -87,9 +87,12 @@ fn publish_dry_run_succeeded(
     // process APIs expose that as 255 on Unix and -1 on Windows.
     let known_false_failure = status == 255 || status == -1
     let accepted = "Server status: 202 Accepted, detail: Dry run completed successfully. No changes were made. The dry-run was made for package \{package_name} version \{version}."
+    // The captured stdout and stderr are concatenated rather than
+    // interleaved, so match the reported failure anywhere instead of relying
+    // on it being the last line the process printed.
     known_false_failure &&
     output.contains(accepted) &&
-    output.trim_end().has_suffix("Error: `moon publish` failed")
+    output.contains("Error: `moon publish` failed")
   }
 }
 

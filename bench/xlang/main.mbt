@@ -1,18 +1,28 @@
 ///|
 /// Run `step` with extra arguments, returning its exit status and its output
-/// (stdout only, or stdout and stderr merged for builds).
+/// (stdout only, or stdout and stderr merged for builds). `@shell` cannot
+/// merge the two streams at the descriptor level, so a build's captured
+/// streams are concatenated for the failure diagnostics below, and the
+/// capture limit is raised above its 8 MiB default because build logs are
+/// chatty.
 async fn run_step(
   step : Step,
   extra~ : Array[String] = [],
   merge_stderr~ : Bool = false,
 ) -> (Int32, String) {
   let arguments = [..step.arguments, ..extra]
-  let (status, output) = if merge_stderr {
-    @process.collect_output_merged(step.program, arguments, cwd=step.cwd)
+  let output = @shell.Cmd(
+    step.program,
+    arguments,
+    cwd=step.cwd,
+    stderr=if merge_stderr { Capture } else { Inherit },
+  ).output(max_output_bytes=64 * 1024 * 1024)
+  let text = if merge_stderr {
+    "\{output.stdout()}\{output.stderr()}"
   } else {
-    @process.collect_stdout(step.program, arguments, cwd=step.cwd)
+    output.stdout()
   }
-  (status, output.text())
+  (output.exit_code(), text)
 }
 
 ///|
