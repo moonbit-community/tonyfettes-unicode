@@ -1,3 +1,7 @@
 import {
   "moonbit-community/unicode-data/internal/normalization" @normalization_data,
 }
+
+// This package's own APIs call the lookups marked for unicode-normalization.
+
+warnings = "-alert_internal"

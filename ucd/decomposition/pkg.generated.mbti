@@ -8,10 +8,6 @@ pub fn get_canonical_decomposition(Char) -> Array[Char]?
 
 pub fn get_compat_decomposition(Char) -> Array[Char]?
 
-pub fn lookup_normalization_record(Char) -> Int32
-
-pub fn packed_decomposition(Int32, compatibility~ : Bool) -> ArrayView[Int32]
-
 // Errors
 
 // Types and methods

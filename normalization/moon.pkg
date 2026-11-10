@@ -18,6 +18,7 @@ import {
 } for "wbtest"
 
 // Only the native and Wasm backends reach the `moonbitlang/core/v128` import,
-// so the other backends would report it as unused.
+// so the other backends would report it as unused. The decomposition lookups
+// that unicode-data marks as internal are meant for this module.
 
-warnings = "-unused_package"
+warnings = "-unused_package-alert_internal"

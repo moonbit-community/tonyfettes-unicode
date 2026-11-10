@@ -208,6 +208,10 @@ pub fn emit_decomposition(data : UnicodeData) -> String raise {
   out.write(
     (
       $|///|
+      $|/// Public only because unicode-normalization, a separate module, needs
+      $|/// it. `#alert` does not apply to a re-export, so unlike
+      $|/// `packed_decomposition` it does not warn.
+      $|#doc(hidden)
       $|pub using @normalization_data {lookup_normalization_record}
       $|
       $|///|
@@ -227,6 +231,11 @@ pub fn emit_decomposition(data : UnicodeData) -> String raise {
       $|///
       $|/// Hangul syllables decompose algorithmically and have no mapping
       $|/// here.
+      $|///
+      $|/// Public only because unicode-normalization, a separate module, needs
+      $|/// it. Other callers want `append_decomposition`.
+      $|#doc(hidden)
+      $|#alert(internal, "For unicode-normalization; the entry layout may change.")
       $|pub fn packed_decomposition(
       $|  record : Int,
       $|  compatibility~ : Bool,
