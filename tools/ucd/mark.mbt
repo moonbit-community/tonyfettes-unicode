@@ -1,54 +1,17 @@
 ///|
-/// Emit the ranges of General_Category group M (Mn, Mc, and Me), looked up
-/// by binary search.
-pub fn emit_marks(data : UnicodeData) -> String {
+/// Emit the bitset trie of General_Category group M (Mn, Mc, and Me).
+pub fn emit_marks(data : UnicodeData) -> String raise {
   // Mn, Mc, and Me are ordinals 5 to 7.
-  let mark_ranges = ranges_where(data.general_categories, gc => {
-    gc >= 5 && gc <= 7
-  })
+  let ranges = ranges_where(data.general_categories, gc => gc >= 5 && gc <= 7)
   let out = @emitter.Emitter::new()
-  out.write_file_header("Mark character lookup data", "UnicodeData.txt")
-  out.write_int_array(
-    "Mark character range start code points (General_Category = M)",
-    "mark_starts",
-    mark_ranges.map(range => range.start),
-    hex=true,
+  out.write_file_header(
+    "Mark (General_Category group M) lookup data", "UnicodeData.txt",
   )
-  out.write_int_array(
-    "Mark character range end code points (inclusive)",
-    "mark_ends",
-    mark_ranges.map(range => range.end),
-    hex=true,
-  )
-  out.write(
-    (
-      #|///|
-      #|/// Check if a character is a Mark character (General_Category = Mn, Mc, or Me)
-      #|/// This is used for the IDNA "no leading combining mark" validation (V5/V6)
-      #|pub fn is_mark(c : Char) -> Bool {
-      #|  let cp = c.to_int()
-      #|  // Binary search through mark ranges
-      #|  let mut left = 0
-      #|  let mut right = mark_starts.length() - 1
-      #|
-      #|  while left <= right {
-      #|    let mid = (left + right) / 2
-      #|    let start = mark_starts[mid]
-      #|    let end = mark_ends[mid]
-      #|
-      #|    if cp < start {
-      #|      right = mid - 1
-      #|    } else if cp > end {
-      #|      left = mid + 1
-      #|    } else {
-      #|      return true
-      #|    }
-      #|  }
-      #|
-      #|  false
-      #|}
-      #|
-    ),
+  write_binary_property_trie(
+    out,
+    property="Mark",
+    lookup_doc="Check whether a character is a mark (General_Category Mn, Mc, or Me)",
+    ranges,
   )
   out.finish()
 }

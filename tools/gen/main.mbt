@@ -96,18 +96,18 @@ async fn Generator::run_moon(
 }
 
 ///|
-/// Format the generated files and refresh the interfaces of the modules
+/// Format the generated files and refresh the interfaces of the packages
 /// holding them.
 async fn Generator::finish(self : Generator) -> Unit {
   self.run_moon(["fmt", ..self.written])
-  let modules : Array[String] = []
+  let packages : Array[String] = []
   for path in self.written {
-    if path.split_once("/") is Some((module_, _)) &&
-      !modules.contains(module_.to_owned()) {
-      modules.push(module_.to_owned())
+    if path.rev_split_once("/") is Some((package_, _)) &&
+      !packages.contains(package_.to_owned()) {
+      packages.push(package_.to_owned())
     }
   }
-  self.run_moon(["info", ..modules])
+  self.run_moon(["info", ..packages])
 }
 
 ///|

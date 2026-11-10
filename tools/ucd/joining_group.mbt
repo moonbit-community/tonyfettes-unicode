@@ -81,15 +81,14 @@ pub fn emit_joining_group_enum(content : String) -> String raise {
   out.write_file_header(
     "Joining_Group values and lookup", "DerivedJoiningGroup.txt",
   )
-  write_property_enum(
-    out,
+  out.write_enum(
     type_name="JoiningGroup",
     doc=[
       "Unicode Joining_Group values", "See the Unicode Standard, section 9.2, Arabic:",
       "https://www.unicode.org/versions/latest/core-spec/chapter-9/#G7480",
     ],
     converter="ordinal_to_joining_group",
-    values=sorted.map(name => {
+    values=sorted.map(name => @emitter.EnumValue::{
       name: joining_group_constructor(name),
       comment: name,
     }),

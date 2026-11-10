@@ -609,10 +609,13 @@ test "punctuation and mark tables come from General_Category" {
   assert_true(source.contains("pub fn is_punctuation(c : Char) -> Bool"))
   assert_true(source.contains("punctuation_trie_top"))
   let marks = emit_marks(data)
+  assert_true(marks.contains("pub fn is_mark(c : Char) -> Bool"))
+  // U+0300 and U+0301 are the two lowest bits of one leaf byte, and no mark
+  // lies above the trie.
   assert_true(
-    marks.contains("let mark_starts : ReadOnlyArray[Int] = [\n  0x0300,\n]"),
+    marks.contains(
+      "let mark_trie_leaf : Bytes = [\n" + "  0,\n".repeat(16) + "  3,\n",
+    ),
   )
-  assert_true(
-    marks.contains("let mark_ends : ReadOnlyArray[Int] = [\n  0x0301,\n]"),
-  )
+  assert_true(marks.contains("    return false\n"))
 }

@@ -3,12 +3,18 @@
 /// Generated from BidiBrackets.txt
 
 ///|
-#derive(Eq)
+/// Bidi_Paired_Bracket_Type values
+#derive(Debug, Eq)
 pub(all) enum BracketType {
-  Open
-  Close
-  None
+  Open // Opening paired bracket
+  Close // Closing paired bracket
+  None // Not a paired bracket
 }
+
+///|
+#deprecated("Use `Debug::to_repr` instead", skip_current_package=true)
+#doc(hidden)
+pub extend BracketType with Debug::{to_repr}
 
 ///|
 pub extend BracketType with Eq::{not_equal, equal}
@@ -18,10 +24,22 @@ pub extend BracketType with Show::{to_string, output}
 
 ///|
 pub impl Show for BracketType with fn output(self, logger) {
-  match self {
-    Open => logger.write_string("Open")
-    Close => logger.write_string("Close")
-    None => logger.write_string("None")
+  logger.write_string(
+    match self {
+      Open => "Open"
+      Close => "Close"
+      None => "None"
+    },
+  )
+}
+
+///|
+/// Convert BracketType ordinal to enum value
+fn bracket_type_from_ordinal(ordinal : Int32) -> BracketType {
+  match ordinal {
+    0 => Open
+    1 => Close
+    _ => None // 2 or any unknown
   }
 }
 
@@ -62,7 +80,7 @@ let paired_brackets : ReadOnlyArray[Int32] = [
 ]
 
 ///|
-/// Bracket types (0 = open, 1 = close)
+/// `BracketType` ordinal of each code point
 let bracket_types : ReadOnlyArray[Int32] = [
   0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0,
   1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1,
@@ -72,39 +90,18 @@ let bracket_types : ReadOnlyArray[Int32] = [
 ]
 
 ///|
-fn find_bracket_index(c : Char) -> Int32 {
-  let cp = c.to_int()
-  let mut left = 0
-  let mut right = bracket_code_points.length() - 1
-  while left <= right {
-    let mid = (left + right) / 2
-    let mid_cp = bracket_code_points[mid]
-    if cp < mid_cp {
-      right = mid - 1
-    } else if cp > mid_cp {
-      left = mid + 1
-    } else {
-      return mid
-    }
-  }
-  -1
-}
-
-///|
 pub fn bracket_type(c : Char) -> BracketType {
-  let idx = find_bracket_index(c)
+  let idx = find_bracket_index(c.to_int())
   if idx < 0 {
     None
-  } else if bracket_types[idx] == 0 {
-    Open
   } else {
-    Close
+    bracket_type_from_ordinal(bracket_types[idx])
   }
 }
 
 ///|
 pub fn paired_bracket(c : Char) -> Char? {
-  let idx = find_bracket_index(c)
+  let idx = find_bracket_index(c.to_int())
   if idx < 0 {
     Option::None
   } else {
@@ -129,4 +126,23 @@ pub fn is_bracket_pair(open : Char, close : Char) -> Bool {
   } else {
     false
   }
+}
+
+///|
+/// Index of `key` in the sorted array `bracket_code_points`, or -1 if it is absent.
+fn find_bracket_index(key : Int32) -> Int32 {
+  let mut left = 0
+  let mut right = bracket_code_points.length() - 1
+  while left <= right {
+    let mid = (left + right) / 2
+    let value = bracket_code_points[mid]
+    if key < value {
+      right = mid - 1
+    } else if key > value {
+      left = mid + 1
+    } else {
+      return mid
+    }
+  }
+  -1
 }

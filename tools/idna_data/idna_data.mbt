@@ -7,19 +7,6 @@ const IdnaStatusBits : Int32 = 3
 const IdnaDisallowed : Int32 = 4
 
 ///|
-/// The trie covers planes 0-3; the higher planes hold a few long ranges
-/// without mappings and are looked up as packed ranges instead.
-const IdnaTrieLimit : Int32 = 0x40000
-
-///|
-/// Each top-level trie entry covers `1 << IdnaTrieTopShift` code points.
-const IdnaTrieTopShift : Int32 = 8
-
-///|
-/// Each leaf block holds `1 << IdnaTrieLeafShift` packed values.
-const IdnaTrieLeafShift : Int32 = 4
-
-///|
 priv struct MappingEntry {
   start : Int32
   end : Int32
@@ -45,53 +32,44 @@ fn parse_mapping_table(content : String) -> Array[MappingEntry] raise {
 }
 
 ///|
-fn status_code(status : StringView) -> Int32 {
-  match status {
-    "valid" => 0
-    "ignored" => 1
-    "mapped" => 2
-    "deviation" => 3
-    "disallowed" => 4
-    "disallowed_std3_valid" => 5
-    "disallowed_std3_mapped" => 6
-    _ => 4
-  }
+/// IDNA status values in the order of the `IdnaStatus` enum: the
+/// constructor, the status IdnaMappingTable.txt writes (in lowercase, with
+/// underscores for spaces), and a description.
+let idna_statuses : ReadOnlyArray[(String, String, String)] = [
+  ("Valid", "valid", "Valid character"),
+  ("Ignored", "ignored", "Character is removed"),
+  ("Mapped", "mapped", "Character is replaced by its mapping"),
+  ("Deviation", "deviation", "Treated as valid in nontransitional mode"),
+  ("Disallowed", "disallowed", "Character is not allowed"),
+  (
+    "DisallowedSTD3Valid", "disallowed_std3_valid", "Valid only without UseSTD3ASCIIRules",
+  ),
+  (
+    "DisallowedSTD3Mapped", "disallowed_std3_mapped", "Mapped only without UseSTD3ASCIIRules",
+  ),
+]
+
+///|
+/// Status code of a status: its index in `idna_statuses`. Unknown statuses
+/// are disallowed.
+fn status_code(status : String) -> Int32 {
+  idna_statuses.search_by(entry => entry.1 == status).unwrap_or(IdnaDisallowed)
 }
 
 ///|
-/// Append a packed range unless it continues the status of the previous one.
-fn push_high_range(
-  ranges : Array[Int32],
-  start : Int32,
-  status : Int32,
-) -> Unit {
-  let status_mask = (1 << IdnaStatusBits) - 1
-  if ranges.last() is Some(previous) && (previous & status_mask) == status {
-    return
-  }
-  ranges.push((start << IdnaStatusBits) | status)
-}
-
-///|
-/// Emit the IDNA mapping table as a three-level trie for planes 0-3, with
-/// packed ranges for the remaining planes.
+/// Emit the IDNA mapping table as a value trie.
 ///
 /// Every code point has a packed value `mapping << 3 | status`, where
-/// `mapping` numbers the distinct mappings (0 is the empty mapping). The top
-/// level maps `cp >> 8` to a mid block, the mid level maps the next four bits
-/// to a leaf block, and the leaf level stores one 16-bit value per code
-/// point. Identical blocks are shared at both levels.
+/// `mapping` numbers the distinct mappings (0 is the empty mapping). The
+/// higher planes, which the trie does not cover, hold statuses without
+/// mappings.
 pub fn emit_mapping(content : String) -> String raise {
   // Mapping `i` is `mapping_data[mapping_offsets[i]:mapping_offsets[i + 1]]`.
   let mapping_ids : Map[Array[Int32], Int32] = Map([([], 0)])
   let mapping_offsets : Array[Int32] = [0, 0]
   let mapping_data : Array[Int32] = []
-  let values = Array::make(IdnaTrieLimit, IdnaDisallowed)
-  // `start << IdnaStatusBits | status`, sorted by start code point.
-  let high_ranges : Array[Int32] = []
-  let mut high_next = IdnaTrieLimit
+  let values = FixedArray::make(@emitter.MaxCodePoint + 1, IdnaDisallowed)
   for entry in parse_mapping_table(content) {
-    let status = status_code(entry.status)
     let mapping = match mapping_ids.get(entry.mapping) {
       Some(id) => id
       None => {
@@ -102,112 +80,32 @@ pub fn emit_mapping(content : String) -> String raise {
         id
       }
     }
-    let value = (mapping << IdnaStatusBits) | status
-    for code_point in entry.start..<=Int32::min(entry.end, IdnaTrieLimit - 1) {
+    let value = (mapping << IdnaStatusBits) | status_code(entry.status)
+    for code_point in entry.start..<=entry.end {
       values[code_point] = value
     }
-    if entry.end >= IdnaTrieLimit {
-      guard mapping == 0 else {
-        fail(
-          "IDNA mapping at or above \{@emitter.hex_literal(IdnaTrieLimit)} needs trie coverage",
-        )
-      }
-      let start = Int32::max(entry.start, IdnaTrieLimit)
-      guard start >= high_next else {
-        fail("IDNA ranges above the trie must be sorted and disjoint")
-      }
-      // Unlisted code points between two ranges are disallowed.
-      if start > high_next {
-        push_high_range(high_ranges, high_next, IdnaDisallowed)
-      }
-      push_high_range(high_ranges, start, status)
-      high_next = entry.end + 1
-    }
   }
-  if high_next <= @emitter.MaxCodePoint {
-    push_high_range(high_ranges, high_next, IdnaDisallowed)
-  }
-  guard values.iter().all(value => value < 0x10000) else {
-    fail("IDNA trie has too many distinct mappings for 16-bit values")
-  }
-  // Leaf level: blocks of packed values.
-  let leaf = @emitter.deduplicate_blocks(values, 1 << IdnaTrieLeafShift)
-  // Mid level: blocks of leaf block indices; `mid.ids` is the top level.
-  let mid = @emitter.deduplicate_blocks(
-    leaf.ids,
-    1 << (IdnaTrieTopShift - IdnaTrieLeafShift),
-  )
-  guard mid.ids.iter().all(id => id < 0x100) else {
-    fail("IDNA trie has too many mid blocks for one byte")
-  }
-  guard mid.blocks.iter().all(id => id < 0x10000) else {
-    fail("IDNA trie has too many leaf blocks for two bytes")
-  }
-  let trie_limit = @emitter.hex_literal(IdnaTrieLimit)
-  let mid_mask = (1 << (IdnaTrieTopShift - IdnaTrieLeafShift)) - 1
-  let leaf_mask = (1 << IdnaTrieLeafShift) - 1
   let status_mask = (1 << IdnaStatusBits) - 1
   let out = @emitter.Emitter::new()
-  out.write(
-    (
-      #|///|
-      #|/// IDNA Mapping Table (UTS #46)
-      #|/// Generated from IdnaMappingTable.txt
-      #|
-      #|///|
-      #|/// IDNA status values
-      #|#derive(Eq)
-      #|pub(all) enum IdnaStatus {
-      #|  Valid             // 0: Valid character
-      #|  Ignored           // 1: Character is removed
-      #|  Mapped            // 2: Character is replaced by its mapping
-      #|  Deviation         // 3: Treated as valid in nontransitional mode
-      #|  Disallowed        // 4: Character is not allowed
-      #|  DisallowedSTD3Valid  // 5: Valid only without UseSTD3ASCIIRules
-      #|  DisallowedSTD3Mapped // 6: Mapped only without UseSTD3ASCIIRules
-      #|}
-      #|
-      #|///|
-      #|pub extend IdnaStatus with Eq::{not_equal, equal}
-      #|
-      #|///|
-      #|pub extend IdnaStatus with Show::{to_string, output}
-      #|
-      #|///|
-      #|pub impl Show for IdnaStatus with fn output(self, logger) {
-      #|  match self {
-      #|    Valid => logger.write_string("Valid")
-      #|    Ignored => logger.write_string("Ignored")
-      #|    Mapped => logger.write_string("Mapped")
-      #|    Deviation => logger.write_string("Deviation")
-      #|    Disallowed => logger.write_string("Disallowed")
-      #|    DisallowedSTD3Valid => logger.write_string("DisallowedSTD3Valid")
-      #|    DisallowedSTD3Mapped => logger.write_string("DisallowedSTD3Mapped")
-      #|  }
-      #|}
-      #|
-    ),
+  out.write_file_header("IDNA Mapping Table (UTS #46)", "IdnaMappingTable.txt")
+  out.write_enum(
+    type_name="IdnaStatus",
+    doc=["IDNA status values"],
+    converter="idna_status_from_ordinal",
+    values=idna_statuses
+      .iter()
+      .map(entry => @emitter.EnumValue::{ name: entry.0, comment: entry.2, })
+      .collect(),
+    fallback="Disallowed",
   )
-  out.write_byte_array(
-    "IDNA trie top level: `cp >> \{IdnaTrieTopShift}` to mid block index",
-    "idna_trie_top",
-    mid.ids,
-  )
-  out.write_byte_array(
-    "IDNA trie mid level: big-endian 16-bit leaf block indices",
-    "idna_trie_mid",
-    @emitter.big_endian_16(mid.blocks),
-  )
-  out.write_byte_array(
-    "IDNA trie leaf level: big-endian 16-bit `mapping << \{IdnaStatusBits} | status` in blocks of \{1 << IdnaTrieLeafShift}",
-    "idna_trie_leaf",
-    @emitter.big_endian_16(leaf.blocks),
-  )
-  out.write_int_array(
-    "IDNA ranges from \{trie_limit} packed as `start << \{IdnaStatusBits} | status`",
-    "idna_high_ranges",
-    high_ranges,
-    hex=true,
+  out.write_value_trie(
+    property="IDNA",
+    prefix="idna",
+    lookup="fn lookup_idna_value",
+    lookup_doc=["Look up the packed mapping table entry of a character."],
+    value_bits=16,
+    range_value_bits=IdnaStatusBits,
+    values,
   )
   out.write_int_array(
     "Mapping `i` is `idna_mapping_data[idna_mapping_offsets[i]:idna_mapping_offsets[i + 1]]`",
@@ -231,44 +129,12 @@ pub fn emit_mapping(content : String) -> String raise {
       $|///|
       $|/// Look up the mapping table entry of a character.
       $|pub fn lookup_idna_entry(c : Char) -> IdnaEntry {
-      $|  let cp = c.to_int()
-      $|  if cp >= \{trie_limit} {
-      $|    // Binary search for the last range starting at or before `cp`.
-      $|    let key = (cp << \{IdnaStatusBits}) | \{status_mask}
-      $|    let mut low = 0
-      $|    let mut high = idna_high_ranges.length()
-      $|    while high - low > 1 {
-      $|      let mid = (low + high) / 2
-      $|      if idna_high_ranges[mid] <= key {
-      $|        low = mid
-      $|      } else {
-      $|        high = mid
-      $|      }
-      $|    }
-      $|    return IdnaEntry(idna_high_ranges[low] & \{status_mask})
-      $|  }
-      $|  let mid = (idna_trie_top[cp >> \{IdnaTrieTopShift}].to_int() << \{IdnaTrieTopShift - IdnaTrieLeafShift}) |
-      $|    ((cp >> \{IdnaTrieLeafShift}) & \{mid_mask})
-      $|  let leaf = (idna_trie_mid[2 * mid].to_int() << 8) |
-      $|    idna_trie_mid[2 * mid + 1].to_int()
-      $|  let offset = 2 * ((leaf << \{IdnaTrieLeafShift}) | (cp & \{leaf_mask}))
-      $|  IdnaEntry(
-      $|    (idna_trie_leaf[offset].to_int() << 8) | idna_trie_leaf[offset + 1].to_int(),
-      $|  )
+      $|  IdnaEntry(lookup_idna_value(c))
       $|}
       $|
       $|///|
       $|pub fn IdnaEntry::status(self : IdnaEntry) -> IdnaStatus {
-      $|  match self.0 & \{status_mask} {
-      $|    0 => Valid
-      $|    1 => Ignored
-      $|    2 => Mapped
-      $|    3 => Deviation
-      $|    4 => Disallowed
-      $|    5 => DisallowedSTD3Valid
-      $|    6 => DisallowedSTD3Mapped
-      $|    _ => Disallowed
-      $|  }
+      $|  idna_status_from_ordinal(self.0 & \{status_mask})
       $|}
       $|
       $|///|

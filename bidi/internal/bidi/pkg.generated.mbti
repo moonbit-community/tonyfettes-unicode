@@ -1,6 +1,10 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "moonbit-community/unicode-bidi/internal/bidi"
 
+import {
+  "moonbitlang/core/debug",
+}
+
 // Values
 pub fn bidi_mirroring_glyph(Char) -> Char
 
@@ -19,7 +23,7 @@ pub fn paired_bracket(Char) -> Char?
 // Errors
 
 // Types and methods
-#derive(Eq)
+#derive(Eq, @debug.Debug)
 pub(all) enum BracketType {
   Open
   Close

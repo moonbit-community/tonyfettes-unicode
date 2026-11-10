@@ -4,16 +4,21 @@
 
 ///|
 /// IDNA status values
-#derive(Eq)
+#derive(Debug, Eq)
 pub(all) enum IdnaStatus {
-  Valid // 0: Valid character
-  Ignored // 1: Character is removed
-  Mapped // 2: Character is replaced by its mapping
-  Deviation // 3: Treated as valid in nontransitional mode
-  Disallowed // 4: Character is not allowed
-  DisallowedSTD3Valid // 5: Valid only without UseSTD3ASCIIRules
-  DisallowedSTD3Mapped // 6: Mapped only without UseSTD3ASCIIRules
+  Valid // Valid character
+  Ignored // Character is removed
+  Mapped // Character is replaced by its mapping
+  Deviation // Treated as valid in nontransitional mode
+  Disallowed // Character is not allowed
+  DisallowedSTD3Valid // Valid only without UseSTD3ASCIIRules
+  DisallowedSTD3Mapped // Mapped only without UseSTD3ASCIIRules
 }
+
+///|
+#deprecated("Use `Debug::to_repr` instead", skip_current_package=true)
+#doc(hidden)
+pub extend IdnaStatus with Debug::{to_repr}
 
 ///|
 pub extend IdnaStatus with Eq::{not_equal, equal}
@@ -23,14 +28,30 @@ pub extend IdnaStatus with Show::{to_string, output}
 
 ///|
 pub impl Show for IdnaStatus with fn output(self, logger) {
-  match self {
-    Valid => logger.write_string("Valid")
-    Ignored => logger.write_string("Ignored")
-    Mapped => logger.write_string("Mapped")
-    Deviation => logger.write_string("Deviation")
-    Disallowed => logger.write_string("Disallowed")
-    DisallowedSTD3Valid => logger.write_string("DisallowedSTD3Valid")
-    DisallowedSTD3Mapped => logger.write_string("DisallowedSTD3Mapped")
+  logger.write_string(
+    match self {
+      Valid => "Valid"
+      Ignored => "Ignored"
+      Mapped => "Mapped"
+      Deviation => "Deviation"
+      Disallowed => "Disallowed"
+      DisallowedSTD3Valid => "DisallowedSTD3Valid"
+      DisallowedSTD3Mapped => "DisallowedSTD3Mapped"
+    },
+  )
+}
+
+///|
+/// Convert IdnaStatus ordinal to enum value
+fn idna_status_from_ordinal(ordinal : Int32) -> IdnaStatus {
+  match ordinal {
+    0 => Valid
+    1 => Ignored
+    2 => Mapped
+    3 => Deviation
+    5 => DisallowedSTD3Valid
+    6 => DisallowedSTD3Mapped
+    _ => Disallowed // 4 or any unknown
   }
 }
 
@@ -305,7 +326,7 @@ let idna_trie_mid : Bytes = [
 ]
 
 ///|
-/// IDNA trie leaf level: big-endian 16-bit `mapping << 3 | status` in blocks of 16
+/// IDNA trie leaf level: big-endian 16-bit values in blocks of 16
 let idna_trie_leaf : Bytes = [
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 18, 0, 26, 0, 34, 0, 42, 0, 50, 0, 58, 0, 66, 0,
@@ -1294,8 +1315,34 @@ let idna_trie_leaf : Bytes = [
 ]
 
 ///|
-/// IDNA ranges from 0x40000 packed as `start << 3 | status`
+/// IDNA ranges from 0x40000 packed as `start << 3 | value`
 let idna_high_ranges : ReadOnlyArray[Int32] = [0x200004, 0x700801, 0x700F84]
+
+///|
+/// Look up the packed mapping table entry of a character.
+fn lookup_idna_value(c : Char) -> Int32 {
+  let cp = c.to_int()
+  if cp >= 0x40000 {
+    // Binary search for the last range starting at or before `cp`.
+    let key = (cp << 3) | 7
+    let mut low = 0
+    let mut high = idna_high_ranges.length()
+    while high - low > 1 {
+      let mid = (low + high) / 2
+      if idna_high_ranges[mid] <= key {
+        low = mid
+      } else {
+        high = mid
+      }
+    }
+    return idna_high_ranges[low] & 7
+  }
+  let mid = (idna_trie_top[cp >> 8].to_int() << 4) | ((cp >> 4) & 15)
+  let leaf = (idna_trie_mid[2 * mid].to_int() << 8) |
+    idna_trie_mid[2 * mid + 1].to_int()
+  let offset = 2 * ((leaf << 4) | (cp & 15))
+  (idna_trie_leaf[offset].to_int() << 8) | idna_trie_leaf[offset + 1].to_int()
+}
 
 ///|
 /// Mapping `i` is `idna_mapping_data[idna_mapping_offsets[i]:idna_mapping_offsets[i + 1]]`
@@ -2153,43 +2200,12 @@ struct IdnaEntry(Int32)
 ///|
 /// Look up the mapping table entry of a character.
 pub fn lookup_idna_entry(c : Char) -> IdnaEntry {
-  let cp = c.to_int()
-  if cp >= 0x40000 {
-    // Binary search for the last range starting at or before `cp`.
-    let key = (cp << 3) | 7
-    let mut low = 0
-    let mut high = idna_high_ranges.length()
-    while high - low > 1 {
-      let mid = (low + high) / 2
-      if idna_high_ranges[mid] <= key {
-        low = mid
-      } else {
-        high = mid
-      }
-    }
-    return IdnaEntry(idna_high_ranges[low] & 7)
-  }
-  let mid = (idna_trie_top[cp >> 8].to_int() << 4) | ((cp >> 4) & 15)
-  let leaf = (idna_trie_mid[2 * mid].to_int() << 8) |
-    idna_trie_mid[2 * mid + 1].to_int()
-  let offset = 2 * ((leaf << 4) | (cp & 15))
-  IdnaEntry(
-    (idna_trie_leaf[offset].to_int() << 8) | idna_trie_leaf[offset + 1].to_int(),
-  )
+  IdnaEntry(lookup_idna_value(c))
 }
 
 ///|
 pub fn IdnaEntry::status(self : IdnaEntry) -> IdnaStatus {
-  match self.0 & 7 {
-    0 => Valid
-    1 => Ignored
-    2 => Mapped
-    3 => Deviation
-    4 => Disallowed
-    5 => DisallowedSTD3Valid
-    6 => DisallowedSTD3Mapped
-    _ => Disallowed
-  }
+  idna_status_from_ordinal(self.0 & 7)
 }
 
 ///|
