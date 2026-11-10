@@ -241,9 +241,11 @@ fn compose_remaining(
   while offset < view_end {
     // A leading jamo is a clean starter, and it composes at once with the
     // vowel and trailing jamo right after it, before any lookup. An LVT
-    // syllable composes with nothing that follows, so it is written out. An
-    // LV syllable begins a segment instead: in NFKC, a compatibility jamo
-    // that follows may decompose to a trailing jamo that composes with it.
+    // syllable composes with nothing that follows, so it is written out, and
+    // so is an LV syllable in NFC: no canonical decomposition begins with a
+    // trailing jamo. In NFKC an LV syllable begins a segment instead, since
+    // a compatibility jamo that follows, such as U+3133, may decompose to a
+    // trailing jamo that composes with it.
     // SAFETY: offset < view_end, and each following unit is read only below
     // view_end.
     let l_index = data.unsafe_get(offset).to_int() - hangul_l_base
@@ -263,7 +265,12 @@ fn compose_remaining(
             continue
           }
         }
-        composer.push(syllable, 0)
+        if compatibility {
+          composer.push(syllable, 0)
+        } else {
+          composer.out.reserve(1)
+          composer.out.store(syllable)
+        }
         continue
       }
     }
