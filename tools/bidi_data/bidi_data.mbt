@@ -14,16 +14,11 @@ priv struct BracketEntry {
 ///|
 fn parse_mirroring(content : String) -> Array[MirrorEntry] raise {
   let entries : Array[MirrorEntry] = []
-  for raw_line in content.split("\n") {
-    let line = @parsing.strip_comment(raw_line)
-    if line.is_empty() {
-      continue
-    }
-    let fields = line.split(";").collect()
-    if fields.length() >= 2 {
+  for fields in @parsing.data_lines(content) {
+    if fields is [code_point, mirrored, ..] {
       entries.push({
-        code_point: @parsing.parse_hex_int(fields[0]),
-        mirrored: @parsing.parse_hex_int(fields[1]),
+        code_point: @parsing.parse_hex_int(code_point),
+        mirrored: @parsing.parse_hex_int(mirrored),
       })
     }
   }
@@ -34,17 +29,12 @@ fn parse_mirroring(content : String) -> Array[MirrorEntry] raise {
 ///|
 fn parse_brackets(content : String) -> Array[BracketEntry] raise {
   let entries : Array[BracketEntry] = []
-  for raw_line in content.split("\n") {
-    let line = @parsing.strip_comment(raw_line)
-    if line.is_empty() {
-      continue
-    }
-    let fields = line.split(";").collect()
-    if fields.length() >= 3 {
+  for fields in @parsing.data_lines(content) {
+    if fields is [code_point, paired, bracket_type, ..] {
       entries.push({
-        code_point: @parsing.parse_hex_int(fields[0]),
-        paired: @parsing.parse_hex_int(fields[1]),
-        bracket_type: fields[2].trim().to_owned().to_lower(),
+        code_point: @parsing.parse_hex_int(code_point),
+        paired: @parsing.parse_hex_int(paired),
+        bracket_type: bracket_type.to_owned().to_lower(),
       })
     }
   }

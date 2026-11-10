@@ -6,6 +6,8 @@ import {
 }
 
 // Values
+pub fn data_lines(StringView) -> Iter[Array[StringView]]
+
 pub fn parse_code_point_range(StringView) -> CodePointRange raise
 
 pub fn parse_code_point_sequence(StringView) -> Array[Int32] raise

@@ -31,17 +31,6 @@ let indic_conjunct_break_names : ReadOnlyArray[String] = [
 ]
 
 ///|
-/// Code of a property value: its index in `names`.
-fn name_code(names : ReadOnlyArray[String], name : StringView) -> Int32? {
-  for code, candidate in names {
-    if name == candidate {
-      return Some(code)
-    }
-  }
-  None
-}
-
-///|
 /// Combine `bits` into the packed value of every code point in `range`.
 fn set_range_bits(
   values : FixedArray[Int32],
@@ -66,16 +55,12 @@ fn parse_grapheme_break_values(
     grapheme_break_property,
     property="Grapheme_Cluster_Break",
     default="Other",
-    name => name_code(grapheme_cluster_break_names, name),
+    name => grapheme_cluster_break_names.search_by(n => name == n),
   )
-  for raw_line in derived_core_properties.split("\n") {
-    let line = @parsing.strip_comment(raw_line)
-    guard line.split(";").collect() is [range, property, name, ..] &&
-      property.trim() == "InCB" else {
-      continue
-    }
-    guard name_code(indic_conjunct_break_names, name.trim()) is Some(code) else {
-      fail("Unknown Indic_Conjunct_Break: \{name.trim()}")
+  for fields in @parsing.data_lines(derived_core_properties) {
+    guard fields is [range, "InCB", name, ..] else { continue }
+    guard indic_conjunct_break_names.search_by(n => name == n) is Some(code) else {
+      fail("Unknown Indic_Conjunct_Break: \{name}")
     }
     set_range_bits(
       values,
@@ -83,12 +68,8 @@ fn parse_grapheme_break_values(
       code << GcbBits,
     )
   }
-  for raw_line in emoji_data.split("\n") {
-    let line = @parsing.strip_comment(raw_line)
-    guard line.split(";").collect() is [range, property, ..] &&
-      property.trim() == "Extended_Pictographic" else {
-      continue
-    }
+  for fields in @parsing.data_lines(emoji_data) {
+    guard fields is [range, "Extended_Pictographic", ..] else { continue }
     set_range_bits(
       values,
       @parsing.parse_code_point_range(range),

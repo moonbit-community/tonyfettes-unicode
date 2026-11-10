@@ -59,16 +59,6 @@ let line_break_values : ReadOnlyArray[(String, String)] = [
 const LineBreakBits : Int32 = 6
 
 ///|
-fn line_break_ordinal(value : StringView) -> Int32? {
-  for ordinal, entry in line_break_values {
-    if entry.0.to_string_view() == value {
-      return Some(ordinal)
-    }
-  }
-  None
-}
-
-///|
 /// Emit Line_Break data from `LineBreak.txt` as a three-level trie for planes
 /// 0-3, with packed ranges for the remaining planes.
 ///
@@ -79,7 +69,7 @@ pub fn emit_line_break(content : String) -> String raise {
     content,
     property="Line_Break",
     default="XX",
-    line_break_ordinal,
+    name => line_break_values.search_by(entry => name == entry.0),
   )
   let used = FixedArray::make(line_break_values.length(), false)
   for ordinal in values {

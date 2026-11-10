@@ -142,6 +142,23 @@ pub fn Emitter::write_byte_array(
 }
 
 ///|
+/// Emit a `ReadOnlyArray[String]` holding one string per code point
+/// sequence.
+pub fn Emitter::write_string_array(
+  self : Emitter,
+  doc : String,
+  name : String,
+  values : Array[Array[Int32]],
+) -> Unit {
+  self.write_array(
+    doc,
+    name,
+    "ReadOnlyArray[String]",
+    values.map(code_points => string_literal(code_points)),
+  )
+}
+
+///|
 /// Split each value into its high and low byte.
 pub fn big_endian_16(values : Array[Int32]) -> Array[Int32] {
   let bytes = []

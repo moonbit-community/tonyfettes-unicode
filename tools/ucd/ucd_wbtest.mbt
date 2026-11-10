@@ -18,8 +18,12 @@ test "parse UnicodeData fields" {
     [0x41, 0x300, 0x301, 0x302].map(cp => data.ccc[cp]),
     content="[0, 230, 230, 0]",
   )
-  inspect(data.canonical_decompositions.length(), content="1")
-  inspect(data.compatibility_decompositions.length(), content="1")
+  debug_inspect(
+    data.decompositions.map(entry => {
+      (entry.code_point, entry.code_points, entry.compatibility)
+    }),
+    content="[(160, [32], true), (192, [65, 768], false)]",
+  )
   inspect(data.simple_uppercase.length(), content="1")
   inspect(data.simple_lowercase.length(), content="2")
   inspect(data.simple_titlecase.length(), content="1")

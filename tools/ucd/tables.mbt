@@ -19,19 +19,15 @@ fn ranges_where(
 }
 
 ///|
-fn contains_int(values : Array[Int32], target : Int32) -> Bool {
-  values.any(value => value == target)
-}
-
-///|
 fn build_composition_table(
   data : UnicodeData,
   exclusions : Array[Int32],
 ) -> Array[CompositionEntry] {
   let compositions : Array[CompositionEntry] = []
-  for decomp in data.canonical_decompositions {
-    if decomp.code_points.length() == 2 &&
-      !contains_int(exclusions, decomp.code_point) {
+  for decomp in data.decompositions {
+    if !decomp.compatibility &&
+      decomp.code_points.length() == 2 &&
+      !exclusions.contains(decomp.code_point) {
       compositions.push({
         first: decomp.code_points[0],
         second: decomp.code_points[1],
@@ -56,7 +52,10 @@ fn build_full_composition_exclusions(
   explicit_exclusions : Array[Int32],
 ) -> Array[Int32] {
   let exclusions = explicit_exclusions.copy()
-  for decomp in data.canonical_decompositions {
+  for decomp in data.decompositions {
+    if decomp.compatibility {
+      continue
+    }
     // Singletons and decompositions starting with a non-starter never
     // recompose.
     let excluded = match decomp.code_points {
@@ -64,25 +63,12 @@ fn build_full_composition_exclusions(
       [first, ..] => data.ccc[first] > 0
       [] => false
     }
-    if excluded && !contains_int(exclusions, decomp.code_point) {
+    if excluded && !exclusions.contains(decomp.code_point) {
       exclusions.push(decomp.code_point)
     }
   }
   exclusions.sort()
   exclusions
-}
-
-///|
-/// Shared row order for the decomposition arrays and norm16 record indices.
-fn decomposition_entries(data : UnicodeData) -> Array[DecompositionEntry] {
-  let entries = data.canonical_decompositions.copy()
-  for compat in data.compatibility_decompositions {
-    if entries.search_by(entry => entry.code_point == compat.code_point) is None {
-      entries.push({ code_point: compat.code_point, code_points: [], })
-    }
-  }
-  entries.sort_by((left, right) => left.code_point - right.code_point)
-  entries
 }
 
 ///|
