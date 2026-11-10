@@ -27,12 +27,18 @@ pub fn Emitter::finish(Self) -> String
 pub fn Emitter::new() -> Self
 pub fn Emitter::write(Self, String) -> Unit
 pub fn Emitter::write_byte_array(Self, String, String, Array[Int32]) -> Unit
+pub fn Emitter::write_enum(Self, type_name~ : String, doc~ : Array[String], converter~ : String, values~ : Array[EnumValue], fallback~ : String) -> Unit raise
 pub fn Emitter::write_file_header(Self, String, String) -> Unit
 pub fn Emitter::write_int_array(Self, String, String, Array[Int32], hex~ : Bool) -> Unit
 pub fn Emitter::write_line(Self, String) -> Unit
 pub fn Emitter::write_string_array(Self, String, String, Array[Array[Int32]]) -> Unit
 pub fn Emitter::write_uint16_array(Self, String, String, Array[Int32]) -> Unit raise
 pub fn Emitter::write_value_trie(Self, property~ : String, prefix~ : String, lookup~ : String, lookup_doc~ : Array[String], value_bits~ : Int32, range_value_bits? : Int32, takes_code_point? : Bool, FixedArray[Int32]) -> Unit raise
+
+pub(all) struct EnumValue {
+  name : String
+  comment : String
+}
 
 // Type aliases
 

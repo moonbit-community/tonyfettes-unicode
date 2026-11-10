@@ -8,8 +8,18 @@ priv struct MirrorEntry {
 priv struct BracketEntry {
   code_point : Int32
   paired : Int32
-  bracket_type : String
+  /// Index of the bracket type in `bracket_type_values`.
+  bracket_type : Int32
 }
+
+///|
+/// Bidi_Paired_Bracket_Type values in the order of the `BracketType` enum:
+/// the constructor, the value BidiBrackets.txt writes, and a description.
+let bracket_type_values : ReadOnlyArray[(String, String, String)] = [
+  ("Open", "o", "Opening paired bracket"),
+  ("Close", "c", "Closing paired bracket"),
+  ("None", "n", "Not a paired bracket"),
+]
 
 ///|
 fn parse_mirroring(content : String) -> Array[MirrorEntry] raise {
@@ -31,10 +41,15 @@ fn parse_brackets(content : String) -> Array[BracketEntry] raise {
   let entries : Array[BracketEntry] = []
   for fields in @parsing.data_lines(content) {
     if fields is [code_point, paired, bracket_type, ..] {
+      let name = bracket_type.to_owned().to_lower()
+      guard bracket_type_values.search_by(entry => entry.1 == name)
+        is Some(bracket_type) else {
+        fail("Unknown Bidi_Paired_Bracket_Type \{name}")
+      }
       entries.push({
         code_point: @parsing.parse_hex_int(code_point),
         paired: @parsing.parse_hex_int(paired),
-        bracket_type: bracket_type.to_owned().to_lower(),
+        bracket_type,
       })
     }
   }
@@ -43,36 +58,34 @@ fn parse_brackets(content : String) -> Array[BracketEntry] raise {
 }
 
 ///|
-/// Code of a Bidi_Class value: the index of its `BidiClass` constructor.
-/// `@missing` lines spell out the long alias.
-fn bidi_class_code(name : StringView) -> Int32? {
-  match name {
-    "L" | "Left_To_Right" => Some(0)
-    "R" | "Right_To_Left" => Some(1)
-    "AL" | "Arabic_Letter" => Some(2)
-    "EN" => Some(3)
-    "ES" => Some(4)
-    "ET" | "European_Terminator" => Some(5)
-    "AN" => Some(6)
-    "CS" => Some(7)
-    "NSM" => Some(8)
-    "BN" => Some(9)
-    "B" => Some(10)
-    "S" => Some(11)
-    "WS" => Some(12)
-    "ON" => Some(13)
-    "LRE" => Some(14)
-    "LRO" => Some(15)
-    "RLE" => Some(16)
-    "RLO" => Some(17)
-    "PDF" => Some(18)
-    "LRI" => Some(19)
-    "RLI" => Some(20)
-    "FSI" => Some(21)
-    "PDI" => Some(22)
-    _ => None
-  }
-}
+/// Bidi_Class values in the order of the `BidiClass` enum: the short alias,
+/// which DerivedBidiClass.txt writes and which names the constructor, and the
+/// long alias, which `@missing` lines spell out.
+let bidi_classes : ReadOnlyArray[(String, String)] = [
+  ("L", "Left_To_Right"),
+  ("R", "Right_To_Left"),
+  ("AL", "Arabic_Letter"),
+  ("EN", "European_Number"),
+  ("ES", "European_Separator"),
+  ("ET", "European_Terminator"),
+  ("AN", "Arabic_Number"),
+  ("CS", "Common_Separator"),
+  ("NSM", "Nonspacing_Mark"),
+  ("BN", "Boundary_Neutral"),
+  ("B", "Paragraph_Separator"),
+  ("S", "Segment_Separator"),
+  ("WS", "White_Space"),
+  ("ON", "Other_Neutral"),
+  ("LRE", "Left_To_Right_Embedding"),
+  ("LRO", "Left_To_Right_Override"),
+  ("RLE", "Right_To_Left_Embedding"),
+  ("RLO", "Right_To_Left_Override"),
+  ("PDF", "Pop_Directional_Format"),
+  ("LRI", "Left_To_Right_Isolate"),
+  ("RLI", "Right_To_Left_Isolate"),
+  ("FSI", "First_Strong_Isolate"),
+  ("PDI", "Pop_Directional_Isolate"),
+]
 
 ///|
 /// Emit the `BidiClass` enum and Bidi_Class data from `DerivedBidiClass.txt`
@@ -83,80 +96,21 @@ pub fn emit_bidi_class(content : String) -> String raise {
     content,
     property="Bidi_Class",
     default="L",
-    bidi_class_code,
+    name => bidi_classes.search_by(entry => name == entry.0 || name == entry.1),
   )
   let out = @emitter.Emitter::new()
-  out.write(
-    (
-      #|///|
-      #|/// Full Bidi_Class lookup for Unicode Bidirectional Algorithm (UAX #9)
-      #|/// Generated from DerivedBidiClass.txt
-      #|
-      #|///|
-      #|/// All 23 Bidi_Class values from UAX #9
-      #|#derive(Eq)
-      #|pub(all) enum BidiClass {
-      #|  L
-      #|  R
-      #|  AL
-      #|  EN
-      #|  ES
-      #|  ET
-      #|  AN
-      #|  CS
-      #|  NSM
-      #|  BN
-      #|  B
-      #|  S
-      #|  WS
-      #|  ON
-      #|  LRE
-      #|  LRO
-      #|  RLE
-      #|  RLO
-      #|  PDF
-      #|  LRI
-      #|  RLI
-      #|  FSI
-      #|  PDI
-      #|}
-      #|
-      #|///|
-      #|pub extend BidiClass with Eq::{not_equal, equal}
-      #|
-      #|///|
-      #|pub extend BidiClass with Show::{to_string, output}
-      #|
-      #|///|
-      #|pub impl Show for BidiClass with fn output(self, logger) {
-      #|  match self {
-      #|    L => logger.write_string("L")
-      #|    R => logger.write_string("R")
-      #|    AL => logger.write_string("AL")
-      #|    EN => logger.write_string("EN")
-      #|    ES => logger.write_string("ES")
-      #|    ET => logger.write_string("ET")
-      #|    AN => logger.write_string("AN")
-      #|    CS => logger.write_string("CS")
-      #|    NSM => logger.write_string("NSM")
-      #|    BN => logger.write_string("BN")
-      #|    B => logger.write_string("B")
-      #|    S => logger.write_string("S")
-      #|    WS => logger.write_string("WS")
-      #|    ON => logger.write_string("ON")
-      #|    LRE => logger.write_string("LRE")
-      #|    LRO => logger.write_string("LRO")
-      #|    RLE => logger.write_string("RLE")
-      #|    RLO => logger.write_string("RLO")
-      #|    PDF => logger.write_string("PDF")
-      #|    LRI => logger.write_string("LRI")
-      #|    RLI => logger.write_string("RLI")
-      #|    FSI => logger.write_string("FSI")
-      #|    PDI => logger.write_string("PDI")
-      #|  }
-      #|}
-      #|
-    ),
+  out.write_file_header(
+    "Full Bidi_Class lookup for Unicode Bidirectional Algorithm (UAX #9)", "DerivedBidiClass.txt",
+  )
+  out.write_enum(
+    type_name="BidiClass",
+    doc=["All \{bidi_classes.length()} Bidi_Class values from UAX #9"],
+    converter="bidi_from_code",
+    values=bidi_classes
+      .iter()
+      .map(entry => @emitter.EnumValue::{ name: entry.0, comment: entry.1 })
+      .collect(),
+    fallback="L",
   )
   out.write_value_trie(
     property="Bidi_Class",
@@ -174,36 +128,6 @@ pub fn emit_bidi_class(content : String) -> String raise {
 
 ///|
 let bidi_class_implementation : String =
-  #|///|
-  #|fn bidi_from_code(code : Int) -> BidiClass {
-  #|  match code {
-  #|    0 => L
-  #|    1 => R
-  #|    2 => AL
-  #|    3 => EN
-  #|    4 => ES
-  #|    5 => ET
-  #|    6 => AN
-  #|    7 => CS
-  #|    8 => NSM
-  #|    9 => BN
-  #|    10 => B
-  #|    11 => S
-  #|    12 => WS
-  #|    13 => ON
-  #|    14 => LRE
-  #|    15 => LRO
-  #|    16 => RLE
-  #|    17 => RLO
-  #|    18 => PDF
-  #|    19 => LRI
-  #|    20 => RLI
-  #|    21 => FSI
-  #|    22 => PDI
-  #|    _ => L
-  #|  }
-  #|}
-  #|
   #|///|
   #|fn lookup_bidi_class(c : Char) -> BidiClass {
   #|  bidi_from_code(lookup_bidi_class_code(c))
@@ -310,36 +234,18 @@ pub fn emit_mirrored(content : String) -> String raise {
 pub fn emit_bracket(content : String) -> String raise {
   let entries = parse_brackets(content)
   let out = @emitter.Emitter::new()
-  out.write(
-    (
-      #|///|
-      #|/// Bidi_Paired_Bracket lookup for UAX #9 N0 rule
-      #|/// Generated from BidiBrackets.txt
-      #|
-      #|///|
-      #|#derive(Eq)
-      #|pub(all) enum BracketType {
-      #|  Open
-      #|  Close
-      #|  None
-      #|}
-      #|
-      #|///|
-      #|pub extend BracketType with Eq::{not_equal, equal}
-      #|
-      #|///|
-      #|pub extend BracketType with Show::{to_string, output}
-      #|
-      #|///|
-      #|pub impl Show for BracketType with fn output(self, logger) {
-      #|  match self {
-      #|    Open => logger.write_string("Open")
-      #|    Close => logger.write_string("Close")
-      #|    None => logger.write_string("None")
-      #|  }
-      #|}
-      #|
-    ),
+  out.write_file_header(
+    "Bidi_Paired_Bracket lookup for UAX #9 N0 rule", "BidiBrackets.txt",
+  )
+  out.write_enum(
+    type_name="BracketType",
+    doc=["Bidi_Paired_Bracket_Type values"],
+    converter="bracket_type_from_ordinal",
+    values=bracket_type_values
+      .iter()
+      .map(entry => @emitter.EnumValue::{ name: entry.0, comment: entry.2 })
+      .collect(),
+    fallback="None",
   )
   out.write_int_array(
     "Code points of paired brackets",
@@ -354,9 +260,9 @@ pub fn emit_bracket(content : String) -> String raise {
     hex=true,
   )
   out.write_int_array(
-    "Bracket types (0 = open, 1 = close)",
+    "`BracketType` ordinal of each code point",
     "bracket_types",
-    entries.map(entry => if entry.bracket_type == "o" { 0 } else { 1 }),
+    entries.map(entry => entry.bracket_type),
     hex=false,
   )
   out.write(
@@ -383,7 +289,7 @@ pub fn emit_bracket(content : String) -> String raise {
       #|///|
       #|pub fn bracket_type(c : Char) -> BracketType {
       #|  let idx = find_bracket_index(c)
-      #|  if idx < 0 { None } else if bracket_types[idx] == 0 { Open } else { Close }
+      #|  if idx < 0 { None } else { bracket_type_from_ordinal(bracket_types[idx]) }
       #|}
       #|
       #|///|

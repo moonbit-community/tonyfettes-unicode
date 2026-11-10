@@ -100,8 +100,7 @@ pub fn emit_line_break(content : String) -> String raise {
 pub fn emit_line_break_enum() -> String raise {
   let out = @emitter.Emitter::new()
   out.write_file_header("Line_Break values and lookup", "LineBreak.txt")
-  write_property_enum(
-    out,
+  out.write_enum(
     type_name="LineBreak",
     doc=[
       "Unicode Line_Break values", "See UAX #14: https://www.unicode.org/reports/tr14/#Table1",
@@ -109,7 +108,7 @@ pub fn emit_line_break_enum() -> String raise {
     converter="ordinal_to_line_break",
     values=line_break_values
       .iter()
-      .map(entry => { name: entry.0, comment: entry.1, })
+      .map(entry => @emitter.EnumValue::{ name: entry.0, comment: entry.1 })
       .collect(),
     fallback="XX",
   )

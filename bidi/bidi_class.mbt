@@ -4,32 +4,37 @@
 
 ///|
 /// All 23 Bidi_Class values from UAX #9
-#derive(Eq)
+#derive(Debug, Eq)
 pub(all) enum BidiClass {
-  L
-  R
-  AL
-  EN
-  ES
-  ET
-  AN
-  CS
-  NSM
-  BN
-  B
-  S
-  WS
-  ON
-  LRE
-  LRO
-  RLE
-  RLO
-  PDF
-  LRI
-  RLI
-  FSI
-  PDI
+  L // Left_To_Right
+  R // Right_To_Left
+  AL // Arabic_Letter
+  EN // European_Number
+  ES // European_Separator
+  ET // European_Terminator
+  AN // Arabic_Number
+  CS // Common_Separator
+  NSM // Nonspacing_Mark
+  BN // Boundary_Neutral
+  B // Paragraph_Separator
+  S // Segment_Separator
+  WS // White_Space
+  ON // Other_Neutral
+  LRE // Left_To_Right_Embedding
+  LRO // Left_To_Right_Override
+  RLE // Right_To_Left_Embedding
+  RLO // Right_To_Left_Override
+  PDF // Pop_Directional_Format
+  LRI // Left_To_Right_Isolate
+  RLI // Right_To_Left_Isolate
+  FSI // First_Strong_Isolate
+  PDI // Pop_Directional_Isolate
 }
+
+///|
+#deprecated("Use `Debug::to_repr` instead", skip_current_package=true)
+#doc(hidden)
+pub extend BidiClass with Debug::{to_repr}
 
 ///|
 pub extend BidiClass with Eq::{not_equal, equal}
@@ -39,30 +44,62 @@ pub extend BidiClass with Show::{to_string, output}
 
 ///|
 pub impl Show for BidiClass with fn output(self, logger) {
-  match self {
-    L => logger.write_string("L")
-    R => logger.write_string("R")
-    AL => logger.write_string("AL")
-    EN => logger.write_string("EN")
-    ES => logger.write_string("ES")
-    ET => logger.write_string("ET")
-    AN => logger.write_string("AN")
-    CS => logger.write_string("CS")
-    NSM => logger.write_string("NSM")
-    BN => logger.write_string("BN")
-    B => logger.write_string("B")
-    S => logger.write_string("S")
-    WS => logger.write_string("WS")
-    ON => logger.write_string("ON")
-    LRE => logger.write_string("LRE")
-    LRO => logger.write_string("LRO")
-    RLE => logger.write_string("RLE")
-    RLO => logger.write_string("RLO")
-    PDF => logger.write_string("PDF")
-    LRI => logger.write_string("LRI")
-    RLI => logger.write_string("RLI")
-    FSI => logger.write_string("FSI")
-    PDI => logger.write_string("PDI")
+  logger.write_string(
+    match self {
+      L => "L"
+      R => "R"
+      AL => "AL"
+      EN => "EN"
+      ES => "ES"
+      ET => "ET"
+      AN => "AN"
+      CS => "CS"
+      NSM => "NSM"
+      BN => "BN"
+      B => "B"
+      S => "S"
+      WS => "WS"
+      ON => "ON"
+      LRE => "LRE"
+      LRO => "LRO"
+      RLE => "RLE"
+      RLO => "RLO"
+      PDF => "PDF"
+      LRI => "LRI"
+      RLI => "RLI"
+      FSI => "FSI"
+      PDI => "PDI"
+    },
+  )
+}
+
+///|
+/// Convert BidiClass ordinal to enum value
+fn bidi_from_code(ordinal : Int32) -> BidiClass {
+  match ordinal {
+    1 => R
+    2 => AL
+    3 => EN
+    4 => ES
+    5 => ET
+    6 => AN
+    7 => CS
+    8 => NSM
+    9 => BN
+    10 => B
+    11 => S
+    12 => WS
+    13 => ON
+    14 => LRE
+    15 => LRO
+    16 => RLE
+    17 => RLO
+    18 => PDF
+    19 => LRI
+    20 => RLI
+    21 => FSI
+    22 => PDI
+    _ => L // 0 or any unknown
   }
 }
 
@@ -511,36 +548,6 @@ fn lookup_bidi_class_code(c : Char) -> Int32 {
   let leaf = (bidi_trie_mid[2 * mid].to_int() << 8) |
     bidi_trie_mid[2 * mid + 1].to_int()
   bidi_trie_leaf[(leaf << 4) | (cp & 15)].to_int()
-}
-
-///|
-fn bidi_from_code(code : Int32) -> BidiClass {
-  match code {
-    0 => L
-    1 => R
-    2 => AL
-    3 => EN
-    4 => ES
-    5 => ET
-    6 => AN
-    7 => CS
-    8 => NSM
-    9 => BN
-    10 => B
-    11 => S
-    12 => WS
-    13 => ON
-    14 => LRE
-    15 => LRO
-    16 => RLE
-    17 => RLO
-    18 => PDF
-    19 => LRI
-    20 => RLI
-    21 => FSI
-    22 => PDI
-    _ => L
-  }
 }
 
 ///|

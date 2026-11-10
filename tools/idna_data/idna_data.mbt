@@ -32,17 +32,28 @@ fn parse_mapping_table(content : String) -> Array[MappingEntry] raise {
 }
 
 ///|
-fn status_code(status : StringView) -> Int32 {
-  match status {
-    "valid" => 0
-    "ignored" => 1
-    "mapped" => 2
-    "deviation" => 3
-    "disallowed" => 4
-    "disallowed_std3_valid" => 5
-    "disallowed_std3_mapped" => 6
-    _ => 4
-  }
+/// IDNA status values in the order of the `IdnaStatus` enum: the
+/// constructor, the status IdnaMappingTable.txt writes (in lowercase, with
+/// underscores for spaces), and a description.
+let idna_statuses : ReadOnlyArray[(String, String, String)] = [
+  ("Valid", "valid", "Valid character"),
+  ("Ignored", "ignored", "Character is removed"),
+  ("Mapped", "mapped", "Character is replaced by its mapping"),
+  ("Deviation", "deviation", "Treated as valid in nontransitional mode"),
+  ("Disallowed", "disallowed", "Character is not allowed"),
+  (
+    "DisallowedSTD3Valid", "disallowed_std3_valid", "Valid only without UseSTD3ASCIIRules",
+  ),
+  (
+    "DisallowedSTD3Mapped", "disallowed_std3_mapped", "Mapped only without UseSTD3ASCIIRules",
+  ),
+]
+
+///|
+/// Status code of a status: its index in `idna_statuses`. Unknown statuses
+/// are disallowed.
+fn status_code(status : String) -> Int32 {
+  idna_statuses.search_by(entry => entry.1 == status).unwrap_or(IdnaDisallowed)
 }
 
 ///|
@@ -76,45 +87,16 @@ pub fn emit_mapping(content : String) -> String raise {
   }
   let status_mask = (1 << IdnaStatusBits) - 1
   let out = @emitter.Emitter::new()
-  out.write(
-    (
-      #|///|
-      #|/// IDNA Mapping Table (UTS #46)
-      #|/// Generated from IdnaMappingTable.txt
-      #|
-      #|///|
-      #|/// IDNA status values
-      #|#derive(Eq)
-      #|pub(all) enum IdnaStatus {
-      #|  Valid             // 0: Valid character
-      #|  Ignored           // 1: Character is removed
-      #|  Mapped            // 2: Character is replaced by its mapping
-      #|  Deviation         // 3: Treated as valid in nontransitional mode
-      #|  Disallowed        // 4: Character is not allowed
-      #|  DisallowedSTD3Valid  // 5: Valid only without UseSTD3ASCIIRules
-      #|  DisallowedSTD3Mapped // 6: Mapped only without UseSTD3ASCIIRules
-      #|}
-      #|
-      #|///|
-      #|pub extend IdnaStatus with Eq::{not_equal, equal}
-      #|
-      #|///|
-      #|pub extend IdnaStatus with Show::{to_string, output}
-      #|
-      #|///|
-      #|pub impl Show for IdnaStatus with fn output(self, logger) {
-      #|  match self {
-      #|    Valid => logger.write_string("Valid")
-      #|    Ignored => logger.write_string("Ignored")
-      #|    Mapped => logger.write_string("Mapped")
-      #|    Deviation => logger.write_string("Deviation")
-      #|    Disallowed => logger.write_string("Disallowed")
-      #|    DisallowedSTD3Valid => logger.write_string("DisallowedSTD3Valid")
-      #|    DisallowedSTD3Mapped => logger.write_string("DisallowedSTD3Mapped")
-      #|  }
-      #|}
-      #|
-    ),
+  out.write_file_header("IDNA Mapping Table (UTS #46)", "IdnaMappingTable.txt")
+  out.write_enum(
+    type_name="IdnaStatus",
+    doc=["IDNA status values"],
+    converter="idna_status_from_ordinal",
+    values=idna_statuses
+      .iter()
+      .map(entry => @emitter.EnumValue::{ name: entry.0, comment: entry.2 })
+      .collect(),
+    fallback="Disallowed",
   )
   out.write_value_trie(
     property="IDNA",
@@ -152,16 +134,7 @@ pub fn emit_mapping(content : String) -> String raise {
       $|
       $|///|
       $|pub fn IdnaEntry::status(self : IdnaEntry) -> IdnaStatus {
-      $|  match self.0 & \{status_mask} {
-      $|    0 => Valid
-      $|    1 => Ignored
-      $|    2 => Mapped
-      $|    3 => Deviation
-      $|    4 => Disallowed
-      $|    5 => DisallowedSTD3Valid
-      $|    6 => DisallowedSTD3Mapped
-      $|    _ => Disallowed
-      $|  }
+      $|  idna_status_from_ordinal(self.0 & \{status_mask})
       $|}
       $|
       $|///|

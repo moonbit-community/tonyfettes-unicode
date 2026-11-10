@@ -4,16 +4,21 @@
 
 ///|
 /// IDNA status values
-#derive(Eq)
+#derive(Debug, Eq)
 pub(all) enum IdnaStatus {
-  Valid // 0: Valid character
-  Ignored // 1: Character is removed
-  Mapped // 2: Character is replaced by its mapping
-  Deviation // 3: Treated as valid in nontransitional mode
-  Disallowed // 4: Character is not allowed
-  DisallowedSTD3Valid // 5: Valid only without UseSTD3ASCIIRules
-  DisallowedSTD3Mapped // 6: Mapped only without UseSTD3ASCIIRules
+  Valid // Valid character
+  Ignored // Character is removed
+  Mapped // Character is replaced by its mapping
+  Deviation // Treated as valid in nontransitional mode
+  Disallowed // Character is not allowed
+  DisallowedSTD3Valid // Valid only without UseSTD3ASCIIRules
+  DisallowedSTD3Mapped // Mapped only without UseSTD3ASCIIRules
 }
+
+///|
+#deprecated("Use `Debug::to_repr` instead", skip_current_package=true)
+#doc(hidden)
+pub extend IdnaStatus with Debug::{to_repr}
 
 ///|
 pub extend IdnaStatus with Eq::{not_equal, equal}
@@ -23,14 +28,30 @@ pub extend IdnaStatus with Show::{to_string, output}
 
 ///|
 pub impl Show for IdnaStatus with fn output(self, logger) {
-  match self {
-    Valid => logger.write_string("Valid")
-    Ignored => logger.write_string("Ignored")
-    Mapped => logger.write_string("Mapped")
-    Deviation => logger.write_string("Deviation")
-    Disallowed => logger.write_string("Disallowed")
-    DisallowedSTD3Valid => logger.write_string("DisallowedSTD3Valid")
-    DisallowedSTD3Mapped => logger.write_string("DisallowedSTD3Mapped")
+  logger.write_string(
+    match self {
+      Valid => "Valid"
+      Ignored => "Ignored"
+      Mapped => "Mapped"
+      Deviation => "Deviation"
+      Disallowed => "Disallowed"
+      DisallowedSTD3Valid => "DisallowedSTD3Valid"
+      DisallowedSTD3Mapped => "DisallowedSTD3Mapped"
+    },
+  )
+}
+
+///|
+/// Convert IdnaStatus ordinal to enum value
+fn idna_status_from_ordinal(ordinal : Int32) -> IdnaStatus {
+  match ordinal {
+    0 => Valid
+    1 => Ignored
+    2 => Mapped
+    3 => Deviation
+    5 => DisallowedSTD3Valid
+    6 => DisallowedSTD3Mapped
+    _ => Disallowed // 4 or any unknown
   }
 }
 
@@ -2184,16 +2205,7 @@ pub fn lookup_idna_entry(c : Char) -> IdnaEntry {
 
 ///|
 pub fn IdnaEntry::status(self : IdnaEntry) -> IdnaStatus {
-  match self.0 & 7 {
-    0 => Valid
-    1 => Ignored
-    2 => Mapped
-    3 => Deviation
-    4 => Disallowed
-    5 => DisallowedSTD3Valid
-    6 => DisallowedSTD3Mapped
-    _ => Disallowed
-  }
+  idna_status_from_ordinal(self.0 & 7)
 }
 
 ///|

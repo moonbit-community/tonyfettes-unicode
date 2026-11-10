@@ -1,6 +1,10 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "moonbit-community/unicode-bidi"
 
+import {
+  "moonbitlang/core/debug",
+}
+
 // Values
 pub fn bidi_class(Char) -> BidiClass
 
@@ -27,7 +31,7 @@ pub fn requires_bidi(String) -> Bool
 // Errors
 
 // Types and methods
-#derive(Eq)
+#derive(Eq, @debug.Debug)
 pub(all) enum BidiClass {
   L
   R

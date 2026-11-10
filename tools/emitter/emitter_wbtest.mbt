@@ -92,8 +92,7 @@ test "value trie stores wide values in two bytes and narrow high ranges" {
   for
     expected in [
       // `A` is the second value of its block: 0x123 as bytes 1 and 35.
-      "  0,\n  0,\n  1,\n  35,\n",
-      "let test_high_ranges : ReadOnlyArray[Int] = [\n  0x200000,\n  0x70000A,\n  0x700010,\n]",
+      "  0,\n  0,\n  1,\n  35,\n", "let test_high_ranges : ReadOnlyArray[Int] = [\n  0x200000,\n  0x70000A,\n  0x700010,\n]",
       "(test_trie_leaf[offset].to_int() << 8) | test_trie_leaf[offset + 1].to_int()",
     ] {
     guard source.contains(expected) else {
@@ -114,10 +113,56 @@ test "value trie stores wide values in two bytes and narrow high ranges" {
   catch {
     error =>
       inspect(
-        error.to_string().contains("Test value at 0xE0001 does not fit in 3 bits"),
+        error
+        .to_string()
+        .contains("Test value at 0xE0001 does not fit in 3 bits"),
         content="true",
       )
   } noraise {
     _ => fail("expected a wide value above the trie to be rejected")
+  }
+}
+
+///|
+test "enum converts ordinals and falls back to one constructor" {
+  let values = [
+    { name: "Open", comment: "opening", },
+    { name: "Close", comment: "closing", },
+    { name: "None", comment: "neither", },
+  ]
+  let out = Emitter::new()
+  out.write_enum(
+    type_name="Kind",
+    doc=["Kinds"],
+    converter="kind_from_ordinal",
+    values~,
+    fallback="Open",
+  )
+  let source = out.finish()
+  for
+    expected in [
+      "/// Kinds\n#derive(Debug, Eq)\npub(all) enum Kind {\n  Open // opening\n",
+      "      Close => \"Close\"\n", "    1 => Close\n    2 => None\n    _ => Open // 0 or any unknown\n",
+    ] {
+    guard source.contains(expected) else {
+      fail("Generated source is missing: \{expected}")
+    }
+  }
+  try
+    Emitter::new().write_enum(
+      type_name="Kind",
+      doc=[],
+      converter="kind_from_ordinal",
+      values~,
+      fallback="Other",
+    )
+  catch {
+    error =>
+      inspect(
+        error.to_string().contains("Kind has no constructor Other"),
+        content="true",
+      )
+  } noraise {
+    _ => fail("expected an unknown fallback to be rejected")
   }
 }
