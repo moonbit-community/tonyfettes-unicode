@@ -6,11 +6,14 @@ import {
   "moonbit-community/unicode-tools/bidi_data",
   "moonbit-community/unicode-tools/segmentation_data",
   "moonbitlang/core/argparse",
-  "moonbitlang/async",
-  "moonbitlang/async/fs",
-  "moonbitlang/async/http",
-  "moonbitlang/async/os_error",
-  "moonbitlang/async/process",
+  "moonbitlang/core/async",
+  "moonbitlang/core/async/fs",
+  "moonbitlang/core/async/http",
+  "moonbitlang/core/async/shell",
 }
 
 pkgtype(kind: "executable")
+
+options(
+  "allow-experimental-packages": true,
+)

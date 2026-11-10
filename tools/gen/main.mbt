@@ -22,25 +22,21 @@ async fn read_source(root : StringView, name : String, url : String) -> String {
   let path = cache_path(root, name)
   if @fs.exists(path) {
     println("Using cached \{name}")
-    return @fs.read_file(path).text()
+    return @fs.read_text(path)
   }
   println("Downloading \{name}...")
   ensure_directory("\{root}/tools/.cache/\{UnicodeVersion}")
-  let (response, body) = @http.get(url)
+  let (response, content) = @http.get_text(url)
   guard response.code >= 200 && response.code < 300 else {
     fail("Download failed for \{url}: HTTP \{response.code}")
   }
-  let content = body.text()
-  @fs.write_file(path, content, create_mode=CreateOrTruncate, permission=0o644)
+  @fs.write_text(path, content, permission=0o644)
   content
 }
 
 ///|
 async fn ensure_directory(path : String) -> Unit {
-  @fs.mkdir(path, permission=0o755, recursive=true) catch {
-    @os_error.OSError(_) as error if error.is_EEXIST() => ()
-    error => raise error
-  }
+  @fs.mkdir(path, permission=0o755, recursive=true, allow_exist=true)
 }
 
 ///|
@@ -61,18 +57,18 @@ async fn write_source(
   if parent_directory(path) is Some(parent) {
     ensure_directory(parent)
   }
-  @fs.write_file(path, source, create_mode=CreateOrTruncate, permission=0o644)
+  @fs.write_text(path, source, permission=0o644)
 }
 
 ///|
 async fn format_file(root : StringView, relative_path : String) -> Unit {
-  let status = @process.run("moon", ["fmt", relative_path], cwd=root)
+  let status = @shell.Cmd("moon", ["fmt", relative_path], cwd=root.to_owned()).status()
   guard status == 0 else { fail("moon fmt \{relative_path} failed") }
 }
 
 ///|
 async fn generate_interfaces(root : StringView, relative_path : String) -> Unit {
-  let status = @process.run("moon", ["info", relative_path], cwd=root)
+  let status = @shell.Cmd("moon", ["info", relative_path], cwd=root.to_owned()).status()
   guard status == 0 else { fail("moon info \{relative_path} failed") }
 }
 

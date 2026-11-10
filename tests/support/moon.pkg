@@ -1,6 +1,10 @@
 supported_targets = "-all+native+wasm"
 
 import {
-  "moonbitlang/async/fs",
+  "moonbitlang/core/async/fs",
   "moonbitlang/core/string",
 }
+
+options(
+  "allow-experimental-packages": true,
+)

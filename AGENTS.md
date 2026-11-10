@@ -46,7 +46,7 @@ moon info           # Regenerate pkg.generated.mbti files
   package paths
 - **tests/** (`moonbit-community/unicode-tests`): workspace-only conformance tests.
   They read the official Unicode test data files committed under `tests/data/`
-  directly at run time with `moonbitlang/async`; no test code is generated
+  directly at run time with `moonbitlang/core/async`; no test code is generated
 
 - **bench/** (`local/unicode-bench`): workspace-only benchmarks. `normperf/`
   measures normalization with `moon bench`; `xlang/` compares every module with
@@ -99,9 +99,9 @@ official Unicode test files (`BidiTest.txt`, `BidiCharacterTest.txt`,
 `NormalizationTest.txt`, `IdnaTestV2.txt`, `GraphemeBreakTest.txt`,
 `WordBreakTest.txt`, `SentenceBreakTest.txt`, `LineBreakTest.txt`) directly at
 test time via
-`moonbitlang/async`. The data files are committed under `tests/data/`, so the
-test module keeps its `moonbitlang/async` dependency separate from the
-published modules.
+`moonbitlang/core/async`. The data files are committed under `tests/data/`, and
+the tests use the standard library's async runtime, so they need no dependency
+beyond the published modules.
 
 Case folding conformance tests also read `CaseFolding.txt` and
 `DerivedNormalizationProps.txt`, checking every Unicode scalar value against

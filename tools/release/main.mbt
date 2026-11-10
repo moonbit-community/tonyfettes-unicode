@@ -16,6 +16,7 @@ async fn[X] wait_with_heartbeat(
   description : StringView,
   action : async () -> X,
 ) -> X {
+  let mut result : X? = None
   @async.with_task_group(group => {
     group.spawn_bg(no_wait=true, () => {
       for ;; {
@@ -23,8 +24,13 @@ async fn[X] wait_with_heartbeat(
         println("    Still waiting for \{description}...")
       }
     })
-    action()
+    result = Some(action())
   })
+  guard result is Some(value) else {
+    // Unreachable: a raising action propagates out of the task group.
+    raise ReleaseError("The heartbeat action returned no result")
+  }
+  value
 }
 
 ///|
@@ -35,7 +41,7 @@ async fn run_checked(
   description : StringView,
 ) -> Unit {
   println("==> \{description}")
-  let status = @process.run(program, arguments, cwd=root)
+  let status = @shell.Cmd(program.to_owned(), arguments, cwd=root.to_owned()).status()
   guard status == 0 else {
     raise ReleaseError("\{description} failed with exit status \{status}")
   }
@@ -54,14 +60,17 @@ async fn run_publish_dry_run(
   // `moon publish` validates the archive in a fresh directory, so it must be
   // allowed to install registry dependencies there.
   println("    $ moon -C \{release_module.directory} publish --dry-run")
-  let (status, output) = wait_with_heartbeat(description, () => {
-    @process.collect_output_merged(
+  let output = wait_with_heartbeat(description, () => {
+    @shell.Cmd(
       "moon",
       ["-C", release_module.directory, "publish", "--dry-run"],
-      cwd=root,
-    )
+      cwd=root.to_owned(),
+    ).output()
   })
-  let output_text = output.text()
+  let status = output.exit_code()
+  // `@shell` cannot merge the two streams at the descriptor level, so the
+  // captured streams are concatenated; `moon` reports failures on stderr.
+  let output_text = "\{output.stdout()}\{output.stderr()}"
   println(output_text.trim_end())
   guard publish_dry_run_succeeded(status, output_text, package_name, version) else {
     raise ReleaseError("\{description} failed with exit status \{status}")
@@ -72,15 +81,19 @@ async fn run_publish_dry_run(
 ///|
 async fn ensure_clean_worktree(root : StringView) -> Unit {
   println("==> Checking that the Git worktree is clean")
-  let (status, output) = @process.collect_stdout(
+  let output = @shell.Cmd(
     "git",
     ["status", "--porcelain=v1"],
-    cwd=root,
-  )
+    cwd=root.to_owned(),
+    // Only the porcelain lines are inspected; git's own diagnostics belong on
+    // the terminal, as they were before the migration.
+    stderr=Inherit,
+  ).output()
+  let status = output.exit_code()
   guard status == 0 else {
     raise ReleaseError("git status failed with exit status \{status}")
   }
-  let changes = output.text().trim()
+  let changes = output.stdout().trim()
   guard changes == "" else {
     raise ReleaseError(
       "The Git worktree must be clean before this operation:\n\{changes}",
@@ -95,7 +108,7 @@ async fn update_published_versions(root : StringView, version : String) -> Unit 
   let mut previous_version : String? = None
   for release_module in published_modules {
     let path = release_module.manifest_path()
-    let source = @fs.read_file("\{root}/\{path}").text()
+    let source = @fs.read_text("\{root}/\{path}")
     let current_version = manifest_version(source, path)
     if previous_version is Some(expected) {
       guard current_version == expected else {
@@ -115,12 +128,7 @@ async fn update_published_versions(root : StringView, version : String) -> Unit 
     raise ReleaseError("Published modules are already at version \{version}")
   }
   for update in updates {
-    @fs.write_file(
-      "\{root}/\{update.0}",
-      update.1,
-      create_mode=CreateOrTruncate,
-      permission=0o644,
-    )
+    @fs.write_text("\{root}/\{update.0}", update.1, permission=0o644)
   }
 }
 
@@ -129,7 +137,7 @@ async fn verify_published_versions(root : StringView) -> String {
   let versions : Array[(String, String)] = []
   for release_module in published_modules {
     let path = release_module.manifest_path()
-    let source = @fs.read_file("\{root}/\{path}").text()
+    let source = @fs.read_text("\{root}/\{path}")
     let actual_version = manifest_version(source, path)
     versions.push((path, actual_version))
   }
@@ -218,11 +226,15 @@ async fn publish_release(root : StringView) -> Unit {
       "==> Publishing moonbit-community/\{release_module.name}@\{version}",
     )
     println("    $ moon -C \{release_module.directory} publish")
-    let status = @process.run(
+    // `@process` keeps its default graceful cancellation handler (SIGTERM,
+    // five seconds), unlike `@shell`, which kills its child immediately: an
+    // interrupted publish must be able to stop on its own mid-request.
+    let result = @process.run(
       "moon",
       ["-C", release_module.directory, "publish"],
       cwd=root,
     )
+    let status = result.exit_code
     guard status == 0 else {
       raise ReleaseError(
         "Publishing moonbit-community/\{release_module.name}@\{version} failed with exit status \{status}. The modules published before it stay at \{version}: resolve the problem and release the whole set again at a new version.",

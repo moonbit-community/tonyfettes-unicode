@@ -3,6 +3,10 @@ supported_targets = "-all+native+wasm"
 import {
   "moonbit-community/unicode-idna" @idna,
   "moonbit-community/unicode-tests/support",
-  "moonbitlang/async",
+  "moonbitlang/core/async",
   "moonbitlang/core/debug",
 } for "test"
+
+options(
+  "allow-experimental-packages": true,
+)

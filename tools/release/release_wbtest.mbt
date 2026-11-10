@@ -178,3 +178,19 @@ test "preflight covers every module that does not depend on this release" {
     "unicode-data", "punycode", "unicode-bidi",
   ])
 }
+
+///|
+test "publish dry-run verdict does not depend on stream order" {
+  // `run_publish_dry_run` captures stdout and stderr separately and
+  // concatenates them, so the streams are not interleaved: text printed after
+  // the reported failure must not flip the verdict.
+  let output =
+    #|Server status: 202 Accepted, detail: Dry run completed successfully. No changes were made. The dry-run was made for package moonbit-community/unicode-data version 0.4.0.
+    #|Error: `moon publish` failed
+    #|warning: trailing stderr text
+  assert_true(
+    publish_dry_run_succeeded(
+      255, output, "moonbit-community/unicode-data", "0.4.0",
+    ),
+  )
+}
