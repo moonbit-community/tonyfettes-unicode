@@ -332,3 +332,24 @@ test "NFC and NFKC: conjoining jamo compose only when adjacent" {
   // U+3131 decomposes to a leading jamo, which composes with the vowel.
   assert_eq(@normalization.nfkc("\u{3131}\u{1161}"), "\u{AC00}")
 }
+
+///|
+test "NFKC: an LV syllable composes with a compatibility trailing jamo" {
+  // U+3133 and U+FFA3 decompose to the trailing jamo U+11AA, which composes
+  // with the syllable that the leading jamo and vowel before it form.
+  assert_eq(@normalization.nfkc("\u{1100}\u{1161}\u{3133}"), "\u{AC03}")
+  assert_eq(@normalization.nfkc("\u{1100}\u{1161}\u{FFA3}"), "\u{AC03}")
+  assert_eq(@normalization.nfkc("\u{AC00}\u{3133}"), "\u{AC03}")
+  // Normalizing again changes nothing.
+  assert_eq(@normalization.nfkc("\u{AC03}"), "\u{AC03}")
+  assert_true(@normalization.is_normalized("\u{AC03}", NFKC))
+  assert_true(!@normalization.is_normalized("\u{1100}\u{1161}\u{3133}", NFKC))
+  // NFC leaves the compatibility jamo, so the syllable stays LV.
+  assert_eq(@normalization.nfc("\u{1100}\u{1161}\u{3133}"), "\u{AC00}\u{3133}")
+  // The LV syllable still ends its segment before what follows.
+  assert_eq(@normalization.nfkc("\u{1100}\u{1161}a"), "\u{AC00}a")
+  assert_eq(
+    @normalization.nfkc("\u{1100}\u{1161}\u{1100}\u{1161}"),
+    "\u{AC00}\u{AC00}",
+  )
+}
