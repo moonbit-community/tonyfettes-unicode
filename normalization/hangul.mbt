@@ -77,21 +77,6 @@ fn is_hangul_lv(c : Char) -> Bool {
 }
 
 ///|
-/// Append a Hangul syllable's jamo decomposition to the destination.
-/// Writes L + V for LV syllables, L + V + T for LVT syllables.
-fn decompose_hangul(syllable : Char, dest : Array[Char]) -> Unit {
-  let s_index = syllable.to_int() - hangul_s_base
-  let l = hangul_l_base + s_index / hangul_n_count
-  let v = hangul_v_base + s_index % hangul_n_count / hangul_t_count
-  let t_index = s_index % hangul_t_count
-  dest.push(l.unsafe_to_char())
-  dest.push(v.unsafe_to_char())
-  if t_index != 0 {
-    dest.push((hangul_t_base + t_index).unsafe_to_char())
-  }
-}
-
-///|
 /// Try to compose two characters into a Hangul syllable
 /// Returns Some(syllable) if composition is possible, None otherwise
 fn try_compose_hangul(first : Char, second : Char) -> Char? {

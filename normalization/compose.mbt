@@ -17,6 +17,18 @@ priv struct Composer {
 }
 
 ///|
+/// A composer writing to a buffer of `capacity` code units.
+fn Composer::new(capacity : Int32) -> Composer {
+  {
+    out: CodeUnits::new(capacity),
+    segment: FixedArray::make(32, 0),
+    segment_len: 0,
+    previous_ccc: 0,
+    needs_order: false,
+  }
+}
+
+///|
 #inline(never)
 fn Composer::grow_segment(self : Composer) -> Unit {
   self.segment = FixedArray::make_and_blit(
@@ -44,21 +56,22 @@ fn Composer::push(self : Composer, entry : Int32, ccc : Int32) -> Unit {
 
 ///|
 /// Add a character with normalization record `record` to the segment,
-/// decomposed when it has a decomposition of this form's kind, which the
-/// record's bit `decomposition_bit` tells.
+/// decomposed when it has a decomposition of this form's kind.
 ///
 /// Hangul syllables stay whole: an LV syllable composes with a following
 /// trailing jamo as its decomposition would, and nothing else composes with
 /// either. Conjoining jamo compose here, as soon as they arrive: a leading
 /// jamo never composes with what precedes it, and a vowel or trailing jamo
 /// right after the starter it composes with is never blocked or reordered.
+/// This is common, not only for compatibility jamo: a clean run often ends
+/// at a leading jamo, which then begins a segment.
 fn Composer::append(
   self : Composer,
   code_point : Int32,
   record : Int32,
-  decomposition_bit : Int32,
   compatibility~ : Bool,
 ) -> Unit {
+  let decomposition_bit = if compatibility { 13 } else { 12 }
   let c = code_point.unsafe_to_char()
   if ((record >> decomposition_bit) & 1) == 0 || is_hangul_syllable(c) {
     let ccc = record & 255
@@ -83,8 +96,9 @@ fn Composer::append(
 /// classes in their order.
 fn Composer::order_segment(self : Composer) -> Unit {
   let segment = self.segment
+  // SAFETY: every index is below segment_len <= segment.length().
   for i in 1..<self.segment_len {
-    let entry = segment[i]
+    let entry = segment.unsafe_get(i)
     let ccc = entry >> PackedCccShift
     if ccc == 0 {
       continue
@@ -92,11 +106,11 @@ fn Composer::order_segment(self : Composer) -> Unit {
     // A starter's class is 0, below any nonstarter's, so the insertion
     // stops at the start of the run.
     let mut j = i
-    while j > 0 && segment[j - 1] >> PackedCccShift > ccc {
-      segment[j] = segment[j - 1]
+    while j > 0 && segment.unsafe_get(j - 1) >> PackedCccShift > ccc {
+      segment.unsafe_set(j, segment.unsafe_get(j - 1))
       j -= 1
     }
-    segment[j] = entry
+    segment.unsafe_set(j, entry)
   }
 }
 
@@ -105,28 +119,30 @@ fn Composer::order_segment(self : Composer) -> Unit {
 fn Composer::compose_segment(self : Composer) -> Unit {
   let segment = self.segment
   let len = self.segment_len
-  let first_ccc = segment[0] >> PackedCccShift
+  // SAFETY: the segment is not empty, every read index is below len <=
+  // segment.length(), and written <= i, last_starter < written.
+  let first_ccc = segment.unsafe_get(0) >> PackedCccShift
   // The last starter kept, or -1 before the first.
   let mut last_starter = if first_ccc == 0 { 0 } else { -1 }
   // The CCC of the last entry kept; a composed entry keeps the starter's.
   let mut last_ccc = first_ccc
   let mut written = 1
   for i in 1..<len {
-    let entry = segment[i]
+    let entry = segment.unsafe_get(i)
     let ccc = entry >> PackedCccShift
     // A character is blocked from the last starter by any character kept
     // between them whose class is 0 or not below its own.
     let blocked = last_ccc != 0 && (ccc == 0 || last_ccc >= ccc)
     if last_starter >= 0 && !blocked {
-      let starter = (segment[last_starter] & PackedCodePointMask).unsafe_to_char()
+      let starter = (segment.unsafe_get(last_starter) & PackedCodePointMask).unsafe_to_char()
       let second = (entry & PackedCodePointMask).unsafe_to_char()
       if try_compose(starter, second) is Some(composed) {
         // Composites are starters, so the entry's class stays 0.
-        segment[last_starter] = composed.to_int()
+        segment.unsafe_set(last_starter, composed.to_int())
         continue
       }
     }
-    segment[written] = entry
+    segment.unsafe_set(written, entry)
     written += 1
     if ccc == 0 {
       last_starter = written - 1
@@ -158,6 +174,34 @@ fn Composer::flush(self : Composer) -> Unit {
 }
 
 ///|
+/// Whether composing the segment leaves `span`, its characters in the
+/// input, as they are. The segment is then cleared.
+fn Composer::check(self : Composer, span : StringView) -> Bool {
+  if self.segment_len > 1 {
+    if self.needs_order {
+      self.order_segment()
+    }
+    self.compose_segment()
+  }
+  let segment = self.segment
+  let len = self.segment_len
+  let mut i = 0
+  let mut unchanged = true
+  for c in span {
+    // SAFETY: i < len <= segment.length().
+    if i >= len || (segment.unsafe_get(i) & PackedCodePointMask) != c.to_int() {
+      unchanged = false
+      break
+    }
+    i += 1
+  }
+  self.segment_len = 0
+  self.previous_ccc = 0
+  self.needs_order = false
+  unchanged && i == len
+}
+
+///|
 /// Compose `s` from view-relative `start`, the last starter before the
 /// first suspect character (or the view's start). Everything before `start`
 /// is unchanged. The record bits from `shift` hold this form's Quick_Check
@@ -176,8 +220,9 @@ fn compose_remaining(
   let data = s.data()
   let view_start = s.start_offset()
   let view_end = view_start + s.length()
-  let slow_mask = 255 | (3 << shift)
-  let decomposition_bit = if compatibility { 13 } else { 12 }
+  let slow_mask = 255 | (ComposeQuickCheckMask << shift)
+  // A literal rather than `Composer::new`: on wasm-gc, where moonc keeps
+  // that a call, NFC measured up to 18% slower with it.
   let composer : Composer = {
     out: {
       data: FixedArray::make(s.length() + 16, 0),
@@ -222,9 +267,9 @@ fn compose_remaining(
     let code_point = code_point_at(data, offset, view_end)
     let width = if code_point >= 0x10000 { 2 } else { 1 }
     // An unpaired surrogate has default properties: a clean starter.
-    let record = normalization_properties(code_point.unsafe_to_char())
+    let record = normalization_record(code_point.unsafe_to_char())
     if (record & 255) != 0 || ((record >> shift) & 3) != 0 {
-      composer.append(code_point, record, decomposition_bit, compatibility~)
+      composer.append(code_point, record, compatibility~)
       offset += width
       continue
     }
@@ -243,14 +288,13 @@ fn compose_remaining(
       last -= 1
     }
     if last == offset {
-      composer.append(code_point, record, decomposition_bit, compatibility~)
+      composer.append(code_point, record, compatibility~)
     } else {
       composer.out.copy(data, offset, last)
       let last_code_point = code_point_at(data, last, view_end)
       composer.append(
         last_code_point,
-        normalization_properties(last_code_point.unsafe_to_char()),
-        decomposition_bit,
+        normalization_record(last_code_point.unsafe_to_char()),
         compatibility~,
       )
     }

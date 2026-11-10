@@ -2242,7 +2242,9 @@ fn unpack_code_points(entries : ArrayView[Int32]) -> Array[Char] {
 /// Get canonical decomposition for a character
 /// Returns None if no decomposition exists
 pub fn get_canonical_decomposition(c : Char) -> Array[Char]? {
-  let idx = @normalization_data.normalization_decomposition_index(c)
+  let idx = decomposition_row(
+    @normalization_data.lookup_normalization_record(c),
+  )
   if idx < 0 || decomp_canonical_lens[idx] == 0 {
     return None
   }
@@ -2253,7 +2255,9 @@ pub fn get_canonical_decomposition(c : Char) -> Array[Char]? {
 /// Get compatibility decomposition for a character
 /// Returns None if no decomposition exists
 pub fn get_compat_decomposition(c : Char) -> Array[Char]? {
-  let idx = @normalization_data.normalization_decomposition_index(c)
+  let idx = decomposition_row(
+    @normalization_data.lookup_normalization_record(c),
+  )
   if idx < 0 || decomp_canonical_lens[idx] != 0 {
     return None
   }
@@ -2262,6 +2266,13 @@ pub fn get_compat_decomposition(c : Char) -> Array[Char]? {
 
 ///|
 pub using @normalization_data {lookup_normalization_record}
+
+///|
+/// The decomposition row of a character with normalization record
+/// `record`, or -1 without one.
+fn decomposition_row(record : Int32) -> Int32 {
+  (record >> 16) - 1
+}
 
 ///|
 /// The full decomposition of a character: its canonical mapping, or its
@@ -2277,7 +2288,7 @@ pub fn packed_decomposition(
   record : Int32,
   compatibility~ : Bool,
 ) -> ArrayView[Int32] {
-  let idx = (record >> 16) - 1
+  let idx = decomposition_row(record)
   if idx < 0 {
     return decomp_data.exact_view(start=0, end=0)
   }

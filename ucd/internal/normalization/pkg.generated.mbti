@@ -8,8 +8,6 @@ pub fn lookup_normalization_record(Char) -> Int32
 
 pub fn normalization_composition_group(Char) -> Int32
 
-pub fn normalization_decomposition_index(Char) -> Int32
-
 // Errors
 
 // Types and methods

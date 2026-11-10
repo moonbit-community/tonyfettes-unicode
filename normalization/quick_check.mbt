@@ -3,7 +3,7 @@
 /// 0..15, and in the bits above, where `@decomposition.packed_decomposition`
 /// finds its decomposition. ASCII has CCC=0, Quick_Check=Yes for every
 /// normalization form and no decomposition.
-fn normalization_properties(c : Char) -> Int32 {
+fn normalization_record(c : Char) -> Int32 {
   if c.to_int() < 0x80 {
     0
   } else {
@@ -12,98 +12,24 @@ fn normalization_properties(c : Char) -> Int32 {
 }
 
 ///|
-/// Scratch storage for checking NFC and NFKC past a character with
-/// Quick_Check=Maybe, allocated only then and reused across segments.
-/// Normalizing goes through `compose_remaining` instead.
-priv struct NormalizationBuffer {
-  chars : Array[Char]
-  mut previous_ccc : Int32
-  mut needs_order : Bool
-}
+/// The Quick_Check bits of NFC and NFKC, the forms that compose: Yes=0,
+/// No=1, Maybe=2.
+const ComposeQuickCheckMask : Int32 = 3
 
 ///|
-/// Reuse the record (see `normalization_properties`) already loaded by the
-/// scanner. Only mapped characters need their decomposition; detect ordering
-/// while appending the result.
-fn NormalizationBuffer::append(
-  self : NormalizationBuffer,
-  c : Char,
-  properties : Int32,
-  compatibility~ : Bool,
-) -> Unit {
-  let decomp_shift = if compatibility { 13 } else { 12 }
-  if ((properties >> decomp_shift) & 1) == 0 {
-    let ccc = properties & 255
-    if ccc != 0 && self.previous_ccc > ccc {
-      self.needs_order = true
-    }
-    self.previous_ccc = ccc
-    self.chars.push(c)
-  } else if is_hangul_syllable(c) {
-    // Hangul syllables decompose algorithmically into conjoining jamo, which
-    // are all starters, so there is no combining class to look up.
-    decompose_hangul(c, self.chars)
-    self.previous_ccc = 0
-  } else {
-    // The character has a mapping of this form's kind, so the view is not
-    // empty, and its entries carry their combining classes.
-    for entry in @decomposition.packed_decomposition(properties, compatibility~) {
-      let ccc = entry >> PackedCccShift
-      if ccc != 0 && self.previous_ccc > ccc {
-        self.needs_order = true
-      }
-      self.previous_ccc = ccc
-      self.chars.push((entry & PackedCodePointMask).unsafe_to_char())
-    }
-  }
-}
-
-///|
-/// Compare code points without constructing a normalized string.
-fn span_equals(chars : Array[Char], span : StringView) -> Bool {
-  let mut i = 0
-  for c in span {
-    if i >= chars.length() || chars[i] != c {
-      return false
-    }
-    i += 1
-  }
-  i == chars.length()
-}
-
-///|
-/// Check one independent segment: whether composing it leaves `span`, its
-/// characters in the input, as they are. The segment is then cleared.
-fn NormalizationBuffer::check(
-  self : NormalizationBuffer,
-  span : StringView,
-) -> Bool {
-  if self.needs_order {
-    canonical_order(self.chars)
-  }
-  canonical_compose(self.chars)
-  let unchanged = span_equals(self.chars, span)
-  self.chars.clear()
-  self.previous_ccc = 0
-  self.needs_order = false
-  unchanged
-}
-
-///|
-/// Check suspect segments with reusable scratch storage until a clean run.
-/// Return its next unconsumed boundary, or -1 if checking fails.
+/// Check suspect segments of NFC or NFKC, composed in `composer`, until a
+/// clean run. Return its next unconsumed boundary, or -1 if checking fails.
 fn check_suspect_spans(
-  buffer : NormalizationBuffer,
+  composer : Composer,
   s : StringView,
   start : Int32,
   problem_offset : Int32,
   shift : Int32,
-  mask : Int32,
   compatibility~ : Bool,
 ) -> Int32 {
   // Retain the starter and any preceding marks in the first suspect segment.
   for c in s[start:problem_offset] {
-    buffer.append(c, normalization_properties(c), compatibility~)
+    composer.append(c.to_int(), normalization_record(c), compatibility~)
   }
   let mut span_start = start
   let mut offset = problem_offset
@@ -111,9 +37,9 @@ fn check_suspect_spans(
   let mut suspect = true
   let mut clean_start = problem_offset
   for c in s[problem_offset:] {
-    let properties = normalization_properties(c)
-    let ccc = properties & 255
-    let check = (properties >> shift) & mask
+    let record = normalization_record(c)
+    let ccc = record & 255
+    let check = (record >> shift) & ComposeQuickCheckMask
     if ccc == 0 && check == 0 {
       // Amortize the handoff over a clean run: consume up to two UTF-16 units
       // here before resuming the tight scanner. Dense one/two-starter gaps
@@ -122,7 +48,7 @@ fn check_suspect_spans(
         return offset
       }
       if suspect {
-        if !buffer.check(s[span_start:offset]) {
+        if !composer.check(s[span_start:offset]) {
           return -1
         }
         clean_start = offset
@@ -134,23 +60,23 @@ fn check_suspect_spans(
     if check == 1 || out_of_order {
       return -1
     }
-    if !suspect && (check != 0 || out_of_order) {
+    if !suspect && check != 0 {
       for preceding in s[span_start:offset] {
-        buffer.append(
-          preceding,
-          normalization_properties(preceding),
+        composer.append(
+          preceding.to_int(),
+          normalization_record(preceding),
           compatibility~,
         )
       }
       suspect = true
     }
     if suspect {
-      buffer.append(c, properties, compatibility~)
+      composer.append(c.to_int(), record, compatibility~)
     }
     previous_ccc = ccc
     offset += if c.to_int() > 0xFFFF { 2 } else { 1 }
   }
-  if suspect && !buffer.check(s[span_start:offset]) {
+  if suspect && !composer.check(s[span_start:offset]) {
     return -1
   }
   offset
@@ -255,9 +181,10 @@ fn scan_clean_units(
 /// are tried: a block whose code units are all below the clean limit needs
 /// no table. The stretch starts short, so that a run that soon ends never
 /// reaches a block, and grows while no block is clean, so that text above the
-/// limit pays for few tries and few calls. Later stretches are scanned four
-/// units at a time, which takes fewer branches per unit but costs more where
-/// the run ends, so the first stretch, where most short runs end, is not.
+/// limit pays for few tries and few calls. On native and wasm, later
+/// stretches are scanned four units at a time, which takes fewer branches per
+/// unit but costs more where the run ends, so the first stretch, where most
+/// short runs end, is not.
 fn scan_clean_run(
   s : String,
   start : Int32,
@@ -462,6 +389,9 @@ fn process_spans(
     if offset > run_start {
       // All skipped characters are CCC=0 and Quick_Check=Yes. Recover only
       // the last one's start, including its leading surrogate when present.
+      // Written out, not shared with the other two scans that do this: a
+      // helper stays a call on wasm-gc, where this runs after every clean
+      // run.
       span_start = offset - 1
       if data[span_start].is_trailing_surrogate() &&
         span_start > run_start &&
@@ -494,7 +424,6 @@ fn process_spans(
           span_start - start,
           offset - start,
           shift,
-          mask,
           compatibility~,
         ) {
         Some("")
@@ -511,37 +440,31 @@ fn process_spans(
 }
 
 ///|
-/// Check NFC or NFKC after the first suspect character, reusing one scratch
-/// buffer. Normal runs resume the tight scanner; the allocation-free entry
-/// path keeps the scratch state out of its hot loop.
+/// Check NFC or NFKC after the first suspect character, reusing one
+/// composer, which writes nothing. Normal runs resume the tight scanner; the
+/// allocation-free entry path keeps the scratch state out of its hot loop.
 fn check_remaining_spans(
   s : StringView,
   start : Int32,
   problem_offset : Int32,
   shift : Int32,
-  mask : Int32,
   compatibility~ : Bool,
 ) -> Bool {
-  let buffer : NormalizationBuffer = {
-    chars: [],
-    previous_ccc: 0,
-    needs_order: false,
-  }
+  let composer = Composer::new(0)
   let length = s.length()
   let data = s.data()
   let view_start = s.start_offset()
   let view_end = view_start + length
-  let slow_mask = 255 | (mask << shift)
+  let slow_mask = 255 | (ComposeQuickCheckMask << shift)
   let mut offset = problem_offset
   let mut span_start = start
   while offset < length {
     offset = check_suspect_spans(
-      buffer,
+      composer,
       s,
       span_start,
       offset,
       shift,
-      mask,
       compatibility~,
     )
     if offset < 0 {

@@ -26,6 +26,15 @@ pub fn emit_ccc() -> String {
 const DecompositionCccShift : Int32 = 21
 
 ///|
+const DecompositionCodePointMask : Int32 = 0x1FFFFF
+
+///|
+/// A packed decomposition entry: `code_point` and its combining class.
+fn packed_entry(data : UnicodeData, code_point : Int32) -> Int32 {
+  code_point | (data.ccc[code_point] << DecompositionCccShift)
+}
+
+///|
 /// Append the full decomposition of `code_point` to `dest` as packed
 /// entries: its mapping, applied recursively, where a compatibility mapping
 /// applies only when `compatibility` is set.
@@ -47,7 +56,7 @@ fn append_full_decomposition(
       append_full_decomposition(data, mappings, target, compatibility, dest)
     }
   } else {
-    dest.push(code_point | (data.ccc[code_point] << DecompositionCccShift))
+    dest.push(packed_entry(data, code_point))
   }
 }
 
@@ -96,7 +105,7 @@ pub fn emit_decomposition(data : UnicodeData) -> String raise {
       canonical
     }
     let mapping = entry.code_points.map(code_point => {
-      code_point | (data.ccc[code_point] << DecompositionCccShift)
+      packed_entry(data, code_point)
     })
     if mapping == full {
       mapping_lens.push(0)
@@ -143,63 +152,70 @@ pub fn emit_decomposition(data : UnicodeData) -> String raise {
   )
   out.write(
     (
-      #|///|
-      #|/// The mapping of row `idx` itself, which is canonical when the row has
-      #|/// a full canonical decomposition.
-      #|fn mapping_entries(idx : Int) -> ArrayView[Int] {
-      #|  let start = decomp_data_starts[idx]
-      #|  let canonical_len = decomp_canonical_lens[idx].to_int()
-      #|  let full_len = if canonical_len != 0 {
-      #|    canonical_len
-      #|  } else {
-      #|    decomp_compat_lens[idx].to_int()
-      #|  }
-      #|  let mapping_len = decomp_mapping_lens[idx].to_int()
-      #|  if mapping_len == 0 {
-      #|    return decomp_data.exact_view(start~, end=start + full_len)
-      #|  }
-      #|  let mapping_start = start +
-      #|    canonical_len +
-      #|    decomp_compat_lens[idx].to_int()
-      #|  decomp_data.exact_view(
-      #|    start=mapping_start,
-      #|    end=mapping_start + mapping_len,
-      #|  )
-      #|}
-      #|
-      #|///|
-      #|fn unpack_code_points(entries : ArrayView[Int]) -> Array[Char] {
-      #|  entries.map(entry => (entry & 0x1FFFFF).unsafe_to_char())
-      #|}
-      #|
-      #|///|
-      #|/// Get canonical decomposition for a character
-      #|/// Returns None if no decomposition exists
-      #|pub fn get_canonical_decomposition(c : Char) -> Array[Char]? {
-      #|  let idx = @normalization_data.normalization_decomposition_index(c)
-      #|  if idx < 0 || decomp_canonical_lens[idx] == 0 {
-      #|    return None
-      #|  }
-      #|  Some(unpack_code_points(mapping_entries(idx)))
-      #|}
-      #|
-      #|///|
-      #|/// Get compatibility decomposition for a character
-      #|/// Returns None if no decomposition exists
-      #|pub fn get_compat_decomposition(c : Char) -> Array[Char]? {
-      #|  let idx = @normalization_data.normalization_decomposition_index(c)
-      #|  if idx < 0 || decomp_canonical_lens[idx] != 0 {
-      #|    return None
-      #|  }
-      #|  Some(unpack_code_points(mapping_entries(idx)))
-      #|}
-      #|
+      $|///|
+      $|/// The mapping of row `idx` itself, which is canonical when the row has
+      $|/// a full canonical decomposition.
+      $|fn mapping_entries(idx : Int) -> ArrayView[Int] {
+      $|  let start = decomp_data_starts[idx]
+      $|  let canonical_len = decomp_canonical_lens[idx].to_int()
+      $|  let full_len = if canonical_len != 0 {
+      $|    canonical_len
+      $|  } else {
+      $|    decomp_compat_lens[idx].to_int()
+      $|  }
+      $|  let mapping_len = decomp_mapping_lens[idx].to_int()
+      $|  if mapping_len == 0 {
+      $|    return decomp_data.exact_view(start~, end=start + full_len)
+      $|  }
+      $|  let mapping_start = start +
+      $|    canonical_len +
+      $|    decomp_compat_lens[idx].to_int()
+      $|  decomp_data.exact_view(
+      $|    start=mapping_start,
+      $|    end=mapping_start + mapping_len,
+      $|  )
+      $|}
+      $|
+      $|///|
+      $|fn unpack_code_points(entries : ArrayView[Int]) -> Array[Char] {
+      $|  entries.map(entry => (entry & \{@emitter.hex_literal(DecompositionCodePointMask)}).unsafe_to_char())
+      $|}
+      $|
+      $|///|
+      $|/// Get canonical decomposition for a character
+      $|/// Returns None if no decomposition exists
+      $|pub fn get_canonical_decomposition(c : Char) -> Array[Char]? {
+      $|  let idx = decomposition_row(@normalization_data.lookup_normalization_record(c))
+      $|  if idx < 0 || decomp_canonical_lens[idx] == 0 {
+      $|    return None
+      $|  }
+      $|  Some(unpack_code_points(mapping_entries(idx)))
+      $|}
+      $|
+      $|///|
+      $|/// Get compatibility decomposition for a character
+      $|/// Returns None if no decomposition exists
+      $|pub fn get_compat_decomposition(c : Char) -> Array[Char]? {
+      $|  let idx = decomposition_row(@normalization_data.lookup_normalization_record(c))
+      $|  if idx < 0 || decomp_canonical_lens[idx] != 0 {
+      $|    return None
+      $|  }
+      $|  Some(unpack_code_points(mapping_entries(idx)))
+      $|}
+      $|
     ),
   )
   out.write(
     (
       $|///|
       $|pub using @normalization_data {lookup_normalization_record}
+      $|
+      $|///|
+      $|/// The decomposition row of a character with normalization record
+      $|/// `record`, or -1 without one.
+      $|fn decomposition_row(record : Int) -> Int {
+      $|  (record >> 16) - 1
+      $|}
       $|
       $|///|
       $|/// The full decomposition of a character: its canonical mapping, or its
@@ -215,7 +231,7 @@ pub fn emit_decomposition(data : UnicodeData) -> String raise {
       $|  record : Int,
       $|  compatibility~ : Bool,
       $|) -> ArrayView[Int] {
-      $|  let idx = (record >> 16) - 1
+      $|  let idx = decomposition_row(record)
       $|  if idx < 0 {
       $|    return decomp_data.exact_view(start=0, end=0)
       $|  }
@@ -259,7 +275,7 @@ pub fn emit_decomposition(data : UnicodeData) -> String raise {
       $|    return
       $|  }
       $|  for entry in entries {
-      $|    dest.push((entry & 0x1FFFFF).unsafe_to_char())
+      $|    dest.push((entry & \{@emitter.hex_literal(DecompositionCodePointMask)}).unsafe_to_char())
       $|  }
       $|}
       $|

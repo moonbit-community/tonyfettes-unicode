@@ -29,6 +29,17 @@ priv struct CodeUnits {
 }
 
 ///|
+fn CodeUnits::new(capacity : Int32) -> CodeUnits {
+  {
+    data: FixedArray::make(capacity, 0),
+    len: 0,
+    marks_start: 0,
+    previous_ccc: 0,
+    needs_order: false,
+  }
+}
+
+///|
 #inline(never)
 fn CodeUnits::grow(self : CodeUnits, required : Int32) -> Unit {
   let mut capacity = if self.data.length() < 16 {
@@ -171,16 +182,12 @@ fn decompose_remaining(
   let view_start = s.start_offset()
   let view_end = view_start + s.length()
   let slow_mask = 255 | (1 << shift)
-  let out : CodeUnits = {
-    data: FixedArray::make(s.length() + s.length() / 2 + 16, 0),
-    len: 0,
-    marks_start: 0,
-    previous_ccc: 0,
-    needs_order: false,
-  }
+  let out = CodeUnits::new(s.length() + s.length() / 2 + 16)
   out.copy(data, view_start, view_start + start)
   let mut offset = view_start + start
   while offset < view_end {
+    // Decoded here rather than by `code_point_at`, which moonc keeps a call
+    // on wasm-gc: there, the call made Korean NFD 14% slower.
     // SAFETY: view_start <= offset < view_end <= data.length(), and the
     // trailing unit is read only when offset + 1 < view_end.
     let unit = data.unsafe_get(offset).to_int()
@@ -195,10 +202,10 @@ fn decompose_remaining(
     }
     // An unpaired surrogate has default properties: a clean starter.
     let c = code_point.unsafe_to_char()
-    let properties = normalization_properties(c)
-    let ccc = properties & 255
+    let record = normalization_record(c)
+    let ccc = record & 255
     out.reserve(2)
-    if ((properties >> shift) & 1) == 0 {
+    if ((record >> shift) & 1) == 0 {
       if ccc != 0 {
         out.emit(code_point, ccc)
       } else {
@@ -238,10 +245,7 @@ fn decompose_remaining(
     } else {
       // The character has a mapping of this form's kind, so the view is not
       // empty, and its entries carry their combining classes.
-      let entries = @decomposition.packed_decomposition(
-        properties,
-        compatibility~,
-      )
+      let entries = @decomposition.packed_decomposition(record, compatibility~)
       out.reserve(2 * entries.length())
       for entry in entries {
         out.emit(entry & PackedCodePointMask, entry >> PackedCccShift)
