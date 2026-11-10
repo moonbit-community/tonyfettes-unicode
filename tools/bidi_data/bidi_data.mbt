@@ -108,7 +108,7 @@ pub fn emit_bidi_class(content : String) -> String raise {
     converter="bidi_from_code",
     values=bidi_classes
       .iter()
-      .map(entry => @emitter.EnumValue::{ name: entry.0, comment: entry.1 })
+      .map(entry => @emitter.EnumValue::{ name: entry.0, comment: entry.1, })
       .collect(),
     fallback="L",
   )
@@ -196,36 +196,21 @@ pub fn emit_mirrored(content : String) -> String raise {
   out.write(
     (
       #|///|
-      #|fn find_mirrored_index(c : Char) -> Int {
-      #|  let cp = c.to_int()
-      #|  let mut left = 0
-      #|  let mut right = mirrored_code_points.length() - 1
-      #|  while left <= right {
-      #|    let mid = (left + right) / 2
-      #|    let mid_cp = mirrored_code_points[mid]
-      #|    if cp < mid_cp {
-      #|      right = mid - 1
-      #|    } else if cp > mid_cp {
-      #|      left = mid + 1
-      #|    } else {
-      #|      return mid
-      #|    }
-      #|  }
-      #|  -1
-      #|}
-      #|
-      #|///|
       #|pub fn is_bidi_mirrored(c : Char) -> Bool {
-      #|  find_mirrored_index(c) >= 0
+      #|  find_mirrored_index(c.to_int()) >= 0
       #|}
       #|
       #|///|
       #|pub fn bidi_mirroring_glyph(c : Char) -> Char {
-      #|  let idx = find_mirrored_index(c)
+      #|  let idx = find_mirrored_index(c.to_int())
       #|  if idx < 0 { c } else { mirrored_glyphs[idx].unsafe_to_char() }
       #|}
       #|
     ),
+  )
+  out.write_sorted_search(
+    name="find_mirrored_index",
+    values="mirrored_code_points",
   )
   out.finish()
 }
@@ -243,7 +228,7 @@ pub fn emit_bracket(content : String) -> String raise {
     converter="bracket_type_from_ordinal",
     values=bracket_type_values
       .iter()
-      .map(entry => @emitter.EnumValue::{ name: entry.0, comment: entry.2 })
+      .map(entry => @emitter.EnumValue::{ name: entry.0, comment: entry.2, })
       .collect(),
     fallback="None",
   )
@@ -268,33 +253,14 @@ pub fn emit_bracket(content : String) -> String raise {
   out.write(
     (
       #|///|
-      #|fn find_bracket_index(c : Char) -> Int {
-      #|  let cp = c.to_int()
-      #|  let mut left = 0
-      #|  let mut right = bracket_code_points.length() - 1
-      #|  while left <= right {
-      #|    let mid = (left + right) / 2
-      #|    let mid_cp = bracket_code_points[mid]
-      #|    if cp < mid_cp {
-      #|      right = mid - 1
-      #|    } else if cp > mid_cp {
-      #|      left = mid + 1
-      #|    } else {
-      #|      return mid
-      #|    }
-      #|  }
-      #|  -1
-      #|}
-      #|
-      #|///|
       #|pub fn bracket_type(c : Char) -> BracketType {
-      #|  let idx = find_bracket_index(c)
+      #|  let idx = find_bracket_index(c.to_int())
       #|  if idx < 0 { None } else { bracket_type_from_ordinal(bracket_types[idx]) }
       #|}
       #|
       #|///|
       #|pub fn paired_bracket(c : Char) -> Char? {
-      #|  let idx = find_bracket_index(c)
+      #|  let idx = find_bracket_index(c.to_int())
       #|  if idx < 0 { Option::None } else { Some(paired_brackets[idx].unsafe_to_char()) }
       #|}
       #|
@@ -318,6 +284,10 @@ pub fn emit_bracket(content : String) -> String raise {
       #|}
       #|
     ),
+  )
+  out.write_sorted_search(
+    name="find_bracket_index",
+    values="bracket_code_points",
   )
   out.finish()
 }

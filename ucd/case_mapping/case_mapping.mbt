@@ -338,28 +338,6 @@ fn lookup_case_record(c : Char) -> Int32 {
 }
 
 ///|
-/// Binary search helper - returns index if found, -1 otherwise
-fn binary_search_case(arr : ReadOnlyArray[Int32], cp : Int32) -> Int32 {
-  let mut left = 0
-  let mut right = arr.length() - 1
-
-  while left <= right {
-    let mid = (left + right) / 2
-    let mid_cp = arr[mid]
-
-    if cp < mid_cp {
-      right = mid - 1
-    } else if cp > mid_cp {
-      left = mid + 1
-    } else {
-      return mid
-    }
-  }
-
-  -1
-}
-
-///|
 /// Look up simple uppercase mapping for a character
 /// Returns the character itself if no mapping exists
 pub fn lookup_simple_uppercase(c : Char) -> Char {
@@ -372,7 +350,7 @@ pub fn lookup_simple_uppercase(c : Char) -> Char {
 pub fn full_uppercase(c : Char) -> String {
   let record = lookup_case_record(c)
   if (case_special_flags[record].to_int() & 1) != 0 {
-    let index = binary_search_case(special_upper_cps, c.to_int())
+    let index = find_special_upper(c.to_int())
     if index >= 0 {
       return special_upper_strings[index]
     }
@@ -391,7 +369,7 @@ pub fn full_uppercase(c : Char) -> String {
 pub fn lookup_full_uppercase(c : Char) -> Array[Char]? {
   let record = lookup_case_record(c)
   if (case_special_flags[record].to_int() & 1) != 0 {
-    let index = binary_search_case(special_upper_cps, c.to_int())
+    let index = find_special_upper(c.to_int())
     if index >= 0 {
       return Some(special_upper_strings[index].to_array())
     }
@@ -402,6 +380,25 @@ pub fn lookup_full_uppercase(c : Char) -> Array[Char]? {
   } else {
     Some([(c.to_int() + delta).unsafe_to_char()])
   }
+}
+
+///|
+/// Index of `key` in the sorted array `special_upper_cps`, or -1 if it is absent.
+fn find_special_upper(key : Int32) -> Int32 {
+  let mut left = 0
+  let mut right = special_upper_cps.length() - 1
+  while left <= right {
+    let mid = (left + right) / 2
+    let value = special_upper_cps[mid]
+    if key < value {
+      right = mid - 1
+    } else if key > value {
+      left = mid + 1
+    } else {
+      return mid
+    }
+  }
+  -1
 }
 
 ///|
@@ -417,7 +414,7 @@ pub fn lookup_simple_lowercase(c : Char) -> Char {
 pub fn full_lowercase(c : Char) -> String {
   let record = lookup_case_record(c)
   if (case_special_flags[record].to_int() & 2) != 0 {
-    let index = binary_search_case(special_lower_cps, c.to_int())
+    let index = find_special_lower(c.to_int())
     if index >= 0 {
       return special_lower_strings[index]
     }
@@ -436,7 +433,7 @@ pub fn full_lowercase(c : Char) -> String {
 pub fn lookup_full_lowercase(c : Char) -> Array[Char]? {
   let record = lookup_case_record(c)
   if (case_special_flags[record].to_int() & 2) != 0 {
-    let index = binary_search_case(special_lower_cps, c.to_int())
+    let index = find_special_lower(c.to_int())
     if index >= 0 {
       return Some(special_lower_strings[index].to_array())
     }
@@ -447,6 +444,25 @@ pub fn lookup_full_lowercase(c : Char) -> Array[Char]? {
   } else {
     Some([(c.to_int() + delta).unsafe_to_char()])
   }
+}
+
+///|
+/// Index of `key` in the sorted array `special_lower_cps`, or -1 if it is absent.
+fn find_special_lower(key : Int32) -> Int32 {
+  let mut left = 0
+  let mut right = special_lower_cps.length() - 1
+  while left <= right {
+    let mid = (left + right) / 2
+    let value = special_lower_cps[mid]
+    if key < value {
+      right = mid - 1
+    } else if key > value {
+      left = mid + 1
+    } else {
+      return mid
+    }
+  }
+  -1
 }
 
 ///|
@@ -462,7 +478,7 @@ pub fn lookup_simple_titlecase(c : Char) -> Char {
 pub fn full_titlecase(c : Char) -> String {
   let record = lookup_case_record(c)
   if (case_special_flags[record].to_int() & 4) != 0 {
-    let index = binary_search_case(special_title_cps, c.to_int())
+    let index = find_special_title(c.to_int())
     if index >= 0 {
       return special_title_strings[index]
     }
@@ -481,7 +497,7 @@ pub fn full_titlecase(c : Char) -> String {
 pub fn lookup_full_titlecase(c : Char) -> Array[Char]? {
   let record = lookup_case_record(c)
   if (case_special_flags[record].to_int() & 4) != 0 {
-    let index = binary_search_case(special_title_cps, c.to_int())
+    let index = find_special_title(c.to_int())
     if index >= 0 {
       return Some(special_title_strings[index].to_array())
     }
@@ -492,4 +508,23 @@ pub fn lookup_full_titlecase(c : Char) -> Array[Char]? {
   } else {
     Some([(c.to_int() + delta).unsafe_to_char()])
   }
+}
+
+///|
+/// Index of `key` in the sorted array `special_title_cps`, or -1 if it is absent.
+fn find_special_title(key : Int32) -> Int32 {
+  let mut left = 0
+  let mut right = special_title_cps.length() - 1
+  while left <= right {
+    let mid = (left + right) / 2
+    let value = special_title_cps[mid]
+    if key < value {
+      right = mid - 1
+    } else if key > value {
+      left = mid + 1
+    } else {
+      return mid
+    }
+  }
+  -1
 }

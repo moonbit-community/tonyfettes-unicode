@@ -90,27 +90,8 @@ let bracket_types : ReadOnlyArray[Int32] = [
 ]
 
 ///|
-fn find_bracket_index(c : Char) -> Int32 {
-  let cp = c.to_int()
-  let mut left = 0
-  let mut right = bracket_code_points.length() - 1
-  while left <= right {
-    let mid = (left + right) / 2
-    let mid_cp = bracket_code_points[mid]
-    if cp < mid_cp {
-      right = mid - 1
-    } else if cp > mid_cp {
-      left = mid + 1
-    } else {
-      return mid
-    }
-  }
-  -1
-}
-
-///|
 pub fn bracket_type(c : Char) -> BracketType {
-  let idx = find_bracket_index(c)
+  let idx = find_bracket_index(c.to_int())
   if idx < 0 {
     None
   } else {
@@ -120,7 +101,7 @@ pub fn bracket_type(c : Char) -> BracketType {
 
 ///|
 pub fn paired_bracket(c : Char) -> Char? {
-  let idx = find_bracket_index(c)
+  let idx = find_bracket_index(c.to_int())
   if idx < 0 {
     Option::None
   } else {
@@ -145,4 +126,23 @@ pub fn is_bracket_pair(open : Char, close : Char) -> Bool {
   } else {
     false
   }
+}
+
+///|
+/// Index of `key` in the sorted array `bracket_code_points`, or -1 if it is absent.
+fn find_bracket_index(key : Int32) -> Int32 {
+  let mut left = 0
+  let mut right = bracket_code_points.length() - 1
+  while left <= right {
+    let mid = (left + right) / 2
+    let value = bracket_code_points[mid]
+    if key < value {
+      right = mid - 1
+    } else if key > value {
+      left = mid + 1
+    } else {
+      return mid
+    }
+  }
+  -1
 }

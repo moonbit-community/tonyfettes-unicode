@@ -32,7 +32,7 @@ pub fn emit_line_break(String) -> String raise
 
 pub fn emit_line_break_enum() -> String raise
 
-pub fn emit_marks(UnicodeData) -> String
+pub fn emit_marks(UnicodeData) -> String raise
 
 pub fn emit_nfkc_casefold(String) -> String raise
 

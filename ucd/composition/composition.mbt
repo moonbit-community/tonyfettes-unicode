@@ -392,23 +392,24 @@ pub fn lookup_composition(starter : Char, combining : Char) -> Char? {
 ///|
 /// Check if a character is excluded from composition
 pub fn is_composition_excluded(c : Char) -> Bool {
-  let cp = c.to_int()
-  // Binary search in exclusions
+  find_composition_exclusion(c.to_int()) >= 0
+}
+
+///|
+/// Index of `key` in the sorted array `comp_exclusions`, or -1 if it is absent.
+fn find_composition_exclusion(key : Int32) -> Int32 {
   let mut left = 0
   let mut right = comp_exclusions.length() - 1
-
   while left <= right {
     let mid = (left + right) / 2
-    let mid_cp = comp_exclusions[mid]
-
-    if cp < mid_cp {
+    let value = comp_exclusions[mid]
+    if key < value {
       right = mid - 1
-    } else if cp > mid_cp {
+    } else if key > value {
       left = mid + 1
     } else {
-      return true
+      return mid
     }
   }
-
-  false
+  -1
 }

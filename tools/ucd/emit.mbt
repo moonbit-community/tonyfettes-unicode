@@ -234,28 +234,14 @@ pub fn emit_composition(
       #|///|
       #|/// Check if a character is excluded from composition
       #|pub fn is_composition_excluded(c : Char) -> Bool {
-      #|  let cp = c.to_int()
-      #|  // Binary search in exclusions
-      #|  let mut left = 0
-      #|  let mut right = comp_exclusions.length() - 1
-      #|
-      #|  while left <= right {
-      #|    let mid = (left + right) / 2
-      #|    let mid_cp = comp_exclusions[mid]
-      #|
-      #|    if cp < mid_cp {
-      #|      right = mid - 1
-      #|    } else if cp > mid_cp {
-      #|      left = mid + 1
-      #|    } else {
-      #|      return true
-      #|    }
-      #|  }
-      #|
-      #|  false
+      #|  find_composition_exclusion(c.to_int()) >= 0
       #|}
       #|
     ),
+  )
+  out.write_sorted_search(
+    name="find_composition_exclusion",
+    values="comp_exclusions",
   )
   out.finish()
 }

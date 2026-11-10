@@ -182,28 +182,6 @@ pub fn emit_case_mapping(
       $|  case_trie_leaf[(leaf << \{CaseTrieLeafShift}) | (cp & \{leaf_mask})].to_int()
       $|}
       $|
-      $|///|
-      $|/// Binary search helper - returns index if found, -1 otherwise
-      $|fn binary_search_case(arr : ReadOnlyArray[Int], cp : Int) -> Int {
-      $|  let mut left = 0
-      $|  let mut right = arr.length() - 1
-      $|
-      $|  while left <= right {
-      $|    let mid = (left + right) / 2
-      $|    let mid_cp = arr[mid]
-      $|
-      $|    if cp < mid_cp {
-      $|      right = mid - 1
-      $|    } else if cp > mid_cp {
-      $|      left = mid + 1
-      $|    } else {
-      $|      return mid
-      $|    }
-      $|  }
-      $|
-      $|  -1
-      $|}
-      $|
     ),
   )
   for bit, table in cases {
@@ -224,7 +202,7 @@ pub fn emit_case_mapping(
         $|pub fn full_\{name}case(c : Char) -> String {
         $|  let record = lookup_case_record(c)
         $|  if (case_special_flags[record].to_int() & \{flag}) != 0 {
-        $|    let index = binary_search_case(special_\{name}_cps, c.to_int())
+        $|    let index = find_special_\{name}(c.to_int())
         $|    if index >= 0 {
         $|      return special_\{name}_strings[index]
         $|    }
@@ -243,7 +221,7 @@ pub fn emit_case_mapping(
         $|pub fn lookup_full_\{name}case(c : Char) -> Array[Char]? {
         $|  let record = lookup_case_record(c)
         $|  if (case_special_flags[record].to_int() & \{flag}) != 0 {
-        $|    let index = binary_search_case(special_\{name}_cps, c.to_int())
+        $|    let index = find_special_\{name}(c.to_int())
         $|    if index >= 0 {
         $|      return Some(special_\{name}_strings[index].to_array())
         $|    }
@@ -257,6 +235,10 @@ pub fn emit_case_mapping(
         $|}
         $|
       ),
+    )
+    out.write_sorted_search(
+      name="find_special_\{name}",
+      values="special_\{name}_cps",
     )
   }
   out.finish()

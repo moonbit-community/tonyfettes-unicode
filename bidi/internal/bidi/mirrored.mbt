@@ -101,35 +101,35 @@ let mirrored_glyphs : ReadOnlyArray[Int32] = [
 ]
 
 ///|
-fn find_mirrored_index(c : Char) -> Int32 {
-  let cp = c.to_int()
+pub fn is_bidi_mirrored(c : Char) -> Bool {
+  find_mirrored_index(c.to_int()) >= 0
+}
+
+///|
+pub fn bidi_mirroring_glyph(c : Char) -> Char {
+  let idx = find_mirrored_index(c.to_int())
+  if idx < 0 {
+    c
+  } else {
+    mirrored_glyphs[idx].unsafe_to_char()
+  }
+}
+
+///|
+/// Index of `key` in the sorted array `mirrored_code_points`, or -1 if it is absent.
+fn find_mirrored_index(key : Int32) -> Int32 {
   let mut left = 0
   let mut right = mirrored_code_points.length() - 1
   while left <= right {
     let mid = (left + right) / 2
-    let mid_cp = mirrored_code_points[mid]
-    if cp < mid_cp {
+    let value = mirrored_code_points[mid]
+    if key < value {
       right = mid - 1
-    } else if cp > mid_cp {
+    } else if key > value {
       left = mid + 1
     } else {
       return mid
     }
   }
   -1
-}
-
-///|
-pub fn is_bidi_mirrored(c : Char) -> Bool {
-  find_mirrored_index(c) >= 0
-}
-
-///|
-pub fn bidi_mirroring_glyph(c : Char) -> Char {
-  let idx = find_mirrored_index(c)
-  if idx < 0 {
-    c
-  } else {
-    mirrored_glyphs[idx].unsafe_to_char()
-  }
 }
