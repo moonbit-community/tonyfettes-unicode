@@ -32,12 +32,11 @@ pub fn emit_normalization_scan(
   data : UnicodeData,
   derived_properties : String,
 ) -> String raise {
-  let values = normalization_values(
-    compress_ccc_ranges(data),
-    derived_properties,
-  ).map(normalization_scan_flags)
+  let values = normalization_values(data.ccc, derived_properties).map(
+    normalization_scan_flags,
+  )
   let lead_flags = Array::make(1024, 0)
-  for cp in NormalizationBmpLimit..<=MaxCodePoint {
+  for cp in NormalizationBmpLimit..<=@emitter.MaxCodePoint {
     let lead = (cp - NormalizationBmpLimit) >> 10
     lead_flags[lead] = lead_flags[lead] | values[cp]
   }
@@ -46,7 +45,7 @@ pub fn emit_normalization_scan(
       fail("Surrogate code points must have default normalization properties")
     }
   }
-  let mut last = MaxCodePoint
+  let mut last = @emitter.MaxCodePoint
   while last >= NormalizationBmpLimit && values[last] == 0 {
     last -= 1
   }
@@ -56,7 +55,7 @@ pub fn emit_normalization_scan(
   let lead_limit = (limit - NormalizationBmpLimit + 1023) >> 10
   let tail_lead = (limit - NormalizationBmpLimit) >> 10
   let tail_trail = 0xDC00 + ((limit - NormalizationBmpLimit) & 1023)
-  for cp in NormalizationBmpLimit..<=MaxCodePoint {
+  for cp in NormalizationBmpLimit..<=@emitter.MaxCodePoint {
     let lead = (cp - NormalizationBmpLimit) >> 10
     let trail = 0xDC00 + (cp & 1023)
     let default_tail = lead > tail_lead ||
@@ -84,7 +83,7 @@ pub fn emit_normalization_scan(
     bmp_values[cp] = NormalizationScanLeadSurrogate
   }
   let block_size = 1 << NormalizationScanShift
-  let bmp = @trie.deduplicate_blocks(bmp_values, block_size)
+  let bmp = @emitter.deduplicate_blocks(bmp_values, block_size)
   guard bmp.ids.all(id => id >= 0 && id < 256) else {
     fail("Normalization scan block indices exceed their encoded width")
   }
@@ -115,7 +114,7 @@ pub fn emit_normalization_scan(
       pair_values.append(values[start:start + 1024])
     }
   }
-  let pairs = @trie.deduplicate_blocks(pair_values, pair_block_size)
+  let pairs = @emitter.deduplicate_blocks(pair_values, pair_block_size)
   guard lead_slots.all(slot => slot < 256) &&
     pairs.ids.all(id => id >= 0 && id < 256) else {
     fail("Normalization pair indices exceed their encoded width")

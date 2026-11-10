@@ -6,23 +6,6 @@ test "parse ranges and sequences" {
 }
 
 ///|
-test "parse IDNA escape formats" {
-  let parsed = parse_escaped_text("a\\u0062\\x{1F600}")
-  inspect(parsed.text, content="ab😀")
-  inspect(parsed.has_surrogate, content="false")
-  inspect(parse_escaped_text("\\uD800").has_surrogate, content="true")
-}
-
-///|
-test "escape MoonBit source strings" {
-  inspect(escape_moonbit_string("a\n😀"), content="a\\n\\u{1F600}")
-  inspect(
-    code_points_to_moonbit_string([0x41, 0x307]),
-    content="\\u{0041}\\u{0307}",
-  )
-}
-
-///|
 test "parse an enumerated property with missing declarations" {
   let values = parse_enumerated_property(
     (

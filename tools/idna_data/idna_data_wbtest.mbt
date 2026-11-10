@@ -1,6 +1,6 @@
 ///|
 test "parse and emit IDNA mapping data" {
-  let source = generate_mapping_source(
+  let source = emit_mapping(
     (
       #|0041; mapped; 0061
       #|0053; mapped; 0073
@@ -31,7 +31,7 @@ test "parse and emit IDNA mapping data" {
 
 ///|
 test "IDNA ranges above the trie are packed and merged" {
-  let source = generate_mapping_source(
+  let source = emit_mapping(
     (
       #|3FFFE..4FFFD; disallowed
       #|4FFFE..4FFFF; disallowed
@@ -51,7 +51,7 @@ test "IDNA ranges above the trie are packed and merged" {
 
 ///|
 test "IDNA mappings above the trie are rejected" {
-  try generate_mapping_source("40000; mapped; 0061\n") catch {
+  try emit_mapping("40000; mapped; 0061\n") catch {
     Failure::Failure(message) =>
       assert_true(message.contains("needs trie coverage"))
     error => raise error

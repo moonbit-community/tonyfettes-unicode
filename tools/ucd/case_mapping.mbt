@@ -32,7 +32,7 @@ fn CaseTable::new(
   for entry in simple {
     guard entry.code_point < CaseTrieLimit else {
       fail(
-        "Case mapping at or above \{hex_literal(CaseTrieLimit)} needs trie coverage",
+        "Case mapping at or above \{@emitter.hex_literal(CaseTrieLimit)} needs trie coverage",
       )
     }
     deltas[entry.code_point] = entry.target - entry.code_point
@@ -41,7 +41,7 @@ fn CaseTable::new(
   for entry in special_casing {
     guard entry.code_point < CaseTrieLimit else {
       fail(
-        "Case mapping at or above \{hex_literal(CaseTrieLimit)} needs trie coverage",
+        "Case mapping at or above \{@emitter.hex_literal(CaseTrieLimit)} needs trie coverage",
       )
     }
     // A full mapping overrides the simple one. When they agree, the simple
@@ -113,9 +113,9 @@ pub fn emit_case_mapping(
     fail("Case mapping has too many distinct records for one byte")
   }
   // Leaf level: blocks of record indices.
-  let leaf = @trie.deduplicate_blocks(values, 1 << CaseTrieLeafShift)
+  let leaf = @emitter.deduplicate_blocks(values, 1 << CaseTrieLeafShift)
   // Mid level: blocks of leaf block indices; `mid.ids` is the top level.
-  let mid = @trie.deduplicate_blocks(
+  let mid = @emitter.deduplicate_blocks(
     leaf.ids,
     1 << (CaseTrieTopShift - CaseTrieLeafShift),
   )
@@ -193,7 +193,7 @@ pub fn emit_case_mapping(
       $|/// Index of the record holding a character's case mappings
       $|fn lookup_case_record(c : Char) -> Int {
       $|  let cp = c.to_int()
-      $|  if cp >= \{hex_literal(CaseTrieLimit)} {
+      $|  if cp >= \{@emitter.hex_literal(CaseTrieLimit)} {
       $|    return 0
       $|  }
       $|  let mid = (case_trie_top[cp >> \{CaseTrieTopShift}].to_int() << \{CaseTrieTopShift - CaseTrieLeafShift}) |

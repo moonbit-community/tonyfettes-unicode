@@ -17,26 +17,14 @@ const NormalizationLeafShift : Int32 = 2
 /// Bits 0..7: CCC; 8..9: NFC_QC; 10..11: NFKC_QC;
 /// bit 12: NFD_QC; bit 13: NFKD_QC. Quick_Check: Yes=0, No=1, Maybe=2.
 fn normalization_values(
-  ccc_ranges : Array[CccRange],
+  ccc : FixedArray[Int32],
   derived_properties : String,
 ) -> Array[Int32] raise {
-  let values = Array::make(MaxCodePoint + 1, 0)
-  for range in ccc_ranges {
-    guard range.start >= 0 &&
-      range.start <= range.end &&
-      range.end <= MaxCodePoint &&
-      range.value >= 0 &&
-      range.value <= 255 else {
-      fail("Invalid CCC range")
-    }
-    for cp in range.start..<=range.end {
-      values[cp] = range.value
-    }
-  }
+  let values = Array::makei(ccc.length(), cp => ccc[cp])
   let seen = Array::make(4, false)
   // Properties can have separate No and Maybe sections, so track duplicates
   // per code point rather than requiring globally sorted ranges.
-  let assigned = Array::make(MaxCodePoint + 1, 0)
+  let assigned = Array::make(@emitter.MaxCodePoint + 1, 0)
   for raw_line in derived_properties.split("\n") {
     let line = @parsing.strip_comment(raw_line)
     if line.is_empty() {
@@ -65,7 +53,7 @@ fn normalization_values(
     let range = @parsing.parse_code_point_range(fields[0])
     guard range.start >= 0 &&
       range.start <= range.end &&
-      range.end <= MaxCodePoint else {
+      range.end <= @emitter.MaxCodePoint else {
       fail("Invalid Quick_Check range")
     }
     seen[index] = true
@@ -85,28 +73,29 @@ fn normalization_values(
 /// Emit a norm16 trie. Values below 0x8000 contain packed properties directly;
 /// values with bit 15 set index six-byte records (properties, decomposition row
 /// + 1, composition group + 1). Zero indices denote absent mappings/groups.
+///
+/// `exclusions` are the code points `CompositionExclusions.txt` lists, and
+/// `derived_properties` is `DerivedNormalizationProps.txt`.
 pub fn emit_normalization(
   data : UnicodeData,
-  compositions : Array[CompositionEntry],
+  exclusions : Array[Int32],
   derived_properties : String,
 ) -> String raise {
-  let values = normalization_values(
-    compress_ccc_ranges(data),
-    derived_properties,
-  )
-  let decomp_indices = Array::make(MaxCodePoint + 1, 0)
+  let compositions = build_composition_table(data, exclusions)
+  let values = normalization_values(data.ccc, derived_properties)
+  let decomp_indices = Array::make(@emitter.MaxCodePoint + 1, 0)
   for index, entry in decomposition_entries(data) {
     guard index < 65535 else { fail("Too many decomposition rows for norm16") }
     decomp_indices[entry.code_point] = index + 1
   }
-  let composition_groups = Array::make(MaxCodePoint + 1, 0)
+  let composition_groups = Array::make(@emitter.MaxCodePoint + 1, 0)
   let offsets = composition_group_offsets(compositions)
   for group in 0..<(offsets.length() - 1) {
     guard group < 65535 else { fail("Too many composition groups for norm16") }
     composition_groups[compositions[offsets[group]].first] = group + 1
   }
   let extra : Array[Int32] = []
-  for cp in 0..<=MaxCodePoint {
+  for cp in 0..<=@emitter.MaxCodePoint {
     if decomp_indices[cp] != 0 || composition_groups[cp] != 0 {
       let record = extra.length() / 6
       guard record < 32768 else { fail("Too many extra records for norm16") }
@@ -117,7 +106,7 @@ pub fn emit_normalization(
       values[cp] = 0x8000 | record
     }
   }
-  let mut last = MaxCodePoint
+  let mut last = @emitter.MaxCodePoint
   while last > 0 && values[last] == 0 {
     last -= 1
   }
@@ -126,16 +115,16 @@ pub fn emit_normalization(
     NormalizationBmpLimit,
     (last + top_size) / top_size * top_size,
   )
-  let bmp = @trie.deduplicate_blocks(
+  let bmp = @emitter.deduplicate_blocks(
     values[:NormalizationBmpLimit].to_owned(),
     1 << NormalizationBmpShift,
   )
   let bmp_offsets = bmp.ids.map(id => id << NormalizationBmpShift)
-  let leaf = @trie.deduplicate_blocks(
+  let leaf = @emitter.deduplicate_blocks(
     values[NormalizationBmpLimit:limit].to_owned(),
     1 << NormalizationLeafShift,
   )
-  let mid = @trie.deduplicate_blocks(
+  let mid = @emitter.deduplicate_blocks(
     leaf.ids,
     1 << (NormalizationTopShift - NormalizationLeafShift),
   )
@@ -148,7 +137,7 @@ pub fn emit_normalization(
   // Check the encoded representation, including the implicit default tail,
   // before emitting source. Validate every derived supplementary index before
   // its access: emitted unsafe_get calls rely on these immutable tables.
-  for cp in 0..<=MaxCodePoint {
+  for cp in 0..<=@emitter.MaxCodePoint {
     let actual = if cp < NormalizationBmpLimit {
       bmp.blocks[bmp_offsets[cp >> NormalizationBmpShift] +
       (cp & ((1 << NormalizationBmpShift) - 1))]

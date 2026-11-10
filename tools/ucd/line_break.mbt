@@ -75,9 +75,10 @@ fn line_break_ordinal(value : StringView) -> Int32? {
 /// Every value in `line_break_values` must occur in the file, so that a
 /// value Unicode withdraws does not linger in the enum.
 pub fn emit_line_break(content : String) -> String raise {
-  let values = property_ordinals(
+  let values = @parsing.parse_enumerated_ordinals(
+    content,
     property="Line_Break",
-    @parsing.parse_enumerated_property(content, default="XX"),
+    default="XX",
     line_break_ordinal,
   )
   let used = FixedArray::make(line_break_values.length(), false)
@@ -91,14 +92,12 @@ pub fn emit_line_break(content : String) -> String raise {
   }
   let out = @emitter.Emitter::new()
   out.write_file_header("Line_Break lookup data", "LineBreak.txt")
-  out.write_value_trie(
+  write_enumerated_trie(
+    out,
     property="Line_Break",
     prefix="line_break",
-    lookup="pub fn lookup_line_break",
-    lookup_doc=[
-      "Look up Line_Break ordinal for a character",
-      "Returns ordinal value (0-\{line_break_values.length() - 1}) corresponding to LineBreak enum",
-    ],
+    enum_name="LineBreak",
+    value_count=line_break_values.length(),
     value_bits=LineBreakBits,
     values,
   )

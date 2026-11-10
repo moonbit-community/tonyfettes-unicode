@@ -1,7 +1,4 @@
 ///|
-const MaxCodePoint : Int32 = 0x10FFFF
-
-///|
 /// Number of low bits holding the status code in a packed trie value or range.
 const IdnaStatusBits : Int32 = 3
 
@@ -95,7 +92,7 @@ fn push_high_range(
 /// level maps `cp >> 8` to a mid block, the mid level maps the next four bits
 /// to a leaf block, and the leaf level stores one 16-bit value per code
 /// point. Identical blocks are shared at both levels.
-pub fn generate_mapping_source(content : String) -> String raise {
+pub fn emit_mapping(content : String) -> String raise {
   // Mapping `i` is `mapping_data[mapping_offsets[i]:mapping_offsets[i + 1]]`.
   let mapping_ids : Map[Array[Int32], Int32] = Map([([], 0)])
   let mapping_offsets : Array[Int32] = [0, 0]
@@ -123,7 +120,7 @@ pub fn generate_mapping_source(content : String) -> String raise {
     if entry.end >= IdnaTrieLimit {
       guard mapping == 0 else {
         fail(
-          "IDNA mapping at or above \{@emitter.hex_upper(IdnaTrieLimit)} needs trie coverage",
+          "IDNA mapping at or above \{@emitter.hex_literal(IdnaTrieLimit)} needs trie coverage",
         )
       }
       let start = Int32::max(entry.start, IdnaTrieLimit)
@@ -138,16 +135,16 @@ pub fn generate_mapping_source(content : String) -> String raise {
       high_next = entry.end + 1
     }
   }
-  if high_next <= MaxCodePoint {
+  if high_next <= @emitter.MaxCodePoint {
     push_high_range(high_ranges, high_next, IdnaDisallowed)
   }
   guard values.iter().all(value => value < 0x10000) else {
     fail("IDNA trie has too many distinct mappings for 16-bit values")
   }
   // Leaf level: blocks of packed values.
-  let leaf = @trie.deduplicate_blocks(values, 1 << IdnaTrieLeafShift)
+  let leaf = @emitter.deduplicate_blocks(values, 1 << IdnaTrieLeafShift)
   // Mid level: blocks of leaf block indices; `mid.ids` is the top level.
-  let mid = @trie.deduplicate_blocks(
+  let mid = @emitter.deduplicate_blocks(
     leaf.ids,
     1 << (IdnaTrieTopShift - IdnaTrieLeafShift),
   )
@@ -157,7 +154,7 @@ pub fn generate_mapping_source(content : String) -> String raise {
   guard mid.blocks.iter().all(id => id < 0x10000) else {
     fail("IDNA trie has too many leaf blocks for two bytes")
   }
-  let trie_limit = "0x\{@emitter.hex_upper(IdnaTrieLimit)}"
+  let trie_limit = @emitter.hex_literal(IdnaTrieLimit)
   let mid_mask = (1 << (IdnaTrieTopShift - IdnaTrieLeafShift)) - 1
   let leaf_mask = (1 << IdnaTrieLeafShift) - 1
   let status_mask = (1 << IdnaStatusBits) - 1
@@ -210,12 +207,12 @@ pub fn generate_mapping_source(content : String) -> String raise {
   out.write_byte_array(
     "IDNA trie mid level: big-endian 16-bit leaf block indices",
     "idna_trie_mid",
-    big_endian_16(mid.blocks),
+    @emitter.big_endian_16(mid.blocks),
   )
   out.write_byte_array(
     "IDNA trie leaf level: big-endian 16-bit `mapping << \{IdnaStatusBits} | status` in blocks of \{1 << IdnaTrieLeafShift}",
     "idna_trie_leaf",
-    big_endian_16(leaf.blocks),
+    @emitter.big_endian_16(leaf.blocks),
   )
   out.write_int_array(
     "IDNA ranges from \{trie_limit} packed as `start << \{IdnaStatusBits} | status`",
@@ -301,15 +298,4 @@ pub fn generate_mapping_source(content : String) -> String raise {
     ),
   )
   out.finish()
-}
-
-///|
-/// Split each value into its high and low byte.
-fn big_endian_16(values : Array[Int32]) -> Array[Int32] {
-  let bytes = []
-  for value in values {
-    bytes.push(value >> 8)
-    bytes.push(value & 0xFF)
-  }
-  bytes
 }

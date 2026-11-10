@@ -1,31 +1,4 @@
 ///|
-const MaxCodePoint : Int32 = 0x10FFFF
-
-///|
-/// Number of low bits holding the Bidi_Class code in a packed range.
-const BidiValueBits : Int32 = 5
-
-///|
-/// The trie covers planes 0-3; the higher planes are almost entirely L or BN
-/// and are looked up as packed ranges instead.
-const BidiTrieLimit : Int32 = 0x40000
-
-///|
-/// Each top-level trie entry covers `1 << BidiTrieTopShift` code points.
-const BidiTrieTopShift : Int32 = 8
-
-///|
-/// Each leaf block holds `1 << BidiTrieLeafShift` Bidi_Class codes.
-const BidiTrieLeafShift : Int32 = 4
-
-///|
-priv struct BidiRange {
-  start : Int32
-  end : Int32
-  bidi_class : String
-}
-
-///|
 priv struct MirrorEntry {
   code_point : Int32
   mirrored : Int32
@@ -36,79 +9,6 @@ priv struct BracketEntry {
   code_point : Int32
   paired : Int32
   bracket_type : String
-}
-
-///|
-fn normalize_bidi_class(name : StringView) -> String {
-  match name {
-    "Left_To_Right" => "L"
-    "Right_To_Left" => "R"
-    "Arabic_Letter" => "AL"
-    "European_Terminator" => "ET"
-    _ => name.to_owned()
-  }
-}
-
-///|
-fn fill_class_range(
-  classes : FixedArray[String],
-  range : @parsing.CodePointRange,
-  bidi_class : String,
-) -> Unit {
-  for code_point in range.start..<=range.end {
-    classes[code_point] = bidi_class
-  }
-}
-
-///|
-fn parse_bidi_ranges(content : String) -> Array[BidiRange] raise {
-  let classes = FixedArray::make(MaxCodePoint + 1, "L")
-  let explicit : Array[BidiRange] = []
-  for raw_line in content.split("\n") {
-    let stripped = raw_line.trim()
-    if stripped.strip_prefix("# @missing:") is Some(declaration) {
-      let fields = declaration.trim().split(";").collect()
-      if fields.length() >= 2 {
-        let range = @parsing.parse_code_point_range(fields[0])
-        fill_class_range(classes, range, normalize_bidi_class(fields[1].trim()))
-      }
-      continue
-    }
-    let line = @parsing.strip_comment(raw_line)
-    if line.is_empty() {
-      continue
-    }
-    let fields = line.split(";").collect()
-    if fields.length() < 2 {
-      continue
-    }
-    let range = @parsing.parse_code_point_range(fields[0])
-    explicit.push({
-      start: range.start,
-      end: range.end,
-      bidi_class: fields[1].trim().to_owned(),
-    })
-  }
-  for entry in explicit {
-    fill_class_range(
-      classes,
-      { start: entry.start, end: entry.end, },
-      entry.bidi_class,
-    )
-  }
-  let result : Array[BidiRange] = []
-  let mut start = 0
-  let mut previous = classes[0]
-  for code_point in 1..<=MaxCodePoint {
-    let current = classes[code_point]
-    if current != previous {
-      result.push({ start, end: code_point - 1, bidi_class: previous, })
-      start = code_point
-      previous = current
-    }
-  }
-  result.push({ start, end: MaxCodePoint, bidi_class: previous, })
-  result
 }
 
 ///|
@@ -153,14 +53,16 @@ fn parse_brackets(content : String) -> Array[BracketEntry] raise {
 }
 
 ///|
+/// Code of a Bidi_Class value: the index of its `BidiClass` constructor.
+/// `@missing` lines spell out the long alias.
 fn bidi_class_code(name : StringView) -> Int32? {
   match name {
-    "L" => Some(0)
-    "R" => Some(1)
-    "AL" => Some(2)
+    "L" | "Left_To_Right" => Some(0)
+    "R" | "Right_To_Left" => Some(1)
+    "AL" | "Arabic_Letter" => Some(2)
     "EN" => Some(3)
     "ES" => Some(4)
-    "ET" => Some(5)
+    "ET" | "European_Terminator" => Some(5)
     "AN" => Some(6)
     "CS" => Some(7)
     "NSM" => Some(8)
@@ -183,51 +85,16 @@ fn bidi_class_code(name : StringView) -> Int32? {
 }
 
 ///|
-/// Emit Bidi_Class data as a three-level trie for planes 0-3, with packed
-/// ranges for the remaining planes.
-///
-/// The top level maps `cp >> 8` to a mid block, the mid level maps the next
-/// four bits to a leaf block, and the leaf level stores one class code per
-/// code point. Identical blocks are shared at both levels.
-pub fn generate_bidi_class_source(content : String) -> String raise {
-  let values = Array::make(BidiTrieLimit, 0)
-  // `start << BidiValueBits | code`, so the packed values sort by start code
-  // point. The parsed ranges cover every code point without gaps.
-  let high_ranges : Array[Int32] = []
-  for range in parse_bidi_ranges(content) {
-    guard bidi_class_code(range.bidi_class) is Some(code) else {
-      fail("Unknown Bidi_Class: \{range.bidi_class}")
-    }
-    for code_point in range.start..<=Int32::min(range.end, BidiTrieLimit - 1) {
-      values[code_point] = code
-    }
-    if range.end >= BidiTrieLimit {
-      let start = Int32::max(range.start, BidiTrieLimit)
-      high_ranges.push((start << BidiValueBits) | code)
-    }
-  }
-  // Leaf level: blocks of class codes.
-  let leaf = @trie.deduplicate_blocks(values, 1 << BidiTrieLeafShift)
-  // Mid level: blocks of leaf block indices; `mid.ids` is the top level.
-  let mid = @trie.deduplicate_blocks(
-    leaf.ids,
-    1 << (BidiTrieTopShift - BidiTrieLeafShift),
+/// Emit the `BidiClass` enum and Bidi_Class data from `DerivedBidiClass.txt`
+/// as a three-level trie for planes 0-3, with packed ranges for the remaining
+/// planes.
+pub fn emit_bidi_class(content : String) -> String raise {
+  let values = @parsing.parse_enumerated_ordinals(
+    content,
+    property="Bidi_Class",
+    default="L",
+    bidi_class_code,
   )
-  guard mid.ids.iter().all(id => id < 0x100) else {
-    fail("Bidi_Class trie has too many mid blocks for one byte")
-  }
-  guard mid.blocks.iter().all(id => id < 0x10000) else {
-    fail("Bidi_Class trie has too many leaf blocks for two bytes")
-  }
-  let mid_bytes = []
-  for id in mid.blocks {
-    mid_bytes.push(id >> 8)
-    mid_bytes.push(id & 0xFF)
-  }
-  let trie_limit = "0x\{@emitter.hex_upper(BidiTrieLimit)}"
-  let mid_mask = (1 << (BidiTrieTopShift - BidiTrieLeafShift)) - 1
-  let leaf_mask = (1 << BidiTrieLeafShift) - 1
-  let value_mask = (1 << BidiValueBits) - 1
   let out = @emitter.Emitter::new()
   out.write(
     (
@@ -301,55 +168,15 @@ pub fn generate_bidi_class_source(content : String) -> String raise {
       #|
     ),
   )
-  out.write_byte_array(
-    "Bidi_Class trie top level: `cp >> \{BidiTrieTopShift}` to mid block index",
-    "bidi_trie_top",
-    mid.ids,
-  )
-  out.write_byte_array(
-    "Bidi_Class trie mid level: big-endian 16-bit leaf block indices", "bidi_trie_mid",
-    mid_bytes,
-  )
-  out.write_byte_array(
-    "Bidi_Class trie leaf level: class codes in blocks of \{1 << BidiTrieLeafShift}",
-    "bidi_trie_leaf",
-    leaf.blocks,
-  )
-  out.write_int_array(
-    "Bidi_Class ranges from \{trie_limit} packed as `start << \{BidiValueBits} | code`",
-    "bidi_high_ranges",
-    high_ranges,
-    hex=true,
-  )
-  out.write(
-    (
-      $|///|
-      $|/// Look up the Bidi_Class code (the `BidiClass` constructor index).
-      $|fn lookup_bidi_class_code(c : Char) -> Int {
-      $|  let cp = c.to_int()
-      $|  if cp >= \{trie_limit} {
-      $|    // Binary search for the last range starting at or before `cp`.
-      $|    let key = (cp << \{BidiValueBits}) | \{value_mask}
-      $|    let mut low = 0
-      $|    let mut high = bidi_high_ranges.length()
-      $|    while high - low > 1 {
-      $|      let mid = (low + high) / 2
-      $|      if bidi_high_ranges[mid] <= key {
-      $|        low = mid
-      $|      } else {
-      $|        high = mid
-      $|      }
-      $|    }
-      $|    return bidi_high_ranges[low] & \{value_mask}
-      $|  }
-      $|  let mid = (bidi_trie_top[cp >> \{BidiTrieTopShift}].to_int() << \{BidiTrieTopShift - BidiTrieLeafShift}) |
-      $|    ((cp >> \{BidiTrieLeafShift}) & \{mid_mask})
-      $|  let leaf = (bidi_trie_mid[2 * mid].to_int() << 8) |
-      $|    bidi_trie_mid[2 * mid + 1].to_int()
-      $|  bidi_trie_leaf[(leaf << \{BidiTrieLeafShift}) | (cp & \{leaf_mask})].to_int()
-      $|}
-      $|
-    ),
+  out.write_value_trie(
+    property="Bidi_Class",
+    prefix="bidi",
+    lookup="fn lookup_bidi_class_code",
+    lookup_doc=[
+      "Look up the Bidi_Class code (the `BidiClass` constructor index).",
+    ],
+    value_bits=5,
+    values,
   )
   out.write(bidi_class_implementation)
   out.finish()
@@ -434,7 +261,7 @@ let bidi_class_implementation : String =
   #|
 
 ///|
-pub fn generate_mirrored_source(content : String) -> String raise {
+pub fn emit_mirrored(content : String) -> String raise {
   let entries = parse_mirroring(content)
   let out = @emitter.Emitter::new()
   out.write_file_header(
@@ -490,7 +317,7 @@ pub fn generate_mirrored_source(content : String) -> String raise {
 }
 
 ///|
-pub fn generate_bracket_source(content : String) -> String raise {
+pub fn emit_bracket(content : String) -> String raise {
   let entries = parse_brackets(content)
   let out = @emitter.Emitter::new()
   out.write(

@@ -54,19 +54,15 @@ pub fn emit_joining_group(content : String) -> String raise {
   for ordinal, name in sorted {
     ordinals[name] = ordinal
   }
-  let values = property_ordinals(property="Joining_Group", names, name => {
-    ordinals.get(name.to_owned())
-  })
+  let values = FixedArray::makei(names.length(), cp => ordinals[names[cp]])
   let out = @emitter.Emitter::new()
   out.write_file_header("Joining_Group lookup data", "DerivedJoiningGroup.txt")
-  out.write_value_trie(
+  write_enumerated_trie(
+    out,
     property="Joining_Group",
     prefix="joining_group",
-    lookup="pub fn lookup_joining_group",
-    lookup_doc=[
-      "Look up Joining_Group ordinal for a character",
-      "Returns ordinal value (0-\{sorted.length() - 1}) corresponding to JoiningGroup enum",
-    ],
+    enum_name="JoiningGroup",
+    value_count=sorted.length(),
     value_bits=JoiningGroupBits,
     values,
   )

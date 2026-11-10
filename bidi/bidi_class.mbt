@@ -284,7 +284,7 @@ let bidi_trie_mid : Bytes = [
 ]
 
 ///|
-/// Bidi_Class trie leaf level: class codes in blocks of 16
+/// Bidi_Class trie leaf level: values in blocks of 16
 let bidi_trie_leaf : Bytes = [
   9, 9, 9, 9, 9, 9, 9, 9, 9, 11, 10, 11, 12, 10, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9,
   9, 9, 9, 10, 10, 10, 11, 12, 13, 13, 5, 5, 5, 13, 13, 13, 13, 13, 4, 7, 4, 7, 7,
@@ -480,7 +480,7 @@ let bidi_trie_leaf : Bytes = [
 ]
 
 ///|
-/// Bidi_Class ranges from 0x40000 packed as `start << 5 | code`
+/// Bidi_Class ranges from 0x40000 packed as `start << 5 | value`
 let bidi_high_ranges : ReadOnlyArray[Int32] = [
   0x800000, 0x9FFFC9, 0xA00000, 0xBFFFC9, 0xC00000, 0xDFFFC9, 0xE00000, 0xFFFFC9,
   0x1000000, 0x11FFFC9, 0x1200000, 0x13FFFC9, 0x1400000, 0x15FFFC9, 0x1600000, 0x17FFFC9,

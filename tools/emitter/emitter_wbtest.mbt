@@ -1,18 +1,18 @@
 ///|
-test "Emitter writes source fragments and typed values" {
+test "Emitter writes source fragments and literals" {
   let out = Emitter::new()
   out.write("let answer = ")
-  out.write_int(42)
-  out.write_char('\n')
-  out.write_line("test \"generated\" {}")
+  out.write_line(hex_literal(42, min_width=4))
+  out.write_line("let text = \{string_literal([0x41, 0x1F600])}")
   inspect(
     out.finish(),
     content=(
-      #|let answer = 42
-      #|test "generated" {}
+      #|let answer = 0x002A
+      #|let text = "\u{0041}\u{1F600}"
       #|
     ),
   )
+  inspect(hex_upper(0), content="0")
 }
 
 ///|
