@@ -21,94 +21,120 @@ pub fn emit_ccc() -> String {
 }
 
 ///|
+/// Bits of a packed decomposition entry: the code point occupies the low
+/// 21 bits and its Canonical_Combining_Class the eight above them.
+const DecompositionCccShift : Int32 = 21
+
+///|
+/// Append the full decomposition of `code_point` to `dest` as packed
+/// entries: its mapping, applied recursively, where a compatibility mapping
+/// applies only when `compatibility` is set.
+fn append_full_decomposition(
+  data : UnicodeData,
+  mappings : Map[Int32, Decomposition],
+  code_point : Int32,
+  compatibility : Bool,
+  dest : Array[Int32],
+) -> Unit raise {
+  // Hangul syllables decompose algorithmically. The runtime does not look
+  // them up, so a mapping that produced one would leave it composed.
+  guard code_point < 0xAC00 || code_point > 0xD7A3 else {
+    fail("A decomposition mapping produces a Hangul syllable")
+  }
+  if mappings.get(code_point) is Some(entry) &&
+    (compatibility || !entry.compatibility) {
+    for target in entry.code_points {
+      append_full_decomposition(data, mappings, target, compatibility, dest)
+    }
+  } else {
+    dest.push(code_point | (data.ccc[code_point] << DecompositionCccShift))
+  }
+}
+
+///|
 pub fn emit_decomposition(data : UnicodeData) -> String raise {
+  let mappings : Map[Int32, Decomposition] = Map([])
+  for entry in data.decompositions {
+    mappings[entry.code_point] = entry
+  }
+  // Each row's entries are its full canonical decomposition (canonical
+  // mappings only), its full compatibility decomposition (compatibility
+  // mappings, or canonical ones whose full compatibility decomposition
+  // differs), and its own mapping, when that differs from the full
+  // decomposition of its kind.
   let starts : Array[Int32] = []
   let canonical_lens : Array[Int32] = []
   let compat_lens : Array[Int32] = []
-  let flattened : Array[Int32] = []
+  let mapping_lens : Array[Int32] = []
+  let entries : Array[Int32] = []
   for entry in data.decompositions {
-    let length = entry.code_points.length()
-    starts.push(flattened.length())
-    canonical_lens.push(if entry.compatibility { 0 } else { length })
-    compat_lens.push(if entry.compatibility { length } else { 0 })
-    flattened.append(entry.code_points)
+    starts.push(entries.length())
+    let compat : Array[Int32] = []
+    append_full_decomposition(data, mappings, entry.code_point, true, compat)
+    let full = if entry.compatibility {
+      canonical_lens.push(0)
+      compat_lens.push(compat.length())
+      entries.append(compat)
+      compat
+    } else {
+      let canonical : Array[Int32] = []
+      append_full_decomposition(
+        data,
+        mappings,
+        entry.code_point,
+        false,
+        canonical,
+      )
+      canonical_lens.push(canonical.length())
+      entries.append(canonical)
+      if compat == canonical {
+        compat_lens.push(0)
+      } else {
+        compat_lens.push(compat.length())
+        entries.append(compat)
+      }
+      canonical
+    }
+    let mapping = entry.code_points.map(code_point => {
+      code_point | (data.ccc[code_point] << DecompositionCccShift)
+    })
+    if mapping == full {
+      mapping_lens.push(0)
+    } else {
+      mapping_lens.push(mapping.length())
+      entries.append(mapping)
+    }
   }
   guard canonical_lens.all(len => len <= 255) &&
-    compat_lens.all(len => len <= 255) else {
+    compat_lens.all(len => len <= 255) &&
+    mapping_lens.all(len => len <= 255) else {
     fail("Decomposition length exceeds its encoded byte width")
   }
   let out = @emitter.Emitter::new()
   out.write_file_header("Decomposition mapping data", "UnicodeData.txt")
   out.write_int_array(
-    "Data start index for each code point",
+    "Start of each decomposition row's entries",
     "decomp_data_starts",
     starts,
     hex=false,
   )
   out.write_byte_array(
-    "Canonical decomposition length (0 if none)", "decomp_canonical_lens", canonical_lens,
+    "Length of the full canonical decomposition (0 for a compatibility mapping)",
+    "decomp_canonical_lens", canonical_lens,
   )
   out.write_byte_array(
-    "Compatibility decomposition length (0 if none)", "decomp_compat_lens", compat_lens,
+    "Length of the full compatibility decomposition (0 if it is the canonical one)",
+    "decomp_compat_lens", compat_lens,
+  )
+  out.write_byte_array(
+    "Length of the mapping itself (0 if it is the full decomposition)", "decomp_mapping_lens",
+    mapping_lens,
   )
   out.write_int_array(
-    "Decomposition data (flattened code points)",
+    "Packed entries: code point in bits 0..20, its CCC in bits 21..28",
     "decomp_data",
-    flattened,
+    entries,
     hex=true,
-  )
-  out.write(
-    (
-      #|///|
-      #|/// Get canonical decomposition for a character
-      #|/// Returns None if no decomposition exists
-      #|pub fn get_canonical_decomposition(c : Char) -> Array[Char]? {
-      #|  let idx = @normalization_data.normalization_decomposition_index(c)
-      #|  if idx < 0 {
-      #|    return None
-      #|  }
-      #|
-      #|  let len = decomp_canonical_lens[idx].to_int()
-      #|  if len == 0 {
-      #|    return None
-      #|  }
-      #|
-      #|  let start = decomp_data_starts[idx]
-      #|  let result : Array[Char] = []
-      #|  for code_point in decomp_data.exact_view(start=start, end=start + len) {
-      #|    result.push(code_point.unsafe_to_char())
-      #|  }
-      #|  Some(result)
-      #|}
-      #|
-      #|///|
-      #|/// Get compatibility decomposition for a character
-      #|/// Returns None if no decomposition exists
-      #|pub fn get_compat_decomposition(c : Char) -> Array[Char]? {
-      #|  let idx = @normalization_data.normalization_decomposition_index(c)
-      #|  if idx < 0 {
-      #|    return None
-      #|  }
-      #|
-      #|  let compat_len = decomp_compat_lens[idx].to_int()
-      #|  if compat_len == 0 {
-      #|    return None
-      #|  }
-      #|
-      #|  // Compat data comes after canonical data
-      #|  let canonical_len = decomp_canonical_lens[idx].to_int()
-      #|  let start = decomp_data_starts[idx] + canonical_len
-      #|  let result : Array[Char] = []
-      #|  for code_point in decomp_data.exact_view(
-      #|    start=start,
-      #|    end=start + compat_len,
-      #|  ) {
-      #|    result.push(code_point.unsafe_to_char())
-      #|  }
-      #|  Some(result)
-      #|}
-      #|
-    ),
   )
   // Lets the lookup skip everything below the first character with a mapping.
   let first_decomposable = data.decompositions.fold(
@@ -117,6 +143,96 @@ pub fn emit_decomposition(data : UnicodeData) -> String raise {
   )
   out.write(
     (
+      #|///|
+      #|/// The mapping of row `idx` itself, which is canonical when the row has
+      #|/// a full canonical decomposition.
+      #|fn mapping_entries(idx : Int) -> ArrayView[Int] {
+      #|  let start = decomp_data_starts[idx]
+      #|  let canonical_len = decomp_canonical_lens[idx].to_int()
+      #|  let full_len = if canonical_len != 0 {
+      #|    canonical_len
+      #|  } else {
+      #|    decomp_compat_lens[idx].to_int()
+      #|  }
+      #|  let mapping_len = decomp_mapping_lens[idx].to_int()
+      #|  if mapping_len == 0 {
+      #|    return decomp_data.exact_view(start~, end=start + full_len)
+      #|  }
+      #|  let mapping_start = start +
+      #|    canonical_len +
+      #|    decomp_compat_lens[idx].to_int()
+      #|  decomp_data.exact_view(
+      #|    start=mapping_start,
+      #|    end=mapping_start + mapping_len,
+      #|  )
+      #|}
+      #|
+      #|///|
+      #|fn unpack_code_points(entries : ArrayView[Int]) -> Array[Char] {
+      #|  entries.map(entry => (entry & 0x1FFFFF).unsafe_to_char())
+      #|}
+      #|
+      #|///|
+      #|/// Get canonical decomposition for a character
+      #|/// Returns None if no decomposition exists
+      #|pub fn get_canonical_decomposition(c : Char) -> Array[Char]? {
+      #|  let idx = @normalization_data.normalization_decomposition_index(c)
+      #|  if idx < 0 || decomp_canonical_lens[idx] == 0 {
+      #|    return None
+      #|  }
+      #|  Some(unpack_code_points(mapping_entries(idx)))
+      #|}
+      #|
+      #|///|
+      #|/// Get compatibility decomposition for a character
+      #|/// Returns None if no decomposition exists
+      #|pub fn get_compat_decomposition(c : Char) -> Array[Char]? {
+      #|  let idx = @normalization_data.normalization_decomposition_index(c)
+      #|  if idx < 0 || decomp_canonical_lens[idx] != 0 {
+      #|    return None
+      #|  }
+      #|  Some(unpack_code_points(mapping_entries(idx)))
+      #|}
+      #|
+    ),
+  )
+  out.write(
+    (
+      $|///|
+      $|pub using @normalization_data {lookup_normalization_record}
+      $|
+      $|///|
+      $|/// The full decomposition of a character: its canonical mapping, or its
+      $|/// compatibility mapping when asked for and present, applied
+      $|/// recursively. `record` is the character's `lookup_normalization_record`,
+      $|/// which tells where its decomposition is. Each entry packs a code point
+      $|/// in bits 0..20 and its Canonical_Combining_Class in bits 21..28. The
+      $|/// view is empty when the character has no such mapping.
+      $|///
+      $|/// Hangul syllables decompose algorithmically and have no mapping
+      $|/// here.
+      $|pub fn packed_decomposition(
+      $|  record : Int,
+      $|  compatibility~ : Bool,
+      $|) -> ArrayView[Int] {
+      $|  let idx = (record >> 16) - 1
+      $|  if idx < 0 {
+      $|    return decomp_data.exact_view(start=0, end=0)
+      $|  }
+      $|  let start = decomp_data_starts[idx]
+      $|  let canonical_len = decomp_canonical_lens[idx].to_int()
+      $|  let compat_len = decomp_compat_lens[idx].to_int()
+      $|  if compatibility && compat_len != 0 {
+      $|    decomp_data.exact_view(
+      $|      start=start + canonical_len,
+      $|      end=start + canonical_len + compat_len,
+      $|    )
+      $|  } else {
+      $|    // Empty for a compatibility mapping, which has no canonical part.
+      $|    decomp_data.exact_view(start~, end=start + canonical_len)
+      $|  }
+      $|}
+      $|
       $|///|
       $|/// Append the full decomposition of a character: its canonical mapping,
       $|/// or its compatibility mapping when asked for and present, applied
@@ -134,27 +250,16 @@ pub fn emit_decomposition(data : UnicodeData) -> String raise {
       $|    dest.push(c)
       $|    return
       $|  }
-      $|  let idx = @normalization_data.normalization_decomposition_index(c)
-      $|  if idx < 0 {
+      $|  let entries = packed_decomposition(
+      $|    lookup_normalization_record(c),
+      $|    compatibility~,
+      $|  )
+      $|  if entries.length() == 0 {
       $|    dest.push(c)
       $|    return
       $|  }
-      $|  let canonical_len = decomp_canonical_lens[idx].to_int()
-      $|  let compat_len = decomp_compat_lens[idx].to_int()
-      $|  let use_compat = compatibility && compat_len != 0
-      $|  // Compat data comes after canonical data
-      $|  let start = if use_compat {
-      $|    decomp_data_starts[idx] + canonical_len
-      $|  } else {
-      $|    decomp_data_starts[idx]
-      $|  }
-      $|  let len = if use_compat { compat_len } else { canonical_len }
-      $|  if len == 0 {
-      $|    dest.push(c)
-      $|    return
-      $|  }
-      $|  for i in start..<(start + len) {
-      $|    append_decomposition(decomp_data[i].unsafe_to_char(), dest, compatibility~)
+      $|  for entry in entries {
+      $|    dest.push((entry & 0x1FFFFF).unsafe_to_char())
       $|  }
       $|}
       $|

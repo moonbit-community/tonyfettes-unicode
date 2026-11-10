@@ -1,27 +1,30 @@
 ///|
-/// ASCII has CCC=0 and Quick_Check=Yes for every normalization form.
+/// The normalization record of a character: its packed properties in bits
+/// 0..15, and in the bits above, where `@decomposition.packed_decomposition`
+/// finds its decomposition. ASCII has CCC=0, Quick_Check=Yes for every
+/// normalization form and no decomposition.
 fn normalization_properties(c : Char) -> Int32 {
   if c.to_int() < 0x80 {
     0
   } else {
-    @ccc.lookup_normalization_properties(c)
+    @decomposition.lookup_normalization_record(c)
   }
 }
 
 ///|
-/// Scratch storage is allocated only after the first suspect character and
-/// reused across safe segments. The output is allocated only on a change.
+/// Scratch storage for checking NFC and NFKC past a character with
+/// Quick_Check=Maybe, allocated only then and reused across segments.
+/// Normalizing goes through `compose_remaining` instead.
 priv struct NormalizationBuffer {
   chars : Array[Char]
-  mut output : StringBuilder?
-  mut copied_until : Int32
   mut previous_ccc : Int32
   mut needs_order : Bool
 }
 
 ///|
-/// Reuse the properties already loaded by the scanner. Only mapped characters
-/// need recursive decomposition; detect ordering while appending the result.
+/// Reuse the record (see `normalization_properties`) already loaded by the
+/// scanner. Only mapped characters need their decomposition; detect ordering
+/// while appending the result.
 fn NormalizationBuffer::append(
   self : NormalizationBuffer,
   c : Char,
@@ -42,14 +45,15 @@ fn NormalizationBuffer::append(
     decompose_hangul(c, self.chars)
     self.previous_ccc = 0
   } else {
-    let start = self.chars.length()
-    @decomposition.append_decomposition(c, self.chars, compatibility~)
-    for i in start..<self.chars.length() {
-      let ccc = @ccc.lookup_ccc(self.chars[i])
+    // The character has a mapping of this form's kind, so the view is not
+    // empty, and its entries carry their combining classes.
+    for entry in @decomposition.packed_decomposition(properties, compatibility~) {
+      let ccc = entry >> PackedCccShift
       if ccc != 0 && self.previous_ccc > ccc {
         self.needs_order = true
       }
       self.previous_ccc = ccc
+      self.chars.push((entry & PackedCodePointMask).unsafe_to_char())
     }
   }
 }
@@ -68,52 +72,27 @@ fn span_equals(chars : Array[Char], span : StringView) -> Bool {
 }
 
 ///|
-/// Finish one independent segment. In checking mode, a difference terminates
-/// the scan immediately; otherwise append only changed segments to the output.
-fn NormalizationBuffer::finish(
+/// Check one independent segment: whether composing it leaves `span`, its
+/// characters in the input, as they are. The segment is then cleared.
+fn NormalizationBuffer::check(
   self : NormalizationBuffer,
-  s : StringView,
-  start : Int32,
-  end : Int32,
-  compose~ : Bool,
-  check_only~ : Bool,
+  span : StringView,
 ) -> Bool {
   if self.needs_order {
     canonical_order(self.chars)
   }
-  if compose {
-    canonical_compose(self.chars)
-  }
-  if !span_equals(self.chars, s[start:end]) {
-    if check_only {
-      return false
-    }
-    let out = if self.output is Some(out) {
-      out
-    } else {
-      // The size hint counts bytes, two per UTF-16 code unit.
-      let out = StringBuilder(size_hint=2 * s.length())
-      self.output = Some(out)
-      out
-    }
-    if self.copied_until < start {
-      out.write_view(s[self.copied_until:start])
-    }
-    for c in self.chars {
-      out.write_char(c)
-    }
-    self.copied_until = end
-  }
+  canonical_compose(self.chars)
+  let unchanged = span_equals(self.chars, span)
   self.chars.clear()
   self.previous_ccc = 0
   self.needs_order = false
-  true
+  unchanged
 }
 
 ///|
-/// Process suspect segments with reusable scratch storage until a clean run.
+/// Check suspect segments with reusable scratch storage until a clean run.
 /// Return its next unconsumed boundary, or -1 if checking fails.
-fn process_suspect_spans(
+fn check_suspect_spans(
   buffer : NormalizationBuffer,
   s : StringView,
   start : Int32,
@@ -121,8 +100,6 @@ fn process_suspect_spans(
   shift : Int32,
   mask : Int32,
   compatibility~ : Bool,
-  compose~ : Bool,
-  check_only~ : Bool,
 ) -> Int32 {
   // Retain the starter and any preceding marks in the first suspect segment.
   for c in s[start:problem_offset] {
@@ -145,7 +122,7 @@ fn process_suspect_spans(
         return offset
       }
       if suspect {
-        if !buffer.finish(s, span_start, offset, compose~, check_only~) {
+        if !buffer.check(s[span_start:offset]) {
           return -1
         }
         clean_start = offset
@@ -154,7 +131,7 @@ fn process_suspect_spans(
       suspect = false
     }
     let out_of_order = ccc != 0 && previous_ccc > ccc
-    if check_only && (check == 1 || out_of_order) {
+    if check == 1 || out_of_order {
       return -1
     }
     if !suspect && (check != 0 || out_of_order) {
@@ -173,7 +150,7 @@ fn process_suspect_spans(
     previous_ccc = ccc
     offset += if c.to_int() > 0xFFFF { 2 } else { 1 }
   }
-  if suspect && !buffer.finish(s, span_start, offset, compose~, check_only~) {
+  if suspect && !buffer.check(s[span_start:offset]) {
     return -1
   }
   offset
@@ -209,10 +186,6 @@ fn scan_clean_units(
     // SAFETY: offset starts at a nonnegative boundary and offset < end <= limit <= s.length().
     // It advances by two only after checking that a second unit exists.
     let first = s.unsafe_get(offset).to_int()
-    if first < 0x80 {
-      offset += 1
-      continue
-    }
     // SAFETY: first is a UTF-16 code unit, so first >> NormalizationScanShift
     // indexes one of the 2048 blocks; the generator checks every flags index.
     let block = normalization_scan_index
@@ -277,25 +250,14 @@ fn scan_clean_units(
 
 ///|
 /// Return the end of the run of clean characters starting at `start`.
-#cfg(not(any(target="native", target="wasm")))
-fn scan_clean_run(
-  s : String,
-  start : Int32,
-  end : Int32,
-  slow_mask : Int32,
-) -> Int32 {
-  scan_clean_units(s, start, end, end, slow_mask)
-}
-
-///|
-/// Return the end of the run of clean characters starting at `start`.
 ///
-/// Once a stretch of code units has passed the scan one at a time, blocks of
-/// eight are tried: a block whose code units are all below the clean limit
-/// needs no table. The stretch starts short, so that a run that soon ends
-/// never reaches a block, and grows while no block is clean, so that text
-/// above the limit pays for few tries and few calls.
-#cfg(any(target="native", target="wasm"))
+/// Once a stretch of code units has passed the scan one at a time, blocks
+/// are tried: a block whose code units are all below the clean limit needs
+/// no table. The stretch starts short, so that a run that soon ends never
+/// reaches a block, and grows while no block is clean, so that text above the
+/// limit pays for few tries and few calls. Later stretches are scanned four
+/// units at a time, which takes fewer branches per unit but costs more where
+/// the run ends, so the first stretch, where most short runs end, is not.
 fn scan_clean_run(
   s : String,
   start : Int32,
@@ -306,6 +268,9 @@ fn scan_clean_run(
   let mut stretch = MinUnitStretch
   while true {
     let chunk_end = if end - offset > stretch { offset + stretch } else { end }
+    if offset > start {
+      offset = skip_clean_quads(s, offset, chunk_end, slow_mask >> 7)
+    }
     offset = scan_clean_units(s, offset, chunk_end, end, slow_mask)
     // A pair that crosses `chunk_end` leaves the offset one past it.
     if offset < chunk_end || offset >= end {
@@ -323,13 +288,69 @@ fn scan_clean_run(
 }
 
 ///|
+/// Without SIMD, the scan one unit at a time is faster than groups of four.
+#cfg(not(any(target="native", target="wasm")))
+fn skip_clean_quads(
+  _s : String,
+  start : Int32,
+  _end : Int32,
+  _scan_mask : Int32,
+) -> Int32 {
+  start
+}
+
+///|
+/// Skip groups of four code units that are all clean. A lead surrogate
+/// stops the skip; the scan one unit at a time handles it.
+#cfg(any(target="native", target="wasm"))
+fn skip_clean_quads(
+  s : String,
+  start : Int32,
+  end : Int32,
+  scan_mask : Int32,
+) -> Int32 {
+  let unit_mask = scan_mask | NormalizationScanLeadSurrogate
+  let mut offset = start
+  while end - offset >= 4 {
+    // SAFETY: four units remain before `end`.
+    let flags = unit_scan_flags(s.unsafe_get(offset)) |
+      unit_scan_flags(s.unsafe_get(offset + 1)) |
+      unit_scan_flags(s.unsafe_get(offset + 2)) |
+      unit_scan_flags(s.unsafe_get(offset + 3))
+    if (flags & unit_mask) != 0 {
+      break
+    }
+    offset += 4
+  }
+  offset
+}
+
+///|
+/// The scan flags of one code unit.
+#cfg(any(target="native", target="wasm"))
+fn unit_scan_flags(unit : UInt16) -> Int32 {
+  let unit = unit.to_int()
+  // SAFETY: a code unit shifted by NormalizationScanShift indexes one of the
+  // 2048 blocks; the generator checks every flags index.
+  normalization_scan_flags
+  .unsafe_get(
+    (
+      normalization_scan_index
+      .unsafe_get(unit >> NormalizationScanShift)
+      .to_int() <<
+      NormalizationScanShift
+    ) |
+    (unit & NormalizationScanBlockMask),
+  )
+  .to_int()
+}
+
+///|
 /// Code units scanned one at a time before the first block and after a block
 /// that is not clean.
-#cfg(any(target="native", target="wasm"))
 const MinUnitStretch : Int32 = 16
 
 ///|
-#cfg(any(target="native", target="wasm"))
 const MaxUnitStretch : Int32 = 4096
 
 ///|
@@ -345,6 +366,33 @@ fn clean_unit_limit(scan_mask : Int32) -> Int32 {
   } else {
     0x300
   }
+}
+
+///|
+/// Skip blocks of four code units that are all ASCII, and return the offset
+/// of the first block that is not, or that is incomplete. ASCII is below the
+/// clean limit of every form. Without SIMD, comparing the units' union is
+/// one test per block.
+#cfg(not(any(target="native", target="wasm")))
+fn skip_clean_blocks(
+  s : String,
+  start : Int32,
+  end : Int32,
+  _scan_mask : Int32,
+) -> Int32 {
+  let mut offset = start
+  while end - offset >= 4 {
+    // SAFETY: four units remain before `end`.
+    let units = s.unsafe_get(offset) |
+      s.unsafe_get(offset + 1) |
+      s.unsafe_get(offset + 2) |
+      s.unsafe_get(offset + 3)
+    if units >= 0x80 {
+      break
+    }
+    offset += 4
+  }
+  offset
 }
 
 ///|
@@ -429,16 +477,30 @@ fn process_spans(
       return None
     }
     if check != 0 || out_of_order {
-      return process_remaining_spans(
-        s,
-        span_start - start,
-        offset - start,
-        shift,
-        mask,
-        compatibility~,
-        compose~,
-        check_only~,
-      )
+      if !check_only {
+        let remaining_start = span_start - start
+        return Some(
+          if compose {
+            compose_remaining(s, remaining_start, shift, compatibility~)
+          } else {
+            decompose_remaining(s, remaining_start, shift, compatibility~)
+          },
+        )
+      }
+      // Checking reaches this point only past Quick_Check=Maybe, which
+      // only NFC and NFKC have.
+      return if check_remaining_spans(
+          s,
+          span_start - start,
+          offset - start,
+          shift,
+          mask,
+          compatibility~,
+        ) {
+        Some("")
+      } else {
+        None
+      }
     }
     // Quick_Check=Yes marks still require ordering checks. Keep their starter
     // boundary until the next run of CCC=0 characters or a suspect character.
@@ -449,24 +511,19 @@ fn process_spans(
 }
 
 ///|
-/// Continue after the first suspect character, reusing one scratch buffer.
-/// Normal runs resume the tight scanner; the allocation-free entry path above
-/// keeps this scratch/output state out of its hot loop.
-/// Uses the same checking/normalization result convention as process_spans.
-fn process_remaining_spans(
+/// Check NFC or NFKC after the first suspect character, reusing one scratch
+/// buffer. Normal runs resume the tight scanner; the allocation-free entry
+/// path keeps the scratch state out of its hot loop.
+fn check_remaining_spans(
   s : StringView,
   start : Int32,
   problem_offset : Int32,
   shift : Int32,
   mask : Int32,
   compatibility~ : Bool,
-  compose~ : Bool,
-  check_only~ : Bool,
-) -> String? {
+) -> Bool {
   let buffer : NormalizationBuffer = {
     chars: [],
-    output: None,
-    copied_until: 0,
     previous_ccc: 0,
     needs_order: false,
   }
@@ -478,7 +535,7 @@ fn process_remaining_spans(
   let mut offset = problem_offset
   let mut span_start = start
   while offset < length {
-    offset = process_suspect_spans(
+    offset = check_suspect_spans(
       buffer,
       s,
       span_start,
@@ -486,14 +543,12 @@ fn process_remaining_spans(
       shift,
       mask,
       compatibility~,
-      compose~,
-      check_only~,
     )
     if offset < 0 {
-      return None
+      return false
     }
     // The helper stopped before a clean starter (or at the end). Scan the
-    // following run without carrying scratch/output state through its loop.
+    // following run without carrying scratch state through its loop.
     let run_start = offset
     // Suspect-segment processing uses view-relative offsets; convert only
     // at the handoff to the scanner, whose hot loop uses absolute offsets.
@@ -511,14 +566,7 @@ fn process_remaining_spans(
       span_start -= 1
     }
   }
-  if buffer.output is Some(out) {
-    if buffer.copied_until < length {
-      out.write_view(s[buffer.copied_until:])
-    }
-    Some(out.to_string())
-  } else {
-    Some(if check_only { "" } else { s.to_owned() })
-  }
+  true
 }
 
 ///|

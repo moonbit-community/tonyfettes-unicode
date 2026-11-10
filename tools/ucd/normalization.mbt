@@ -80,7 +80,10 @@ pub fn emit_normalization(
   let values = normalization_values(data.ccc, derived_properties)
   let decomp_indices = Array::make(@emitter.MaxCodePoint + 1, 0)
   for index, entry in data.decompositions {
-    guard index < 65535 else { fail("Too many decomposition rows for norm16") }
+    // `lookup_normalization_record` keeps the row + 1 in 15 bits.
+    guard index < 32767 else {
+      fail("Too many decomposition rows for a normalization record")
+    }
     decomp_indices[entry.code_point] = index + 1
   }
   let composition_groups = Array::make(@emitter.MaxCodePoint + 1, 0)
@@ -271,6 +274,27 @@ pub fn emit_normalization(
       $|  let offset = (norm16 & 0x7FFF) * 6
       $|  normalization_extra[offset].to_int() |
       $|    (normalization_extra[offset + 1].to_int() << 8)
+      $|}
+      $|
+      $|///|
+      $|/// Packed properties as `lookup_normalization_properties` gives them in
+      $|/// bits 0..15, and the decomposition row + 1 in bits 16..30 (0 without
+      $|/// a decomposition), from one lookup.
+      $|pub fn lookup_normalization_record(c : Char) -> Int {
+      $|  let cp = c.to_int()
+      $|  let norm16 = if cp < \{NormalizationBmpLimit} {
+      $|    lookup_bmp_norm16(cp)
+      $|  } else {
+      $|    lookup_supplementary_norm16(cp)
+      $|  }
+      $|  if norm16 < 0x8000 {
+      $|    return norm16
+      $|  }
+      $|  let offset = (norm16 & 0x7FFF) * 6
+      $|  normalization_extra[offset].to_int() |
+      $|    (normalization_extra[offset + 1].to_int() << 8) |
+      $|    (normalization_extra[offset + 2].to_int() << 16) |
+      $|    (normalization_extra[offset + 3].to_int() << 24)
       $|}
       $|
       $|///|

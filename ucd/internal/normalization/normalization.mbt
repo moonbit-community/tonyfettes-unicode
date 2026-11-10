@@ -2724,6 +2724,27 @@ pub fn lookup_normalization_properties(c : Char) -> Int32 {
 }
 
 ///|
+/// Packed properties as `lookup_normalization_properties` gives them in
+/// bits 0..15, and the decomposition row + 1 in bits 16..30 (0 without
+/// a decomposition), from one lookup.
+pub fn lookup_normalization_record(c : Char) -> Int32 {
+  let cp = c.to_int()
+  let norm16 = if cp < 65536 {
+    lookup_bmp_norm16(cp)
+  } else {
+    lookup_supplementary_norm16(cp)
+  }
+  if norm16 < 0x8000 {
+    return norm16
+  }
+  let offset = (norm16 & 0x7FFF) * 6
+  normalization_extra[offset].to_int() |
+  (normalization_extra[offset + 1].to_int() << 8) |
+  (normalization_extra[offset + 2].to_int() << 16) |
+  (normalization_extra[offset + 3].to_int() << 24)
+}
+
+///|
 pub fn normalization_decomposition_index(c : Char) -> Int32 {
   let norm16 = lookup_norm16(c)
   if norm16 < 0x8000 {
