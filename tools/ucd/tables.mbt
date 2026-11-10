@@ -1,8 +1,21 @@
 ///|
-fn sorted_ints(values : Array[Int32]) -> Array[Int32] {
-  let sorted = values.copy()
-  sorted.sort()
-  sorted
+/// Collect the maximal runs of code points whose value satisfies `keep`.
+fn ranges_where(
+  values : FixedArray[Int32],
+  keep : (Int32) -> Bool,
+) -> Array[@parsing.CodePointRange] {
+  let ranges : Array[@parsing.CodePointRange] = []
+  for cp, value in values {
+    if !keep(value) {
+      continue
+    }
+    if ranges.last() is Some(range) && range.end + 1 == cp {
+      ranges[ranges.length() - 1] = { start: range.start, end: cp, }
+    } else {
+      ranges.push({ start: cp, end: cp, })
+    }
+  }
+  ranges
 }
 
 ///|
@@ -11,164 +24,7 @@ fn contains_int(values : Array[Int32], target : Int32) -> Bool {
 }
 
 ///|
-fn ccc_for(data : UnicodeData, cp : Int32) -> Int32 {
-  match data.ccc_entries.search_by(entry => entry.code_point == cp) {
-    Some(index) => data.ccc_entries[index].value
-    None => 0
-  }
-}
-
-///|
-fn gc_ordinal(category : String) -> Int32 {
-  match category {
-    "Lu" => 0
-    "Ll" => 1
-    "Lt" => 2
-    "Lm" => 3
-    "Lo" => 4
-    "Mn" => 5
-    "Mc" => 6
-    "Me" => 7
-    "Nd" => 8
-    "Nl" => 9
-    "No" => 10
-    "Zs" => 11
-    "Zl" => 12
-    "Zp" => 13
-    "Pc" => 14
-    "Pd" => 15
-    "Ps" => 16
-    "Pe" => 17
-    "Pi" => 18
-    "Pf" => 19
-    "Po" => 20
-    "Sm" => 21
-    "Sc" => 22
-    "Sk" => 23
-    "So" => 24
-    "Cc" => 25
-    "Cf" => 26
-    "Cs" => 27
-    "Co" => 28
-    _ => 29
-  }
-}
-
-///|
-pub fn compress_ccc_ranges(data : UnicodeData) -> Array[CccRange] {
-  let entries = data.ccc_entries.copy()
-  entries.sort_by((left, right) => left.code_point - right.code_point)
-  let ranges : Array[CccRange] = []
-  if entries.length() == 0 {
-    return ranges
-  }
-  let mut start = entries[0].code_point
-  let mut prev_cp = start
-  let mut prev_value = entries[0].value
-  for entry in entries.exact_view(start=1) {
-    if entry.code_point == prev_cp + 1 && entry.value == prev_value {
-      prev_cp = entry.code_point
-    } else {
-      ranges.push({ start, end: prev_cp, value: prev_value, })
-      start = entry.code_point
-      prev_cp = entry.code_point
-      prev_value = entry.value
-    }
-  }
-  ranges.push({ start, end: prev_cp, value: prev_value, })
-  ranges
-}
-
-///|
-pub fn compress_mark_ranges(
-  data : UnicodeData,
-) -> Array[@parsing.CodePointRange] {
-  let cps = sorted_ints(data.mark_code_points)
-  let ranges : Array[@parsing.CodePointRange] = []
-  if cps.length() == 0 {
-    return ranges
-  }
-  let mut start = cps[0]
-  let mut prev_cp = start
-  for cp in cps.exact_view(start=1) {
-    if cp == prev_cp + 1 {
-      prev_cp = cp
-    } else {
-      ranges.push({ start, end: prev_cp, })
-      start = cp
-      prev_cp = cp
-    }
-  }
-  ranges.push({ start, end: prev_cp, })
-  ranges
-}
-
-///|
-pub fn compress_general_category_ranges(
-  data : UnicodeData,
-) -> Array[GeneralCategoryRange] {
-  let entries = data.general_categories.copy()
-  entries.sort_by((left, right) => left.code_point - right.code_point)
-  let ranges : Array[GeneralCategoryRange] = []
-  if entries.length() == 0 {
-    return ranges
-  }
-  let max_cp = entries[entries.length() - 1].code_point
-  let mut entry_index = 0
-  let mut start = 0
-  let mut prev_cp = -1
-  let mut prev_value = -1
-  for cp in 0..<=max_cp {
-    let value = if entry_index < entries.length() &&
-      entries[entry_index].code_point == cp {
-      let current = gc_ordinal(entries[entry_index].category)
-      entry_index += 1
-      current
-    } else {
-      29
-    }
-    if cp == prev_cp + 1 && value == prev_value {
-      prev_cp = cp
-    } else {
-      if prev_value >= 0 {
-        ranges.push({ start, end: prev_cp, value: prev_value, })
-      }
-      start = cp
-      prev_cp = cp
-      prev_value = value
-    }
-  }
-  if prev_value >= 0 {
-    ranges.push({ start, end: prev_cp, value: prev_value, })
-  }
-  ranges
-}
-
-///|
-/// General_Category ordinals of the punctuation group: Pc (14) through
-/// Po (20).
-const GcPunctuationFirst : Int32 = 14
-
-///|
-const GcPunctuationLast : Int32 = 20
-
-///|
-/// Collect the General_Category group P ranges from a compressed
-/// General_Category range list, preserving their sorted order.
-pub fn compress_punctuation_ranges(
-  ranges : Array[GeneralCategoryRange],
-) -> Array[@parsing.CodePointRange] {
-  let punctuation : Array[@parsing.CodePointRange] = []
-  for range in ranges {
-    if range.value >= GcPunctuationFirst && range.value <= GcPunctuationLast {
-      punctuation.push({ start: range.start, end: range.end, })
-    }
-  }
-  punctuation
-}
-
-///|
-pub fn build_composition_table(
+fn build_composition_table(
   data : UnicodeData,
   exclusions : Array[Int32],
 ) -> Array[CompositionEntry] {
@@ -195,21 +51,21 @@ pub fn build_composition_table(
 }
 
 ///|
-pub fn build_full_composition_exclusions(
+fn build_full_composition_exclusions(
   data : UnicodeData,
   explicit_exclusions : Array[Int32],
 ) -> Array[Int32] {
   let exclusions = explicit_exclusions.copy()
   for decomp in data.canonical_decompositions {
-    if decomp.code_points.length() == 1 {
-      if !contains_int(exclusions, decomp.code_point) {
-        exclusions.push(decomp.code_point)
-      }
-    } else if decomp.code_points.length() > 0 &&
-      ccc_for(data, decomp.code_points[0]) > 0 {
-      if !contains_int(exclusions, decomp.code_point) {
-        exclusions.push(decomp.code_point)
-      }
+    // Singletons and decompositions starting with a non-starter never
+    // recompose.
+    let excluded = match decomp.code_points {
+      [_] => true
+      [first, ..] => data.ccc[first] > 0
+      [] => false
+    }
+    if excluded && !contains_int(exclusions, decomp.code_point) {
+      exclusions.push(decomp.code_point)
     }
   }
   exclusions.sort()

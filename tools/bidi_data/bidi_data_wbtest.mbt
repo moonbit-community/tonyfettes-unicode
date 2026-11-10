@@ -1,30 +1,6 @@
 ///|
-test "ordered missing declarations and explicit ranges" {
-  let ranges = parse_bidi_ranges(
-    (
-      #|# @missing: 0000..10FFFF; Left_To_Right
-      #|# @missing: 0590..05FF; Right_To_Left
-      #|05D0; R
-      #|0600; AL
-      #|
-    ),
-  )
-  debug_inspect(
-    ranges.map(range => (range.start, range.end, range.bidi_class)),
-    content=(
-      #|[
-      #|  (0, 1423, "L"),
-      #|  (1424, 1535, "R"),
-      #|  (1536, 1536, "AL"),
-      #|  (1537, 1114111, "L"),
-      #|]
-    ),
-  )
-}
-
-///|
 test "bidi class trie and high ranges" {
-  let source = generate_bidi_class_source(
+  let source = emit_bidi_class(
     (
       #|# @missing: 0000..10FFFF; Left_To_Right
       #|05D0; R
@@ -48,7 +24,7 @@ test "bidi class trie and high ranges" {
 
 ///|
 test "unknown bidi class is rejected" {
-  try generate_bidi_class_source("0041; XX\n") catch {
+  try emit_bidi_class("0041; XX\n") catch {
     error =>
       inspect(
         error.to_string().contains("Unknown Bidi_Class: XX"),
@@ -61,9 +37,9 @@ test "unknown bidi class is rejected" {
 
 ///|
 test "mirror and bracket emitters" {
-  let mirrors = generate_mirrored_source("0028; 0029\n")
+  let mirrors = emit_mirrored("0028; 0029\n")
   inspect(mirrors.contains("  0x0028"), content="true")
-  let brackets = generate_bracket_source("0028; 0029; o\n0029; 0028; c\n")
+  let brackets = emit_bracket("0028; 0029; o\n0029; 0028; c\n")
   inspect(brackets.contains("let paired_brackets"), content="true")
   inspect(brackets.contains("pub fn paired_bracket"), content="true")
   inspect(

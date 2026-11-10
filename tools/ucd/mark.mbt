@@ -1,5 +1,11 @@
 ///|
-pub fn emit_marks(mark_ranges : Array[@parsing.CodePointRange]) -> String {
+/// Emit the ranges of General_Category group M (Mn, Mc, and Me), looked up
+/// by binary search.
+pub fn emit_marks(data : UnicodeData) -> String {
+  // Mn, Mc, and Me are ordinals 5 to 7.
+  let mark_ranges = ranges_where(data.general_categories, gc => {
+    gc >= 5 && gc <= 7
+  })
   let out = @emitter.Emitter::new()
   out.write_file_header("Mark character lookup data", "UnicodeData.txt")
   out.write_int_array(

@@ -2,23 +2,36 @@
 package "moonbit-community/unicode-tools/emitter"
 
 // Values
+pub const MaxCodePoint : Int32 = 0x10FFFF
+
+pub fn big_endian_16(Array[Int32]) -> Array[Int32]
+
+pub fn deduplicate_blocks(Array[Int32], Int32) -> DedupedBlocks
+
+pub fn hex_literal(Int32, min_width? : Int32) -> String
+
 pub fn hex_upper(Int32, min_width? : Int32) -> String
+
+pub fn string_literal(ArrayView[Int32]) -> String
 
 // Errors
 
 // Types and methods
+pub struct DedupedBlocks {
+  ids : Array[Int32]
+  blocks : Array[Int32]
+}
+
 type Emitter
 pub fn Emitter::finish(Self) -> String
 pub fn Emitter::new() -> Self
 pub fn Emitter::write(Self, String) -> Unit
 pub fn Emitter::write_byte_array(Self, String, String, Array[Int32]) -> Unit
-pub fn Emitter::write_char(Self, Char) -> Unit
 pub fn Emitter::write_file_header(Self, String, String) -> Unit
-pub fn Emitter::write_int(Self, Int32) -> Unit
 pub fn Emitter::write_int_array(Self, String, String, Array[Int32], hex~ : Bool) -> Unit
 pub fn Emitter::write_line(Self, String) -> Unit
 pub fn Emitter::write_uint16_array(Self, String, String, Array[Int32]) -> Unit raise
-pub fn Emitter::write_value_trie(Self, property~ : String, prefix~ : String, lookup~ : String, lookup_doc~ : Array[String], value_bits~ : Int32, FixedArray[Int32]) -> Unit raise
+pub fn Emitter::write_value_trie(Self, property~ : String, prefix~ : String, lookup~ : String, lookup_doc~ : Array[String], value_bits~ : Int32, takes_code_point? : Bool, FixedArray[Int32]) -> Unit raise
 
 // Type aliases
 

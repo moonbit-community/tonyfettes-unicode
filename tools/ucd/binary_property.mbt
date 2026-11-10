@@ -12,11 +12,6 @@ const BinaryTrieTopShift : Int32 = 10
 const BinaryTrieLeafShift : Int32 = 7
 
 ///|
-fn hex_literal(value : Int32) -> String {
-  "0x\{@emitter.hex_upper(value)}"
-}
-
-///|
 /// Write a binary property as a three-level bitset trie for planes 0-3
 /// named `<prefix>_trie_top`, `<prefix>_trie_mid`, and `<prefix>_trie_leaf`,
 /// followed by the lookup function `is_<prefix>`, where `<prefix>` is the
@@ -54,9 +49,9 @@ fn write_binary_property_trie(
     }
   }
   // Leaf level: bitset blocks; `leaf.ids` has one entry per leaf block.
-  let leaf = @trie.deduplicate_blocks(bits, 1 << (BinaryTrieLeafShift - 3))
+  let leaf = @emitter.deduplicate_blocks(bits, 1 << (BinaryTrieLeafShift - 3))
   // Mid level: blocks of leaf block indices; `mid.ids` is the top level.
-  let mid = @trie.deduplicate_blocks(
+  let mid = @emitter.deduplicate_blocks(
     leaf.ids,
     1 << (BinaryTrieTopShift - BinaryTrieLeafShift),
   )
@@ -71,7 +66,7 @@ fn write_binary_property_trie(
   } else {
     high_ranges
     .map(range => {
-      "(cp >= \{hex_literal(range.start)} && cp <= \{hex_literal(range.end)})"
+      "(cp >= \{@emitter.hex_literal(range.start)} && cp <= \{@emitter.hex_literal(range.end)})"
     })
     .join(" || ")
   }
@@ -98,7 +93,7 @@ fn write_binary_property_trie(
       $|/// \{lookup_doc}
       $|pub fn \{lookup}(c : Char) -> Bool {
       $|  let cp = c.to_int()
-      $|  if cp >= \{hex_literal(BinaryTrieLimit)} {
+      $|  if cp >= \{@emitter.hex_literal(BinaryTrieLimit)} {
       $|    return \{high_check}
       $|  }
       $|  let mid = (\{prefix}_trie_top[cp >> \{BinaryTrieTopShift}].to_int() << \{BinaryTrieTopShift - BinaryTrieLeafShift}) |
@@ -113,129 +108,67 @@ fn write_binary_property_trie(
 }
 
 ///|
-/// Emit a data file holding the trie and lookup function for one binary
-/// property read from `source`.
-fn emit_binary_property(
+/// Emit a data file holding the trie and lookup function of the binary
+/// property `property`, read from the UCD file `content`, whose name is
+/// `source`.
+pub fn emit_binary_property(
+  content : String,
   property~ : String,
   source~ : String,
-  ranges : Array[@parsing.CodePointRange],
 ) -> String raise {
   let out = @emitter.Emitter::new()
   out.write_file_header("\{property} lookup data", source)
-  write_binary_property_trie(out, property~, ranges)
+  write_binary_property_trie(
+    out,
+    property~,
+    parse_property_ranges(content, property),
+  )
   out.finish()
 }
 
 ///|
-pub fn emit_alphabetic(properties : DerivedCoreProperties) -> String raise {
-  emit_binary_property(
-    property="Alphabetic",
-    source="DerivedCoreProperties.txt",
-    properties.alphabetic,
+/// Emit XID_Start and XID_Continue from `DerivedCoreProperties.txt`.
+pub fn emit_xid(content : String) -> String raise {
+  let xid_start = parse_property_ranges(content, "XID_Start")
+  let xid_continue = parse_property_ranges(content, "XID_Continue")
+  validate_xid_subset(xid_start, xid_continue)
+  let out = @emitter.Emitter::new()
+  out.write_file_header(
+    "XID_Start and XID_Continue lookup data", "DerivedCoreProperties.txt",
   )
+  write_binary_property_trie(out, property="XID_Start", xid_start)
+  write_binary_property_trie(out, property="XID_Continue", xid_continue)
+  out.finish()
 }
 
 ///|
-pub fn emit_lowercase(properties : DerivedCoreProperties) -> String raise {
-  emit_binary_property(
-    property="Lowercase",
-    source="DerivedCoreProperties.txt",
-    properties.lowercase,
-  )
-}
-
-///|
-pub fn emit_uppercase(properties : DerivedCoreProperties) -> String raise {
-  emit_binary_property(
-    property="Uppercase",
-    source="DerivedCoreProperties.txt",
-    properties.uppercase,
-  )
-}
-
-///|
-pub fn emit_white_space(properties : PropList) -> String raise {
-  emit_binary_property(
-    property="White_Space",
-    source="PropList.txt",
-    properties.white_space,
-  )
-}
-
-///|
-pub fn emit_default_ignorable_code_point(
-  properties : DerivedCoreProperties,
-) -> String raise {
-  emit_binary_property(
-    property="Default_Ignorable_Code_Point",
-    source="DerivedCoreProperties.txt",
-    properties.default_ignorable_code_point,
-  )
-}
-
-///|
-pub fn emit_grapheme_extend(properties : DerivedCoreProperties) -> String raise {
-  emit_binary_property(
-    property="Grapheme_Extend",
-    source="DerivedCoreProperties.txt",
-    properties.grapheme_extend,
-  )
-}
-
-///|
-pub fn emit_regional_indicator(properties : PropList) -> String raise {
-  emit_binary_property(
-    property="Regional_Indicator",
-    source="PropList.txt",
-    properties.regional_indicator,
-  )
-}
-
-///|
-pub fn emit_prepended_concatenation_mark(properties : PropList) -> String raise {
-  emit_binary_property(
-    property="Prepended_Concatenation_Mark",
-    source="PropList.txt",
-    properties.prepended_concatenation_mark,
-  )
-}
-
-///|
+/// Emit the emoji properties of `emoji-data.txt` and the characters
+/// `emoji-variation-sequences.txt` lists a variation sequence for.
 pub fn emit_emoji(
-  properties : EmojiData,
-  variation_sequences : Array[@parsing.CodePointRange],
+  emoji_data : String,
+  variation_sequences : String,
 ) -> String raise {
   let out = @emitter.Emitter::new()
   out.write_file_header(
     "Extended_Pictographic, Emoji_Presentation, Emoji_Modifier, Emoji_Modifier_Base, and emoji variation sequence lookup data",
     "emoji-data.txt and emoji-variation-sequences.txt",
   )
-  write_binary_property_trie(
-    out,
-    property="Extended_Pictographic",
-    properties.extended_pictographic,
-  )
-  write_binary_property_trie(
-    out,
-    property="Emoji_Presentation",
-    properties.emoji_presentation,
-  )
-  write_binary_property_trie(
-    out,
-    property="Emoji_Modifier",
-    properties.emoji_modifier,
-  )
-  write_binary_property_trie(
-    out,
-    property="Emoji_Modifier_Base",
-    properties.emoji_modifier_base,
-  )
+  for
+    property in [
+      "Extended_Pictographic", "Emoji_Presentation", "Emoji_Modifier", "Emoji_Modifier_Base",
+    ] {
+    write_binary_property_trie(
+      out,
+      property~,
+      parse_property_ranges(emoji_data, property),
+    )
+  }
   write_binary_property_trie(
     out,
     property="Emoji_Variation_Sequence",
     lookup="has_emoji_variation_sequence",
     lookup_doc="Check whether a character starts an emoji variation sequence",
-    variation_sequences,
+    parse_emoji_variation_sequences(variation_sequences),
   )
   out.finish()
 }
@@ -244,9 +177,9 @@ pub fn emit_emoji(
 /// Emit an independent punctuation table (General_Category group P). Keeping
 /// it separate means code that only tests punctuation does not link the
 /// General_Category trie.
-pub fn emit_punctuation(
-  ranges : Array[@parsing.CodePointRange],
-) -> String raise {
+pub fn emit_punctuation(data : UnicodeData) -> String raise {
+  // Pc, Pd, Ps, Pe, Pi, Pf, and Po are ordinals 14 to 20.
+  let ranges = ranges_where(data.general_categories, gc => gc >= 14 && gc <= 20)
   let out = @emitter.Emitter::new()
   out.write_file_header(
     "Punctuation (General_Category group P) lookup data", "UnicodeData.txt",

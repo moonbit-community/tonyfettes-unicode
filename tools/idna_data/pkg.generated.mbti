@@ -2,7 +2,7 @@
 package "moonbit-community/unicode-tools/idna_data"
 
 // Values
-pub fn generate_mapping_source(String) -> String raise
+pub fn emit_mapping(String) -> String raise
 
 // Errors
 

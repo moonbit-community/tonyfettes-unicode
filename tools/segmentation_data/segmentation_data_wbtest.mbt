@@ -33,7 +33,7 @@ test "packed values combine the three properties" {
 
 ///|
 test "grapheme break trie, high ranges, and constants" {
-  let source = generate_grapheme_break_source(
+  let source = emit_grapheme_break(
     (
       #|000D          ; CR # Cc       <control-000D>
       #|E0001         ; Control # Cf       LANGUAGE TAG
@@ -68,7 +68,7 @@ test "grapheme break trie, high ranges, and constants" {
 
 ///|
 test "unknown property values are rejected" {
-  try generate_grapheme_break_source("0041; XX\n", "", "") catch {
+  try emit_grapheme_break("0041; XX\n", "", "") catch {
     error =>
       inspect(
         error.to_string().contains("Unknown Grapheme_Cluster_Break: XX"),
@@ -77,7 +77,7 @@ test "unknown property values are rejected" {
   } noraise {
     _ => fail("expected an unknown Grapheme_Cluster_Break to be rejected")
   }
-  try generate_grapheme_break_source("", "", "0041; InCB; XX\n") catch {
+  try emit_grapheme_break("", "", "0041; InCB; XX\n") catch {
     error =>
       inspect(
         error.to_string().contains("Unknown Indic_Conjunct_Break: XX"),

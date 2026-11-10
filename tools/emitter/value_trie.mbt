@@ -1,7 +1,4 @@
 ///|
-const MaxCodePoint : Int32 = 0x10FFFF
-
-///|
 /// Value tries cover planes 0-3; the higher planes hold few distinct runs and
 /// are looked up as packed ranges instead.
 const ValueTrieLimit : Int32 = 0x40000
@@ -27,9 +24,9 @@ const ValueTrieLeafShift : Int32 = 4
 ///
 /// `values` holds the value of every code point, each below
 /// `1 << value_bits`. `lookup` is the declaration head of the lookup
-/// function, such as `pub fn lookup_east_asian_width`; it takes a `Char` and
-/// returns the value as an `Int`. `lookup_doc` is its documentation, one
-/// entry per line.
+/// function, such as `pub fn lookup_east_asian_width`; it takes a `Char`, or
+/// the code point as an `Int` when `takes_code_point` is set, and returns the
+/// value as an `Int`. `lookup_doc` is its documentation, one entry per line.
 pub fn Emitter::write_value_trie(
   self : Emitter,
   property~ : String,
@@ -37,6 +34,7 @@ pub fn Emitter::write_value_trie(
   lookup~ : String,
   lookup_doc~ : Array[String],
   value_bits~ : Int32,
+  takes_code_point~ : Bool = false,
   values : FixedArray[Int32],
 ) -> Unit raise {
   guard values.length() == MaxCodePoint + 1 else {
@@ -54,12 +52,12 @@ pub fn Emitter::write_value_trie(
     }
   }
   // Leaf level: blocks of values.
-  let leaf = @trie.deduplicate_blocks(
+  let leaf = deduplicate_blocks(
     Array::makei(ValueTrieLimit, cp => values[cp]),
     1 << ValueTrieLeafShift,
   )
   // Mid level: blocks of leaf block indices; `mid.ids` is the top level.
-  let mid = @trie.deduplicate_blocks(
+  let mid = deduplicate_blocks(
     leaf.ids,
     1 << (ValueTrieTopShift - ValueTrieLeafShift),
   )
@@ -69,12 +67,7 @@ pub fn Emitter::write_value_trie(
   guard mid.blocks.all(id => id < 0x10000) else {
     fail("\{property} trie has too many leaf blocks for two bytes")
   }
-  let mid_bytes = []
-  for id in mid.blocks {
-    mid_bytes.push(id >> 8)
-    mid_bytes.push(id & 0xFF)
-  }
-  let trie_limit = "0x\{hex_upper(ValueTrieLimit)}"
+  let trie_limit = hex_literal(ValueTrieLimit)
   let mid_mask = (1 << (ValueTrieTopShift - ValueTrieLeafShift)) - 1
   let leaf_mask = (1 << ValueTrieLeafShift) - 1
   let value_mask = (1 << value_bits) - 1
@@ -86,7 +79,7 @@ pub fn Emitter::write_value_trie(
   self.write_byte_array(
     "\{property} trie mid level: big-endian 16-bit leaf block indices",
     "\{prefix}_trie_mid",
-    mid_bytes,
+    big_endian_16(mid.blocks),
   )
   self.write_byte_array(
     "\{property} trie leaf level: values in blocks of \{1 << ValueTrieLeafShift}",
@@ -104,9 +97,14 @@ pub fn Emitter::write_value_trie(
     self.write_line("/// \{line}")
   }
   self.write(
+    if takes_code_point {
+      "\{lookup}(cp : Int) -> Int {\n"
+    } else {
+      "\{lookup}(c : Char) -> Int {\n  let cp = c.to_int()\n"
+    },
+  )
+  self.write(
     (
-      $|\{lookup}(c : Char) -> Int {
-      $|  let cp = c.to_int()
       $|  if cp >= \{trie_limit} {
       $|    // Binary search for the last range starting at or before `cp`.
       $|    let key = (cp << \{value_bits}) | \{value_mask}

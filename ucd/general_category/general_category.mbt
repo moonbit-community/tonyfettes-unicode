@@ -312,7 +312,7 @@ let gc_trie_mid : Bytes = [
 ]
 
 ///|
-/// General_Category trie leaf level: ordinals in blocks of 16
+/// General_Category trie leaf level: values in blocks of 16
 let gc_trie_leaf : Bytes = [
   25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 11, 20, 20, 20,
   22, 20, 20, 20, 16, 17, 20, 21, 20, 15, 20, 20, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 20,
@@ -810,7 +810,7 @@ let gc_trie_leaf : Bytes = [
 ]
 
 ///|
-/// General_Category ranges from 0x40000 packed as `start << 5 | ordinal`
+/// General_Category ranges from 0x40000 packed as `start << 5 | value`
 let gc_high_ranges : ReadOnlyArray[Int32] = [
   0x80001D, 0x1C0003A, 0x1C0005D, 0x1C0041A, 0x1C0101D, 0x1C02005, 0x1C03E1D, 0x1E0001C,
   0x1FFFFDD, 0x200001C, 0x21FFFDD,

@@ -14,22 +14,21 @@ let sample_unicode_data : String =
 ///|
 test "parse UnicodeData fields" {
   let data = parse_unicode_data(sample_unicode_data)
-  inspect(data.ccc_entries.length(), content="2")
+  debug_inspect(
+    [0x41, 0x300, 0x301, 0x302].map(cp => data.ccc[cp]),
+    content="[0, 230, 230, 0]",
+  )
   inspect(data.canonical_decompositions.length(), content="1")
   inspect(data.compatibility_decompositions.length(), content="1")
-  inspect(data.mark_code_points.length(), content="2")
-  inspect(data.mark_code_points[0], content="768")
-  inspect(data.mark_code_points[1], content="769")
   inspect(data.simple_uppercase.length(), content="1")
   inspect(data.simple_lowercase.length(), content="2")
   inspect(data.simple_titlecase.length(), content="1")
-  inspect(
-    data.general_categories.any(entry => entry.code_point == 0x3401),
-    content="true",
-  )
-  inspect(
-    data.general_categories.any(entry => entry.code_point == 0xAC01),
-    content="true",
+  // Lu, Ll, Mn, Cn, and Lo inside the First/Last ranges.
+  debug_inspect(
+    [0x41, 0x61, 0x300, 0x302, 0x3401, 0x3403, 0xAC01].map(cp => {
+      data.general_categories[cp]
+    }),
+    content="[0, 1, 5, 29, 4, 29, 4]",
   )
 }
 
@@ -62,7 +61,7 @@ test "parse SpecialCasing unconditional mappings only" {
 }
 
 ///|
-test "parse XID properties" {
+test "parse binary property ranges" {
   let input =
     #|0030..0039 ; XID_Continue # Nd
     #|0041..005A ; XID_Start # Lu
@@ -72,76 +71,28 @@ test "parse XID properties" {
     #|2118 ; XID_Start # Other_ID_Start
     #|2118 ; XID_Continue # Other_ID_Start
     #|212E ; ID_Start # ignored
-    #|0041..005A ; Alphabetic # Lu
-    #|0061..007A ; Alphabetic # Ll
-    #|0061..007A ; Lowercase # Ll
-    #|00AA ; Lowercase # Lo
-    #|0041..005A ; Uppercase # Lu
-    #|00AD ; Default_Ignorable_Code_Point # Cf
     #|200C..200F ; Default_Ignorable_Code_Point # Cf
-    #|0300..036F ; Grapheme_Extend # Mn
-    #|200C ; Grapheme_Extend # Cf
-    #|200D ; Grapheme_Base # ignored
-  let properties = parse_derived_core_properties(input)
-  inspect(properties.xid_start.length(), content="2")
-  inspect(properties.xid_start[0].start, content="65")
-  inspect(properties.xid_start[0].end, content="90")
-  inspect(properties.xid_continue.length(), content="5")
-  inspect(properties.xid_continue[3].start, content="183")
-  inspect(properties.alphabetic.length(), content="2")
-  inspect(properties.lowercase.length(), content="2")
-  inspect(properties.lowercase[1].start, content="170")
-  inspect(properties.uppercase.length(), content="1")
-  inspect(properties.default_ignorable_code_point.length(), content="2")
-  inspect(properties.default_ignorable_code_point[1].end, content="8207")
-  inspect(properties.grapheme_extend.length(), content="2")
-  inspect(properties.grapheme_extend[1].start, content="8204")
-}
-
-///|
-test "parse White_Space from PropList" {
-  let input =
-    #|0009..000D    ; White_Space # Cc   [5] <control-0009>..<control-000D>
-    #|0020          ; White_Space # Zs       SPACE
-    #|002D          ; Dash # Pd       HYPHEN-MINUS
-    #|3000          ; White_Space # Zs       IDEOGRAPHIC SPACE
-    #|0600..0605    ; Prepended_Concatenation_Mark # Cf   [6] ARABIC NUMBER SIGN..ARABIC NUMBER MARK ABOVE
-    #|06DD          ; Prepended_Concatenation_Mark # Cf       ARABIC END OF AYAH
-    #|1F1E6..1F1FF  ; Regional_Indicator # So  [26] REGIONAL INDICATOR SYMBOL LETTER A..REGIONAL INDICATOR SYMBOL LETTER Z
-  let properties = parse_prop_list(input)
-  inspect(properties.white_space.length(), content="3")
-  inspect(properties.white_space[0].start, content="9")
-  inspect(properties.white_space[0].end, content="13")
-  inspect(properties.white_space[2].start, content="12288")
-  inspect(properties.prepended_concatenation_mark.length(), content="2")
-  inspect(properties.prepended_concatenation_mark[1].start, content="1757")
-  inspect(properties.regional_indicator.length(), content="1")
-  inspect(properties.regional_indicator[0].end, content="127487")
-}
-
-///|
-test "parse emoji-data properties" {
-  let input =
-    #|0023          ; Emoji                # E0.0   [1] (#️)       hash sign
-    #|231A..231B    ; Emoji_Presentation   # E0.6   [2] (⌚..⌛)    watch..hourglass done
-    #|1F600         ; Emoji_Presentation   # E1.0   [1] (😀)       grinning face
-    #|1F3FB..1F3FF  ; Emoji_Modifier       # E1.0   [5] (🏻..🏿)    light skin tone..dark skin tone
-    #|261D          ; Emoji_Modifier_Base  # E0.6   [1] (☝️)       index pointing up
-    #|1F44D         ; Emoji_Modifier_Base  # E0.6   [1] (👍)       thumbs up
-    #|00A9          ; Extended_Pictographic# E0.6   [1] (©️)       copyright
-  let properties = parse_emoji_data(input)
-  inspect(properties.extended_pictographic[0].start, content="169")
-  inspect(properties.emoji_presentation.length(), content="2")
-  inspect(properties.emoji_presentation[0].end, content="8987")
-  inspect(properties.emoji_modifier.length(), content="1")
-  inspect(properties.emoji_modifier[0].start, content="127995")
-  inspect(properties.emoji_modifier_base.length(), content="2")
-  inspect(properties.emoji_modifier_base[1].start, content="128077")
+  let xid_start = parse_property_ranges(input, "XID_Start")
+  debug_inspect(
+    xid_start,
+    content="[{ start: 65, end: 90 }, { start: 8472, end: 8472 }]",
+  )
+  inspect(parse_property_ranges(input, "XID_Continue").length(), content="5")
+  debug_inspect(
+    parse_property_ranges(input, "Default_Ignorable_Code_Point"),
+    content="[{ start: 8204, end: 8207 }]",
+  )
 }
 
 ///|
 test "reject missing White_Space" {
-  try parse_prop_list("0020 ; Dash") catch {
+  try
+    emit_binary_property(
+      "0020 ; Dash",
+      property="White_Space",
+      source="PropList.txt",
+    )
+  catch {
     Failure::Failure(message) =>
       assert_true(message.contains("Missing White_Space ranges"))
     error => raise error
@@ -158,7 +109,7 @@ test "reject XID_Start outside XID_Continue" {
     #|0041..0042 ; Alphabetic
     #|0061 ; Lowercase
     #|0041 ; Uppercase
-  try parse_derived_core_properties(input) catch {
+  try emit_xid(input) catch {
     Failure::Failure(message) =>
       assert_true(
         message.contains("XID_Start must be a subset of XID_Continue"),
@@ -170,20 +121,8 @@ test "reject XID_Start outside XID_Continue" {
 }
 
 ///|
-test "compress ranges and build composition data" {
+test "build composition data" {
   let data = parse_unicode_data(sample_unicode_data)
-  let ccc_ranges = compress_ccc_ranges(data)
-  inspect(ccc_ranges.length(), content="1")
-  inspect(ccc_ranges[0].start, content="768")
-  inspect(ccc_ranges[0].end, content="769")
-  inspect(ccc_ranges[0].value, content="230")
-  let mark_ranges = compress_mark_ranges(data)
-  inspect(mark_ranges[0].start, content="768")
-  inspect(mark_ranges[0].end, content="769")
-  let gc_ranges = compress_general_category_ranges(data)
-  inspect(gc_ranges[0].start, content="0")
-  inspect(gc_ranges[0].end, content="64")
-  inspect(gc_ranges[0].value, content="29")
   let compositions = build_composition_table(data, [])
   inspect(compositions[0].first, content="65")
   inspect(compositions[0].second, content="768")
@@ -215,20 +154,14 @@ test "emit CCC lookup through shared normalization properties" {
 
 ///|
 test "emit XID table" {
-  let properties = parse_derived_core_properties(
+  let source = emit_xid(
     (
       #|0041..005A ; XID_Start
       #|0041..005A ; XID_Continue
       #|005F ; XID_Continue
       #|E0100..E01EF ; XID_Continue
-      #|0041..005A ; Alphabetic
-      #|0061..007A ; Lowercase
-      #|0041..005A ; Uppercase
-      #|00AD ; Default_Ignorable_Code_Point
-      #|0300..036F ; Grapheme_Extend
     ),
   )
-  let source = emit_xid(properties)
   inspect(
     source.contains("let xid_start_trie_leaf : Bytes = ["),
     content="true",
@@ -347,15 +280,15 @@ test "case mappings above the trie are rejected" {
 
 ///|
 test "emit White_Space table" {
-  let source = emit_white_space(
-    parse_prop_list(
-      (
-        #|0009..000D ; White_Space
-        #|0020 ; White_Space
-        #|0600..0605 ; Prepended_Concatenation_Mark
-        #|1F1E6..1F1FF ; Regional_Indicator
-      ),
+  let source = emit_binary_property(
+    (
+      #|0009..000D ; White_Space
+      #|0020 ; White_Space
+      #|0600..0605 ; Prepended_Concatenation_Mark
+      #|1F1E6..1F1FF ; Regional_Indicator
     ),
+    property="White_Space",
+    source="PropList.txt",
   )
   inspect(source.contains("/// White_Space lookup data\n"), content="true")
   inspect(source.contains("/// Generated from PropList.txt\n"), content="true")
@@ -409,19 +342,15 @@ test "unknown East_Asian_Width is rejected" {
 ///|
 test "emit Emoji tables" {
   let source = emit_emoji(
-    parse_emoji_data(
-      (
-        #|231A..231B ; Emoji_Presentation
-        #|1F3FB..1F3FF ; Emoji_Modifier
-        #|1F44D ; Emoji_Modifier_Base
-        #|00A9 ; Extended_Pictographic
-      ),
+    (
+      #|231A..231B ; Emoji_Presentation
+      #|1F3FB..1F3FF ; Emoji_Modifier
+      #|1F44D ; Emoji_Modifier_Base
+      #|00A9 ; Extended_Pictographic
     ),
-    parse_emoji_variation_sequences(
-      (
-        #|0023 FE0E  ; text style;  # (1.1) NUMBER SIGN
-        #|0023 FE0F  ; emoji style; # (1.1) NUMBER SIGN
-      ),
+    (
+      #|0023 FE0E  ; text style;  # (1.1) NUMBER SIGN
+      #|0023 FE0F  ; emoji style; # (1.1) NUMBER SIGN
     ),
   )
   for
@@ -647,7 +576,7 @@ test "Line_Break values must match the data" {
 }
 
 ///|
-test "compress punctuation ranges and emit punctuation table" {
+test "punctuation and mark tables come from General_Category" {
   let data = parse_unicode_data(
     (
       #|0021;EXCLAMATION MARK;Po;0;ON;;;;;N;;;;;
@@ -657,23 +586,29 @@ test "compress punctuation ranges and emit punctuation table" {
       #|0029;RIGHT PARENTHESIS;Pe;0;ON;;;;;N;;;;;
       #|0030;DIGIT ZERO;Nd;0;EN;;0;0;0;N;;;;;
       #|0041;LATIN CAPITAL LETTER A;Lu;0;L;;;;;N;;;;0061;
+      #|0300;COMBINING GRAVE ACCENT;Mn;230;NSM;;;;;N;;;;;
+      #|0301;COMBINING ACUTE ACCENT;Mn;230;NSM;;;;;N;;;;;
     ),
   )
-  let ranges = compress_punctuation_ranges(
-    compress_general_category_ranges(data),
+  // Adjacent values of different punctuation categories share a range.
+  debug_inspect(
+    ranges_where(data.general_categories, gc => gc >= 14 && gc <= 20),
+    content=(
+      #|[
+      #|  { start: 33, end: 33 },
+      #|  { start: 40, end: 41 },
+      #|  { start: 44, end: 45 },
+      #|]
+    ),
   )
-  inspect(ranges.length(), content="5")
-  inspect(ranges[0].start, content="33")
-  inspect(ranges[0].end, content="33")
-  inspect(ranges[1].start, content="40")
-  inspect(ranges[1].end, content="40")
-  inspect(ranges[2].start, content="41")
-  inspect(ranges[2].end, content="41")
-  inspect(ranges[3].start, content="44")
-  inspect(ranges[3].end, content="44")
-  inspect(ranges[4].start, content="45")
-  inspect(ranges[4].end, content="45")
-  let source = emit_punctuation(ranges)
+  let source = emit_punctuation(data)
   assert_true(source.contains("pub fn is_punctuation(c : Char) -> Bool"))
   assert_true(source.contains("punctuation_trie_top"))
+  let marks = emit_marks(data)
+  assert_true(
+    marks.contains("let mark_starts : ReadOnlyArray[Int] = [\n  0x0300,\n]"),
+  )
+  assert_true(
+    marks.contains("let mark_ends : ReadOnlyArray[Int] = [\n  0x0301,\n]"),
+  )
 }

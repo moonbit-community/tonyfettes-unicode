@@ -275,7 +275,7 @@ let grapheme_break_trie_mid : Bytes = [
 ]
 
 ///|
-/// Grapheme break trie leaf level: packed values in blocks of 16
+/// Grapheme break trie leaf level: values in blocks of 16
 let grapheme_break_trie_leaf : Bytes = [
   3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 3, 3, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
   3, 3, 3, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,

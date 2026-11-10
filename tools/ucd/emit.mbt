@@ -21,21 +21,6 @@ pub fn emit_ccc() -> String {
 }
 
 ///|
-pub fn emit_xid(properties : DerivedCoreProperties) -> String raise {
-  let out = @emitter.Emitter::new()
-  out.write_file_header(
-    "XID_Start and XID_Continue lookup data", "DerivedCoreProperties.txt",
-  )
-  write_binary_property_trie(out, property="XID_Start", properties.xid_start)
-  write_binary_property_trie(
-    out,
-    property="XID_Continue",
-    properties.xid_continue,
-  )
-  out.finish()
-}
-
-///|
 pub fn emit_decomposition(data : UnicodeData) -> String raise {
   let entries = decomposition_entries(data)
   let starts : Array[Int32] = []
@@ -145,9 +130,10 @@ pub fn emit_decomposition(data : UnicodeData) -> String raise {
     ),
   )
   // Lets the lookup skip everything below the first character with a mapping.
-  let first_decomposable = entries.fold(init=MaxCodePoint + 1, (first, entry) => {
-    Int32::min(first, entry.code_point)
-  })
+  let first_decomposable = entries.fold(init=@emitter.MaxCodePoint + 1, (
+    first,
+    entry,
+  ) => Int32::min(first, entry.code_point))
   out.write(
     (
       $|///|
@@ -163,7 +149,7 @@ pub fn emit_decomposition(data : UnicodeData) -> String raise {
       $|  compatibility~ : Bool,
       $|) -> Unit {
       $|  // No character below this one has a decomposition.
-      $|  if c.to_int() < \{hex_literal(first_decomposable)} {
+      $|  if c.to_int() < \{@emitter.hex_literal(first_decomposable)} {
       $|    dest.push(c)
       $|    return
       $|  }
@@ -197,10 +183,14 @@ pub fn emit_decomposition(data : UnicodeData) -> String raise {
 }
 
 ///|
+/// Emit the canonical composition pairs and the full composition exclusions.
+/// `exclusions` are the code points `CompositionExclusions.txt` lists.
 pub fn emit_composition(
-  compositions : Array[CompositionEntry],
+  data : UnicodeData,
   exclusions : Array[Int32],
 ) -> String {
+  let compositions = build_composition_table(data, exclusions)
+  let exclusions = build_full_composition_exclusions(data, exclusions)
   let out = @emitter.Emitter::new()
   out.write_file_header(
     "Composition lookup data", "UnicodeData.txt and CompositionExclusions.txt",

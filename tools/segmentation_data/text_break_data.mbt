@@ -12,32 +12,25 @@ let sentence_break_names : ReadOnlyArray[String] = [
 ]
 
 ///|
-fn generate_text_break_source(
+fn emit_text_break(
   source : String,
   property~ : String,
+  file~ : String,
   prefix~ : String,
   constant_prefix~ : String,
   names~ : ReadOnlyArray[String],
   bits~ : Int32,
 ) -> String raise {
-  let values = FixedArray::make(MaxCodePoint + 1, 0)
-  for raw_line in source.split("\n") {
-    let line = @parsing.strip_comment(raw_line)
-    guard line.split(";").collect() is [range, name, ..] else { continue }
-    let range = @parsing.parse_code_point_range(range)
-    let code = property_code(property, names, name.trim())
-    for cp in range.start..<=range.end {
-      values[cp] = code
-    }
-  }
+  let values = @parsing.parse_enumerated_ordinals(
+    source,
+    property~,
+    default="Other",
+    name => name_code(names, name),
+  )
   let out = @emitter.Emitter::new()
   out.write_file_header(
     "\{property} properties for Unicode Text Segmentation (UAX #29)",
-    if prefix == "word_break" {
-      "WordBreakProperty.txt"
-    } else {
-      "SentenceBreakProperty.txt"
-    },
+    file,
   )
   for code, name in names {
     if code != 0 {
@@ -64,10 +57,11 @@ fn generate_text_break_source(
 
 ///|
 /// Generate the default word boundary property table from WordBreakProperty.txt.
-pub fn generate_word_break_source(source : String) -> String raise {
-  generate_text_break_source(
+pub fn emit_word_break(source : String) -> String raise {
+  emit_text_break(
     source,
     property="Word_Break",
+    file="WordBreakProperty.txt",
     prefix="word_break",
     constant_prefix="Wb",
     names=word_break_names,
@@ -77,10 +71,11 @@ pub fn generate_word_break_source(source : String) -> String raise {
 
 ///|
 /// Generate the sentence boundary property table from SentenceBreakProperty.txt.
-pub fn generate_sentence_break_source(source : String) -> String raise {
-  generate_text_break_source(
+pub fn emit_sentence_break(source : String) -> String raise {
+  emit_text_break(
     source,
     property="Sentence_Break",
+    file="SentenceBreakProperty.txt",
     prefix="sentence_break",
     constant_prefix="Sb",
     names=sentence_break_names,
