@@ -305,7 +305,7 @@ let idna_trie_mid : Bytes = [
 ]
 
 ///|
-/// IDNA trie leaf level: big-endian 16-bit `mapping << 3 | status` in blocks of 16
+/// IDNA trie leaf level: big-endian 16-bit values in blocks of 16
 let idna_trie_leaf : Bytes = [
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 18, 0, 26, 0, 34, 0, 42, 0, 50, 0, 58, 0, 66, 0,
@@ -1294,8 +1294,34 @@ let idna_trie_leaf : Bytes = [
 ]
 
 ///|
-/// IDNA ranges from 0x40000 packed as `start << 3 | status`
+/// IDNA ranges from 0x40000 packed as `start << 3 | value`
 let idna_high_ranges : ReadOnlyArray[Int32] = [0x200004, 0x700801, 0x700F84]
+
+///|
+/// Look up the packed mapping table entry of a character.
+fn lookup_idna_value(c : Char) -> Int32 {
+  let cp = c.to_int()
+  if cp >= 0x40000 {
+    // Binary search for the last range starting at or before `cp`.
+    let key = (cp << 3) | 7
+    let mut low = 0
+    let mut high = idna_high_ranges.length()
+    while high - low > 1 {
+      let mid = (low + high) / 2
+      if idna_high_ranges[mid] <= key {
+        low = mid
+      } else {
+        high = mid
+      }
+    }
+    return idna_high_ranges[low] & 7
+  }
+  let mid = (idna_trie_top[cp >> 8].to_int() << 4) | ((cp >> 4) & 15)
+  let leaf = (idna_trie_mid[2 * mid].to_int() << 8) |
+    idna_trie_mid[2 * mid + 1].to_int()
+  let offset = 2 * ((leaf << 4) | (cp & 15))
+  (idna_trie_leaf[offset].to_int() << 8) | idna_trie_leaf[offset + 1].to_int()
+}
 
 ///|
 /// Mapping `i` is `idna_mapping_data[idna_mapping_offsets[i]:idna_mapping_offsets[i + 1]]`
@@ -2153,29 +2179,7 @@ struct IdnaEntry(Int32)
 ///|
 /// Look up the mapping table entry of a character.
 pub fn lookup_idna_entry(c : Char) -> IdnaEntry {
-  let cp = c.to_int()
-  if cp >= 0x40000 {
-    // Binary search for the last range starting at or before `cp`.
-    let key = (cp << 3) | 7
-    let mut low = 0
-    let mut high = idna_high_ranges.length()
-    while high - low > 1 {
-      let mid = (low + high) / 2
-      if idna_high_ranges[mid] <= key {
-        low = mid
-      } else {
-        high = mid
-      }
-    }
-    return IdnaEntry(idna_high_ranges[low] & 7)
-  }
-  let mid = (idna_trie_top[cp >> 8].to_int() << 4) | ((cp >> 4) & 15)
-  let leaf = (idna_trie_mid[2 * mid].to_int() << 8) |
-    idna_trie_mid[2 * mid + 1].to_int()
-  let offset = 2 * ((leaf << 4) | (cp & 15))
-  IdnaEntry(
-    (idna_trie_leaf[offset].to_int() << 8) | idna_trie_leaf[offset + 1].to_int(),
-  )
+  IdnaEntry(lookup_idna_value(c))
 }
 
 ///|

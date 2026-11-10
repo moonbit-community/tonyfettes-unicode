@@ -72,3 +72,52 @@ test "value trie rejects values wider than value_bits" {
     _ => fail("expected an oversized value to be rejected")
   }
 }
+
+///|
+test "value trie stores wide values in two bytes and narrow high ranges" {
+  let values = FixedArray::make(MaxCodePoint + 1, 0)
+  values[0x41] = 0x123
+  values[0xE0001] = 2
+  let out = Emitter::new()
+  out.write_value_trie(
+    property="Test",
+    prefix="test",
+    lookup="fn lookup_test",
+    lookup_doc=[],
+    value_bits=12,
+    range_value_bits=3,
+    values,
+  )
+  let source = out.finish()
+  for
+    expected in [
+      // `A` is the second value of its block: 0x123 as bytes 1 and 35.
+      "  0,\n  0,\n  1,\n  35,\n",
+      "let test_high_ranges : ReadOnlyArray[Int] = [\n  0x200000,\n  0x70000A,\n  0x700010,\n]",
+      "(test_trie_leaf[offset].to_int() << 8) | test_trie_leaf[offset + 1].to_int()",
+    ] {
+    guard source.contains(expected) else {
+      fail("Generated source is missing: \{expected}")
+    }
+  }
+  values[0xE0001] = 8
+  try
+    Emitter::new().write_value_trie(
+      property="Test",
+      prefix="test",
+      lookup="fn lookup_test",
+      lookup_doc=[],
+      value_bits=12,
+      range_value_bits=3,
+      values,
+    )
+  catch {
+    error =>
+      inspect(
+        error.to_string().contains("Test value at 0xE0001 does not fit in 3 bits"),
+        content="true",
+      )
+  } noraise {
+    _ => fail("expected a wide value above the trie to be rejected")
+  }
+}

@@ -53,7 +53,7 @@ test "IDNA ranges above the trie are packed and merged" {
 test "IDNA mappings above the trie are rejected" {
   try emit_mapping("40000; mapped; 0061\n") catch {
     Failure::Failure(message) =>
-      assert_true(message.contains("needs trie coverage"))
+      assert_true(message.contains("IDNA value at 0x40000 does not fit in 3 bits"))
     error => raise error
   } noraise {
     _ => fail("expected a mapping above the trie to be rejected")
