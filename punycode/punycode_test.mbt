@@ -7,6 +7,24 @@ test "encode: ASCII passthrough" {
 }
 
 ///|
+test "encode: ASCII view of a longer string" {
+  let text = "abc.bücher"
+  inspect(@punycode.encode(text[0:3]), content="abc-")
+  inspect(@punycode.encode(text[3:3]), content="")
+}
+
+///|
+test "encode_to: appends and returns the length written" {
+  let output = StringBuilder()
+  output.write_string("xn--")
+  for input in ["abc", "", "bücher", "ü"] {
+    let length = @punycode.encode_to(input, output)
+    output.write_string("|\{length}|")
+  }
+  inspect(output.to_string(), content="xn--abc-|4||0|bcher-kva|9|tda|3|")
+}
+
+///|
 test "encode: single non-ASCII" {
   // ü (U+00FC) -> "bcher" with encoded suffix
   inspect(@punycode.encode("bücher"), content="bcher-kva")

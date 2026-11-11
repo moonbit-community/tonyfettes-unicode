@@ -111,12 +111,29 @@ fn decode_digit(cp : Int32) -> Int32 {
 }
 
 ///|
+/// Whether every code point of `input` is basic. Code units below `InitialN`
+/// are exactly the basic code points, as surrogates are above it.
+fn is_basic(input : StringView) -> Bool {
+  for i in 0..<input.length() {
+    if input.unsafe_get(i).to_int() >= InitialN {
+      return false
+    }
+  }
+  true
+}
+
+///|
 /// Encode a Unicode string to Punycode
 pub fn encode(input : StringView) -> String raise PunycodeError {
+  if is_basic(input) {
+    // Only basic code points: they are copied, followed by the delimiter.
+    // `to_owned` does not copy a view of a whole string.
+    return if input.is_empty() { "" } else { input.to_owned() + "-" }
+  }
   // Reserve the input and a few digits for each code unit; the size hint
   // counts bytes, two per UTF-16 code unit.
   let output = StringBuilder(size_hint=2 * (1 + 4 * input.length()))
-  ignore(encode_to(input, output))
+  ignore(encode_extended(input, output))
   output.to_string()
 }
 
@@ -126,6 +143,25 @@ pub fn encode(input : StringView) -> String raise PunycodeError {
 ///
 /// When encoding fails, part of the encoding may already be in `output`.
 pub fn encode_to(
+  input : StringView,
+  output : StringBuilder,
+) -> Int32 raise PunycodeError {
+  if is_basic(input) {
+    // Only basic code points: they are copied, followed by the delimiter.
+    if input.is_empty() {
+      return 0
+    }
+    output.write_view(input)
+    output.write_char(Delimiter)
+    return input.length() + 1
+  }
+  encode_extended(input, output)
+}
+
+///|
+/// Encode `input`, which holds at least one code point that is not basic, at
+/// the end of `output`, and return the number of characters written.
+fn encode_extended(
   input : StringView,
   output : StringBuilder,
 ) -> Int32 raise PunycodeError {
