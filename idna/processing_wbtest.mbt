@@ -1,19 +1,38 @@
 ///|
-test "split_labels: every separator" {
+/// The labels of `domain`, found the way ToASCII and ToUnicode find them.
+fn split_with_label_end(domain : String) -> Array[String] {
+  let labels : Array[String] = []
+  let mut start = 0
+  for ;; {
+    let end = label_end(domain, start)
+    labels.push(domain[start:end].to_owned())
+    if end == domain.length() {
+      break
+    }
+    start = end + 1
+  }
+  labels
+}
+
+///|
+test "label_end: every separator" {
   debug_inspect(
-    split_labels("a.b\u{3002}c\u{FF0E}d\u{FF61}e"),
+    split_with_label_end("a.b\u{3002}c\u{FF0E}d\u{FF61}e"),
     content=(
       #|["a", "b", "c", "d", "e"]
     ),
   )
-  debug_inspect(split_labels(""), content="[\"\"]")
-  debug_inspect(split_labels("."), content="[\"\", \"\"]")
-  debug_inspect(split_labels("a..b."), content="[\"a\", \"\", \"b\", \"\"]")
+  debug_inspect(split_with_label_end(""), content="[\"\"]")
+  debug_inspect(split_with_label_end("."), content="[\"\", \"\"]")
+  debug_inspect(
+    split_with_label_end("a..b."),
+    content="[\"a\", \"\", \"b\", \"\"]",
+  )
 }
 
 ///|
-test "split_labels: supplementary characters next to separators" {
-  let labels = split_labels("\u{1F600}.a\u{1F600}\u{3002}\u{1F600}")
+test "label_end: supplementary characters next to separators" {
+  let labels = split_with_label_end("\u{1F600}.a\u{1F600}\u{3002}\u{1F600}")
   inspect(labels.length(), content="3")
   inspect(labels[0] == "\u{1F600}", content="true")
   inspect(labels[1] == "a\u{1F600}", content="true")
@@ -72,4 +91,35 @@ test "has_ace_prefix ignores ASCII case" {
   inspect(has_ace_prefix("xn-"), content="false")
   inspect(has_ace_prefix("xn-a-"), content="false")
   inspect(has_ace_prefix("axn--"), content="false")
+}
+
+///|
+test "ASCII shortcut agrees with the mapping table" {
+  // `map_text` and `validate_char_status` skip the table for ASCII, taking
+  // every character as valid but A-Z, which maps to a-z.
+  for code in 0..<0x80 {
+    let c = code.unsafe_to_char()
+    let entry = @idna_data.lookup_idna_entry(c)
+    if code is ('A'..<='Z') {
+      assert_true(entry.status() is Mapped)
+      let mapping = StringBuilder()
+      entry.write_mapping(mapping)
+      assert_eq(mapping.to_string(), (code + 32).unsafe_to_char().to_string())
+    } else {
+      assert_true(entry.status() is Valid)
+    }
+  }
+}
+
+///|
+test "map_domain: ASCII uppercase is mapped without a lookup" {
+  inspect(
+    map_domain("Ab.C\u{00C4}", use_std3_ascii_rules=true),
+    content="ab.c\u{00E4}",
+  )
+  let domain = "ab-c_d.e"
+  inspect(
+    physical_equal(map_domain(domain, use_std3_ascii_rules=false), domain),
+    content="true",
+  )
 }

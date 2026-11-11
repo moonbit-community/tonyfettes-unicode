@@ -2,23 +2,28 @@
 /// IDNA label validation (UTS #46 Section 4.1)
 
 ///|
-/// Validate a single label according to UTS #46 validity criteria
+/// Validate a single label according to UTS #46 validity criteria, and
+/// return its Bidi flags (`RtlLabel`, `BreaksBidiRule`) when `check_bidi`
+/// is set, or 0 otherwise.
+///
+/// Every caller passes a label it has just mapped and normalized to NFC, so
+/// the label is not checked for NFC again. `statuses_known` tells that the
+/// mapping and normalization left the label as it was, so that every
+/// character already has a valid status.
 fn validate_label(
-  label : String,
+  label : StringView,
   use_std3_ascii_rules~ : Bool,
   check_hyphens~ : Bool,
   check_joiners~ : Bool,
-) -> Unit raise IdnaError {
+  check_bidi~ : Bool,
+  statuses_known~ : Bool,
+) -> Int32 raise IdnaError {
   // Empty labels should raise an error - they indicate either intentional empty
   // labels (like trailing dots) or labels that became empty after IDNA mapping
   // (like soft hyphen U+00AD). The caller can catch EmptyLabel and decide
   // whether to allow it based on context.
   if label.length() == 0 {
     raise EmptyLabel
-  }
-  // Check 1: Must be NFC normalized
-  if !@normalization.is_normalized(label, @normalization.NFC) {
-    raise InvalidLabel(label)
   }
 
   // Check 2 & 3: Hyphen restrictions (when check_hyphens)
@@ -33,20 +38,39 @@ fn validate_label(
     raise LeadingCombiningMark
   }
 
-  // Check 6: All characters must have valid status
+  // Check 6 (every character has a valid status) in the same pass that
+  // looks for joiners and gathers what the Bidi rule needs.
+  let mut has_joiner = false
+  let bidi = LabelBidi::new()
   for c in label {
-    validate_char_status(c, use_std3_ascii_rules)
+    if !statuses_known {
+      validate_char_status(c, use_std3_ascii_rules)
+    } else if use_std3_ascii_rules && c.to_int() < 0x80 && !is_ldh_ascii(c) {
+      // The table has these valid; STD3 rules allow only LDH in ASCII.
+      raise DisallowedCodePoint(cp=c.to_int())
+    }
+    if c is ('\u{200C}' | '\u{200D}') {
+      has_joiner = true
+    }
+    if check_bidi {
+      bidi.add(@bidi.bidi_class(c))
+    }
   }
 
   // Check 7: ContextJ rules (when check_joiners)
-  if check_joiners {
+  if check_joiners && has_joiner {
     validate_contextj(label)
+  }
+  if check_bidi {
+    bidi.flags()
+  } else {
+    0
   }
 }
 
 ///|
 /// Validate hyphen restrictions on a non-empty label
-fn validate_hyphens(label : String) -> Unit raise IdnaError {
+fn validate_hyphens(label : StringView) -> Unit raise IdnaError {
   // Cannot start or end with hyphen. A hyphen is one UTF-16 code unit.
   if label[0] == '-' || label[label.length() - 1] == '-' {
     raise InvalidHyphen
@@ -96,8 +120,13 @@ fn validate_char_status(
   // STD3 ASCII rules: only LDH characters allowed in ASCII range
   // This check is separate from IdnaMappingTable.txt which marks
   // these characters as "valid" but they should be rejected under STD3
-  if use_std3_ascii_rules && c.to_int() < 0x80 && !is_ldh_ascii(c) {
-    raise DisallowedCodePoint(cp=c.to_int())
+  if c.to_int() < 0x80 {
+    // IdnaMappingTable has every ASCII character valid but A-Z, which it
+    // maps to a-z.
+    if (use_std3_ascii_rules && !is_ldh_ascii(c)) || c is ('A'..<='Z') {
+      raise DisallowedCodePoint(cp=c.to_int())
+    }
+    return
   }
   match @idna_data.lookup_idna_entry(c).status() {
     Valid | Deviation =>
@@ -123,11 +152,8 @@ fn validate_char_status(
 
 ///|
 /// Validate ContextJ rules for ZWNJ (U+200C) and ZWJ (U+200D)
-fn validate_contextj(label : String) -> Unit raise IdnaError {
+fn validate_contextj(label : StringView) -> Unit raise IdnaError {
   // Joiners are rare; only a label containing one needs random access.
-  if !label.any(c => c is ('\u{200C}' | '\u{200D}')) {
-    return
-  }
   let chars = label.to_array()
   for i, c in chars {
     if c == '\u{200C}' {
@@ -206,142 +232,99 @@ fn has_right_joining_after(chars : Array[Char], pos : Int32) -> Bool {
 }
 
 ///|
-/// Validate Bidi rules (RFC 5893) for an entire domain
-/// RFC 5893 requires domain-level checking: when ANY label is RTL,
-/// all labels must follow stricter rules.
-fn validate_domain_bidi(labels : ArrayView[String]) -> Unit raise IdnaError {
-  // Check if domain contains any RTL labels
-  let mut has_rtl_label = false
-  for label in labels {
-    if is_rtl_label_check(label) {
-      has_rtl_label = true
-      break
-    }
-  }
-  if !has_rtl_label {
-    // Not a Bidi domain name - no Bidi validation needed per UTS #46
-    // "If CheckBidi, and if the domain name is a Bidi domain name, then..."
-    return
-  }
+/// A label in a right-to-left (Bidi) domain name: one with an R, AL or AN.
+const RtlLabel : Int32 = 1
 
-  // RTL domain: stricter rules apply to all labels
-  for label in labels {
-    if label.length() == 0 {
-      continue
+///|
+/// A label that breaks the RFC 5893 Bidi rule that applies to it in a Bidi
+/// domain name: the rule for right-to-left labels if it is one, and the rule
+/// for left-to-right labels otherwise.
+const BreaksBidiRule : Int32 = 2
+
+///|
+/// What the RFC 5893 Bidi rule needs to know about a label, gathered one
+/// Bidi class at a time. Whether the label is right-to-left is known only at
+/// the end, so both the right-to-left and the left-to-right rule are tracked.
+priv struct LabelBidi {
+  mut first : @bidi.BidiClass?
+  /// The last class that is not NSM and that either rule allows (B3, B6).
+  mut last : @bidi.BidiClass
+  mut has_l : Bool
+  mut has_rtl : Bool
+  mut has_en : Bool
+  mut has_an : Bool
+}
+
+///|
+fn LabelBidi::new() -> LabelBidi {
+  {
+    first: None,
+    last: @bidi.ON,
+    has_l: false,
+    has_rtl: false,
+    has_en: false,
+    has_an: false,
+  }
+}
+
+///|
+fn LabelBidi::add(self : LabelBidi, bc : @bidi.BidiClass) -> Unit {
+  if self.first is None {
+    self.first = Some(bc)
+    self.last = bc
+  }
+  match bc {
+    @bidi.L => self.has_l = true
+    @bidi.R | @bidi.AL => self.has_rtl = true
+    @bidi.AN => {
+      self.has_rtl = true
+      self.has_an = true
     }
-    if is_rtl_label_check(label) {
-      validate_rtl_label(label)
+    @bidi.EN => self.has_en = true
+    _ => ()
+  }
+  // Each rule rejects a label with a class outside its list (L for the
+  // right-to-left rule; R, AL and AN for the left-to-right one), so the
+  // union of both lists can be tracked for whichever rule applies.
+  if bc
+    is (@bidi.L
+    | @bidi.R
+    | @bidi.AL
+    | @bidi.AN
+    | @bidi.EN
+    | @bidi.ES
+    | @bidi.CS
+    | @bidi.ET
+    | @bidi.ON
+    | @bidi.BN) {
+    self.last = bc
+  }
+}
+
+///|
+/// `RtlLabel` and `BreaksBidiRule` for the label.
+fn LabelBidi::flags(self : LabelBidi) -> Int32 {
+  if self.has_rtl {
+    // B1: starts with R or AL. B2: no L. B3: ends with R, AL, EN or AN
+    // (ignoring NSM). B4: not both EN and AN.
+    let valid = self.first is Some(@bidi.R | @bidi.AL) &&
+      !self.has_l &&
+      self.last is (@bidi.R | @bidi.AL | @bidi.EN | @bidi.AN) &&
+      !(self.has_en && self.has_an)
+    if valid {
+      RtlLabel
     } else {
-      // LTR label in RTL domain - must start with L (stricter rule)
-      validate_ltr_label_in_rtl_domain(label)
+      RtlLabel | BreaksBidiRule
     }
-  }
-}
-
-///|
-/// Validate LTR label that appears in an RTL domain
-/// Stricter than regular LTR validation: first char must be L (not EN/ON/etc.)
-fn validate_ltr_label_in_rtl_domain(label : String) -> Unit raise IdnaError {
-  // Track last non-NSM for ending check; starts as the first character's class.
-  let mut last_non_nsm_bc = @bidi.L
-  let mut is_first = true
-
-  // Same allowed classes as regular LTR, but no R/AL/AN
-  for c in label {
-    let bc = @bidi.bidi_class(c)
-    if is_first {
-      // In RTL domain, LTR labels must start with L (not EN, ES, etc.)
-      // This is stricter than pure LTR domain rules
-      guard bc is @bidi.L else { raise InvalidBidi } // B1 - first char must be L in RTL domain context
-      last_non_nsm_bc = bc
-      is_first = false
+  } else {
+    // B5 is implied, with no R, AL or AN. Starting with L is stricter than
+    // B1 requires, as left-to-right labels in a Bidi domain name must.
+    // B6: ends with L or EN (ignoring NSM).
+    let valid = self.first is Some(@bidi.L) && self.last is (@bidi.L | @bidi.EN)
+    if valid {
+      0
+    } else {
+      BreaksBidiRule
     }
-    match bc {
-      @bidi.L
-      | @bidi.EN
-      | @bidi.ES
-      | @bidi.CS
-      | @bidi.ET
-      | @bidi.ON
-      | @bidi.BN
-      | @bidi.NSM => if !(bc is @bidi.NSM) { last_non_nsm_bc = bc }
-      @bidi.R | @bidi.AL | @bidi.AN => raise InvalidBidi
-      _ => ()
-    }
-  }
-
-  // Rule 6 (B6): Last non-NSM character must be L or EN
-  match last_non_nsm_bc {
-    @bidi.L | @bidi.EN => ()
-    _ => raise InvalidBidi // B6 - ending violation
-  }
-}
-
-///|
-/// Check if label is RTL (contains R, AL, or AN characters)
-fn is_rtl_label_check(label : String) -> Bool {
-  for c in label {
-    let bc = @bidi.bidi_class(c)
-    match bc {
-      @bidi.R | @bidi.AL | @bidi.AN => return true
-      _ => continue
-    }
-  }
-  false
-}
-
-///|
-/// Validate an RTL label according to RFC 5893
-fn validate_rtl_label(label : String) -> Unit raise IdnaError {
-  // Track last non-NSM character for ending check (B3), starting as the
-  // first character's class, and whether EN/AN appear (B4)
-  let mut last_non_nsm_bc = @bidi.L
-  let mut is_first = true
-  let mut has_en = false
-  let mut has_an = false
-  for c in label {
-    let bc = @bidi.bidi_class(c)
-    if is_first {
-      // Rule 1 (B1): First character must be R or AL
-      guard bc is (@bidi.R | @bidi.AL) else { raise InvalidBidi }
-      last_non_nsm_bc = bc
-      is_first = false
-    }
-    match bc {
-      @bidi.R
-      | @bidi.AL
-      | @bidi.AN
-      | @bidi.EN
-      | @bidi.ES
-      | @bidi.CS
-      | @bidi.ET
-      | @bidi.ON
-      | @bidi.BN
-      | @bidi.NSM => {
-        // Rule 2 (B2): Allowed in RTL label
-        if !(bc is @bidi.NSM) {
-          last_non_nsm_bc = bc
-        }
-        if bc is @bidi.EN {
-          has_en = true
-        }
-        if bc is @bidi.AN {
-          has_an = true
-        }
-      }
-      @bidi.L => raise InvalidBidi // B2 - L not allowed in RTL label
-      _ => ()
-    }
-  }
-
-  // Rule 3 (B3): Last non-NSM character must be R, AL, EN, or AN
-  match last_non_nsm_bc {
-    @bidi.R | @bidi.AL | @bidi.EN | @bidi.AN => ()
-    _ => raise InvalidBidi
-  }
-
-  // Rule 4 (B4): EN and AN cannot both appear
-  if has_en && has_an {
-    raise InvalidBidi
   }
 }

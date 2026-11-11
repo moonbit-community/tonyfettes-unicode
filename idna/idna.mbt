@@ -87,109 +87,153 @@ fn to_ascii_general(
   verify_dns_length~ : Bool,
 ) -> String raise IdnaError {
   // Map and normalize before splitting. Labels are validated below, after
-  // existing A-labels have been decoded to their Unicode form.
-  let mapped = map_domain(domain, use_std3_ascii_rules~)
-  let processed = @normalization.nfc(mapped)
-
-  // Split into labels
-  let labels = split_labels(processed)
-  let label_count = labels.length()
-  // A valid trailing dot requires at least 2 labels (e.g., "example.com." -> ["example", "com", ""])
-  // A single empty label (from empty domain like "") is NOT a trailing dot
-  let has_trailing_dot = label_count > 1 && labels[label_count - 1] == ""
-
-  // For domain-level bidi validation, we need Unicode content of all labels
-  // This requires decoding ACE labels first
-  let unicode_labels : Array[String] = []
-  let ascii_labels : Array[String] = []
-  for i, label in labels {
-    // Handle trailing empty label
-    if i == label_count - 1 && has_trailing_dot {
-      unicode_labels.push("")
-      ascii_labels.push("")
-      continue
+  // existing A-labels have been decoded to their Unicode form. Mapping
+  // leaves no ASCII uppercase letter, so every label is already lowercase.
+  let processed = @normalization.nfc(map_domain(domain, use_std3_ascii_rules~))
+  // When mapping and normalization leave the domain as it is, every
+  // character has a valid status.
+  let statuses_known = physical_equal(processed, domain)
+  let length = processed.length()
+  // Punycode is longer than the label it encodes; the size hint counts
+  // bytes, two per UTF-16 code unit.
+  let output = StringBuilder(size_hint=4 * length)
+  // The `validate_label` Bidi flags of every label so far, or-ed together.
+  let mut domain_bidi = 0
+  // The first label that the DNS length checks reject. Like the Bidi
+  // error, it is reported only once every label has been validated.
+  let mut dns_error : IdnaError? = None
+  // Length of the output, which is all ASCII.
+  let mut ascii_length = 0
+  let mut start = 0
+  for ;; {
+    let end = label_end(processed, start)
+    let label = processed[start:end]
+    if start > 0 {
+      output.write_char('.')
+      ascii_length += 1
     }
     if label.length() == 0 {
-      // Empty label that's not a trailing dot - this is invalid
-      // (could be from IDNA mapping like soft hyphen -> "", or ".." in domain)
-      raise EmptyLabel
+      // Only the last label may be empty, after a dot (a trailing dot).
+      // Any other empty label comes from ".." or from a label mapped to
+      // nothing, such as a soft hyphen.
+      guard end == length && start > 0 else { raise EmptyLabel }
+      if dns_error is None {
+        dns_error = Some(EmptyLabel)
+      }
+      break
     }
-
-    // Process label to get both Unicode and ASCII forms
-    let (unicode_label, ascii_label) = process_label_for_ascii(
-      label,
-      use_std3_ascii_rules~,
-      check_hyphens~,
-      check_joiners~,
-    )
-    unicode_labels.push(unicode_label)
-    ascii_labels.push(ascii_label)
-  }
-
-  // Domain-level bidi validation on Unicode labels
-  if check_bidi {
-    let bidi_label_count = if has_trailing_dot {
-      label_count - 1
+    let mut label_bidi = 0
+    let label_length = if has_ace_prefix(label) {
+      // Decode the A-label to validate its Unicode content.
+      let decoded = decode_ace_label(label)
+      let normalized = map_and_normalize_label(decoded, use_std3_ascii_rules~)
+      let unicode_label = if normalized is Some(normalized) {
+        normalized[:]
+      } else {
+        decoded[:]
+      }
+      label_bidi = validate_label(
+        unicode_label,
+        use_std3_ascii_rules~,
+        check_hyphens~,
+        check_joiners~,
+        check_bidi~,
+        statuses_known=normalized is None,
+      )
+      // Encoding the Unicode form must give the A-label back (V7). The
+      // decoded label always encodes back to an A-label in canonical form,
+      // so it is encoded again only when mapping changed it.
+      let round_trips = if normalized is None {
+        is_canonical_ace_label(label)
+      } else {
+        encodes_to_ace_label(unicode_label, label)
+      }
+      guard round_trips else { raise InvalidAcePrefix }
+      output.write_view(label)
+      label.length()
     } else {
-      label_count
+      // Raw A-labels must not be subjected to the hyphen checks before
+      // decoding, because the xn-- prefix is intentional.
+      label_bidi = validate_label(
+        label,
+        use_std3_ascii_rules~,
+        check_hyphens~,
+        check_joiners~,
+        check_bidi~,
+        statuses_known~,
+      )
+      if is_all_ascii(label) {
+        output.write_view(label)
+        label.length()
+      } else {
+        output.write_string(ace_prefix)
+        let encoded_length = @punycode.encode_to(label, output) catch {
+          error => raise PunycodeError(error)
+        }
+        ace_prefix.length() + encoded_length
+      }
     }
-    validate_domain_bidi(unicode_labels[:bidi_label_count])
+    domain_bidi = domain_bidi | label_bidi
+    if dns_error is None && label_length > 63 {
+      dns_error = Some(LabelTooLong)
+    }
+    ascii_length += label_length
+    if end == length {
+      break
+    }
+    start = end + 1
   }
-  let result = ascii_labels.join(".")
-
-  // Verify DNS length constraints
+  // A Bidi domain name, one with a right-to-left label, needs every label
+  // to satisfy the Bidi rule.
+  if domain_bidi == (RtlLabel | BreaksBidiRule) {
+    raise InvalidBidi
+  }
   if verify_dns_length {
-    verify_dns_length_constraints(result, ascii_labels)
+    if dns_error is Some(error) {
+      raise error
+    }
+    if ascii_length > 253 {
+      raise DomainTooLong
+    }
   }
-  result
+  output.to_string()
 }
 
 ///|
-/// Process a single label and return both Unicode and ASCII forms
-/// Used by to_ascii to collect Unicode labels for domain-level bidi validation
-fn process_label_for_ascii(
-  label : String,
-  use_std3_ascii_rules~ : Bool,
-  check_hyphens~ : Bool,
-  check_joiners~ : Bool,
-) -> (String, String) raise IdnaError {
-  if label.length() == 0 {
-    return ("", "")
+/// Whether `label`, a lowercase A-label that decodes, is the encoding of its
+/// decoding. Punycode gives each string a single lowercase encoding, and
+/// decoding accepts only that one but for a delimiter with no basic code
+/// point before it, which the encoding leaves out (see the Punycode fuzz
+/// test "lowercase input that decodes encodes back to itself").
+fn is_canonical_ace_label(label : StringView) -> Bool {
+  let encoded = label[ace_prefix.length():]
+  if encoded.length() == 0 || encoded[0] != '-' {
+    return true
   }
-
-  // Check if label has ACE prefix (xn--)
-  if has_ace_prefix(label) {
-    // Decode ACE label to get Unicode content
-    let decoded = decode_ace_label(label)
-
-    // Apply mapping and normalize
-    let mapped = map_label(decoded, use_std3_ascii_rules~)
-    let normalized = @normalization.nfc(mapped)
-
-    // Validate the decoded label (without bidi - done at domain level)
-    validate_label(
-      normalized,
-      use_std3_ascii_rules~,
-      check_hyphens~,
-      check_joiners~,
-    )
-
-    // Re-encode for roundtrip check
-    let re_encoded = encode_label_to_ascii(normalized)
-
-    // Roundtrip check (V7 error on mismatch)
-    let lowercase_label = label.to_lower()
-    if re_encoded != lowercase_label {
-      raise InvalidAcePrefix
+  // The first delimiter is the last one only without basic code points.
+  for i in 1..<encoded.length() {
+    if encoded[i] == '-' {
+      return true
     }
-    return (normalized, lowercase_label)
   }
+  false
+}
 
-  // Validate non-ACE labels here. Raw A-labels must not be subjected to the
-  // hyphen checks before decoding, because the xn-- prefix is intentional.
-  validate_label(label, use_std3_ascii_rules~, check_hyphens~, check_joiners~)
-  let ascii_label = encode_label_to_ascii(label)
-  (label, ascii_label)
+///|
+/// Whether encoding `unicode_label` gives back `label`, an A-label that is
+/// already lowercase.
+fn encodes_to_ace_label(
+  unicode_label : StringView,
+  label : StringView,
+) -> Bool raise IdnaError {
+  if is_all_ascii(unicode_label) {
+    // An all-ASCII label is not encoded, so it is compared as it is.
+    return unicode_label == label
+  }
+  let encoded = @punycode.encode(unicode_label) catch {
+    error => raise PunycodeError(error)
+  }
+  label[ace_prefix.length():] == encoded[:]
 }
 
 ///|
@@ -231,90 +275,62 @@ fn to_unicode_general(
   check_joiners~ : Bool,
 ) -> String raise IdnaError {
   // Split into labels first (before mapping, to handle Punycode)
-  let labels = split_labels(domain)
-  let label_count = labels.length()
-  // A valid trailing dot requires at least 2 labels (e.g., "example.com." -> ["example", "com", ""])
-  // A single empty label (from empty domain like "") is NOT a trailing dot
-  let has_trailing_dot = label_count > 1 && labels[label_count - 1] == ""
-  let unicode_labels : Array[String] = []
-  for i, label in labels {
-    // Skip processing for trailing empty label (trailing dot)
-    if i == label_count - 1 && has_trailing_dot {
-      unicode_labels.push("")
-      continue
+  let length = domain.length()
+  // The size hint counts bytes, two per UTF-16 code unit.
+  let output = StringBuilder(size_hint=2 * length)
+  let mut domain_bidi = 0
+  let mut start = 0
+  for ;; {
+    let end = label_end(domain, start)
+    let label = domain[start:end]
+    if start > 0 {
+      output.write_char('.')
     }
     if label.length() == 0 {
-      // Empty label that's not a trailing dot - this is invalid
-      raise EmptyLabel
+      // Only the last label may be empty, after a dot (a trailing dot).
+      guard end == length && start > 0 else { raise EmptyLabel }
+      break
     }
-    let unicode_label = label_to_unicode(
-      label,
+    let decoded = if has_ace_prefix(label) {
+      decode_ace_label(label)[:]
+    } else {
+      label
+    }
+    let normalized = map_and_normalize_label(decoded, use_std3_ascii_rules~)
+    let unicode_label = if normalized is Some(normalized) {
+      normalized[:]
+    } else {
+      decoded
+    }
+    let label_bidi = validate_label(
+      unicode_label,
       use_std3_ascii_rules~,
       check_hyphens~,
       check_joiners~,
+      check_bidi~,
+      statuses_known=normalized is None,
     )
-    unicode_labels.push(unicode_label)
-  }
-  if check_bidi {
-    let bidi_label_count = if has_trailing_dot {
-      label_count - 1
-    } else {
-      label_count
+    domain_bidi = domain_bidi | label_bidi
+    output.write_view(unicode_label)
+    if end == length {
+      break
     }
-    validate_domain_bidi(unicode_labels[:bidi_label_count])
+    start = end + 1
   }
-  unicode_labels.join(".")
-}
-
-///|
-/// Encode a label to ASCII (Punycode if needed), without ACE validation
-fn encode_label_to_ascii(label : String) -> String raise IdnaError {
-  if is_all_ascii(label) {
-    // Already ASCII, return as-is (lowercased)
-    label.to_lower()
-  } else {
-    // Encode to Punycode
-    let encoded = @punycode.encode(label.to_lower()) catch {
-      error => raise PunycodeError(error)
-    }
-    ace_prefix + encoded
+  // A Bidi domain name, one with a right-to-left label, needs every label
+  // to satisfy the Bidi rule.
+  if domain_bidi == (RtlLabel | BreaksBidiRule) {
+    raise InvalidBidi
   }
-}
-
-///|
-/// Convert a single label from Punycode to Unicode if needed
-fn label_to_unicode(
-  label : String,
-  use_std3_ascii_rules~ : Bool,
-  check_hyphens~ : Bool,
-  check_joiners~ : Bool,
-) -> String raise IdnaError {
-  let unicode_label = if has_ace_prefix(label) {
-    decode_ace_label(label)
-  } else {
-    label
-  }
-
-  // Apply mapping and normalize
-  let processed = map_label(unicode_label, use_std3_ascii_rules~)
-  let normalized = @normalization.nfc(processed)
-
-  // Validate the label
-  validate_label(
-    normalized,
-    use_std3_ascii_rules~,
-    check_hyphens~,
-    check_joiners~,
-  )
-  normalized
+  output.to_string()
 }
 
 ///|
 /// Decode an A-label and enforce the UTS #46 requirement that its decoded
 /// form is non-empty and contains at least one non-ASCII code point.
-fn decode_ace_label(label : String) -> String raise IdnaError {
+fn decode_ace_label(label : StringView) -> String raise IdnaError {
   // The prefix is four ASCII characters, so four UTF-16 code units.
-  let decoded = @punycode.decode(label[ace_prefix.length():].to_owned()) catch {
+  let decoded = @punycode.decode(label[ace_prefix.length():]) catch {
     error => raise PunycodeError(error)
   }
   if is_all_ascii(decoded) {
@@ -324,39 +340,16 @@ fn decode_ace_label(label : String) -> String raise IdnaError {
 }
 
 ///|
-fn is_all_ascii(label : String) -> Bool {
+fn is_all_ascii(label : StringView) -> Bool {
   label.all(c => c.to_int() < 0x80)
 }
 
 ///|
 /// Check if a label has the ACE prefix "xn--", ignoring ASCII case
-fn has_ace_prefix(label : String) -> Bool {
+fn has_ace_prefix(label : StringView) -> Bool {
   label.length() >= 4 &&
   label[0] is ('x' | 'X') &&
   label[1] is ('n' | 'N') &&
   label[2] == '-' &&
   label[3] == '-'
-}
-
-///|
-/// Verify DNS length constraints
-fn verify_dns_length_constraints(
-  domain : String,
-  labels : Array[String],
-) -> Unit raise IdnaError {
-  // Each label must be 1-63 characters
-  // Empty labels are not allowed (including trailing dots in DNS)
-  for label in labels {
-    if label.length() == 0 {
-      raise EmptyLabel
-    }
-    if label.length() > 63 {
-      raise LabelTooLong
-    }
-  }
-
-  // Total domain name must be at most 253 characters
-  if domain.length() > 253 {
-    raise DomainTooLong
-  }
 }

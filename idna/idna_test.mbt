@@ -567,3 +567,15 @@ test "scripts: Arabic domain with digits" {
   )
   assert_true(result.has_prefix("xn--"))
 }
+
+///|
+test "ace: a delimiter with no basic code points is not canonical" {
+  // "-mnchen-3ya" and "mnchen-3ya" decode alike, but only the second is the
+  // encoding of the result.
+  inspect(@idna.to_ascii("xn--mnchen-3ya.de"), content="xn--mnchen-3ya.de")
+  inspect(@idna.to_unicode("xn--4ca.de"), content="ä.de")
+  let error = @test.expect_error(() => @idna.to_ascii("xn---4ca.de"))
+  guard error is @idna.InvalidAcePrefix else {
+    fail("Expected InvalidAcePrefix")
+  }
+}
