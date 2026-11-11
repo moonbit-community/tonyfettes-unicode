@@ -205,3 +205,39 @@ test "fuzz: single character roundtrip" {
     }
   }
 }
+
+// =============================================================================
+// Property: decoding has a single preimage
+// =============================================================================
+
+///|
+/// Whether `input` is the encoding of its own decoding, for lowercase input
+/// that decodes: only a delimiter with nothing before it and no other
+/// delimiter after it is not, as an encoding without basic code points has
+/// no delimiter. IDNA relies on this to skip re-encoding A-labels.
+fn is_canonical_encoding(input : String) -> Bool {
+  !(input.has_prefix("-") && !input[1:].contains("-"))
+}
+
+///|
+test "fuzz: lowercase input that decodes encodes back to itself" {
+  let rng = @random.Rand::chacha8(seed=fuzz_seed)
+  let alphabet = "abcdefghijklmnopqrstuvwxyz0123456789-----"
+  let mut decoded_count = 0
+  for _ in 0..<20000 {
+    let sb = StringBuilder()
+    let len = rng.int(limit=12) + 1
+    for _ in 0..<len {
+      sb.write_char(
+        alphabet.get_char(rng.int(limit=alphabet.length())).unwrap(),
+      )
+    }
+    let input = sb.to_string()
+    let decoded = @punycode.decode(input) catch { _ => continue }
+    decoded_count += 1
+    let encoded = @punycode.encode(decoded)
+    assert_eq(encoded == input, is_canonical_encoding(input))
+  }
+  // Most random inputs decode, so the property is not checked vacuously.
+  assert_true(decoded_count > 5000)
+}

@@ -284,8 +284,9 @@ The available forms are `NFD`, `NFC`, `NFKD`, and `NFKC`.
 
 | API | Description |
 | --- | --- |
-| `encode(String) -> String raise PunycodeError` | Encode Unicode text as Punycode. |
-| `decode(String) -> String raise PunycodeError` | Decode Punycode text back to Unicode. |
+| `encode(StringView) -> String raise PunycodeError` | Encode Unicode text as Punycode. |
+| `encode_to(StringView, StringBuilder) -> Int32 raise PunycodeError` | Append the Punycode encoding to a builder and return its length. |
+| `decode(StringView) -> String raise PunycodeError` | Decode Punycode text back to Unicode. |
 
 `PunycodeError` variants are `Overflow`, `InvalidInput`, and `BadInput`.
 

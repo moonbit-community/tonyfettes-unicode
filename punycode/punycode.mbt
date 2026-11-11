@@ -112,7 +112,23 @@ fn decode_digit(cp : Int32) -> Int32 {
 
 ///|
 /// Encode a Unicode string to Punycode
-pub fn encode(input : String) -> String raise PunycodeError {
+pub fn encode(input : StringView) -> String raise PunycodeError {
+  // Reserve the input and a few digits for each code unit; the size hint
+  // counts bytes, two per UTF-16 code unit.
+  let output = StringBuilder(size_hint=2 * (1 + 4 * input.length()))
+  ignore(encode_to(input, output))
+  output.to_string()
+}
+
+///|
+/// Encode a Unicode string to Punycode at the end of `output`, and return the
+/// number of characters written, all of them ASCII.
+///
+/// When encoding fails, part of the encoding may already be in `output`.
+pub fn encode_to(
+  input : StringView,
+  output : StringBuilder,
+) -> Int32 raise PunycodeError {
   // The UTF-16 length bounds the number of code points.
   let code_points : FixedArray[Int32] = FixedArray::make(input.length(), 0)
   let mut count = 0
@@ -125,16 +141,7 @@ pub fn encode(input : String) -> String raise PunycodeError {
       basic_count = basic_count + 1
     }
   }
-  if basic_count == count {
-    // Only basic code points: they are copied, followed by the delimiter.
-    return if basic_count == 0 { "" } else { input + "-" }
-  }
-
-  // Reserve the basic code points, the delimiter and a few digits for each
-  // other code point; the size hint counts bytes, two per UTF-16 code unit.
-  let output = StringBuilder(
-    size_hint=2 * (basic_count + 1 + 4 * (count - basic_count)),
-  )
+  let mut written = 0
 
   // Copy all basic code points to output
   for i in 0..<count {
@@ -143,10 +150,12 @@ pub fn encode(input : String) -> String raise PunycodeError {
       output.write_char(cp.unsafe_to_char())
     }
   }
+  written = basic_count
 
   // Add delimiter if there were basic characters
   if basic_count > 0 {
     output.write_char(Delimiter)
+    written = written + 1
   }
   let mut n = InitialN
   let mut delta = 0
@@ -193,10 +202,12 @@ pub fn encode(input : String) -> String raise PunycodeError {
             break
           }
           output.write_char(encode_digit(t + (q - t) % (Base - t)))
+          written = written + 1
           q = (q - t) / (Base - t)
           k = k + Base
         }
         output.write_char(encode_digit(q))
+        written = written + 1
         bias = adapt(delta, handled + 1, handled == basic_count)
         delta = 0
         handled = handled + 1
@@ -208,12 +219,12 @@ pub fn encode(input : String) -> String raise PunycodeError {
     delta = delta + 1
     n = n + 1
   }
-  output.to_string()
+  written
 }
 
 ///|
 /// Decode a Punycode string to Unicode
-pub fn decode(input : String) -> String raise PunycodeError {
+pub fn decode(input : StringView) -> String raise PunycodeError {
   // Valid input is ASCII, so it is read as UTF-16 code units; any other
   // unit is rejected where it is reached.
   let length = input.length()

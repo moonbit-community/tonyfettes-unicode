@@ -205,13 +205,29 @@ fn process_at_base_level(text : String, base_level : Int32) -> BidiParagraph {
   let chars : Array[Char] = Array(capacity=text.length())
   let original_classes : Array[BidiClass] = Array(capacity=text.length())
   let mut has_explicit = false
+  let mut has_rtl = false
   for c in text {
     let bc = lookup_bidi_class(c)
     if bc.is_explicit() {
       has_explicit = true
+    } else if bc is (R | AL | AN) {
+      has_rtl = true
     }
     chars.push(c)
     original_classes.push(bc)
+  }
+  if base_level == 0 && !has_explicit && !has_rtl {
+    // With no R, AL, AN or explicit formatting character in a left-to-right
+    // paragraph, W1-W7 and N0-N2 resolve every type but BN to L (the most
+    // recent strong type, sos and eos are all L), so every level stays 0.
+    let resolved_classes : Array[BidiClass] = Array(
+      capacity=original_classes.length(),
+    )
+    for bc in original_classes {
+      resolved_classes.push(if bc is BN { BN } else { L })
+    }
+    let levels : Array[Int32] = Array::make(chars.length(), 0)
+    return { chars, original_classes, resolved_classes, levels, base_level, }
   }
 
   // Make a copy for resolution
