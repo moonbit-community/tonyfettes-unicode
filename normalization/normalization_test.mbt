@@ -301,3 +301,55 @@ test "NFD and NFKD: recursive and compatibility decompositions" {
   assert_eq(@normalization.nfkd("\u{01C4}"), "DZ\u{030C}")
   assert_eq(@normalization.nfkd("\u{FB03}\u{00E9}"), "ffie\u{0301}")
 }
+
+///|
+test "NFC: the last character of a clean run composes with what follows" {
+  // U+11099 is a supplementary starter after a clean run; the nukta
+  // (Quick_Check=Maybe) composes with it.
+  assert_eq(@normalization.nfc("ab\u{11099}\u{110BA}"), "ab\u{1109A}")
+  // The marks are reordered before composing: U+0323 (class 220) composes
+  // with `e`, and U+0301 (class 230) then has no composite.
+  assert_eq(@normalization.nfc("e\u{0301}\u{0323}"), "\u{1EB9}\u{0301}")
+}
+
+///|
+test "NFC and NFKC: conjoining jamo compose only when adjacent" {
+  assert_eq(@normalization.nfc("x\u{1100}"), "x\u{1100}")
+  assert_eq(@normalization.nfc("\u{1100}a\u{1161}"), "\u{1100}a\u{1161}")
+  // A mark between the syllable and a trailing jamo blocks it.
+  assert_eq(
+    @normalization.nfc("\u{1100}\u{1161}\u{0301}\u{11A8}"),
+    "\u{AC00}\u{0301}\u{11A8}",
+  )
+  assert_eq(
+    @normalization.nfc("\u{AC00}\u{0323}\u{11A8}"),
+    "\u{AC00}\u{0323}\u{11A8}",
+  )
+  // The trailing jamo past the view's end is not read.
+  let text = "x\u{1100}\u{1161}\u{11A8}"
+  assert_eq(@normalization.nfc(text[1:3]), "\u{AC00}")
+  assert_eq(@normalization.nfc(text[1:4]), "\u{AC01}")
+  // U+3131 decomposes to a leading jamo, which composes with the vowel.
+  assert_eq(@normalization.nfkc("\u{3131}\u{1161}"), "\u{AC00}")
+}
+
+///|
+test "NFKC: an LV syllable composes with a compatibility trailing jamo" {
+  // U+3133 and U+FFA3 decompose to the trailing jamo U+11AA, which composes
+  // with the syllable that the leading jamo and vowel before it form.
+  assert_eq(@normalization.nfkc("\u{1100}\u{1161}\u{3133}"), "\u{AC03}")
+  assert_eq(@normalization.nfkc("\u{1100}\u{1161}\u{FFA3}"), "\u{AC03}")
+  assert_eq(@normalization.nfkc("\u{AC00}\u{3133}"), "\u{AC03}")
+  // Normalizing again changes nothing.
+  assert_eq(@normalization.nfkc("\u{AC03}"), "\u{AC03}")
+  assert_true(@normalization.is_normalized("\u{AC03}", NFKC))
+  assert_true(!@normalization.is_normalized("\u{1100}\u{1161}\u{3133}", NFKC))
+  // NFC leaves the compatibility jamo, so the syllable stays LV.
+  assert_eq(@normalization.nfc("\u{1100}\u{1161}\u{3133}"), "\u{AC00}\u{3133}")
+  // The LV syllable still ends its segment before what follows.
+  assert_eq(@normalization.nfkc("\u{1100}\u{1161}a"), "\u{AC00}a")
+  assert_eq(
+    @normalization.nfkc("\u{1100}\u{1161}\u{1100}\u{1161}"),
+    "\u{AC00}\u{AC00}",
+  )
+}

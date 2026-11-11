@@ -80,7 +80,10 @@ pub fn emit_normalization(
   let values = normalization_values(data.ccc, derived_properties)
   let decomp_indices = Array::make(@emitter.MaxCodePoint + 1, 0)
   for index, entry in data.decompositions {
-    guard index < 65535 else { fail("Too many decomposition rows for norm16") }
+    // `lookup_normalization_record` keeps the row + 1 in 15 bits.
+    guard index < 32767 else {
+      fail("Too many decomposition rows for a normalization record")
+    }
     decomp_indices[entry.code_point] = index + 1
   }
   let composition_groups = Array::make(@emitter.MaxCodePoint + 1, 0)
@@ -269,17 +272,39 @@ pub fn emit_normalization(
       $|    return norm16
       $|  }
       $|  let offset = (norm16 & 0x7FFF) * 6
-      $|  normalization_extra[offset].to_int() |
-      $|    (normalization_extra[offset + 1].to_int() << 8)
+      $|  // SAFETY: every norm16 from 0x8000 indexes one of the six-byte extra
+      $|  // records the generator writes. The view has exactly 2 bytes, so
+      $|  // the pattern always matches, and they are read in one load.
+      $|  guard normalization_extra.unsafe_view(start=offset, end=offset + 2)
+      $|    is [u16le(properties)] else {
+      $|    abort("unreachable")
+      $|  }
+      $|  properties.reinterpret_as_int()
       $|}
       $|
       $|///|
-      $|pub fn normalization_decomposition_index(c : Char) -> Int {
-      $|  let norm16 = lookup_norm16(c)
-      $|  if norm16 < 0x8000 { return -1 }
-      $|  let offset = (norm16 & 0x7FFF) * 6 + 2
-      $|  (normalization_extra[offset].to_int() |
-      $|    (normalization_extra[offset + 1].to_int() << 8)) - 1
+      $|/// Packed properties as `lookup_normalization_properties` gives them in
+      $|/// bits 0..15, and the decomposition row + 1 in bits 16..30 (0 without
+      $|/// a decomposition), from one lookup.
+      $|pub fn lookup_normalization_record(c : Char) -> Int {
+      $|  let cp = c.to_int()
+      $|  let norm16 = if cp < \{NormalizationBmpLimit} {
+      $|    lookup_bmp_norm16(cp)
+      $|  } else {
+      $|    lookup_supplementary_norm16(cp)
+      $|  }
+      $|  if norm16 < 0x8000 {
+      $|    return norm16
+      $|  }
+      $|  let offset = (norm16 & 0x7FFF) * 6
+      $|  // SAFETY: every norm16 from 0x8000 indexes one of the six-byte extra
+      $|  // records the generator writes. The view has exactly 4 bytes, so
+      $|  // the pattern always matches, and they are read in one load.
+      $|  guard normalization_extra.unsafe_view(start=offset, end=offset + 4)
+      $|    is [i32le(record)] else {
+      $|    abort("unreachable")
+      $|  }
+      $|  record
       $|}
       $|
       $|///|
