@@ -353,10 +353,57 @@ pub fn decode(input : StringView) -> String raise PunycodeError {
     i_val = i_val + 1
   }
 
-  // The size hint counts bytes, so the builder is filled exactly.
-  let result = StringBuilder(size_hint=2 * output_units)
-  for i in 0..<output_length {
-    result.write_char(output[i].unsafe_to_char())
+  if BuildWithStringBuilder {
+    // The size hint counts bytes, so the builder is filled exactly.
+    let result = StringBuilder(size_hint=2 * output_units)
+    for i in 0..<output_length {
+      result.write_char(output[i].unsafe_to_char())
+    }
+    return result.to_string()
   }
-  result.to_string()
+  code_points_to_string(output, output_length, output_units)
 }
+
+///|
+/// Whether `decode` builds its output with a string builder. On JS a builder
+/// appends to a JS string, which is cheaper than making a string from an
+/// array of code units. Elsewhere the builder costs an extra allocation, as
+/// its buffer and the string are allocated separately.
+#cfg(target="js")
+const BuildWithStringBuilder : Bool = true
+
+///|
+#cfg(not(target="js"))
+const BuildWithStringBuilder : Bool = false
+
+///|
+/// The string of the first `count` code points of `code_points`, which take
+/// `units` UTF-16 code units. They are written into an array of that length,
+/// which becomes the string without a copy.
+fn code_points_to_string(
+  code_points : FixedArray[Int32],
+  count : Int32,
+  units : Int32,
+) -> String {
+  let result : FixedArray[UInt16] = FixedArray::make(units, 0)
+  let mut index = 0
+  for i in 0..<count {
+    let code_point = code_points[i]
+    // SAFETY: `units` counts two units for each code point above U+FFFF and
+    // one for every other, so every index is in bounds.
+    if code_point > 0xFFFF {
+      let offset = code_point - 0x10000
+      result.unsafe_set(index, (0xD800 + (offset >> 10)).to_uint16())
+      result.unsafe_set(index + 1, (0xDC00 + (offset & 0x3FF)).to_uint16())
+      index += 2
+    } else {
+      result.unsafe_set(index, code_point.to_uint16())
+      index += 1
+    }
+  }
+  uint16_array_to_string(result)
+}
+
+///|
+/// Take ownership of UTF-16 code units as a string of the same length.
+fn uint16_array_to_string(units : FixedArray[UInt16]) -> String = "%string.unsafe_from_uint16_fixedarray"
