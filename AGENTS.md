@@ -28,8 +28,10 @@ moon info           # Regenerate pkg.generated.mbti files
 - **casefold/** (`moonbit-community/unicode-casefold`): full case folding,
   canonical caseless matching, and NFKC_Casefold
 - **punycode/** (`moonbit-community/punycode`): RFC 3492 Punycode encoding/decoding
-  - `encode(String) -> String raise PunycodeError`
-  - `decode(String) -> String raise PunycodeError`
+  - `encode(StringView) -> String raise PunycodeError`
+  - `encode_to(StringView, StringBuilder) -> Int32 raise PunycodeError` - appends
+    the encoding and returns its length
+  - `decode(StringView) -> String raise PunycodeError`
 - **bidi/** (`moonbit-community/unicode-bidi`): UAX #9 bidirectional text processing
 - **segmentation/** (`moonbit-community/unicode-segmentation`): UAX #29 text segmentation
   - `graphemes(StringView) -> Graphemes` - cursor over extended grapheme clusters
