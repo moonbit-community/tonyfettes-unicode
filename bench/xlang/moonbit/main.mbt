@@ -41,6 +41,31 @@ fn run(iterations : Int32, f : () -> Int32) -> (Double, Int32) {
 }
 
 ///|
+/// The latest string a case built. Every result is stored here, where it can
+/// be read later, so that the optimizer cannot drop the work that builds it:
+/// V8 drops a string that only has its length read, as it can compute the
+/// length without the string.
+let kept_string : Ref[String] = Ref("")
+
+///|
+/// Keep `result` and return its length.
+fn keep_string(result : String) -> Int32 {
+  kept_string.val = result
+  result.length()
+}
+
+///|
+/// The latest bidi levels a case built, kept as `kept_string` keeps strings.
+let kept_levels : Ref[Array[Int32]] = Ref([])
+
+///|
+/// Keep `levels` and return their number.
+fn keep_levels(levels : Array[Int32]) -> Int32 {
+  kept_levels.val = levels
+  levels.length()
+}
+
+///|
 /// Print one result row: `library<TAB>case<TAB>ns<TAB>units<TAB>check`.
 ///
 /// Every harness in `bench/xlang` follows the same protocol: double the
@@ -86,14 +111,14 @@ fn bench_normalization(inputs : String) -> Unit raise {
         "norm/\{label}/\{name}",
         units,
         @normalization.normalize(original, form).char_length(),
-        () => @normalization.normalize(original, form).length(),
+        () => keep_string(@normalization.normalize(original, form)),
       )
     }
     measure(
       "norm/nfd>nfc/\{name}",
       decomposed.char_length(),
       @normalization.normalize(decomposed, NFC).char_length(),
-      () => @normalization.normalize(decomposed, NFC).length(),
+      () => keep_string(@normalization.normalize(decomposed, NFC)),
     )
     let is_nfc = () => {
       if @normalization.is_normalized(original, NFC) {
@@ -131,7 +156,7 @@ fn bench_bidi(inputs : String) -> Unit raise {
       level_sum += level
     }
     measure("bidi/process/\{name}", text.char_length(), level_sum, () => {
-      @bidi.process(text).levels.length()
+      keep_levels(@bidi.process(text).levels)
     })
   }
 }
@@ -144,12 +169,18 @@ fn bench_idna(inputs : String) -> Unit raise {
     let ascii = @idna.to_ascii(domain, use_std3_ascii_rules=false)
     let unicode = @idna.to_unicode(domain, use_std3_ascii_rules=false)
     measure("idna/to_ascii/\{name}", 1, ascii.char_length(), () => {
-      (@idna.to_ascii(domain, use_std3_ascii_rules=false) catch { _ => domain }).length()
+      keep_string(
+        @idna.to_ascii(domain, use_std3_ascii_rules=false) catch {
+          _ => domain
+        },
+      )
     })
     measure("idna/to_unicode/\{name}", 1, unicode.char_length(), () => {
-      (@idna.to_unicode(domain, use_std3_ascii_rules=false) catch {
-        _ => domain
-      }).length()
+      keep_string(
+        @idna.to_unicode(domain, use_std3_ascii_rules=false) catch {
+          _ => domain
+        },
+      )
     })
   }
 }
@@ -159,10 +190,10 @@ fn bench_punycode(inputs : String) -> Unit raise {
   for (name, input) in pairs("\{inputs}/puny.tsv") {
     let encoded = @punycode.encode(input)
     measure("puny/encode/\{name}", 1, encoded.length(), () => {
-      (@punycode.encode(input) catch { _ => input }).length()
+      keep_string(@punycode.encode(input) catch { _ => input })
     })
     measure("puny/decode/\{name}", 1, input.char_length(), () => {
-      (@punycode.decode(encoded) catch { _ => encoded }).length()
+      keep_string(@punycode.decode(encoded) catch { _ => encoded })
     })
   }
 }
@@ -182,7 +213,10 @@ fn bench_properties(inputs : String) -> Unit raise {
     let full_upper = () => {
       let mut length = 0
       for c in text {
-        length += @ucd.to_uppercase(c).char_length()
+        // The check counts code points, so the string is kept by hand.
+        let upper = @ucd.to_uppercase(c)
+        kept_string.val = upper
+        length += upper.char_length()
       }
       length
     }

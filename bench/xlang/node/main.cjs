@@ -16,6 +16,15 @@ function run(iterations, f) {
   return Number(process.hrtime.bigint() - start);
 }
 
+// The latest result a case built. Every result is stored here, where it can be
+// read later, so that V8 cannot drop the work that builds it: it drops a string
+// that only has its length read, as it can compute the length without it.
+let kept;
+function keep(result) {
+  kept = result;
+  return result.length;
+}
+
 // Double the iteration count until one sample takes at least 10 ms, then print
 // the fastest of 12 samples as library<TAB>case<TAB>ns<TAB>units<TAB>check.
 // The library column is empty: each case has a single platform API.
@@ -46,10 +55,10 @@ function benchNormalization(inputs) {
     const units = codePoints(original);
     for (const form of ['NFC', 'NFD', 'NFKC', 'NFKD']) {
       measure(`norm/${form.toLowerCase()}/${name}`, units, codePoints(original.normalize(form)),
-        () => original.normalize(form).length);
+        () => keep(original.normalize(form)));
     }
     measure(`norm/nfd>nfc/${name}`, codePoints(decomposed), codePoints(decomposed.normalize('NFC')),
-      () => decomposed.normalize('NFC').length);
+      () => keep(decomposed.normalize('NFC')));
   }
 }
 
@@ -69,17 +78,17 @@ function benchSegmentation(inputs) {
 function benchIdna(inputs) {
   for (const [name, domain] of pairs(`${inputs}/idna.tsv`)) {
     measure(`idna/to_ascii/${name}`, 1, codePoints(url.domainToASCII(domain)),
-      () => url.domainToASCII(domain).length);
+      () => keep(url.domainToASCII(domain)));
     measure(`idna/to_unicode/${name}`, 1, codePoints(url.domainToUnicode(domain)),
-      () => url.domainToUnicode(domain).length);
+      () => keep(url.domainToUnicode(domain)));
   }
 }
 
 function benchPunycode(inputs) {
   for (const [name, input] of pairs(`${inputs}/puny.tsv`)) {
     const encoded = punycode.encode(input);
-    measure(`puny/encode/${name}`, 1, encoded.length, () => punycode.encode(input).length);
-    measure(`puny/decode/${name}`, 1, codePoints(input), () => punycode.decode(encoded).length);
+    measure(`puny/encode/${name}`, 1, encoded.length, () => keep(punycode.encode(input)));
+    measure(`puny/decode/${name}`, 1, codePoints(input), () => keep(punycode.decode(encoded)));
   }
 }
 

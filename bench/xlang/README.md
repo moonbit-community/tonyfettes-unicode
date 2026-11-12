@@ -7,13 +7,14 @@ the same jobs. Run from the repository root:
 moon run --target native bench/xlang
 moon run --target native bench/xlang -- --rounds 1 --group bidi
 moon run --target native bench/xlang -- --impl moonbit-native,rust --detail
+moon run --target native bench/xlang -- --base HEAD^
 ```
 
 The runner (the MoonBit package in this directory) prepares the inputs, builds
 every harness, runs them one at a time for three rounds, and prints a Markdown
 report. Nothing is written to the source tree: inputs, build products,
-`results.tsv` and `report.md` go to `_build/xlang/`. A full run takes about
-twelve minutes.
+`results.tsv`, `report.md` and `results.json` (for the dashboard) go to
+`_build/xlang/`. A full run takes about fifteen minutes.
 
 | Option | Meaning |
 |---|---|
@@ -21,6 +22,7 @@ twelve minutes.
 | `--impl A,B` | Only these harnesses (default: every one that can be set up) |
 | `--group G` | Only `norm`, `seg`, `bidi`, `idna`, `puny` or `case` |
 | `--detail` | Also report every case, not only the mean per operation |
+| `--base REV` | Compare the MoonBit harnesses with those of commit `REV` instead; see below |
 
 ## Harnesses
 
@@ -30,7 +32,7 @@ same cases with the same protocol, and prints rows in the same format.
 
 | Harness | Directory | Measures | Needs |
 |---|---|---|---|
-| `moonbit-native`, `moonbit-wasm-gc`, `moonbit-js` | `moonbit/` | This checkout, per backend | `moon`; `node` for `js` |
+| `moonbit-native`, `moonbit-wasm-gc`, `moonbit-wasm`, `moonbit-js` | `moonbit/` | This checkout, per backend | `moon`; `node` for `js` |
 | `icu4c` | `icu4c/` | ICU4C, on UTF-16 | A C++17 compiler and ICU4C |
 | `rust` | `rust/` | `unicode-normalization`, `unicode-segmentation`, `unicode-bidi`, `idna`, `unicode-general-category`, `std`, and ICU4X on UTF-8 and UTF-16 | `cargo` |
 | `go` | `go/` | `golang.org/x/text`, `golang.org/x/net/idna`, `rivo/uniseg`, `unicode` | `go` 1.26 or later |
@@ -60,6 +62,12 @@ points of the result, the grapheme cluster count or the sum of the Bidi
 levels (`-` when there is nothing comparable). File IO, decoding and input
 preparation are outside the timed calls. The report lists the cases on which
 implementations disagree.
+
+A harness must keep every result where it could be read later, not only fold
+its length into the sink: V8 drops a string that only has its length read,
+since it can compute the length without building the string, and LLVM can drop
+an allocation it sees unused. The MoonBit and Node harnesses store each result
+in a global; the Rust harness passes it through `black_box`.
 
 The inputs are defined once, in `inputs.mbt`; harnesses list the input
 directories rather than naming files. Normalization uses the 14 ICU normperf
@@ -92,3 +100,35 @@ time relative to `moonbit-native` on the same cases.
   Node case crosses from JavaScript into the runtime.
 - Other processes disturb the measurement. The report's noise table shows how
   much the rounds disagreed; treat differences of that size as equal.
+
+## Comparing two commits
+
+`--base REV` checks `REV` out in `_build/xlang/base`, copies this checkout's
+MoonBit harness into it, and runs the MoonBit harnesses of both commits in
+turns: in odd rounds the base goes first, in even rounds the head. Both sides
+run the same harness, so a change to `moonbit/main.mbt` does not show up as a
+change to the library. Only the MoonBit harnesses take part. The report,
+`compare.md`, gives the change in time per operation and backend, and
+`compare.json` holds the costs of every case on both sides.
+
+## Dashboard
+
+`site/` is a static page that shows both kinds of run. The `benchmark`
+workflow (`.github/workflows/bench.yml`) runs `--base HEAD^` on every push to
+main, appends the result to `history.json` on the `bench-data` branch, keeps
+the full comparison in `runs/<commit>.json` there, and publishes `site/` with
+the history to GitHub Pages. GitHub's runners are shared machines, so only
+these same-runner comparisons are recorded from CI, never absolute times.
+
+The cross-language part of the page reads `site/snapshot.json`, which is
+updated by hand from a full run on a quiet machine:
+
+```sh
+moon run --target native bench/xlang
+cp _build/xlang/results.json bench/xlang/site/snapshot.json
+```
+
+Commit it; the push to main republishes the page. To look at the page
+locally, serve `site/` over HTTP (it fetches its data), for example with
+`python3 -m http.server -d bench/xlang/site`. Without a `history.json` next to
+it, the history section says there are no runs yet.

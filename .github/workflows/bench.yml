@@ -1,0 +1,115 @@
+name: benchmark
+
+# On every push to main, time the MoonBit harnesses at the pushed commit and
+# at its first parent on the same runner, record the comparison on the
+# `bench-data` branch and publish the dashboard (bench/xlang/site) to GitHub
+# Pages. Run by hand, it only republishes the dashboard, for example after the
+# cross-language snapshot was updated, unless asked to compare as well.
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      compare:
+        description: Also compare the head of main with its first parent
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+# One run at a time, so that runs do not append to the history at once. By
+# default a group keeps a single pending run and cancels it when another
+# arrives, which would skip the comparison of a push; `queue: max` keeps up
+# to 100 waiting. They may start out of order, so the page sorts the history
+# by commit date.
+concurrency:
+  group: benchmark
+  cancel-in-progress: false
+  queue: max
+
+env:
+  DATA_BRANCH: bench-data
+
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: install
+        run: |
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
+          echo "$HOME/.moon/bin" >> $GITHUB_PATH
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: moon version
+        run: |
+          moon version --all
+          moon update
+
+      - name: compare with the first parent
+        if: github.event_name == 'push' || inputs.compare
+        run: moon run --target native bench/xlang -- --base HEAD^ --rounds 3
+
+      - name: summary
+        if: github.event_name == 'push' || inputs.compare
+        run: cat _build/xlang/compare.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: check out the history
+        run: |
+          if git fetch --depth 1 origin "$DATA_BRANCH"; then
+            git worktree add data FETCH_HEAD
+            git -C data switch -c "$DATA_BRANCH"
+          else
+            git worktree add --orphan -b "$DATA_BRANCH" data
+          fi
+          [ -f data/history.json ] || echo '[]' > data/history.json
+
+      - name: record the comparison
+        if: github.event_name == 'push' || inputs.compare
+        run: |
+          mkdir -p data/runs
+          cp _build/xlang/compare.json "data/runs/$GITHUB_SHA.json"
+          # The history keeps the means per operation; the costs of every case
+          # stay in runs/<commit>.json.
+          jq --slurpfile run _build/xlang/compare.json \
+            '[.[] | select(.about.head.commit != $run[0].about.head.commit)] + [$run[0] | del(.cases)]' \
+            data/history.json > data/history.json.new
+          mv data/history.json.new data/history.json
+          cd data
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add history.json runs
+          git commit -m "bench: compare ${GITHUB_SHA::7} with its first parent"
+          git push origin "HEAD:$DATA_BRANCH"
+
+      - name: assemble the site
+        run: |
+          cp -R bench/xlang/site _site
+          cp data/history.json _site/history.json
+          if [ -d data/runs ]; then cp -R data/runs _site/runs; fi
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: compare
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
