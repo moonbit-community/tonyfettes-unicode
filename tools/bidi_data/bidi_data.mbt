@@ -110,7 +110,6 @@ pub fn emit_bidi_class(content : String) -> String raise {
       .iter()
       .map(entry => @emitter.EnumValue::{ name: entry.0, comment: entry.1, })
       .collect(),
-    fallback="L",
   )
   out.write_value_trie(
     property="Bidi_Class",
@@ -230,7 +229,6 @@ pub fn emit_bracket(content : String) -> String raise {
       .iter()
       .map(entry => @emitter.EnumValue::{ name: entry.0, comment: entry.2, })
       .collect(),
-    fallback="None",
   )
   out.write_int_array(
     "Code points of paired brackets",

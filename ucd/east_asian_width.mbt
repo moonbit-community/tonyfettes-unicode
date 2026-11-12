@@ -35,17 +35,12 @@ pub impl Show for EastAsianWidth with fn output(self, logger) {
 }
 
 ///|
-/// Convert EastAsianWidth ordinal to enum value
-fn ordinal_to_eaw(ordinal : Int32) -> EastAsianWidth {
-  match ordinal {
-    0 => A
-    1 => F
-    2 => H
-    4 => Na
-    5 => W
-    _ => N // 3 or any unknown
-  }
-}
+/// Convert a EastAsianWidth ordinal, below 6, to the enum value.
+///
+/// A constructor without arguments is its ordinal on every backend. A
+/// `match` or a table would cost a jump table or a load on wasm, wasm-gc
+/// and JS, slower there than the trie lookup itself.
+fn ordinal_to_eaw(ordinal : Int32) -> EastAsianWidth = "%identity"
 
 ///|
 /// Get the East_Asian_Width for a character.

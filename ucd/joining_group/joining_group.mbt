@@ -46,17 +46,12 @@ let joining_group_trie_top : Bytes = [
 ]
 
 ///|
-/// Joining_Group trie mid level: big-endian 16-bit leaf block indices
-let joining_group_trie_mid : Bytes = [
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 2, 0, 3, 0, 0, 0, 4, 0, 5, 0, 6, 0, 7, 0, 8,
-  0, 9, 0, 10, 0, 11, 0, 12, 0, 13, 0, 0, 0, 14, 0, 15, 0, 0, 0, 16, 0, 17, 0, 18,
-  0, 19, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 20, 0, 21, 0, 22, 0, 0, 0, 23, 0, 24, 0, 25, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 26, 0,
-  27, 0, 28, 0, 0, 0, 29, 0, 30, 0, 31, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 32, 0, 33, 0, 34, 0, 0,
+/// Joining_Group trie mid level: 16-bit leaf block indices, two per entry
+let joining_group_trie_mid : ReadOnlyArray[Int32] = [
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 131073, 3, 327684, 458758, 589832, 720906, 851980, 917504,
+  15, 1114128, 1245202, 0, 0, 0, 0, 0, 0, 0, 1376276, 22, 1572887, 25, 0, 0, 0, 0,
+  0, 0, 0, 1769498, 28, 1966109, 31, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2162720,
+  34,
 ]
 
 ///|
@@ -117,7 +112,6 @@ pub fn lookup_joining_group(c : Char) -> Int32 {
     return joining_group_high_ranges[low] & 127
   }
   let mid = (joining_group_trie_top[cp >> 8].to_int() << 4) | ((cp >> 4) & 15)
-  let leaf = (joining_group_trie_mid[2 * mid].to_int() << 8) |
-    joining_group_trie_mid[2 * mid + 1].to_int()
+  let leaf = (joining_group_trie_mid[mid >> 1] >> ((mid & 1) << 4)) & 0xFFFF
   joining_group_trie_leaf[(leaf << 4) | (cp & 15)].to_int()
 }

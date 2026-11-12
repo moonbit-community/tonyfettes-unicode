@@ -13,7 +13,7 @@ test "parse and emit IDNA mapping data" {
   )
   for
     expected in [
-      "let idna_trie_top : Bytes", "let idna_trie_mid : Bytes", "let idna_trie_leaf : Bytes",
+      "let idna_trie_top : Bytes", "let idna_trie_mid : ReadOnlyArray[Int]", "let idna_trie_leaf : ReadOnlyArray[Int]",
       // Unlisted code points are disallowed, including everything above the trie.
        "let idna_high_ranges : ReadOnlyArray[Int] = [\n  0x200004,\n]",
       // The empty mapping, "a", "s" shared by U+0053 and U+017F, and "ss".

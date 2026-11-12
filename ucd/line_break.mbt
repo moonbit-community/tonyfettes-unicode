@@ -127,60 +127,12 @@ pub impl Show for LineBreak with fn output(self, logger) {
 }
 
 ///|
-/// Convert LineBreak ordinal to enum value
-fn ordinal_to_line_break(ordinal : Int32) -> LineBreak {
-  match ordinal {
-    0 => AI
-    1 => AK
-    2 => AL
-    3 => AP
-    4 => AS
-    5 => B2
-    6 => BA
-    7 => BB
-    8 => BK
-    9 => CB
-    10 => CJ
-    11 => CL
-    12 => CM
-    13 => CP
-    14 => CR
-    15 => EB
-    16 => EM
-    17 => EX
-    18 => GL
-    19 => H2
-    20 => H3
-    21 => HH
-    22 => HL
-    23 => HY
-    24 => ID
-    25 => IN
-    26 => IS
-    27 => JL
-    28 => JT
-    29 => JV
-    30 => LF
-    31 => NL
-    32 => NS
-    33 => NU
-    34 => OP
-    35 => PO
-    36 => PR
-    37 => QU
-    38 => RI
-    39 => SA
-    40 => SG
-    41 => SP
-    42 => SY
-    43 => VF
-    44 => VI
-    45 => WJ
-    47 => ZW
-    48 => ZWJ
-    _ => XX // 46 or any unknown
-  }
-}
+/// Convert a LineBreak ordinal, below 49, to the enum value.
+///
+/// A constructor without arguments is its ordinal on every backend. A
+/// `match` or a table would cost a jump table or a load on wasm, wasm-gc
+/// and JS, slower there than the trie lookup itself.
+fn ordinal_to_line_break(ordinal : Int32) -> LineBreak = "%identity"
 
 ///|
 /// Get the Line_Break for a character.

@@ -128,41 +128,12 @@ pub impl Show for GeneralCategory with fn output(self, logger) {
 }
 
 ///|
-/// Convert GeneralCategory ordinal to enum value
-fn ordinal_to_gc(ordinal : Int32) -> GeneralCategory {
-  match ordinal {
-    0 => Lu
-    1 => Ll
-    2 => Lt
-    3 => Lm
-    4 => Lo
-    5 => Mn
-    6 => Mc
-    7 => Me
-    8 => Nd
-    9 => Nl
-    10 => No
-    11 => Zs
-    12 => Zl
-    13 => Zp
-    14 => Pc
-    15 => Pd
-    16 => Ps
-    17 => Pe
-    18 => Pi
-    19 => Pf
-    20 => Po
-    21 => Sm
-    22 => Sc
-    23 => Sk
-    24 => So
-    25 => Cc
-    26 => Cf
-    27 => Cs
-    28 => Co
-    _ => Cn // 29 or any unknown
-  }
-}
+/// Convert a GeneralCategory ordinal, below 30, to the enum value.
+///
+/// A constructor without arguments is its ordinal on every backend. A
+/// `match` or a table would cost a jump table or a load on wasm, wasm-gc
+/// and JS, slower there than the trie lookup itself.
+fn ordinal_to_gc(ordinal : Int32) -> GeneralCategory = "%identity"
 
 ///|
 /// Get the General_Category for a character

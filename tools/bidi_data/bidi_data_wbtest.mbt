@@ -10,7 +10,7 @@ test "bidi class trie and high ranges" {
   )
   for
     expected in [
-      "let bidi_trie_top : Bytes", "let bidi_trie_mid : Bytes", "let bidi_trie_leaf : Bytes",
+      "let bidi_trie_top : Bytes", "let bidi_trie_mid : ReadOnlyArray[Int]", "let bidi_trie_leaf : Bytes",
       "let bidi_high_ranges : ReadOnlyArray[Int]",
       // Planes 4 and up: L from U+40000, BN at U+E0001, L again from U+E0002.
        "  0x800000,\n  0x1C00029,\n  0x1C00040,\n]", "fn lookup_bidi_class_code(c : Char) -> Int",
