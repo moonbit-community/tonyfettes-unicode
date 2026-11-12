@@ -72,7 +72,12 @@ in a global; the Rust harness passes it through `black_box`.
 The inputs are defined once, in `inputs.mbt`; harnesses list the input
 directories rather than naming files. Normalization uses the 14 ICU normperf
 corpora committed for [`bench/normperf`](../normperf/README.md), as they are
-and converted to NFD.
+and converted to NFD. The `case` group has short phrases repeated, three of
+those corpora (Latin and Russian names, English prose) and the Latin names
+in uppercase, where nearly every letter has a mapping to apply. Other
+libraries time case folding on less: ICU4X on one English sentence, Go's
+`x/text` on repeated ASCII and a few paragraphs, and utf8proc on four of the
+eprun corpora.
 
 To add a harness, write a program that takes `<inputs> [group]` and prints
 rows in this format, then add it to `all_peers` in `peers.mbt`.

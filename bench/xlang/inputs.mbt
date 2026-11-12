@@ -83,6 +83,12 @@ async fn prepare_inputs(root : String, directory : String) -> Unit {
     ("case/Latin", "Ünïcödé Çàfé Straße ".repeat(32)),
     ("case/Greek", "Ὀδυσσεύς καὶ ᾈχιλλεύς ".repeat(32)),
     ("case/CJK", "世界こんにちは、テスト。".repeat(64)),
+    // Real text with its own mix of cases: capitalized names and English prose.
+    ("case/names_Latin", corpus("TestNames_Latin")),
+    ("case/names_Russian", corpus("TestNames_Russian")),
+    ("case/English", corpus("vfear11a")),
+    // Mostly uppercase, so that nearly every letter has a mapping to apply.
+    ("case/names_Latin_upper", uppercase(corpus("TestNames_Latin"))),
   ]
   for (name, text) in texts {
     write_text("\{directory}/\{name}.txt", text)
@@ -122,4 +128,14 @@ async fn prepare_inputs(root : String, directory : String) -> Unit {
     }
     write_text("\{directory}/\{name}.tsv", lines.to_string())
   }
+}
+
+///|
+/// `text` with every character replaced by its full uppercase mapping.
+fn uppercase(text : String) -> String {
+  let result = StringBuilder(size_hint=text.length())
+  for c in text {
+    result.write_string(@ucd.to_uppercase(c))
+  }
+  result.to_string()
 }
