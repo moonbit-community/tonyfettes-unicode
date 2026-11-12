@@ -1,7 +1,41 @@
 ///|
 /// Default caseless equality (D144), without normalization.
 pub fn caseless_match(a : StringView, b : StringView) -> Bool {
-  case_fold(a) == case_fold(b)
+  // Folding maps each code point on its own, so equal folded prefixes leave
+  // only the rest to compare. Walk both while every code point folds to a
+  // single one, and fold the rest only from the first longer mapping.
+  let a_length = a.length()
+  let b_length = b.length()
+  let mut i = 0
+  let mut j = 0
+  while i < a_length && j < b_length {
+    // Equal code units outside surrogate pairs need no decoding.
+    // SAFETY: i < a_length and j < b_length.
+    let unit = a.unsafe_get(i)
+    if unit == b.unsafe_get(j) && !unit.is_leading_surrogate() {
+      i += 1
+      j += 1
+      continue
+    }
+    let ca = code_point_at(a, i, a_length)
+    let cb = code_point_at(b, j, b_length)
+    if ca != cb {
+      guard simple_fold(ca) is Some(fa) && simple_fold(cb) is Some(fb) else {
+        break
+      }
+      if fa != fb {
+        return false
+      }
+    }
+    i += utf16_width(ca)
+    j += utf16_width(cb)
+  }
+  if i == a_length && j == b_length {
+    return true
+  }
+  // SAFETY: i and j are code point boundaries within their views.
+  case_fold(a.unsafe_view(start=i, end=a_length)) ==
+  case_fold(b.unsafe_view(start=j, end=b_length))
 }
 
 ///|

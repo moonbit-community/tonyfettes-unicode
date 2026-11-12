@@ -50,20 +50,84 @@ fn parse_fold_mappings(
 }
 
 ///|
-/// Emit folding data as sorted range starts (plus range ends when some range
-/// covers more than one code point) and all targets packed into one string,
-/// sliced by 16-bit offsets. One string instead of a string per mapping keeps
-/// the table free of pointers and per-literal headers.
+/// Number of distinct deltas a folding trie can encode: its values fit in a
+/// byte, and kinds 0 and 1 are taken.
+const FoldDeltaLimit : Int32 = 254
+
+///|
+/// Emit folding data in two parts.
+///
+/// `<prefix>_kind` is a byte-valued trie giving every code point a kind:
+/// 0 when the code point folds to itself, 1 when its mapping must be looked up
+/// with `lookup_<prefix>`, and from 2 on an index into `<prefix>_deltas`, for
+/// a mapping to the single code point `cp + <prefix>_deltas[kind]`. The most
+/// frequent deltas get a kind, so nearly every cased letter is folded without
+/// a search.
+///
+/// `lookup_<prefix>` searches the entries holding a code point of kind 1:
+/// sorted range starts (plus range ends when some range covers more than one
+/// code point), with all targets packed into one string and sliced by 16-bit
+/// offsets. One string instead of a string per mapping keeps the table free of
+/// pointers and per-literal headers.
 fn emit_fold_mappings(
   entries : Array[FoldMapping],
   prefix : String,
   source : String,
 ) -> String raise {
-  let has_ranges = entries.any(e => e.start != e.end)
+  let counts : Map[Int32, Int32] = Map([])
+  for entry in entries {
+    if entry.targets is [target] {
+      for cp in entry.start..<=entry.end {
+        counts.set(target - cp, counts.get(target - cp).unwrap_or(0) + 1)
+      }
+    }
+  }
+  // Most frequent first; equal counts by delta, so the output is stable.
+  let ranked = counts.to_array()
+  ranked.sort_by((a, b) => {
+    if a.1 != b.1 {
+      b.1.compare(a.1)
+    } else {
+      a.0.compare(b.0)
+    }
+  })
+  let deltas = [0, 0]
+  let kinds : Map[Int32, Int32] = Map([])
+  for pair in ranked[:FoldDeltaLimit] {
+    kinds.set(pair.0, deltas.length())
+    deltas.push(pair.0)
+  }
+  let values = FixedArray::make(@emitter.MaxCodePoint + 1, 0)
+  let searched = []
+  for entry in entries {
+    let mut found = false
+    for cp in entry.start..<=entry.end {
+      let kind = if entry.targets is [target] {
+        kinds.get(target - cp).unwrap_or(1)
+      } else {
+        1
+      }
+      values[cp] = kind
+      found = found || kind == 1
+    }
+    if found {
+      searched.push(entry)
+    }
+  }
+  // The folding code maps ASCII without the tables, A-Z to a-z only.
+  for cp in 0..<0x80 {
+    let delta = if cp >= 'A' && cp <= 'Z' { 32 } else { 0 }
+    guard values[cp] != 1 && deltas[values[cp]] == delta else {
+      fail(
+        "\{prefix} folds ASCII \{@emitter.hex_literal(cp)} other than A-Z to a-z",
+      )
+    }
+  }
+  let has_ranges = searched.any(e => e.start != e.end)
   let text : Array[Int32] = []
   let offsets = [0]
   let mut units = 0
-  for entry in entries {
+  for entry in searched {
     for target in entry.targets {
       text.push(target)
       units += if target > 0xFFFF { 2 } else { 1 }
@@ -72,21 +136,38 @@ fn emit_fold_mappings(
   }
   let out = @emitter.Emitter::new()
   out.write_file_header("\{prefix} mapping data", source)
+  out.write_value_trie(
+    property="\{prefix} kind",
+    prefix="\{prefix}_kind",
+    lookup="fn \{prefix}_kind",
+    lookup_doc=[
+      "How `c` folds: 0 to itself, 1 to the mapping `lookup_\{prefix}` finds,",
+      "and from 2 on to the code point `c + \{prefix}_deltas[kind]`.",
+    ],
+    value_bits=8,
+    values,
+  )
+  out.write_int_array(
+    "Code point deltas by kind; kinds 0 and 1 have none",
+    "\{prefix}_deltas",
+    deltas,
+    hex=false,
+  )
   out.write_int_array(
     if has_ranges {
-      "Sorted inclusive range starts"
+      "Sorted inclusive range starts of the entries with a code point of kind 1"
     } else {
-      "Sorted code points"
+      "Sorted code points of kind 1"
     },
     "\{prefix}_starts",
-    entries.map(e => e.start),
+    searched.map(e => e.start),
     hex=true,
   )
   if has_ranges {
     out.write_int_array(
       "Inclusive range ends",
       "\{prefix}_ends",
-      entries.map(e => e.end),
+      searched.map(e => e.end),
       hex=true,
     )
   }
@@ -117,8 +198,9 @@ fn emit_fold_mappings(
   out.write(
     (
       $|///|
-      $|/// The mapping of \{found_doc}, as a view of
-      $|/// `\{prefix}_text`. None means identity; an empty view means removal.
+      $|/// The mapping of \{found_doc}, as a view of `\{prefix}_text`, for
+      $|/// a code point of kind 1. None means identity; an empty view means
+      $|/// removal.
       $|fn lookup_\{prefix}(c : Char) -> StringView? {
       $|  let cp = c.to_int()
       $|  let mut low = 0

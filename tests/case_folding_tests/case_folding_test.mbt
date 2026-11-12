@@ -41,6 +41,15 @@ async test "CaseFolding.txt full default mappings and identity for every scalar"
       actual,
       msg="CaseFolding not idempotent at \{cp}",
     )
+    // Matching walks code points instead of folding whole strings.
+    assert_true(
+      @casefold.caseless_match("A\{input}b", "a\{target}B"),
+      msg="caseless_match rejects its folding at \{cp}",
+    )
+    assert_true(
+      !@casefold.caseless_match("\{input}a", "\{target}b"),
+      msg="caseless_match ignores a difference after \{cp}",
+    )
   }
 }
 

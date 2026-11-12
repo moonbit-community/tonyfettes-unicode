@@ -10,13 +10,11 @@ pub fn canonical_case_fold(s : StringView) -> String {
 /// default-ignorable code points, then normalizes the concatenation to NFC.
 /// This is locale-independent and is not an identifier validity check.
 pub fn nfkc_casefold(s : StringView) -> String {
-  let out = StringBuilder(size_hint=s.length())
-  for c in s {
-    if lookup_nfkc_casefold(c) is Some(mapping) {
-      out.write_view(mapping)
-    } else {
-      out.write_char(c)
-    }
+  let index = Nfkc.first_change(s)
+  // Unchanged input goes to NFC as it is, which copies it only once.
+  if index == s.length() {
+    @normalization.nfc(s)
+  } else {
+    @normalization.nfc(Nfkc.fold_from(s, index))
   }
-  @normalization.nfc(out.to_string())
 }
