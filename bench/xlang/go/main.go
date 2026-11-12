@@ -29,16 +29,17 @@ func run(iterations int, f func() int) float64 {
 	return float64(time.Since(start).Nanoseconds())
 }
 
-// measure doubles the iteration count until one sample takes at least 10 ms,
-// then prints the fastest of 12 samples as
+// measure doubles the iteration count until one sample takes at least 5 ms,
+// then prints the fastest of 5 samples, the first of which is that one, as
 // library<TAB>case<TAB>ns<TAB>units<TAB>check.
 func measure(library, name string, units int, check any, f func() int) {
 	iterations := 1
-	for run(iterations, f) < 1e7 {
+	best := run(iterations, f)
+	for best < 5e6 {
 		iterations *= 2
+		best = run(iterations, f)
 	}
-	best := math.Inf(1)
-	for i := 0; i < 12; i++ {
+	for i := 1; i < 5; i++ {
 		best = math.Min(best, run(iterations, f))
 	}
 	fmt.Printf("%s\t%s\t%v\t%d\t%v\n", library, name, best/float64(iterations), units, check)

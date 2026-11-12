@@ -21,14 +21,17 @@ fn run(iterations: u64, f: &mut dyn FnMut() -> usize) -> f64 {
     start.elapsed().as_secs_f64() * 1e9
 }
 
-/// Double the iteration count until one sample takes at least 10 ms, then
-/// print the fastest of 12 samples as `library<TAB>case<TAB>ns<TAB>units<TAB>check`.
+/// Double the iteration count until one sample takes at least 5 ms, then
+/// print the fastest of 5 samples, the first of which is that one, as
+/// `library<TAB>case<TAB>ns<TAB>units<TAB>check`.
 fn measure(library: &str, name: &str, units: usize, check: usize, mut f: impl FnMut() -> usize) {
     let mut iterations = 1u64;
-    while run(iterations, &mut f) < 1e7 {
+    let mut first = run(iterations, &mut f);
+    while first < 5e6 {
         iterations *= 2;
+        first = run(iterations, &mut f);
     }
-    let best = (0..12).map(|_| run(iterations, &mut f)).fold(f64::INFINITY, f64::min);
+    let best = (1..5).map(|_| run(iterations, &mut f)).fold(first, f64::min);
     println!("{library}\t{name}\t{}\t{units}\t{check}", best / iterations as f64);
 }
 
