@@ -80,46 +80,46 @@ fn bench_normalization(inputs: &str) {
         // UTF-8 in, UTF-8 out; always builds a new string.
         let library = "unicode-normalization";
         measure(library, &case("nfc"), units, chars(&original.nfc().collect::<String>()),
-            || black_box(&original).nfc().collect::<String>().len());
+            || black_box(black_box(&original).nfc().collect::<String>()).len());
         measure(library, &case("nfd"), units, chars(&original.nfd().collect::<String>()),
-            || black_box(&original).nfd().collect::<String>().len());
+            || black_box(black_box(&original).nfd().collect::<String>()).len());
         measure(library, &case("nfkc"), units, chars(&original.nfkc().collect::<String>()),
-            || black_box(&original).nfkc().collect::<String>().len());
+            || black_box(black_box(&original).nfkc().collect::<String>()).len());
         measure(library, &case("nfkd"), units, chars(&original.nfkd().collect::<String>()),
-            || black_box(&original).nfkd().collect::<String>().len());
+            || black_box(black_box(&original).nfkd().collect::<String>()).len());
         measure(library, &case("nfd>nfc"), decomposed_units,
             chars(&decomposed.nfc().collect::<String>()),
-            || black_box(&decomposed).nfc().collect::<String>().len());
+            || black_box(black_box(&decomposed).nfc().collect::<String>()).len());
         measure(library, &case("is_nfc"), units, unicode_normalization::is_nfc(&original) as usize,
             || unicode_normalization::is_nfc(black_box(&original)) as usize);
 
         let library = "icu4x-utf8";
         measure(library, &case("nfc"), units, chars(&nfc.normalize(&original)),
-            || nfc.normalize(black_box(&original)).len());
+            || black_box(nfc.normalize(black_box(&original))).len());
         measure(library, &case("nfd"), units, chars(&nfd.normalize(&original)),
-            || nfd.normalize(black_box(&original)).len());
+            || black_box(nfd.normalize(black_box(&original))).len());
         measure(library, &case("nfkc"), units, chars(&nfkc.normalize(&original)),
-            || nfkc.normalize(black_box(&original)).len());
+            || black_box(nfkc.normalize(black_box(&original))).len());
         measure(library, &case("nfkd"), units, chars(&nfkd.normalize(&original)),
-            || nfkd.normalize(black_box(&original)).len());
+            || black_box(nfkd.normalize(black_box(&original))).len());
         measure(library, &case("nfd>nfc"), decomposed_units, chars(&nfc.normalize(&decomposed)),
-            || nfc.normalize(black_box(&decomposed)).len());
+            || black_box(nfc.normalize(black_box(&decomposed))).len());
         measure(library, &case("is_nfc"), units, nfc.is_normalized(&original) as usize,
             || nfc.is_normalized(black_box(&original)) as usize);
 
         // The same code unit as MoonBit strings.
         let library = "icu4x-utf16";
         measure(library, &case("nfc"), units, chars16(&nfc.normalize_utf16(&original16)),
-            || nfc.normalize_utf16(black_box(&original16)).len());
+            || black_box(nfc.normalize_utf16(black_box(&original16))).len());
         measure(library, &case("nfd"), units, chars16(&nfd.normalize_utf16(&original16)),
-            || nfd.normalize_utf16(black_box(&original16)).len());
+            || black_box(nfd.normalize_utf16(black_box(&original16))).len());
         measure(library, &case("nfkc"), units, chars16(&nfkc.normalize_utf16(&original16)),
-            || nfkc.normalize_utf16(black_box(&original16)).len());
+            || black_box(nfkc.normalize_utf16(black_box(&original16))).len());
         measure(library, &case("nfkd"), units, chars16(&nfkd.normalize_utf16(&original16)),
-            || nfkd.normalize_utf16(black_box(&original16)).len());
+            || black_box(nfkd.normalize_utf16(black_box(&original16))).len());
         measure(library, &case("nfd>nfc"), decomposed_units,
             chars16(&nfc.normalize_utf16(&decomposed16)),
-            || nfc.normalize_utf16(black_box(&decomposed16)).len());
+            || black_box(nfc.normalize_utf16(black_box(&decomposed16))).len());
         measure(library, &case("is_nfc"), units, nfc.is_normalized_utf16(&original16) as usize,
             || nfc.is_normalized_utf16(black_box(&original16)) as usize);
     }
@@ -152,9 +152,9 @@ fn bench_bidi(inputs: &str) {
             text.char_indices().map(|(i, _)| info.levels[i].number() as usize).sum();
         let case = format!("bidi/process/{name}");
         measure("unicode-bidi", &case, units, level_sum,
-            || unicode_bidi::BidiInfo::new(black_box(&text), None).levels.len());
+            || black_box(unicode_bidi::BidiInfo::new(black_box(&text), None)).levels.len());
         measure("unicode-bidi-utf16", &case, units, level_sum,
-            || unicode_bidi::utf16::BidiInfo::new(black_box(&text16), None).levels.len());
+            || black_box(unicode_bidi::utf16::BidiInfo::new(black_box(&text16), None)).levels.len());
     }
 }
 
@@ -164,9 +164,9 @@ fn bench_idna(inputs: &str) {
         let (unicode, result) = idna::domain_to_unicode(&domain);
         result.unwrap();
         measure("idna", &format!("idna/to_ascii/{name}"), 1, chars(&ascii),
-            || idna::domain_to_ascii(black_box(&domain)).map_or(0, |s| s.len()));
+            || black_box(idna::domain_to_ascii(black_box(&domain))).map_or(0, |s| s.len()));
         measure("idna", &format!("idna/to_unicode/{name}"), 1, chars(&unicode),
-            || idna::domain_to_unicode(black_box(&domain)).0.len());
+            || black_box(idna::domain_to_unicode(black_box(&domain))).0.len());
     }
 }
 
@@ -174,9 +174,9 @@ fn bench_punycode(inputs: &str) {
     for (name, input) in pairs(format!("{inputs}/puny.tsv")) {
         let encoded = idna::punycode::encode_str(&input).unwrap();
         measure("idna", &format!("puny/encode/{name}"), 1, encoded.len(),
-            || idna::punycode::encode_str(black_box(&input)).map_or(0, |s| s.len()));
+            || black_box(idna::punycode::encode_str(black_box(&input))).map_or(0, |s| s.len()));
         measure("idna", &format!("puny/decode/{name}"), 1, chars(&input),
-            || idna::punycode::decode_to_string(black_box(&encoded)).map_or(0, |s| s.len()));
+            || black_box(idna::punycode::decode_to_string(black_box(&encoded))).map_or(0, |s| s.len()));
     }
 }
 
