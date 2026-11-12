@@ -121,6 +121,12 @@ footer { font-size: 0.8rem; color: var(--muted); border-top: 1px solid var(--rul
 .history td.commit .sha { font-family: var(--mono); font-size: 0.86em; color: var(--muted); margin-right: 6px; }
 .history td.commit .when { display: block; font-size: 0.86em; color: var(--muted); }
 .history th.op { white-space: normal; min-width: 64px; }
+/* Combining merges: a checkbox per merge and the combined row on top. */
+.history input.pick { accent-color: var(--mb-native); margin: 0 8px 0 0; vertical-align: -2px; cursor: pointer; }
+.history tr.picked td.commit { box-shadow: inset 3px 0 0 var(--mb-native); }
+.history tr.combined td { border-bottom: 2px solid var(--ink); font-weight: 600; }
+.history tr.combined td.commit .label { font-family: var(--display); font-weight: 700; }
+.history tr.combined td.commit .when { font-weight: 400; }
 .empty { border: 1px dashed var(--rule); border-radius: 8px; padding: 18px; color: var(--muted); font-size: 0.9rem; }
 .more { align-self: flex-start; }
 
