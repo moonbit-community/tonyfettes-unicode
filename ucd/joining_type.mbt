@@ -36,17 +36,12 @@ pub impl Show for JoiningType with fn output(self, logger) {
 }
 
 ///|
-/// Convert JoiningType ordinal to enum value
-fn ordinal_to_joining_type(ordinal : Int32) -> JoiningType {
-  match ordinal {
-    1 => JoinCausing
-    2 => DualJoining
-    3 => LeftJoining
-    4 => RightJoining
-    5 => Transparent
-    _ => NonJoining // 0 or any unknown
-  }
-}
+/// Convert a JoiningType ordinal, below 6, to the enum value.
+///
+/// A constructor without arguments is its ordinal on every backend. A
+/// `match` or a table would cost a jump table or a load on wasm, wasm-gc
+/// and JS, slower there than the trie lookup itself.
+fn ordinal_to_joining_type(ordinal : Int32) -> JoiningType = "%identity"
 
 ///|
 /// Get the Joining_Type for a character.

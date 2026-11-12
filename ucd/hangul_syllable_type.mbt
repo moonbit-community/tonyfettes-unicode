@@ -36,17 +36,12 @@ pub impl Show for HangulSyllableType with fn output(self, logger) {
 }
 
 ///|
-/// Convert HangulSyllableType ordinal to enum value
-fn ordinal_to_hangul_syllable_type(ordinal : Int32) -> HangulSyllableType {
-  match ordinal {
-    1 => LeadingJamo
-    2 => VowelJamo
-    3 => TrailingJamo
-    4 => LVSyllable
-    5 => LVTSyllable
-    _ => NotApplicable // 0 or any unknown
-  }
-}
+/// Convert a HangulSyllableType ordinal, below 6, to the enum value.
+///
+/// A constructor without arguments is its ordinal on every backend. A
+/// `match` or a table would cost a jump table or a load on wasm, wasm-gc
+/// and JS, slower there than the trie lookup itself.
+fn ordinal_to_hangul_syllable_type(ordinal : Int32) -> HangulSyllableType = "%identity"
 
 ///|
 /// Get the Hangul_Syllable_Type for a character.

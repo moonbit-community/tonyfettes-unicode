@@ -320,7 +320,8 @@ test "emit East_Asian_Width table" {
   for
     expected in [
       "/// East_Asian_Width lookup data\n/// Generated from EastAsianWidth.txt\n",
-      "let eaw_trie_top : Bytes = [", "let eaw_trie_mid : Bytes = [", "let eaw_trie_leaf : Bytes = [",
+      "let eaw_trie_top : Bytes = [", "let eaw_trie_mid : ReadOnlyArray[Int] = [",
+      "let eaw_trie_leaf : Bytes = [",
       // Planes 4 and up: N from U+40000, A at U+E0100, N again from U+E0101.
        "  0x200003,\n  0x700800,\n  0x70080B,\n]", "pub fn lookup_east_asian_width(c : Char) -> Int {",
     ] {
@@ -516,7 +517,8 @@ test "emit Joining_Group table and enum in dictionary order" {
       // Dictionary order, not the length-first order of `String::compare`.
       "#derive(Debug, Eq)\npub(all) enum JoiningGroup {\n  Beh // Beh\n  Hah // Hah\n  Heh // Heh\n  NoJoiningGroup // No_Joining_Group\n  TehMarbuta // Teh_Marbuta\n  TehMarbutaGoal // Teh_Marbuta_Goal\n}",
       "#deprecated(\"Use `Debug::to_repr` instead\", skip_current_package=true)\n#doc(hidden)\npub extend JoiningGroup with Debug::{to_repr}\n",
-      "      TehMarbutaGoal => \"TehMarbutaGoal\"\n", "    0 => Beh\n    1 => Hah\n    2 => Heh\n    4 => TehMarbuta\n    5 => TehMarbutaGoal\n    _ => NoJoiningGroup // 3 or any unknown\n",
+      "      TehMarbutaGoal => \"TehMarbutaGoal\"\n", "/// Convert a JoiningGroup ordinal, below 6, to the enum value.\n",
+      "fn ordinal_to_joining_group(ordinal : Int) -> JoiningGroup = \"%identity\"\n",
       "  ordinal_to_joining_group(@joining_group.lookup_joining_group(c))\n",
     ] {
     guard api.contains(expected) else {
@@ -547,8 +549,7 @@ test "emit Line_Break table and enum" {
     expected in [
       "#derive(Debug, Eq)\npub(all) enum LineBreak {\n  AI // Ambiguous (Alphabetic or Ideographic)\n",
       "  ZWJ // Zero Width Joiner\n}", "#deprecated(\"Use `Debug::to_repr` instead\", skip_current_package=true)\n#doc(hidden)\npub extend LineBreak with Debug::{to_repr}\n",
-      "    45 => WJ\n    47 => ZW\n    48 => ZWJ\n    _ => XX // 46 or any unknown\n",
-      "  ordinal_to_line_break(@line_break.lookup_line_break(c))\n",
+      "/// Convert a LineBreak ordinal, below 49, to the enum value.\n", "  ordinal_to_line_break(@line_break.lookup_line_break(c))\n",
     ] {
     guard api.contains(expected) else {
       fail("Generated source is missing: \{expected}")

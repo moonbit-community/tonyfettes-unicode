@@ -69,10 +69,11 @@ fn keep_levels(levels : Array[Int32]) -> Int32 {
 /// Print one result row: `library<TAB>case<TAB>ns<TAB>units<TAB>check`.
 ///
 /// Every harness in `bench/xlang` follows the same protocol: double the
-/// iteration count until one sample takes at least 10 ms, then report the
-/// fastest of 12 samples. `units` is the number of code points processed per
-/// call (1 for per-call cases) and `check` is a value every implementation
-/// must agree on. The library column is empty: this harness has one library.
+/// iteration count until one sample takes at least 5 ms, then report the
+/// fastest of 5 samples, the first of which is that one. `units` is the
+/// number of code points processed per call (1 for per-call cases) and
+/// `check` is a value every implementation must agree on. The library column
+/// is empty: this harness has one library.
 fn measure(
   name : String,
   units : Int32,
@@ -80,11 +81,12 @@ fn measure(
   f : () -> Int32,
 ) -> Unit {
   let mut iterations = 1
-  while run(iterations, f).0 < 10000.0 {
-    iterations = iterations * 2
-  }
   let mut best = run(iterations, f).0
-  for _ in 1..<12 {
+  while best < 5000.0 {
+    iterations = iterations * 2
+    best = run(iterations, f).0
+  }
+  for _ in 1..<5 {
     let elapsed = run(iterations, f).0
     if elapsed < best {
       best = elapsed
