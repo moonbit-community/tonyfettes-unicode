@@ -1,0 +1,3 @@
+# Official Unicode test data: keep the bytes as published, and show changes
+# as binary so a version bump does not produce a diff of megabytes.
+*.txt -text -diff linguist-generated
