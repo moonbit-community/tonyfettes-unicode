@@ -209,6 +209,26 @@ static void bench_idna(const std::string &inputs) {
 }
 
 static void bench_properties(const std::string &inputs) {
+  UErrorCode status = U_ZERO_ERROR;
+  const Normalizer2 *nfkc_casefold = Normalizer2::getNFKCCasefoldInstance(status);
+  check_status(status, "Normalizer2");
+  // Full default case folding into a fresh destination per call. Folding
+  // expands a UTF-16 code unit to at most three.
+  auto fold = [](const UnicodeString &source) {
+    UnicodeString destination;
+    int32_t capacity = source.length() * 3;
+    UErrorCode status = U_ZERO_ERROR;
+    int32_t length = u_strFoldCase(destination.getBuffer(capacity), capacity, source.getBuffer(),
+                                   source.length(), U_FOLD_CASE_DEFAULT, &status);
+    destination.releaseBuffer(U_SUCCESS(status) ? length : 0);
+    return destination;
+  };
+  auto normalized = [&](const UnicodeString &source) {
+    UnicodeString destination;
+    UErrorCode status = U_ZERO_ERROR;
+    nfkc_casefold->normalize(source, destination, status);
+    return destination;
+  };
   // These are calls into the ICU shared library: nothing is inlined into the loop.
   for (const std::string &name : names(inputs + "/case")) {
     UnicodeString text = read(inputs + "/case/" + name + ".txt");
@@ -232,6 +252,10 @@ static void bench_properties(const std::string &inputs) {
       return count;
     };
     measure("case/simple_upper/" + name, units, simple_upper(), simple_upper);
+    measure("case/fold/" + name, units, fold(text).countChar32(),
+            [&]() { return (long)fold(text).length(); });
+    measure("case/nfkc_casefold/" + name, units, normalized(text).countChar32(),
+            [&]() { return (long)normalized(text).length(); });
     measure("prop/general_category_Ll/" + name, units, lowercase_letters(), lowercase_letters);
   }
 }

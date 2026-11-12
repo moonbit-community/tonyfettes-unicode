@@ -232,6 +232,18 @@ fn bench_properties(inputs : String) -> Unit raise {
     measure("case/simple_upper/\{name}", units, simple_upper(), simple_upper)
     measure("case/full_upper/\{name}", units, full_upper(), full_upper)
     measure(
+      "case/fold/\{name}",
+      units,
+      @casefold.case_fold(text).char_length(),
+      () => keep_string(@casefold.case_fold(text)),
+    )
+    measure(
+      "case/nfkc_casefold/\{name}",
+      units,
+      @casefold.nfkc_casefold(text).char_length(),
+      () => keep_string(@casefold.nfkc_casefold(text)),
+    )
+    measure(
       "prop/general_category_Ll/\{name}",
       units,
       lowercase_letters(),

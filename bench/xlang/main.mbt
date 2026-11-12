@@ -157,6 +157,8 @@ async fn run_peer(peer : Peer, extra : Array[String]) -> Array[Row]? {
 /// in `root`, replacing any worktree left there by an earlier run. The MoonBit
 /// harness is then copied from `root`, so that both commits run the same
 /// harness and a change to it does not show up as a change to the library.
+/// The bench module's `moon.mod` goes with it, so that a harness importing a
+/// module the base did not import yet still builds there.
 async fn check_out(
   root : String,
   revision : String,
@@ -184,8 +186,8 @@ async fn check_out(
     {
       program: "sh",
       arguments: [
-        "-c", "rm -rf \"$2/$3\" && cp -R \"$1/$3\" \"$2/$3\"", "sh", root, directory,
-        harness,
+        "-c", "rm -rf \"$2/$3\" && cp -R \"$1/$3\" \"$2/$3\" && cp \"$1/$4\" \"$2/$4\"",
+        "sh", root, directory, harness, "bench/moon.mod",
       ],
       cwd: root,
     },

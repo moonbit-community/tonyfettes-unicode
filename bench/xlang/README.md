@@ -37,7 +37,7 @@ same cases with the same protocol, and prints rows in the same format.
 | `rust` | `rust/` | `unicode-normalization`, `unicode-segmentation`, `unicode-bidi`, `idna`, `unicode-general-category`, `std`, and ICU4X on UTF-8 and UTF-16 | `cargo` |
 | `go` | `go/` | `golang.org/x/text`, `golang.org/x/net/idna`, `rivo/uniseg`, `unicode` | `go` 1.26 or later |
 | `node` | `node/` | `String.prototype.normalize` and `Intl.Segmenter` (ICU4C behind V8), `url.domainToASCII` (ada), the bundled `punycode` | `node` |
-| `python` | `python/` | `unicodedata` (normalization only) | `python3` |
+| `python` | `python/` | `unicodedata` for normalization, `str.casefold` | `python3` |
 
 A harness whose toolchain, runtime or library is missing is reported as
 skipped and the comparison continues without it; the run fails only when no
@@ -96,6 +96,16 @@ time relative to `moonbit-native` on the same cases.
   differs on Devanagari text.
 - `case/full_upper` compares MoonBit's `to_uppercase`, which returns a string
   per character, with Rust's iterator, which allocates nothing.
+- `case/fold` is full default case folding (`CaseFolding.txt` statuses C and
+  F, no Turkic mappings) of a whole string: MoonBit's `case_fold`, ICU4C's
+  `u_strFoldCase` with `U_FOLD_CASE_DEFAULT` on UTF-16, ICU4X's
+  `CaseMapper::fold_string` on UTF-8, Go's `cases.Fold()` and Python's
+  `str.casefold`. ICU4X returns a borrowed `Cow` and Go the input string
+  itself when folding changes nothing, as on the CJK input, while MoonBit,
+  ICU4C and Python always build a new string. Python answers ASCII-only
+  strings with a dedicated loop. Node and the Rust standard library have no
+  full case folding, so they take no part; `case/nfkc_casefold` is compared
+  with ICU4C's `Normalizer2::getNFKCCasefoldInstance` only.
 - ICU4C's per-character functions are calls into a shared library, and every
   Node case crosses from JavaScript into the runtime.
 - Other processes disturb the measurement. The report's noise table shows how
@@ -104,7 +114,7 @@ time relative to `moonbit-native` on the same cases.
 ## Comparing two commits
 
 `--base REV` checks `REV` out in `_build/xlang/base`, copies this checkout's
-MoonBit harness into it, and runs the MoonBit harnesses of both commits in
+MoonBit harness and `bench/moon.mod` into it, and runs the MoonBit harnesses of both commits in
 turns: in odd rounds the base goes first, in even rounds the head. Both sides
 run the same harness, so a change to `moonbit/main.mbt` does not show up as a
 change to the library. Only the MoonBit harnesses take part. The report,
