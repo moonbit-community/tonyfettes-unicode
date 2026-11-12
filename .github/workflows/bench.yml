@@ -3,13 +3,25 @@ name: benchmark
 # On every push to main, time the MoonBit harnesses at the pushed commit and
 # at its first parent on the same runner, record the comparison on the
 # `bench-data` branch and publish the dashboard (bench/xlang/site) to GitHub
-# Pages. Run by hand, it only republishes the dashboard, for example after the
-# cross-language snapshot was updated, unless asked to compare as well.
+# Pages. Pushes that only touch files that cannot change the library's speed
+# (documentation, tests, tools) start no run. Pushes that only touch the page
+# itself, the snapshot included, republish it without comparing. Run by hand,
+# it only republishes the dashboard unless asked to compare as well.
 
 on:
   push:
     branches:
       - main
+    paths:
+      - "**"
+      - "!**.md"
+      - "!**/*_test.mbt"
+      - "!**/*_wbtest.mbt"
+      - "!docs/**"
+      - "!tests/**"
+      - "!tools/**"
+      - "!.github/**"
+      - ".github/workflows/bench.yml"
   workflow_dispatch:
     inputs:
       compare:
@@ -44,26 +56,40 @@ jobs:
         with:
           fetch-depth: 2
 
+      - name: decide whether to compare
+        id: changes
+        run: |
+          if [ "$GITHUB_EVENT_NAME" = workflow_dispatch ]; then
+            echo "compare=${{ inputs.compare }}" >> "$GITHUB_OUTPUT"
+          elif git diff --quiet HEAD^ HEAD -- . ':(exclude)bench/xlang/site'; then
+            echo "compare=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "compare=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: install
+        if: steps.changes.outputs.compare == 'true'
         run: |
           curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
           echo "$HOME/.moon/bin" >> $GITHUB_PATH
 
       - uses: actions/setup-node@v4
+        if: steps.changes.outputs.compare == 'true'
         with:
           node-version: 24
 
       - name: moon version
+        if: steps.changes.outputs.compare == 'true'
         run: |
           moon version --all
           moon update
 
       - name: compare with the first parent
-        if: github.event_name == 'push' || inputs.compare
-        run: moon run --target native bench/xlang -- --base HEAD^ --rounds 3
+        if: steps.changes.outputs.compare == 'true'
+        run: moon run --target native bench/xlang -- --base HEAD^ --rounds 2
 
       - name: summary
-        if: github.event_name == 'push' || inputs.compare
+        if: steps.changes.outputs.compare == 'true'
         run: cat _build/xlang/compare.md >> "$GITHUB_STEP_SUMMARY"
 
       - name: check out the history
@@ -77,7 +103,7 @@ jobs:
           [ -f data/history.json ] || echo '[]' > data/history.json
 
       - name: record the comparison
-        if: github.event_name == 'push' || inputs.compare
+        if: steps.changes.outputs.compare == 'true'
         run: |
           mkdir -p data/runs
           cp _build/xlang/compare.json "data/runs/$GITHUB_SHA.json"
