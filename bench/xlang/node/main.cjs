@@ -25,14 +25,18 @@ function keep(result) {
   return result.length;
 }
 
-// Double the iteration count until one sample takes at least 10 ms, then print
-// the fastest of 12 samples as library<TAB>case<TAB>ns<TAB>units<TAB>check.
+// Double the iteration count until one sample takes at least 5 ms, then print
+// the fastest of 5 samples, the first of which is that one, as
+// library<TAB>case<TAB>ns<TAB>units<TAB>check.
 // The library column is empty: each case has a single platform API.
 function measure(name, units, check, f) {
   let iterations = 1;
-  while (run(iterations, f) < 1e7) iterations *= 2;
-  let best = Infinity;
-  for (let i = 0; i < 12; i++) best = Math.min(best, run(iterations, f));
+  let best = run(iterations, f);
+  while (best < 5e6) {
+    iterations *= 2;
+    best = run(iterations, f);
+  }
+  for (let i = 1; i < 5; i++) best = Math.min(best, run(iterations, f));
   console.log(`\t${name}\t${best / iterations}\t${units}\t${check}`);
 }
 

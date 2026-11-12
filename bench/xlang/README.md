@@ -14,7 +14,7 @@ The runner (the MoonBit package in this directory) prepares the inputs, builds
 every harness, runs them one at a time for three rounds, and prints a Markdown
 report. Nothing is written to the source tree: inputs, build products,
 `results.tsv`, `report.md` and `results.json` (for the dashboard) go to
-`_build/xlang/`. A full run takes about fifteen minutes.
+`_build/xlang/`. A full run takes a few minutes.
 
 | Option | Meaning |
 |---|---|
@@ -49,7 +49,7 @@ selects the compiler. Rust and Go dependencies are pinned by `Cargo.lock` and
 ## Protocol
 
 Every harness doubles the iteration count of a case until one sample takes at
-least 10 ms, then reports the fastest of 12 samples as
+least 5 ms, then reports the fastest of 5 samples, counting that one, as
 
 ```
 library<TAB>group/operation/input<TAB>ns per call<TAB>units<TAB>check

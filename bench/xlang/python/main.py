@@ -16,13 +16,16 @@ def run(iterations, f):
 
 
 def measure(name, units, check, f):
-    """Double the iteration count until one sample takes at least 10 ms, then
-    print the fastest of 12 samples as library<TAB>case<TAB>ns<TAB>units<TAB>check.
+    """Double the iteration count until one sample takes at least 5 ms, then
+    print the fastest of 5 samples, the first of which is that one, as
+    library<TAB>case<TAB>ns<TAB>units<TAB>check.
     The library column is empty: this harness has one library."""
     iterations = 1
-    while run(iterations, f) < 1e7:
+    first = run(iterations, f)
+    while first < 5e6:
         iterations *= 2
-    best = min(run(iterations, f) for _ in range(12))
+        first = run(iterations, f)
+    best = min([first] + [run(iterations, f) for _ in range(4)])
     print(f"\t{name}\t{best / iterations}\t{units}\t{check}", flush=True)
 
 
