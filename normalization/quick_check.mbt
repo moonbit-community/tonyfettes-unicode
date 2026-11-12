@@ -283,7 +283,9 @@ const MaxUnitStretch : Int32 = 4096
 ///|
 /// The first code unit that is not a clean starter in the forms `scan_mask`
 /// selects: U+00A0 has a compatibility mapping, U+00C0 a canonical one, and
-/// U+0300 is the first combining mark.
+/// U+0300 is the first combining mark. The wasm-gc skip tests the
+/// `scan_mask` bits inline instead.
+#cfg(not(target="wasm-gc"))
 fn clean_unit_limit(scan_mask : Int32) -> Int32 {
   if (scan_mask & 0b1011000) != 0 {
     0xA0
@@ -307,7 +309,10 @@ fn skip_clean_blocks(
   end : Int32,
   scan_mask : Int32,
 ) -> Int32 {
-  let limit = if clean_unit_limit(scan_mask) == 0x300 { 0x200 } else { 0x80 }
+  // `clean_unit_limit` is 0x300 exactly when none of these forms is selected.
+  // Tested here, since a call stays a call on wasm-gc: calling it made NFD
+  // 6-8% slower there on x86.
+  let limit = if (scan_mask & 0b1111000) == 0 { 0x200 } else { 0x80 }
   let mut offset = start
   while end - offset >= 4 {
     // SAFETY: four units remain before `end`.
@@ -333,7 +338,8 @@ fn skip_low_unit_blocks(
   end : Int32,
   scan_mask : Int32,
 ) -> Int32 {
-  let limit = if clean_unit_limit(scan_mask) == 0x300 { 0x200 } else { 0x80 }
+  // The test of the wasm-gc version, for the same `scan_mask` bits.
+  let limit = if (scan_mask & 0b1111000) == 0 { 0x200 } else { 0x80 }
   let mut offset = start
   while end - offset >= 4 {
     // SAFETY: four units remain before `end`.
@@ -397,7 +403,57 @@ extern "js" fn skip_units_below(
 ///|
 /// Skip blocks of eight code units that are all below the clean limit, and
 /// return the offset of the first block that is not, or that is incomplete.
-#cfg(any(target="native", target="wasm"))
+///
+/// A unit at or above the limit is the one that leaves a lane nonzero after
+/// subtracting `limit - 1` with saturation. That takes one instruction on
+/// SSE2, which has no unsigned 16-bit comparison, and two blocks are tested
+/// per step. With a comparison and one block per step, the loop took 60-86%
+/// longer on the x86 CI runners (AMD EPYC 7763 and 9V74) once a change to
+/// unrelated tables moved it, though its code was the same: about 4 cycles
+/// per block instead of 2.5.
+#cfg(target="native")
+// The SIMD operations are experimental upstream. Only this function uses
+// them, so the alert is silenced here and not for the whole package.
+#warnings("-alert_experimental")
+fn skip_clean_blocks(
+  s : String,
+  start : Int32,
+  end : Int32,
+  scan_mask : Int32,
+) -> Int32 {
+  let below = @v128.i16x8_splat((clean_unit_limit(scan_mask) - 1).to_uint16())
+  let mut offset = start
+  while end - offset >= 16 {
+    // SAFETY: offset is absolute and sixteen units remain before the view's
+    // end.
+    let excess = @v128.v128_or_(
+      @v128.i16x8_sub_sat_u(@v128.v128_load_i16x8(s, offset), below),
+      @v128.i16x8_sub_sat_u(@v128.v128_load_i16x8(s, offset + 8), below),
+    )
+    if @v128.v128_any_true(excess) {
+      break
+    }
+    offset += 16
+  }
+  // The first block of a pair that failed may still be clean.
+  while end - offset >= 8 {
+    // SAFETY: offset is absolute and eight units remain before the view's end.
+    let excess = @v128.i16x8_sub_sat_u(@v128.v128_load_i16x8(s, offset), below)
+    if @v128.v128_any_true(excess) {
+      break
+    }
+    offset += 8
+  }
+  offset
+}
+
+///|
+/// Skip blocks of eight code units that are all below the clean limit, and
+/// return the offset of the first block that is not, or that is incomplete.
+///
+/// The native version tests two blocks per step; here that made NFD on
+/// Cyrillic text 30-38% slower in V8, though it halved the time on ASCII.
+#cfg(target="wasm")
 // The SIMD operations are experimental upstream. Only this function uses
 // them, so the alert is silenced here and not for the whole package.
 #warnings("-alert_experimental")
