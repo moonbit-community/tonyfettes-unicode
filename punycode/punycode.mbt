@@ -127,8 +127,14 @@ fn is_basic(input : StringView) -> Bool {
 pub fn encode(input : StringView) -> String raise PunycodeError {
   if is_basic(input) {
     // Only basic code points: they are copied, followed by the delimiter.
-    // `to_owned` does not copy a view of a whole string.
-    return if input.is_empty() { "" } else { input.to_owned() + "-" }
+    return if input.is_empty() {
+      ""
+    } else if JsStrings {
+      // `to_owned` does not copy a view of a whole string.
+      input.to_owned() + "-"
+    } else {
+      basic_to_string(input)
+    }
   }
   // Reserve the input and a few digits for each code unit; the size hint
   // counts bytes, two per UTF-16 code unit.
@@ -353,7 +359,7 @@ pub fn decode(input : StringView) -> String raise PunycodeError {
     i_val = i_val + 1
   }
 
-  if BuildWithStringBuilder {
+  if JsStrings {
     // The size hint counts bytes, so the builder is filled exactly.
     let result = StringBuilder(size_hint=2 * output_units)
     for i in 0..<output_length {
@@ -365,16 +371,30 @@ pub fn decode(input : StringView) -> String raise PunycodeError {
 }
 
 ///|
-/// Whether `decode` builds its output with a string builder. On JS a builder
-/// appends to a JS string, which is cheaper than making a string from an
-/// array of code units. Elsewhere the builder costs an extra allocation, as
-/// its buffer and the string are allocated separately.
+/// Whether strings are JS strings. These are cheaper to build by appending, as
+/// a string builder does, than from an array of code units. Elsewhere an array
+/// of code units becomes a string without a copy, while a builder or a
+/// concatenation allocates a buffer as well as the string.
 #cfg(target="js")
-const BuildWithStringBuilder : Bool = true
+const JsStrings : Bool = true
 
 ///|
 #cfg(not(target="js"))
-const BuildWithStringBuilder : Bool = false
+const JsStrings : Bool = false
+
+///|
+/// The basic code points of `input` followed by the delimiter, as a string
+/// allocated once.
+fn basic_to_string(input : StringView) -> String {
+  let length = input.length()
+  let units : FixedArray[UInt16] = FixedArray::make(length + 1, 0)
+  for i in 0..<length {
+    // SAFETY: `i` is below the length of both `input` and `units`.
+    units.unsafe_set(i, input.unsafe_get(i))
+  }
+  units.unsafe_set(length, Delimiter.to_int().to_uint16())
+  uint16_array_to_string(units)
+}
 
 ///|
 /// The string of the first `count` code points of `code_points`, which take
