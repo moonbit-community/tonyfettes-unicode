@@ -21,9 +21,6 @@ import (
 
 var sink int
 
-// kept holds the latest string a case built, where it can be read later.
-var kept string
-
 func run(iterations int, f func() int) float64 {
 	start := time.Now()
 	for i := 0; i < iterations; i++ {
@@ -183,14 +180,10 @@ func benchProperties(inputs string) {
 			}
 			return count
 		}
-		// Full default case folding. Caser.String returns the input itself when
-		// folding leaves it unchanged.
 		fold := cases.Fold()
 		measure("std", "case/simple_upper/"+name, units, simpleUpper(), simpleUpper)
-		measure("x/text", "case/fold/"+name, units, utf8.RuneCountInString(fold.String(text)), func() int {
-			kept = fold.String(text)
-			return len(kept)
-		})
+		measure("x/text", "case/fold/"+name, units, utf8.RuneCountInString(fold.String(text)),
+			func() int { return len(fold.String(text)) })
 		measure("std", "prop/general_category_Ll/"+name, units, lowercaseLetters(), lowercaseLetters)
 	}
 }

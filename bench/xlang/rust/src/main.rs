@@ -205,7 +205,6 @@ fn bench_properties(inputs: &str) {
             || simple_upper(black_box(&text)));
         measure("std", &format!("case/full_upper/{name}"), units, full_upper(&text),
             || full_upper(black_box(&text)));
-        // A `Cow`: input that folding leaves unchanged is returned borrowed.
         measure("icu4x-utf8", &format!("case/fold/{name}"), units, chars(&mapper.fold_string(&text)),
             || black_box(mapper.fold_string(black_box(&text))).len());
         let case = format!("prop/general_category_Ll/{name}");
