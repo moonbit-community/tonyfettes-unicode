@@ -9,6 +9,14 @@ pub fn caseless_match(a : StringView, b : StringView) -> Bool {
   let mut i = 0
   let mut j = 0
   while i < a_length && j < b_length {
+    // Equal code units outside surrogate pairs need no decoding.
+    // SAFETY: i < a_length and j < b_length.
+    let unit = a.unsafe_get(i)
+    if unit == b.unsafe_get(j) && !unit.is_leading_surrogate() {
+      i += 1
+      j += 1
+      continue
+    }
     let ca = code_point_at(a, i, a_length)
     let cb = code_point_at(b, j, b_length)
     if ca != cb {
@@ -19,8 +27,8 @@ pub fn caseless_match(a : StringView, b : StringView) -> Bool {
         return false
       }
     }
-    i += if ca >= 0x10000 { 2 } else { 1 }
-    j += if cb >= 0x10000 { 2 } else { 1 }
+    i += utf16_width(ca)
+    j += utf16_width(cb)
   }
   if i == a_length && j == b_length {
     return true

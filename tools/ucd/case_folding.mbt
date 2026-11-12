@@ -114,6 +114,15 @@ fn emit_fold_mappings(
       searched.push(entry)
     }
   }
+  // The folding code maps ASCII without the tables, A-Z to a-z only.
+  for cp in 0..<0x80 {
+    let delta = if cp >= 'A' && cp <= 'Z' { 32 } else { 0 }
+    guard values[cp] != 1 && deltas[values[cp]] == delta else {
+      fail(
+        "\{prefix} folds ASCII \{@emitter.hex_literal(cp)} other than A-Z to a-z",
+      )
+    }
+  }
   let has_ranges = searched.any(e => e.start != e.end)
   let text : Array[Int32] = []
   let offsets = [0]

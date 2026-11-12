@@ -3,12 +3,17 @@
 /// Locale-independent: uses the C and F mappings in CaseFolding.txt, including
 /// expansions such as ß -> ss. Does not normalize or apply Turkic tailoring.
 pub fn case_fold(s : StringView) -> String {
-  fold(s, Full)
+  let index = Full.first_change(s)
+  if index == s.length() {
+    s.to_owned()
+  } else {
+    Full.fold_from(s, index)
+  }
 }
 
 ///|
 /// The folding tables of this package. Both fold ASCII alike, mapping only
-/// A-Z, to a-z.
+/// A-Z, to a-z; the generator checks this.
 priv enum Folding {
   /// Full default case folding, from CaseFolding.txt.
   Full
@@ -70,82 +75,126 @@ fn code_point_at(s : StringView, index : Int32, length : Int32) -> Int32 {
 }
 
 ///|
-/// Whether the code point `cp` folds to something other than itself.
-fn Folding::changes(self : Folding, cp : Int32) -> Bool {
-  if cp < 0x80 {
-    cp >= 'A' && cp <= 'Z'
+/// The number of UTF-16 code units of `cp`.
+fn utf16_width(cp : Int32) -> Int32 {
+  if cp >= 0x10000 {
+    2
   } else {
-    self.kind(cp.unsafe_to_char()) != KindIdentity
+    1
   }
 }
 
 ///|
-/// Fold `s` with `folding`. Runs of code points that fold to themselves are
-/// copied at once, and input that does not change is copied without a builder.
-fn fold(s : StringView, folding : Folding) -> String {
-  let length = s.length()
-  let mut index = 0
-  while index < length {
-    let cp = code_point_at(s, index, length)
-    if folding.changes(cp) {
-      break
-    }
-    index += if cp >= 0x10000 { 2 } else { 1 }
+/// What the ASCII code point `cp` folds to, under either folding.
+fn ascii_fold(cp : Int32) -> Int32 {
+  if cp >= 'A' && cp <= 'Z' {
+    cp + 32
+  } else {
+    cp
   }
-  if index == length {
-    return s.to_owned()
-  }
-  let out = StringBuilder(size_hint=length)
-  // Code units before `copied` are in `out`.
-  let mut copied = 0
-  while index < length {
-    let cp = code_point_at(s, index, length)
-    if cp < 0x80 {
-      if cp >= 'A' && cp <= 'Z' {
-        // SAFETY: copied <= index < length, both on code point boundaries.
-        out.write_view(s.unsafe_view(start=copied, end=index))
-        out.write_char((cp + 32).unsafe_to_char())
-        copied = index + 1
-      }
-      index += 1
-      continue
-    }
-    let width = if cp >= 0x10000 { 2 } else { 1 }
-    let kind = folding.kind(cp.unsafe_to_char())
-    if kind != KindIdentity {
-      // SAFETY: copied <= index < length, both on code point boundaries.
-      out.write_view(s.unsafe_view(start=copied, end=index))
-      if kind == KindSearched {
-        // The tables give every code point of this kind a mapping; a missing
-        // one would mean identity.
-        let c = cp.unsafe_to_char()
-        if folding.lookup(c) is Some(mapping) {
-          out.write_view(mapping)
-        } else {
-          out.write_char(c)
-        }
-      } else {
-        out.write_char((cp + folding.delta(kind)).unsafe_to_char())
-      }
-      copied = index + width
-    }
-    index += width
-  }
-  // SAFETY: copied <= length, on a code point boundary.
-  out.write_view(s.unsafe_view(start=copied, end=length))
-  out.to_string()
 }
 
 ///|
-/// The single code point `cp` folds to under full case folding, or None when
-/// its folding has several code points.
+/// The single code point `cp` folds to, itself included, or None when its
+/// mapping is found with `Folding::lookup`.
+fn Folding::fold_code_point(self : Folding, cp : Int32) -> Int32? {
+  if cp < 0x80 {
+    return Some(ascii_fold(cp))
+  }
+  match self.kind(cp.unsafe_to_char()) {
+    KindIdentity => Some(cp)
+    KindSearched => None
+    kind => Some(cp + self.delta(kind))
+  }
+}
+
+///|
+/// `Full.fold_code_point(cp)`, without the dispatch on the folding.
+/// `caseless_match` calls it for every pair of code points that differ, and
+/// there the dispatch costs about a fifth of the time.
 fn simple_fold(cp : Int32) -> Int32? {
   if cp < 0x80 {
-    return Some(if cp >= 'A' && cp <= 'Z' { cp + 32 } else { cp })
+    return Some(ascii_fold(cp))
   }
   match case_folding_kind(cp.unsafe_to_char()) {
     KindIdentity => Some(cp)
     KindSearched => None
     kind => Some(cp + case_folding_deltas[kind])
   }
+}
+
+///|
+/// The offset of the first code point of `s` that does not fold to itself,
+/// or the length of `s` when there is none.
+fn Folding::first_change(self : Folding, s : StringView) -> Int32 {
+  let length = s.length()
+  let mut index = 0
+  while index < length {
+    // ASCII, most of most text, needs neither decoding nor the tables.
+    // SAFETY: index < length.
+    let unit = s.unsafe_get(index).to_int()
+    if unit < 0x80 {
+      if ascii_fold(unit) != unit {
+        break
+      }
+      index += 1
+      continue
+    }
+    let cp = code_point_at(s, index, length)
+    if !(self.fold_code_point(cp) is Some(target) && target == cp) {
+      break
+    }
+    index += utf16_width(cp)
+  }
+  index
+}
+
+///|
+/// Fold `s`, whose code points before `index` fold to themselves. Runs of
+/// code points that fold to themselves are copied at once.
+fn Folding::fold_from(self : Folding, s : StringView, index : Int32) -> String {
+  let length = s.length()
+  let out = StringBuilder(size_hint=length)
+  // Code units before `copied` are in `out`.
+  let mut copied = 0
+  for index = index; index < length; {
+    // SAFETY: index < length.
+    let unit = s.unsafe_get(index).to_int()
+    if unit < 0x80 {
+      let target = ascii_fold(unit)
+      if target != unit {
+        // SAFETY: copied <= index < length, both on code point boundaries.
+        out.write_view(s.unsafe_view(start=copied, end=index))
+        out.write_char(target.unsafe_to_char())
+        copied = index + 1
+      }
+      continue index + 1
+    }
+    let cp = code_point_at(s, index, length)
+    let width = utf16_width(cp)
+    match self.fold_code_point(cp) {
+      Some(target) if target == cp => ()
+      folded => {
+        // SAFETY: copied <= index < length, both on code point boundaries.
+        out.write_view(s.unsafe_view(start=copied, end=index))
+        if folded is Some(target) {
+          out.write_char(target.unsafe_to_char())
+        } else {
+          let c = cp.unsafe_to_char()
+          // Every code point of kind 1 has a mapping; a missing one would
+          // mean identity.
+          if self.lookup(c) is Some(mapping) {
+            out.write_view(mapping)
+          } else {
+            out.write_char(c)
+          }
+        }
+        copied = index + width
+      }
+    }
+    continue index + width
+  }
+  // SAFETY: copied <= length, on a code point boundary.
+  out.write_view(s.unsafe_view(start=copied, end=length))
+  out.to_string()
 }
