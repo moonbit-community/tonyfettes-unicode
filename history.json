@@ -1177,5 +1177,140 @@
       "moonbit-wasm": 1.0046,
       "moonbit-js": 1.0027
     }
+  },
+  {
+    "about": {
+      "date": "2026-11-12T16:16:24Z",
+      "rounds": 2,
+      "machine": "AMD EPYC 9V74 80-Core Processor, Linux x86_64",
+      "versions": {
+        "moon": "moon 0.1.20261104 (940aa18 2026-11-04)",
+        "Node": "v24.22.2 (ICU 78.3)"
+      },
+      "base": {
+        "commit": "8a07e36dd1f73a277c9b65ad767cac62df0917a5",
+        "subject": "Merge pull request #89 from moonbit-community/claude/xlang-benchmark-compose-display-2b29d1",
+        "title": "feat(bench): combine a range of merges on the dashboard",
+        "date": "2026-11-13T00:07:46+08:00",
+        "dirty": false
+      },
+      "head": {
+        "commit": "520f9517b88671a74036ce3f2b5ca318e6030959",
+        "subject": "Merge pull request #85 from moonbit-community/claude/friendly-carson-0b0bae",
+        "title": "feat(ucd): string-level full uppercase and lowercase",
+        "date": "2026-11-13T00:08:09+08:00",
+        "dirty": false
+      }
+    },
+    "operations": {
+      "norm/nfc": {
+        "moonbit-native": 0.99723,
+        "moonbit-wasm-gc": 1.0001,
+        "moonbit-wasm": 0.99873,
+        "moonbit-js": 0.99973
+      },
+      "norm/nfd": {
+        "moonbit-native": 0.99813,
+        "moonbit-wasm-gc": 0.98988,
+        "moonbit-wasm": 0.99907,
+        "moonbit-js": 0.99229
+      },
+      "norm/nfkc": {
+        "moonbit-native": 1.0012,
+        "moonbit-wasm-gc": 0.99783,
+        "moonbit-wasm": 1.0069,
+        "moonbit-js": 0.99575
+      },
+      "norm/nfkd": {
+        "moonbit-native": 0.99854,
+        "moonbit-wasm-gc": 0.98899,
+        "moonbit-wasm": 1.0012,
+        "moonbit-js": 1.0033
+      },
+      "norm/nfd>nfc": {
+        "moonbit-native": 1.0005,
+        "moonbit-wasm-gc": 1.0047,
+        "moonbit-wasm": 1.0019,
+        "moonbit-js": 0.98862
+      },
+      "norm/is_nfc": {
+        "moonbit-native": 0.99653,
+        "moonbit-wasm-gc": 0.9976,
+        "moonbit-wasm": 0.99918,
+        "moonbit-js": 0.99814
+      },
+      "seg/graphemes": {
+        "moonbit-native": 1.0002,
+        "moonbit-wasm-gc": 1.0001,
+        "moonbit-wasm": 0.99785,
+        "moonbit-js": 0.99904
+      },
+      "bidi/process": {
+        "moonbit-native": 0.99264,
+        "moonbit-wasm-gc": 0.9975,
+        "moonbit-wasm": 1.0024,
+        "moonbit-js": 1.0054
+      },
+      "idna/to_ascii": {
+        "moonbit-native": 0.99901,
+        "moonbit-wasm-gc": 1.0081,
+        "moonbit-wasm": 0.99736,
+        "moonbit-js": 0.98573
+      },
+      "idna/to_unicode": {
+        "moonbit-native": 1.0003,
+        "moonbit-wasm-gc": 1.0082,
+        "moonbit-wasm": 0.9822,
+        "moonbit-js": 1.0015
+      },
+      "puny/encode": {
+        "moonbit-native": 0.99498,
+        "moonbit-wasm-gc": 0.99993,
+        "moonbit-wasm": 1.0067,
+        "moonbit-js": 1.0103
+      },
+      "puny/decode": {
+        "moonbit-native": 0.99357,
+        "moonbit-wasm-gc": 0.99945,
+        "moonbit-wasm": 0.97243,
+        "moonbit-js": 1.0213
+      },
+      "case/simple_upper": {
+        "moonbit-native": 1.0001,
+        "moonbit-wasm-gc": 1.0089,
+        "moonbit-wasm": 0.99926,
+        "moonbit-js": 0.99951
+      },
+      "case/full_upper": {
+        "moonbit-native": 0.99764,
+        "moonbit-wasm-gc": 1.0006,
+        "moonbit-wasm": 0.98876,
+        "moonbit-js": 0.99948
+      },
+      "case/fold": {
+        "moonbit-native": 1.0014,
+        "moonbit-wasm-gc": 0.9918,
+        "moonbit-wasm": 1.0035,
+        "moonbit-js": 0.99677
+      },
+      "case/nfkc_casefold": {
+        "moonbit-native": 1.0036,
+        "moonbit-wasm-gc": 1.0058,
+        "moonbit-wasm": 1.0084,
+        "moonbit-js": 0.95412
+      },
+      "prop/general_category_Ll": {
+        "moonbit-native": 1.0002,
+        "moonbit-wasm-gc": 0.99862,
+        "moonbit-wasm": 1.0005,
+        "moonbit-js": 0.99997
+      }
+    },
+    "spread": {
+      "moonbit-native": 1.0024,
+      "moonbit-wasm-gc": 1.0037,
+      "moonbit-wasm": 1.0024,
+      "moonbit-js": 1.0032
+    }
   }
 ]
