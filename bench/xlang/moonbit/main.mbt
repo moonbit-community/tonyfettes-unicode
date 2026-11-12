@@ -210,16 +210,6 @@ fn bench_properties(inputs : String) -> Unit raise {
       }
       sum
     }
-    let full_upper = () => {
-      let mut length = 0
-      for c in text {
-        // The check counts code points, so the string is kept by hand.
-        let upper = @ucd.to_uppercase(c)
-        kept_string.val = upper
-        length += upper.char_length()
-      }
-      length
-    }
     let lowercase_letters = () => {
       let mut count = 0
       for c in text {
@@ -230,7 +220,12 @@ fn bench_properties(inputs : String) -> Unit raise {
       count
     }
     measure("case/simple_upper/\{name}", units, simple_upper(), simple_upper)
-    measure("case/full_upper/\{name}", units, full_upper(), full_upper)
+    measure(
+      "case/full_upper/\{name}",
+      units,
+      @ucd.uppercase(text).char_length(),
+      () => keep_string(@ucd.uppercase(text)),
+    )
     for
       (label, fold) in [
         ("fold", @casefold.case_fold),

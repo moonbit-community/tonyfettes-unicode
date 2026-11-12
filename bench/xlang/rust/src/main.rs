@@ -188,7 +188,8 @@ fn bench_properties(inputs: &str) {
         let units = chars(&text);
         let simple_upper =
             |s: &str| s.chars().fold(0usize, |sum, c| sum ^ mapper.simple_uppercase(c) as usize);
-        // An iterator per character: unlike MoonBit's `to_uppercase`, no string is allocated.
+        // An iterator per character, counted without building a string; MoonBit's
+        // `uppercase` builds one string for the whole text.
         let full_upper = |s: &str| s.chars().map(|c| c.to_uppercase().count()).sum::<usize>();
         let lowercase_icu4x = |s: &str| {
             s.chars().filter(|&c| categories.get(c) == GeneralCategory::LowercaseLetter).count()

@@ -1,0 +1,6 @@
+import {
+  "moonbit-community/unicode-data" @ucd,
+  "moonbitlang/core/bench",
+  "moonbitlang/core/encoding/utf8",
+  "moonbitlang/x/fs",
+} for "test"
