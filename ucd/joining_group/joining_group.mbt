@@ -46,12 +46,13 @@ let joining_group_trie_top : Bytes = [
 ]
 
 ///|
-/// Joining_Group trie mid level: 16-bit leaf block indices, two per entry
+/// Joining_Group trie mid level: leaf block indices
 let joining_group_trie_mid : ReadOnlyArray[Int32] = [
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 131073, 3, 327684, 458758, 589832, 720906, 851980, 917504,
-  15, 1114128, 1245202, 0, 0, 0, 0, 0, 0, 0, 1376276, 22, 1572887, 25, 0, 0, 0, 0,
-  0, 0, 0, 1769498, 28, 1966109, 31, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2162720,
-  34,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 0, 4, 5, 6, 7, 8,
+  9, 10, 11, 12, 13, 0, 14, 15, 0, 16, 17, 18, 19, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 20, 21, 22, 0, 23, 24, 25, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 26, 27, 28, 0, 29, 30, 31, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 32, 33, 34, 0,
 ]
 
 ///|
@@ -112,6 +113,6 @@ pub fn lookup_joining_group(c : Char) -> Int32 {
     return joining_group_high_ranges[low] & 127
   }
   let mid = (joining_group_trie_top[cp >> 8].to_int() << 4) | ((cp >> 4) & 15)
-  let leaf = (joining_group_trie_mid[mid >> 1] >> ((mid & 1) << 4)) & 0xFFFF
+  let leaf = joining_group_trie_mid[mid]
   joining_group_trie_leaf[(leaf << 4) | (cp & 15)].to_int()
 }

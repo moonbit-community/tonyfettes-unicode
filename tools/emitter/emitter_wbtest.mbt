@@ -97,6 +97,11 @@ test "value trie stores wide values in two bytes and narrow high ranges" {
       "  0,\n".repeat(7) +
       "  19070976,\n",
       "let test_high_ranges : ReadOnlyArray[Int] = [\n  0x200000,\n  0x70000A,\n  0x700010,\n]",
+      // One leaf block index per entry: U+0040 starts leaf block 1.
+      "let test_trie_mid : ReadOnlyArray[Int] = [\n" +
+      "  0,\n".repeat(4) +
+      "  1,\n",
+      "  let leaf = test_trie_mid[mid]\n",
       "(test_trie_leaf[offset >> 1] >> ((offset & 1) << 4)) & 0xFFFF",
     ] {
     guard source.contains(expected) else {

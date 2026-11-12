@@ -23,13 +23,19 @@ const ValueTrieLeafShift : Int32 = 4
 /// both levels. The remaining planes become `<prefix>_high_ranges`, packed as
 /// `start << range_value_bits | value`.
 ///
-/// 16-bit entries are packed two to an `Int`, the even entry in the low half,
-/// so that each takes one load. Reading two bytes instead costs a second
-/// bounds-checked load, which made the General_Category trie 1.4-1.8 times
-/// as slow on wasm and JS. A `ReadOnlyArray[UInt16]` would need no shift,
-/// but moonc builds it on wasm-gc with one `array.set` per element instead
-/// of from a data segment. The pairs are written in decimal, since a pair
-/// whose high half has its top bit set is negative.
+/// The mid level holds one leaf block index per `Int`, so that the step every
+/// lookup takes is a single load. Reading two bytes per index instead costs a
+/// second bounds-checked load, which made the General_Category trie 1.4-1.8
+/// times as slow on wasm and JS; packing two indices per `Int` leaves a shift
+/// and a mask on the path to the leaf load, which made it about 5% slower on
+/// native than two bytes. A `ReadOnlyArray[UInt16]` would be as fast and half
+/// the size, but moonc builds it on wasm-gc with one `array.set` per element
+/// instead of from a data segment.
+///
+/// 16-bit leaf values are packed two to an `Int`, the even value in the low
+/// half, since the leaf level is the largest and its value is the result.
+/// The pairs are written in decimal, since a pair whose high half has its top
+/// bit set is negative.
 ///
 /// `values` holds the value of every code point, each below
 /// `1 << value_bits`, and below `1 << range_value_bits` from U+40000 on;
@@ -98,9 +104,9 @@ pub fn Emitter::write_value_trie(
     mid.ids,
   )
   self.write_int_array(
-    "\{property} trie mid level: 16-bit leaf block indices, two per entry",
+    "\{property} trie mid level: leaf block indices",
     "\{prefix}_trie_mid",
-    pack_16_bit_pairs(mid.blocks),
+    mid.blocks,
     hex=false,
   )
   if wide {
@@ -153,7 +159,7 @@ pub fn Emitter::write_value_trie(
       $|  }
       $|  let mid = (\{prefix}_trie_top[cp >> \{ValueTrieTopShift}].to_int() << \{ValueTrieTopShift - ValueTrieLeafShift}) |
       $|    ((cp >> \{ValueTrieLeafShift}) & \{mid_mask})
-      $|  let leaf = (\{prefix}_trie_mid[mid >> 1] >> ((mid & 1) << 4)) & 0xFFFF
+      $|  let leaf = \{prefix}_trie_mid[mid]
       $|
     ),
   )
