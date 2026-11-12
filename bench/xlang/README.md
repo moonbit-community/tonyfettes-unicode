@@ -96,9 +96,8 @@ time relative to `moonbit-native` on the same cases.
   processing without STD3 rules, with each library's own defaults otherwise.
 - `uniseg` implements an older Unicode version, so its grapheme cluster count
   differs on Devanagari text.
-- `case/full_upper` compares MoonBit's `uppercase`, which builds one string
-  for the whole text, with Rust's `char::to_uppercase` iterator, which is
-  counted without building anything.
+- `case/full_upper` compares MoonBit's `to_uppercase`, which returns a string
+  per character, with Rust's iterator, which allocates nothing.
 - `case/fold` is full default case folding (statuses C and F, no Turkic
   mappings): ICU4C's `u_strFoldCase` on UTF-16, ICU4X's `fold_string`, Go's
   `cases.Fold()` and Python's `str.casefold`. ICU4X and Go return the input
