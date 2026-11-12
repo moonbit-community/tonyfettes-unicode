@@ -676,3 +676,12 @@ test "joining_group: Pe is told apart from the General_Category value" {
   inspect(@ucd.joining_group('\u{0726}') == Pe, content="true")
   inspect(@ucd.general_category(')') == Pe, content="true")
 }
+
+///|
+test "uppercase and lowercase: strings" {
+  inspect(@ucd.uppercase("Straße \u{FB03}"), content="STRASSE FFI")
+  inspect(@ucd.lowercase("İSTANBUL"), content="i\u{0307}stanbul")
+  // Context-free: the final sigma is not applied.
+  inspect(@ucd.lowercase("ΟΔΥΣΣΕΥΣ"), content="οδυσσευσ")
+  inspect(@ucd.uppercase("Hello"[1:]), content="ELLO")
+}

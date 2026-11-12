@@ -28,10 +28,12 @@ pub using @impl {
   joining_group,
   joining_type,
   line_break,
+  lowercase,
   to_lowercase,
   to_simple_lowercase,
   to_simple_titlecase,
   to_simple_uppercase,
   to_titlecase,
   to_uppercase,
+  uppercase,
 }
