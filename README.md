@@ -212,6 +212,7 @@ let hangul = @ucd.hangul_syllable_type('\u{AC00}') // LVSyllable
 let simple = @ucd.to_simple_uppercase('a') // 'A'
 let full = @ucd.to_uppercase('\u{00DF}') // "SS"
 let lower = @ucd.to_lowercase('\u{0130}') // "i" + combining dot above
+let shout = @ucd.uppercase("Straße") // "STRASSE": one string, no per-character allocation
 ```
 
 ## Public Packages
@@ -251,6 +252,8 @@ Root package for Unicode Character Database helpers.
 | `to_uppercase(Char) -> String` | Full uppercase mapping. |
 | `to_lowercase(Char) -> String` | Full lowercase mapping. |
 | `to_titlecase(Char) -> String` | Full titlecase mapping. |
+| `uppercase(StringView) -> String` | Full uppercase mapping of a string, built at once. Context-free: conditional SpecialCasing.txt mappings are not applied. |
+| `lowercase(StringView) -> String` | Full lowercase mapping of a string, built at once. Context-free: Σ always maps to σ, never to final ς, and language-specific mappings are not applied. |
 
 The Joining_Group value `Pe` shares its name with a General_Category value.
 Where the type is not known from the context, write `@ucd.JoiningGroup::Pe` or

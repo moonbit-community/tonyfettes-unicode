@@ -50,6 +50,8 @@ pub fn joining_type(Char) -> JoiningType
 
 pub fn line_break(Char) -> LineBreak
 
+pub fn lowercase(StringView) -> String
+
 pub fn to_lowercase(Char) -> String
 
 pub fn to_simple_lowercase(Char) -> Char
@@ -61,6 +63,8 @@ pub fn to_simple_uppercase(Char) -> Char
 pub fn to_titlecase(Char) -> String
 
 pub fn to_uppercase(Char) -> String
+
+pub fn uppercase(StringView) -> String
 
 // Errors
 

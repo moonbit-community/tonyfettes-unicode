@@ -20,6 +20,10 @@ pub fn lookup_simple_titlecase(Char) -> Char
 
 pub fn lookup_simple_uppercase(Char) -> Char
 
+pub fn lowercase(StringView) -> String
+
+pub fn uppercase(StringView) -> String
+
 // Errors
 
 // Types and methods

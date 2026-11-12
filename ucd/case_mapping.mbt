@@ -42,3 +42,30 @@ pub fn to_lowercase(c : Char) -> String {
 pub fn to_titlecase(c : Char) -> String {
   @case_mapping.full_titlecase(c)
 }
+
+///|
+/// Get the full uppercase mapping of a string, with every character replaced
+/// by its full uppercase mapping. For example, "Straße" maps to "STRASSE".
+/// Unlike calling `to_uppercase` on each character, this builds one string
+/// and allocates nothing per character.
+///
+/// The mapping is context-free: the conditional mappings of
+/// SpecialCasing.txt, which depend on the surrounding text or the language,
+/// are not applied. Unpaired surrogates are copied as they are.
+pub fn uppercase(s : StringView) -> String {
+  @case_mapping.uppercase(s)
+}
+
+///|
+/// Get the full lowercase mapping of a string, with every character replaced
+/// by its full lowercase mapping. For example, "İSTANBUL" maps to
+/// "i\u{0307}stanbul". Unlike calling `to_lowercase` on each character, this
+/// builds one string and allocates nothing per character.
+///
+/// The mapping is context-free: the conditional mappings of
+/// SpecialCasing.txt, which depend on the surrounding text or the language,
+/// are not applied, so Σ always maps to σ and never to the final form ς.
+/// Unpaired surrogates are copied as they are.
+pub fn lowercase(s : StringView) -> String {
+  @case_mapping.lowercase(s)
+}

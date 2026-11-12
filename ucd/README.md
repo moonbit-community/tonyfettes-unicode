@@ -27,7 +27,7 @@ tables and exposes lookup functions; the tables themselves remain private.
 | `general_category` | General Category ordinal and `is_mark` |
 | `punctuation` | General_Category group P (punctuation) |
 | `east_asian_width` | East_Asian_Width ordinal |
-| `case_mapping` | Simple and full uppercase, lowercase, and titlecase mappings |
+| `case_mapping` | Simple and full uppercase, lowercase, and titlecase mappings, of characters and of strings |
 | `xid` | XID_Start and XID_Continue |
 | `alphabetic` | Alphabetic |
 | `lowercase` | Lowercase |

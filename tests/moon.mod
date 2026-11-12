@@ -10,6 +10,7 @@ description = "Workspace-only Unicode conformance tests"
 
 import {
   "moonbit-community/unicode@0.7.1",
+  "moonbit-community/unicode-data@0.7.1",
   "moonbit-community/unicode-normalization@0.7.1",
   "moonbit-community/unicode-bidi@0.7.1",
   "moonbit-community/unicode-segmentation@0.7.1",
