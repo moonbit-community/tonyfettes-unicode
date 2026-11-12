@@ -118,7 +118,15 @@ workflow (`.github/workflows/bench.yml`) runs `--base HEAD^` on every push to
 main, appends the result to `history.json` on the `bench-data` branch, keeps
 the full comparison in `runs/<commit>.json` there, and publishes `site/` with
 the history to GitHub Pages. GitHub's runners are shared machines, so only
-these same-runner comparisons are recorded from CI, never absolute times.
+these same-runner comparisons are recorded from CI, never absolute times. A
+comparison runs two rounds.
+
+Pushes that only change documentation (`*.md`, `docs/`), tests (`*_test.mbt`,
+`*_wbtest.mbt`, `tests/`), `tools/` or other workflows start no run, since they
+cannot change the library's speed, and leave no entry in the history. Pushes
+that only change `site/` republish the page without comparing. Running the
+workflow by hand republishes the page, and compares too when its `compare`
+input is set.
 
 The cross-language part of the page reads `site/snapshot.json`, which is
 updated by hand from a full run on a quiet machine:
