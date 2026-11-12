@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MoonBit Unicode performance</title>
+<meta name="description" content="How fast the MoonBit Unicode library is on every merge to main, and against ICU4X, ICU4C and JavaScript's built-ins.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@500;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">moonbit-community/unicode · performance</div>
+    <h1>MoonBit Unicode performance</h1>
+    <p class="lead prose">How fast the MoonBit Unicode library normalizes, segments, resolves bidi, converts domain names and maps case: on every merge to main, and against ICU4X, ICU4C and, on the JS backend, JavaScript's own built-ins. Lower times are better.</p>
+  </header>
+
+  <section id="history">
+    <div class="prose" style="display:flex;flex-direction:column;gap:8px">
+      <div class="eyebrow">Every merge to main</div>
+      <h2>Changes on main</h2>
+      <p class="muted">For every merge, CI builds the MoonBit harness at the merge and at its first parent, runs the two in turns on the same GitHub runner and keeps the fastest round of each case. Each cell is the change in time, the geometric mean over the operation's inputs: green is faster, red is slower. Runners are shared machines, so changes within the run's noise, shown in grey, mean nothing.</p>
+    </div>
+    <div class="controls">
+      <div class="ctl"><span class="eyebrow">Backend</span><div class="chips" id="backend-chips" role="group" aria-label="Backend"></div></div>
+    </div>
+    <div id="history-body"></div>
+  </section>
+
+  <section id="snapshot">
+    <div class="prose" style="display:flex;flex-direction:column;gap:12px">
+      <div class="eyebrow">Cross-language snapshot</div>
+      <h2>Against other libraries</h2>
+      <p class="muted">A full run of every harness on one quiet machine, published by hand. Times are nanoseconds per code point, per call for IDNA and Punycode.</p>
+      <div class="meta" id="snapshot-meta"></div>
+    </div>
+    <div class="findings" id="findings"></div>
+  </section>
+
+  <section id="icu4x">
+    <div class="prose" style="display:flex;flex-direction:column;gap:8px">
+      <div class="eyebrow">Native and Wasm</div>
+      <h2>Against ICU4X and ICU4C</h2>
+      <p class="muted">Geometric mean over each operation's inputs. MoonBit, ICU4C and ICU4X's UTF-16 API all work on UTF-16, and only libraries that take UTF-16 are shown, so every bar reads the same bytes. ICU4C is used through <code>UnicodeString</code>, ICU4X through its <code>_utf16</code> APIs. The verdict under each chart compares MoonBit native with the fastest of the others. MoonBit runs on two WebAssembly backends: wasm-gc, whose objects V8's garbage collector manages, and wasm, which keeps everything in linear memory with reference counting.</p>
+    </div>
+    <div class="legend" id="legend-icu"></div>
+    <div class="grid" id="grid-icu"></div>
+  </section>
+
+  <section id="js">
+    <div class="prose" style="display:flex;flex-direction:column;gap:10px">
+      <div class="eyebrow">JavaScript backend</div>
+      <h2>MoonBit compiled to JS vs the built-ins</h2>
+      <p class="answer">JavaScript does have built-ins for some of this. <code>String.prototype.normalize</code> and <code>Intl.Segmenter</code> are implemented in C++ inside V8, on top of ICU4C. Node also ships <code>url.domainToASCII</code> (the ada URL parser) and the deprecated <code>punycode</code> module, which is plain JS. There is no built-in for bidi resolution or an NFC check, so those have no JS counterpart here.</p>
+      <p class="muted">So this pits MoonBit compiled to JavaScript against native ICU code reached through V8. Every Node case pays the cost of crossing from JavaScript into the runtime, and <code>domainToASCII</code> converts the string to UTF-8 inside it. <code>domainToUnicode</code> first runs the whole ToASCII conversion and then decodes the result back, so it always costs more than ToASCII.</p>
+    </div>
+    <div class="legend" id="legend-js"></div>
+    <div class="grid" id="grid-js"></div>
+  </section>
+
+  <section id="cases">
+    <div class="prose" style="display:flex;flex-direction:column;gap:8px">
+      <div class="eyebrow" id="case-count">Every case</div>
+      <h2>Every input, every implementation</h2>
+      <p class="muted">Each cell is the fastest round of the snapshot. The second line is the time relative to the baseline you pick: green is faster, red is slower.</p>
+    </div>
+    <div class="controls">
+      <div class="ctl"><span class="eyebrow">Operation</span><div class="chips" id="op-chips" role="group" aria-label="Operation"></div></div>
+      <div class="ctl"><label class="eyebrow" for="baseline">Relative to</label><select id="baseline"></select></div>
+    </div>
+    <div class="table-scroll"><table id="case-table"></table></div>
+  </section>
+
+  <section id="method">
+    <div class="eyebrow">Method and caveats</div>
+    <div class="notes">
+      <p><b>Protocol.</b> Every harness reads the same input files, doubles the iteration count until one sample takes at least 10 ms, and keeps the fastest of 12 samples. Each cell is the fastest of several rounds, which run one harness at a time. File I/O and input preparation are outside the timed calls. Every result is kept where it can be read later, so that no optimizer can drop the work that builds it.</p>
+      <p><b>Changes on main.</b> Both commits run the harness of the merge, so a change to the harness does not show up as a change to the library. They take turns going first in each round. The noise of a run is the median over its cases of slowest round / fastest round; a change no larger than that is greyed out.</p>
+      <p><b>Inputs.</b> Normalization uses the 14 ICU normperf corpora, as they are and converted to NFD. <code>NFD → NFC</code> composes the decomposed copy, forcing real work. Most corpora are already NFC, so MoonBit, ICU4X and Node can return the input unchanged on NFC, NFKC and the NFC check.</p>
+      <p><b>Encodings.</b> Every implementation shown in the snapshot takes UTF-16: MoonBit's <code>String</code>, ICU4C's <code>UnicodeString</code>, ICU4X's <code>_utf16</code> APIs, <code>unicode-bidi</code>'s UTF-16 module and JavaScript strings. The harness also measures Rust libraries that read UTF-8. They are left out here: UTF-8 makes ASCII cheaper and CJK dearer, so those numbers mix the encoding with the algorithm.</p>
+      <p><b>Builds.</b> MoonBit native is compiled through C with clang. Wasm-gc and wasm run in V8 under <code>moonrun</code>. The JS backend runs under Node. The Rust harness is a release build (fat LTO, one codegen unit) with ICU4X's compiled data.</p>
+      <p><b>Case and categories.</b> The harness feeds ICU4X and Rust's <code>std</code> these per-character lookups from UTF-8 strings, so the snapshot compares them with ICU4C only. Full uppercase mapping has no UTF-16 peer and is not shown there.</p>
+      <p><b>Wasm and wasm-gc.</b> The wasm backend shares the native backend's SIMD path, so it beats wasm-gc on NFC, NFKC and the NFC check, where the clean-text scan dominates. Elsewhere it is usually slower: it reference-counts and allocates with MoonBit's own allocator inside linear memory, while wasm-gc allocates from V8's collector. Results also depend on what ran earlier in the same process, as V8's heap grows, so both the snapshot and the changes on main come from runs of the full suite.</p>
+    </div>
+  </section>
+
+  <footer>Source: <code>bench/xlang</code>. Run <code>moon run --target native bench/xlang</code> for the snapshot, <code>moon run --target native bench/xlang -- --base HEAD^</code> for the changes of one commit. See <code>bench/xlang/README.md</code>.</footer>
+</div>
+<script src="dashboard.js"></script>
+</body>
+</html>
