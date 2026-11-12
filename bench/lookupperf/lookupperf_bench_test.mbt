@@ -42,5 +42,30 @@ test "table lookups" (b : @bench.T) {
       }
       b.keep(sum)
     })
+    b.bench(name="general_category_ordinal/\{name}", fn() {
+      let mut sum = 0
+      for c in chars {
+        sum += @general_category.lookup_general_category(c)
+      }
+      b.keep(sum)
+    })
+    b.bench(name="general_category_is_Ll/\{name}", fn() {
+      let mut found = 0
+      for c in chars {
+        if @ucd.general_category(c) is Ll {
+          found += 1
+        }
+      }
+      b.keep(found)
+    })
+    b.bench(name="general_category_group_is_P/\{name}", fn() {
+      let mut found = 0
+      for c in chars {
+        if @ucd.general_category(c).group() is P {
+          found += 1
+        }
+      }
+      b.keep(found)
+    })
   }
 }
