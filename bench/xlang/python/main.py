@@ -1,6 +1,6 @@
 """Python peer of bench/xlang/moonbit: normalization with the standard
-library's unicodedata, on the same inputs, timed with the same protocol and
-printed in the same row format."""
+library's unicodedata and full case folding with str.casefold, on the same
+inputs, timed with the same protocol and printed in the same row format."""
 
 import os
 import sys
@@ -51,8 +51,16 @@ def bench_normalization(inputs):
                 lambda: unicodedata.is_normalized("NFC", original))
 
 
+def bench_case(inputs):
+    for name in names(f"{inputs}/case"):
+        text = read(f"{inputs}/case/{name}.txt")
+        measure(f"case/fold/{name}", len(text), len(text.casefold()), text.casefold)
+
+
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         sys.exit("usage: main.py <inputs> [group]")
-    if len(sys.argv) < 3 or sys.argv[2] == "norm":
-        bench_normalization(sys.argv[1])
+    group = sys.argv[2] if len(sys.argv) > 2 else None
+    for selected, bench in [("norm", bench_normalization), ("case", bench_case)]:
+        if group in (None, selected):
+            bench(sys.argv[1])

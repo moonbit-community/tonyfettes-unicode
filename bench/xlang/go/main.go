@@ -14,6 +14,7 @@ import (
 
 	"github.com/rivo/uniseg"
 	"golang.org/x/net/idna"
+	"golang.org/x/text/cases"
 	"golang.org/x/text/unicode/bidi"
 	"golang.org/x/text/unicode/norm"
 )
@@ -179,7 +180,10 @@ func benchProperties(inputs string) {
 			}
 			return count
 		}
+		fold := cases.Fold()
 		measure("std", "case/simple_upper/"+name, units, simpleUpper(), simpleUpper)
+		measure("x/text", "case/fold/"+name, units, utf8.RuneCountInString(fold.String(text)),
+			func() int { return len(fold.String(text)) })
 		measure("std", "prop/general_category_Ll/"+name, units, lowercaseLetters(), lowercaseLetters)
 	}
 }

@@ -231,6 +231,15 @@ fn bench_properties(inputs : String) -> Unit raise {
     }
     measure("case/simple_upper/\{name}", units, simple_upper(), simple_upper)
     measure("case/full_upper/\{name}", units, full_upper(), full_upper)
+    for
+      (label, fold) in [
+        ("fold", @casefold.case_fold),
+        ("nfkc_casefold", @casefold.nfkc_casefold),
+      ] {
+      measure("case/\{label}/\{name}", units, fold(text).char_length(), () => {
+        keep_string(fold(text))
+      })
+    }
     measure(
       "prop/general_category_Ll/\{name}",
       units,

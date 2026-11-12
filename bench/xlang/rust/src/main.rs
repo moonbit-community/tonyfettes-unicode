@@ -205,6 +205,8 @@ fn bench_properties(inputs: &str) {
             || simple_upper(black_box(&text)));
         measure("std", &format!("case/full_upper/{name}"), units, full_upper(&text),
             || full_upper(black_box(&text)));
+        measure("icu4x-utf8", &format!("case/fold/{name}"), units, chars(&mapper.fold_string(&text)),
+            || black_box(mapper.fold_string(black_box(&text))).len());
         let case = format!("prop/general_category_Ll/{name}");
         measure("icu4x-utf8", &case, units, lowercase_icu4x(&text),
             || lowercase_icu4x(black_box(&text)));

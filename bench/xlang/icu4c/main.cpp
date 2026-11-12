@@ -94,6 +94,14 @@ static void check_status(UErrorCode status, const char *what) {
   }
 }
 
+// A fresh destination per call, like the allocating APIs of the other harnesses.
+static UnicodeString normalized(const Normalizer2 *form, const UnicodeString &source) {
+  UnicodeString destination;
+  UErrorCode status = U_ZERO_ERROR;
+  form->normalize(source, destination, status);
+  return destination;
+}
+
 static void bench_normalization(const std::string &inputs) {
   UErrorCode status = U_ZERO_ERROR;
   const std::pair<const char *, const Normalizer2 *> forms[] = {
@@ -103,13 +111,6 @@ static void bench_normalization(const std::string &inputs) {
       {"nfkd", Normalizer2::getNFKDInstance(status)}};
   check_status(status, "Normalizer2");
   const Normalizer2 *nfc = forms[0].second;
-  // A fresh destination per call, like the allocating APIs of the other harnesses.
-  auto normalized = [](const Normalizer2 *form, const UnicodeString &source) {
-    UnicodeString destination;
-    UErrorCode status = U_ZERO_ERROR;
-    form->normalize(source, destination, status);
-    return destination;
-  };
   for (const std::string &name : names(inputs + "/norm")) {
     UnicodeString original = read(inputs + "/norm/" + name + ".txt");
     UnicodeString decomposed = read(inputs + "/normd/" + name + ".txt");
@@ -209,6 +210,21 @@ static void bench_idna(const std::string &inputs) {
 }
 
 static void bench_properties(const std::string &inputs) {
+  UErrorCode status = U_ZERO_ERROR;
+  const Normalizer2 *nfkc_casefold = Normalizer2::getNFKCCasefoldInstance(status);
+  check_status(status, "Normalizer2");
+  // Full default case folding into a fresh destination per call. Folding
+  // expands a UTF-16 code unit to at most three. UnicodeString::foldCase
+  // copies the source first and takes twice as long.
+  auto fold = [](const UnicodeString &source) {
+    UnicodeString destination;
+    int32_t capacity = source.length() * 3;
+    UErrorCode status = U_ZERO_ERROR;
+    int32_t length = u_strFoldCase(destination.getBuffer(capacity), capacity, source.getBuffer(),
+                                   source.length(), U_FOLD_CASE_DEFAULT, &status);
+    destination.releaseBuffer(U_SUCCESS(status) ? length : 0);
+    return destination;
+  };
   // These are calls into the ICU shared library: nothing is inlined into the loop.
   for (const std::string &name : names(inputs + "/case")) {
     UnicodeString text = read(inputs + "/case/" + name + ".txt");
@@ -232,6 +248,10 @@ static void bench_properties(const std::string &inputs) {
       return count;
     };
     measure("case/simple_upper/" + name, units, simple_upper(), simple_upper);
+    measure("case/fold/" + name, units, fold(text).countChar32(),
+            [&]() { return (long)fold(text).length(); });
+    measure("case/nfkc_casefold/" + name, units, normalized(nfkc_casefold, text).countChar32(),
+            [&]() { return (long)normalized(nfkc_casefold, text).length(); });
     measure("prop/general_category_Ll/" + name, units, lowercase_letters(), lowercase_letters);
   }
 }
