@@ -311,8 +311,11 @@ fn compose_remaining(
     offset = run_end
   }
   composer.flush()
-  // Copied here for the reason given in `decompose_remaining`.
+  // Copied here for the reasons given in `decompose_remaining`.
   let out = composer.out
+  if ArrayOfNumbers {
+    return code_units_prefix_to_string(out.data, out.len)
+  }
   let result = FixedArray::make(out.len, (0).to_uint16())
   result.unsafe_blit(0, out.data, 0, out.len)
   uint16_array_to_string(result)

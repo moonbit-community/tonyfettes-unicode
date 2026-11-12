@@ -10,6 +10,48 @@ const PackedCccShift : Int32 = 21
 fn uint16_array_to_string(buffer : FixedArray[UInt16]) -> String = "%string.unsafe_from_uint16_fixedarray"
 
 ///|
+/// Whether a `FixedArray` is an array of numbers, as on JS, so that the
+/// prefix of the output buffer converts to a string without a copy.
+#cfg(target="js")
+const ArrayOfNumbers : Bool = true
+
+///|
+#cfg(not(target="js"))
+const ArrayOfNumbers : Bool = false
+
+///|
+/// The first `len` code units of `data` as a string, on JS. `len` is at most
+/// `data.length()`.
+///
+/// The exact-length copy that the other backends need costs about 3 ns per
+/// code unit on JS, since `FixedArray::unsafe_blit` copies element by element
+/// there; that was over a quarter of NFD's time on Cyrillic text.
+#cfg(target="js")
+extern "js" fn code_units_prefix_to_string(
+  data : FixedArray[UInt16],
+  len : Int32,
+) -> String =
+  #|(data, len) => {
+  #|  let result = "";
+  #|  for (let i = 0; i < len; i += 8192) {
+  #|    result += String.fromCharCode.apply(null, data.slice(i, Math.min(i + 8192, len)));
+  #|  }
+  #|  return result;
+  #|}
+
+///|
+/// Never called off JS, where `ArrayOfNumbers` is false.
+#cfg(not(target="js"))
+fn code_units_prefix_to_string(
+  data : FixedArray[UInt16],
+  len : Int32,
+) -> String {
+  ignore(data)
+  ignore(len)
+  ""
+}
+
+///|
 /// UTF-16 output, owned until it becomes a string.
 ///
 /// NFD and NFKD write their output here as it is produced, after the first
@@ -256,9 +298,12 @@ fn decompose_remaining(
   if out.previous_ccc != 0 {
     out.end_marks()
   }
-  // The result is copied here rather than in a `CodeUnits` method: on
-  // wasm-gc, where moonc keeps such a method a call, NFD measured 5-20%
-  // slower with it, though the loop compiled to the same instructions.
+  if ArrayOfNumbers {
+    return code_units_prefix_to_string(out.data, out.len)
+  }
+  // The result is copied here rather than in a function: on wasm-gc, where
+  // moonc keeps such a function a call, NFD measured 10-20% slower with it,
+  // though the loop compiled to the same instructions.
   let result = FixedArray::make(out.len, (0).to_uint16())
   result.unsafe_blit(0, out.data, 0, out.len)
   uint16_array_to_string(result)

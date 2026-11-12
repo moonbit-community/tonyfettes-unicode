@@ -284,7 +284,6 @@ const MaxUnitStretch : Int32 = 4096
 /// The first code unit that is not a clean starter in the forms `scan_mask`
 /// selects: U+00A0 has a compatibility mapping, U+00C0 a canonical one, and
 /// U+0300 is the first combining mark.
-#cfg(any(target="native", target="wasm"))
 fn clean_unit_limit(scan_mask : Int32) -> Int32 {
   if (scan_mask & 0b1011000) != 0 {
     0xA0
@@ -296,17 +295,19 @@ fn clean_unit_limit(scan_mask : Int32) -> Int32 {
 }
 
 ///|
-/// Skip blocks of four code units that are all ASCII, and return the offset
-/// of the first block that is not, or that is incomplete. ASCII is below the
-/// clean limit of every form. Without SIMD, comparing the units' union is
-/// one test per block.
-#cfg(not(any(target="native", target="wasm")))
+/// Skip blocks of four code units that are all below the clean limit, and
+/// return the offset of the first block that is not, or that is incomplete.
+/// Without SIMD, comparing the units' union is one test per block, against
+/// the largest power of two at or below the limit: U+0200 for NFC, which
+/// covers Latin Extended-A, and ASCII for the other forms.
+#cfg(target="wasm-gc")
 fn skip_clean_blocks(
   s : String,
   start : Int32,
   end : Int32,
-  _scan_mask : Int32,
+  scan_mask : Int32,
 ) -> Int32 {
+  let limit = if clean_unit_limit(scan_mask) == 0x300 { 0x200 } else { 0x80 }
   let mut offset = start
   while end - offset >= 4 {
     // SAFETY: four units remain before `end`.
@@ -314,13 +315,84 @@ fn skip_clean_blocks(
       s.unsafe_get(offset + 1) |
       s.unsafe_get(offset + 2) |
       s.unsafe_get(offset + 3)
-    if units >= 0x80 {
+    if units.to_int() >= limit {
       break
     }
     offset += 4
   }
   offset
 }
+
+///|
+/// The loop of the wasm-gc `skip_clean_blocks`, for a JS view that ends
+/// before its string.
+#cfg(target="js")
+fn skip_low_unit_blocks(
+  s : String,
+  start : Int32,
+  end : Int32,
+  scan_mask : Int32,
+) -> Int32 {
+  let limit = if clean_unit_limit(scan_mask) == 0x300 { 0x200 } else { 0x80 }
+  let mut offset = start
+  while end - offset >= 4 {
+    // SAFETY: four units remain before `end`.
+    let units = s.unsafe_get(offset) |
+      s.unsafe_get(offset + 1) |
+      s.unsafe_get(offset + 2) |
+      s.unsafe_get(offset + 3)
+    if units.to_int() >= limit {
+      break
+    }
+    offset += 4
+  }
+  offset
+}
+
+///|
+/// Skip code units that are all below the clean limit, and return the offset
+/// of the first that is not. A sticky regular expression scans the string in
+/// V8's compiled matcher, about three times as fast on ASCII as reading the
+/// units one at a time; it stops only at a unit it rejects or at the string's
+/// end, so a view that ends early is scanned with the loop instead.
+#cfg(target="js")
+fn skip_clean_blocks(
+  s : String,
+  start : Int32,
+  end : Int32,
+  scan_mask : Int32,
+) -> Int32 {
+  let limit = clean_unit_limit(scan_mask)
+  // SAFETY: start < end is checked first. A run often ends at its first
+  // unit, as in Cyrillic text, and the call into the matcher costs more
+  // than that test.
+  if start >= end || s.unsafe_get(start).to_int() >= limit {
+    start
+  } else if end == s.length() {
+    skip_units_below(s, start, limit)
+  } else {
+    skip_low_unit_blocks(s, start, end, scan_mask)
+  }
+}
+
+///|
+/// The offset of the first code unit of `s` from `start` that is not below
+/// `limit`, one of the results of `clean_unit_limit`, or `s.length()`.
+#cfg(target="js")
+extern "js" fn skip_units_below(
+  s : String,
+  start : Int32,
+  limit : Int32,
+) -> Int32 =
+  #|(() => {
+  #|  const below = { 0xa0: /[\0-\x9f]*/y, 0xc0: /[\0-\xbf]*/y, 0x300: /[\0-\u02ff]*/y };
+  #|  return (s, start, limit) => {
+  #|    const re = below[limit];
+  #|    re.lastIndex = start;
+  #|    re.test(s);
+  #|    return re.lastIndex;
+  #|  };
+  #|})()
 
 ///|
 /// Skip blocks of eight code units that are all below the clean limit, and
