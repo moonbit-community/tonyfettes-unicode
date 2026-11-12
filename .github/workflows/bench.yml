@@ -22,11 +22,15 @@ permissions:
   pages: write
   id-token: write
 
-# One run at a time, in order, so that every comparison has the runner to
-# itself and the history is appended to in order.
+# One run at a time, so that runs do not append to the history at once. By
+# default a group keeps a single pending run and cancels it when another
+# arrives, which would skip the comparison of a push; `queue: max` keeps up
+# to 100 waiting. They may start out of order, so the page sorts the history
+# by commit date.
 concurrency:
   group: benchmark
   cancel-in-progress: false
+  queue: max
 
 env:
   DATA_BRANCH: bench-data

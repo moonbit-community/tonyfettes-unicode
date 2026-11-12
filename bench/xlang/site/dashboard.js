@@ -1,7 +1,7 @@
 // The performance dashboard. It reads two files next to the page:
 // - snapshot.json: a full run of every harness, `results.json` of `bench/xlang`;
-// - history.json: one entry per merge to main, `compare.json` of
-//   `bench/xlang --base` without its per-case costs, oldest first.
+// - history.json: one entry per push to main, `compare.json` of
+//   `bench/xlang --base` without its per-case costs, in the order recorded.
 // Either may be missing; its sections then say so.
 'use strict';
 
@@ -132,7 +132,9 @@ function commitCell(commit) {
 
 function renderHistory(history) {
   const body = document.getElementById("history-body");
-  const runs = (history || []).slice().reverse();
+  // Newest first. Runs may finish out of order, so sort by commit date.
+  const runs = (history || []).slice().reverse().sort((a, b) =>
+    Date.parse(b.about?.head?.date || 0) - Date.parse(a.about?.head?.date || 0));
   if (!runs.length) {
     document.getElementById("backend-chips").closest(".controls").hidden = true;
     body.appendChild(el("p", { className: "empty" },
