@@ -283,7 +283,9 @@ const MaxUnitStretch : Int32 = 4096
 ///|
 /// The first code unit that is not a clean starter in the forms `scan_mask`
 /// selects: U+00A0 has a compatibility mapping, U+00C0 a canonical one, and
-/// U+0300 is the first combining mark.
+/// U+0300 is the first combining mark. The wasm-gc skip tests the
+/// `scan_mask` bits inline instead.
+#cfg(not(target="wasm-gc"))
 fn clean_unit_limit(scan_mask : Int32) -> Int32 {
   if (scan_mask & 0b1011000) != 0 {
     0xA0
