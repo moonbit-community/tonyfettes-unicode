@@ -121,5 +121,128 @@
       "moonbit-wasm": 1.0068,
       "moonbit-js": 1.0088
     }
+  },
+  {
+    "about": {
+      "date": "2026-11-12T12:32:59Z",
+      "rounds": 3,
+      "machine": "AMD EPYC 9V74 80-Core Processor, Linux x86_64",
+      "versions": {
+        "moon": "moon 0.1.20261104 (940aa18 2026-11-04)",
+        "Node": "v24.22.2 (ICU 78.3)"
+      },
+      "base": {
+        "commit": "dde60d92b79eb894feee8fbaeb0756638579ecd3",
+        "subject": "Merge pull request #81 from moonbit-community/claude/bench-dashboard",
+        "title": "feat(bench): performance dashboard on GitHub Pages",
+        "date": "2026-11-12T20:04:14+08:00",
+        "dirty": false
+      },
+      "head": {
+        "commit": "0f5630782fe65128c3b8b9ed97c0c5295e38ae83",
+        "subject": "Merge pull request #80 from moonbit-community/claude/punycode-encode-single-alloc",
+        "title": "perf(punycode): build all-basic encodings with a single allocation",
+        "date": "2026-11-12T20:04:30+08:00",
+        "dirty": false
+      }
+    },
+    "operations": {
+      "norm/nfc": {
+        "moonbit-native": 0.99373,
+        "moonbit-wasm-gc": 1.0009,
+        "moonbit-wasm": 0.998,
+        "moonbit-js": 0.99847
+      },
+      "norm/nfd": {
+        "moonbit-native": 0.98984,
+        "moonbit-wasm-gc": 0.99813,
+        "moonbit-wasm": 0.99875,
+        "moonbit-js": 1.0016
+      },
+      "norm/nfkc": {
+        "moonbit-native": 0.99463,
+        "moonbit-wasm-gc": 1.0002,
+        "moonbit-wasm": 0.99955,
+        "moonbit-js": 0.99982
+      },
+      "norm/nfkd": {
+        "moonbit-native": 0.99129,
+        "moonbit-wasm-gc": 0.99632,
+        "moonbit-wasm": 1.0007,
+        "moonbit-js": 0.99937
+      },
+      "norm/nfd>nfc": {
+        "moonbit-native": 0.99885,
+        "moonbit-wasm-gc": 0.9993,
+        "moonbit-wasm": 1.0001,
+        "moonbit-js": 0.99982
+      },
+      "norm/is_nfc": {
+        "moonbit-native": 0.99223,
+        "moonbit-wasm-gc": 0.99974,
+        "moonbit-wasm": 0.99895,
+        "moonbit-js": 0.99882
+      },
+      "seg/graphemes": {
+        "moonbit-native": 0.99991,
+        "moonbit-wasm-gc": 1.0009,
+        "moonbit-wasm": 0.994,
+        "moonbit-js": 0.99983
+      },
+      "bidi/process": {
+        "moonbit-native": 1.0006,
+        "moonbit-wasm-gc": 0.98674,
+        "moonbit-wasm": 0.99594,
+        "moonbit-js": 0.97987
+      },
+      "idna/to_ascii": {
+        "moonbit-native": 1.0178,
+        "moonbit-wasm-gc": 1.0143,
+        "moonbit-wasm": 1.0157,
+        "moonbit-js": 0.99587
+      },
+      "idna/to_unicode": {
+        "moonbit-native": 1.0065,
+        "moonbit-wasm-gc": 1.0135,
+        "moonbit-wasm": 1.0232,
+        "moonbit-js": 0.99281
+      },
+      "puny/encode": {
+        "moonbit-native": 0.97742,
+        "moonbit-wasm-gc": 0.98291,
+        "moonbit-wasm": 0.99806,
+        "moonbit-js": 1.0244
+      },
+      "puny/decode": {
+        "moonbit-native": 1.0022,
+        "moonbit-wasm-gc": 1.0003,
+        "moonbit-wasm": 1.0397,
+        "moonbit-js": 1.0019
+      },
+      "case/simple_upper": {
+        "moonbit-native": 0.99855,
+        "moonbit-wasm-gc": 0.98738,
+        "moonbit-wasm": 0.99956,
+        "moonbit-js": 0.99987
+      },
+      "case/full_upper": {
+        "moonbit-native": 1.0026,
+        "moonbit-wasm-gc": 0.99709,
+        "moonbit-wasm": 1.0427,
+        "moonbit-js": 1.0007
+      },
+      "prop/general_category_Ll": {
+        "moonbit-native": 0.99992,
+        "moonbit-wasm-gc": 0.97861,
+        "moonbit-wasm": 0.9887,
+        "moonbit-js": 0.99893
+      }
+    },
+    "spread": {
+      "moonbit-native": 1.0035,
+      "moonbit-wasm-gc": 1.0063,
+      "moonbit-wasm": 1.0087,
+      "moonbit-js": 1.0043
+    }
   }
 ]
