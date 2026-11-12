@@ -11,19 +11,18 @@ pub(all) struct EnumValue {
 /// implementation printing the constructor names, and the function
 /// `converter` turning a table ordinal into the enum.
 ///
-/// The ordinal of a value is its index in `values`. Ordinals outside the
-/// table convert to `fallback`, which must be one of the constructors.
+/// The ordinal of a value is its index in `values`, which is how moonc
+/// represents a constructor without arguments on every backend, so the
+/// converter is `%identity`. Its callers must pass only ordinals below
+/// `values.length()`: no other value is a constructor.
 pub fn Emitter::write_enum(
   self : Emitter,
   type_name~ : String,
   doc~ : Array[String],
   converter~ : String,
   values~ : Array[EnumValue],
-  fallback~ : String,
 ) -> Unit raise {
-  guard values.search_by(value => value.name == fallback) is Some(fallback_at) else {
-    fail("\{type_name} has no constructor \{fallback}")
-  }
+  guard !values.is_empty() else { fail("\{type_name} has no constructors") }
   self.write("///|\n")
   for line in doc {
     self.write_line("/// \{line}")
@@ -65,22 +64,12 @@ pub fn Emitter::write_enum(
       $|}
       $|
       $|///|
-      $|/// Convert \{type_name} ordinal to enum value
-      $|fn \{converter}(ordinal : Int) -> \{type_name} {
-      $|  match ordinal {
-      $|
-    ),
-  )
-  for ordinal, value in values {
-    if ordinal != fallback_at {
-      self.write_line("    \{ordinal} => \{value.name}")
-    }
-  }
-  self.write(
-    (
-      $|    _ => \{fallback} // \{fallback_at} or any unknown
-      $|  }
-      $|}
+      $|/// Convert a \{type_name} ordinal, below \{values.length()}, to the enum value.
+      $|///
+      $|/// A constructor without arguments is its ordinal on every backend. A
+      $|/// `match` or a table would cost a jump table or a load on wasm, wasm-gc
+      $|/// and JS, slower there than the trie lookup itself.
+      $|fn \{converter}(ordinal : Int) -> \{type_name} = "%identity"
       $|
       $|
     ),

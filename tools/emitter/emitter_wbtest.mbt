@@ -91,9 +91,18 @@ test "value trie stores wide values in two bytes and narrow high ranges" {
   let source = out.finish()
   for
     expected in [
-      // `A` is the second value of its block: 0x123 as bytes 1 and 35.
-      "  0,\n  0,\n  1,\n  35,\n", "let test_high_ranges : ReadOnlyArray[Int] = [\n  0x200000,\n  0x70000A,\n  0x700010,\n]",
-      "(test_trie_leaf[offset].to_int() << 8) | test_trie_leaf[offset + 1].to_int()",
+      // `A` is the second value of its block, the high half of the first
+      // pair: 0x123 << 16.
+      "let test_trie_leaf : ReadOnlyArray[Int] = [\n  0,\n".repeat(1) +
+      "  0,\n".repeat(7) +
+      "  19070976,\n",
+      "let test_high_ranges : ReadOnlyArray[Int] = [\n  0x200000,\n  0x70000A,\n  0x700010,\n]",
+      // One leaf block index per entry: U+0040 starts leaf block 1.
+      "let test_trie_mid : ReadOnlyArray[Int] = [\n" +
+      "  0,\n".repeat(4) +
+      "  1,\n",
+      "  let leaf = test_trie_mid[mid]\n",
+      "(test_trie_leaf[offset >> 1] >> ((offset & 1) << 4)) & 0xFFFF",
     ] {
     guard source.contains(expected) else {
       fail("Generated source is missing: \{expected}")
@@ -124,7 +133,7 @@ test "value trie stores wide values in two bytes and narrow high ranges" {
 }
 
 ///|
-test "enum converts ordinals and falls back to one constructor" {
+test "enum converts ordinals with identity" {
   let values = [
     { name: "Open", comment: "opening", },
     { name: "Close", comment: "closing", },
@@ -136,13 +145,13 @@ test "enum converts ordinals and falls back to one constructor" {
     doc=["Kinds"],
     converter="kind_from_ordinal",
     values~,
-    fallback="Open",
   )
   let source = out.finish()
   for
     expected in [
       "/// Kinds\n#derive(Debug, Eq)\npub(all) enum Kind {\n  Open // opening\n",
-      "      Close => \"Close\"\n", "    1 => Close\n    2 => None\n    _ => Open // 0 or any unknown\n",
+      "      Close => \"Close\"\n", "/// Convert a Kind ordinal, below 3, to the enum value.\n",
+      "fn kind_from_ordinal(ordinal : Int) -> Kind = \"%identity\"\n",
     ] {
     guard source.contains(expected) else {
       fail("Generated source is missing: \{expected}")
@@ -153,16 +162,15 @@ test "enum converts ordinals and falls back to one constructor" {
       type_name="Kind",
       doc=[],
       converter="kind_from_ordinal",
-      values~,
-      fallback="Other",
+      values=[],
     )
   catch {
     error =>
       inspect(
-        error.to_string().contains("Kind has no constructor Other"),
+        error.to_string().contains("Kind has no constructors"),
         content="true",
       )
   } noraise {
-    _ => fail("expected an unknown fallback to be rejected")
+    _ => fail("expected an enum without constructors to be rejected")
   }
 }

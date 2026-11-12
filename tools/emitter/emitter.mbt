@@ -157,14 +157,3 @@ pub fn Emitter::write_string_array(
     values.map(code_points => string_literal(code_points)),
   )
 }
-
-///|
-/// Split each value into its high and low byte.
-pub fn big_endian_16(values : Array[Int32]) -> Array[Int32] {
-  let bytes = []
-  for value in values {
-    bytes.push(value >> 8)
-    bytes.push(value & 0xFF)
-  }
-  bytes
-}

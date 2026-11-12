@@ -34,14 +34,12 @@ pub impl Show for BracketType with fn output(self, logger) {
 }
 
 ///|
-/// Convert BracketType ordinal to enum value
-fn bracket_type_from_ordinal(ordinal : Int32) -> BracketType {
-  match ordinal {
-    0 => Open
-    1 => Close
-    _ => None // 2 or any unknown
-  }
-}
+/// Convert a BracketType ordinal, below 3, to the enum value.
+///
+/// A constructor without arguments is its ordinal on every backend. A
+/// `match` or a table would cost a jump table or a load on wasm, wasm-gc
+/// and JS, slower there than the trie lookup itself.
+fn bracket_type_from_ordinal(ordinal : Int32) -> BracketType = "%identity"
 
 ///|
 /// Code points of paired brackets

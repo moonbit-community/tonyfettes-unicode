@@ -96,7 +96,6 @@ pub fn emit_mapping(content : String) -> String raise {
       .iter()
       .map(entry => @emitter.EnumValue::{ name: entry.0, comment: entry.2, })
       .collect(),
-    fallback="Disallowed",
   )
   out.write_value_trie(
     property="IDNA",

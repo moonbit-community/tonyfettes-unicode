@@ -4,8 +4,6 @@ package "moonbit-community/unicode-tools/emitter"
 // Values
 pub const MaxCodePoint : Int32 = 0x10FFFF
 
-pub fn big_endian_16(Array[Int32]) -> Array[Int32]
-
 pub fn deduplicate_blocks(Array[Int32], Int32) -> DedupedBlocks
 
 pub fn hex_literal(Int32, min_width? : Int32) -> String
@@ -27,7 +25,7 @@ pub fn Emitter::finish(Self) -> String
 pub fn Emitter::new() -> Self
 pub fn Emitter::write(Self, String) -> Unit
 pub fn Emitter::write_byte_array(Self, String, String, Array[Int32]) -> Unit
-pub fn Emitter::write_enum(Self, type_name~ : String, doc~ : Array[String], converter~ : String, values~ : Array[EnumValue], fallback~ : String) -> Unit raise
+pub fn Emitter::write_enum(Self, type_name~ : String, doc~ : Array[String], converter~ : String, values~ : Array[EnumValue]) -> Unit raise
 pub fn Emitter::write_file_header(Self, String, String) -> Unit
 pub fn Emitter::write_int_array(Self, String, String, Array[Int32], hex~ : Bool) -> Unit
 pub fn Emitter::write_line(Self, String) -> Unit

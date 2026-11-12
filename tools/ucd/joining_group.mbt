@@ -92,7 +92,6 @@ pub fn emit_joining_group_enum(content : String) -> String raise {
       name: joining_group_constructor(name),
       comment: name,
     }),
-    fallback="NoJoiningGroup",
   )
   out.write(
     (

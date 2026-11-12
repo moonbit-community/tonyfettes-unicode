@@ -19,9 +19,23 @@ const ValueTrieLeafShift : Int32 = 4
 /// `<prefix>_trie_mid`, and `<prefix>_trie_leaf`: the top level maps
 /// `cp >> 8` to a mid block, the mid level maps the next four bits to a leaf
 /// block, and the leaf level stores one value per code point, in one byte or,
-/// when `value_bits` exceeds 8, two big-endian bytes. Identical blocks are
-/// shared at both levels. The remaining planes become `<prefix>_high_ranges`,
-/// packed as `start << range_value_bits | value`.
+/// when `value_bits` exceeds 8, in 16 bits. Identical blocks are shared at
+/// both levels. The remaining planes become `<prefix>_high_ranges`, packed as
+/// `start << range_value_bits | value`.
+///
+/// The mid level holds one leaf block index per `Int`, so that the step every
+/// lookup takes is a single load. Reading two bytes per index instead costs a
+/// second bounds-checked load, which made the General_Category trie 1.4-1.8
+/// times as slow on wasm and JS; packing two indices per `Int` leaves a shift
+/// and a mask on the path to the leaf load, which made it about 5% slower on
+/// native than two bytes. A `ReadOnlyArray[UInt16]` would be as fast and half
+/// the size, but moonc builds it on wasm-gc with one `array.set` per element
+/// instead of from a data segment.
+///
+/// 16-bit leaf values are packed two to an `Int`, the even value in the low
+/// half, since the leaf level is the largest and its value is the result.
+/// The pairs are written in decimal, since a pair whose high half has its top
+/// bit set is negative.
 ///
 /// `values` holds the value of every code point, each below
 /// `1 << value_bits`, and below `1 << range_value_bits` from U+40000 on;
@@ -89,24 +103,26 @@ pub fn Emitter::write_value_trie(
     "\{prefix}_trie_top",
     mid.ids,
   )
-  self.write_byte_array(
-    "\{property} trie mid level: big-endian 16-bit leaf block indices",
+  self.write_int_array(
+    "\{property} trie mid level: leaf block indices",
     "\{prefix}_trie_mid",
-    big_endian_16(mid.blocks),
+    mid.blocks,
+    hex=false,
   )
-  self.write_byte_array(
-    if wide {
-      "\{property} trie leaf level: big-endian 16-bit values in blocks of \{1 << ValueTrieLeafShift}"
-    } else {
-      "\{property} trie leaf level: values in blocks of \{1 << ValueTrieLeafShift}"
-    },
-    "\{prefix}_trie_leaf",
-    if wide {
-      big_endian_16(leaf.blocks)
-    } else {
-      leaf.blocks
-    },
-  )
+  if wide {
+    self.write_int_array(
+      "\{property} trie leaf level: 16-bit values in blocks of \{1 << ValueTrieLeafShift}, two per entry",
+      "\{prefix}_trie_leaf",
+      pack_16_bit_pairs(leaf.blocks),
+      hex=false,
+    )
+  } else {
+    self.write_byte_array(
+      "\{property} trie leaf level: values in blocks of \{1 << ValueTrieLeafShift}",
+      "\{prefix}_trie_leaf",
+      leaf.blocks,
+    )
+  }
   self.write_int_array(
     "\{property} ranges from \{trie_limit} packed as `start << \{range_value_bits} | value`",
     "\{prefix}_high_ranges",
@@ -143,16 +159,15 @@ pub fn Emitter::write_value_trie(
       $|  }
       $|  let mid = (\{prefix}_trie_top[cp >> \{ValueTrieTopShift}].to_int() << \{ValueTrieTopShift - ValueTrieLeafShift}) |
       $|    ((cp >> \{ValueTrieLeafShift}) & \{mid_mask})
-      $|  let leaf = (\{prefix}_trie_mid[2 * mid].to_int() << 8) |
-      $|    \{prefix}_trie_mid[2 * mid + 1].to_int()
+      $|  let leaf = \{prefix}_trie_mid[mid]
       $|
     ),
   )
   self.write(
     if wide {
       (
-        $|  let offset = 2 * ((leaf << \{ValueTrieLeafShift}) | (cp & \{leaf_mask}))
-        $|  (\{prefix}_trie_leaf[offset].to_int() << 8) | \{prefix}_trie_leaf[offset + 1].to_int()
+        $|  let offset = (leaf << \{ValueTrieLeafShift}) | (cp & \{leaf_mask})
+        $|  (\{prefix}_trie_leaf[offset >> 1] >> ((offset & 1) << 4)) & 0xFFFF
         $|}
         $|
       )
@@ -164,4 +179,15 @@ pub fn Emitter::write_value_trie(
       )
     },
   )
+}
+
+///|
+/// Pack 16-bit values two to an `Int`: value `2 * i` in the low half of entry
+/// `i` and value `2 * i + 1` in the high half. An odd count leaves the last
+/// high half zero.
+fn pack_16_bit_pairs(values : Array[Int32]) -> Array[Int32] {
+  Array::makei((values.length() + 1) / 2, i => {
+    let high = if 2 * i + 1 < values.length() { values[2 * i + 1] } else { 0 }
+    values[2 * i] | (high << 16)
+  })
 }

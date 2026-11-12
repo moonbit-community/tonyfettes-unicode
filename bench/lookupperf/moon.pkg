@@ -1,5 +1,6 @@
 import {
   "moonbit-community/unicode-data/general_category",
+  "moonbit-community/unicode-data" @ucd,
   "moonbit-community/unicode-data/composition",
   "moonbit-community/unicode-bidi" @bidi,
   "moonbitlang/core/bench",

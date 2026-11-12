@@ -110,7 +110,6 @@ pub fn emit_line_break_enum() -> String raise {
       .iter()
       .map(entry => @emitter.EnumValue::{ name: entry.0, comment: entry.1, })
       .collect(),
-    fallback="XX",
   )
   out.write(
     (

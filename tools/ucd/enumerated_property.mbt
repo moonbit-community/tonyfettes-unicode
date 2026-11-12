@@ -12,6 +12,10 @@ fn write_enumerated_trie(
   value_bits~ : Int32,
   values : FixedArray[Int32],
 ) -> Unit raise {
+  // The enum converter casts ordinals with `%identity`.
+  guard values.all(value => value >= 0 && value < value_count) else {
+    fail("\{property} has an ordinal outside \{enum_name}")
+  }
   out.write_value_trie(
     property~,
     prefix~,
