@@ -137,6 +137,15 @@ that only change `site/` republish the page without comparing. Running the
 workflow by hand republishes the page, and compares too when its `compare`
 input is set.
 
+Ticking a stretch of consecutive merges in the history adds a row that
+combines them: the change from the base of the oldest to the head of the
+newest. Runs land on runners of different speeds, so it chains each case's
+ratio of head to base from `runs/<commit>.json` rather than comparing times
+across runs, and takes the geometric mean over the cases that every merge in
+the stretch measured. The page keeps the stretch in its address
+(`#range=<base>..<head>`). For a figure measured in one go, run
+`--base <older commit>`.
+
 The cross-language part of the page reads `site/snapshot.json`, which is
 updated by hand from a full run on a quiet machine:
 
