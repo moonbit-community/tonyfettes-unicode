@@ -16,6 +16,9 @@ priv struct Peer {
   setup : Array[Step]
   /// Prints result rows; the inputs directory and the group are appended.
   run : Step
+  /// `(label, command)`: a shell command whose first line of output is the
+  /// version of what the label names, for the record of a run.
+  versions : Array[(String, String)]
 }
 
 ///|
@@ -30,7 +33,7 @@ fn probe(root : String, program : String) -> Step {
 
 ///|
 /// The same MoonBit harness, built for one backend. `moon run` starts the JS
-/// build with Node.
+/// build with Node and the Wasm builds with `moonrun`.
 fn moonbit_peer(root : String, target : String) -> Peer {
   let package_ = "bench/xlang/moonbit"
   let build = {
@@ -50,8 +53,17 @@ fn moonbit_peer(root : String, target : String) -> Peer {
       arguments: ["run", "--target", target, "--release", package_, "--"],
       cwd: root,
     },
+    versions: if target == "js" {
+      [("moon", "moon version"), ("Node", NodeVersion)]
+    } else {
+      [("moon", "moon version")]
+    },
   }
 }
+
+///|
+/// Node's version and the version of the ICU4C it bundles.
+const NodeVersion : String = "node -p 'process.version + \" (ICU \" + process.versions.icu + \")\"'"
 
 ///|
 /// Where ICU4C is installed, when it is not on the compiler's default paths.
@@ -73,7 +85,8 @@ async fn icu_prefix() -> String? {
 /// source tree.
 async fn all_peers(root : String, work : String) -> Array[Peer] {
   let source = "\{root}/bench/xlang"
-  let icu_paths = if icu_prefix() is Some(prefix) {
+  let icu_prefix = icu_prefix()
+  let icu_paths = if icu_prefix is Some(prefix) {
     ["-I\{prefix}/include", "-L\{prefix}/lib", "-Wl,-rpath,\{prefix}/lib"]
   } else {
     []
@@ -81,6 +94,7 @@ async fn all_peers(root : String, work : String) -> Array[Peer] {
   [
     moonbit_peer(root, "native"),
     moonbit_peer(root, "wasm-gc"),
+    moonbit_peer(root, "wasm"),
     moonbit_peer(root, "js"),
     {
       name: "icu4c",
@@ -101,6 +115,16 @@ async fn all_peers(root : String, work : String) -> Array[Peer] {
         },
       ],
       run: { program: "\{work}/icu4c", arguments: [], cwd: root, },
+      versions: [
+        (
+          "ICU4C",
+          if icu_prefix is Some(prefix) {
+            "PKG_CONFIG_PATH=\{prefix}/lib/pkgconfig pkg-config --modversion icu-uc"
+          } else {
+            "pkg-config --modversion icu-uc"
+          },
+        ),
+      ],
     },
     {
       name: "rust",
@@ -118,6 +142,13 @@ async fn all_peers(root : String, work : String) -> Array[Peer] {
         },
       ],
       run: { program: "\{work}/rust/release/xlang", arguments: [], cwd: root, },
+      versions: [
+        ("rustc", "rustc --version"),
+        (
+          "ICU4X",
+          "sed -n '/^name = \"icu_normalizer\"$/{n;s/^version = \"\\(.*\\)\"$/\\1/p;}' \{source}/rust/Cargo.lock",
+        ),
+      ],
     },
     {
       name: "go",
@@ -129,6 +160,7 @@ async fn all_peers(root : String, work : String) -> Array[Peer] {
         },
       ],
       run: { program: "\{work}/go", arguments: [], cwd: root, },
+      versions: [("Go", "go env GOVERSION")],
     },
     {
       name: "node",
@@ -139,6 +171,7 @@ async fn all_peers(root : String, work : String) -> Array[Peer] {
         arguments: ["--no-deprecation", "\{source}/node/main.cjs"],
         cwd: root,
       },
+      versions: [("Node", NodeVersion)],
     },
     {
       name: "python",
@@ -148,6 +181,7 @@ async fn all_peers(root : String, work : String) -> Array[Peer] {
         arguments: ["\{source}/python/main.py"],
         cwd: root,
       },
+      versions: [("Python", "python3 --version")],
     },
   ]
 }
