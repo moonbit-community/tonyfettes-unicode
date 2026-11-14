@@ -15,6 +15,7 @@ pub(all) suberror IdnaError {
   EmptyLabel
   InvalidBidi
   InvalidJoiner
+  InvalidContextO
   InvalidAcePrefix
   LeadingCombiningMark
 }
@@ -37,6 +38,7 @@ pub impl Show for IdnaError with fn output(self, logger) {
     EmptyLabel => logger.write_string("EmptyLabel")
     InvalidBidi => logger.write_string("InvalidBidi")
     InvalidJoiner => logger.write_string("InvalidJoiner")
+    InvalidContextO => logger.write_string("InvalidContextO")
     InvalidAcePrefix => logger.write_string("InvalidAcePrefix")
     LeadingCombiningMark => logger.write_string("LeadingCombiningMark")
   }
@@ -55,16 +57,22 @@ pub fn to_ascii(
   check_hyphens~ : Bool = true,
   check_bidi~ : Bool = true,
   check_joiners~ : Bool = true,
+  check_idna2008~ : Bool = false,
   verify_dns_length~ : Bool = true,
 ) -> String raise IdnaError {
-  if ascii_fast_path(
-      domain,
-      use_std3_ascii_rules~,
-      check_hyphens~,
-      verify_dns_length~,
-    )
-    is Some(ascii) {
-    return ascii
+  // The fast path decides an all-ASCII domain without running per-label
+  // validation, so a caller that also asserts IDNA2008 validity has to use the
+  // general algorithm, which maps and validates every label.
+  if !check_idna2008 {
+    if ascii_fast_path(
+        domain,
+        use_std3_ascii_rules~,
+        check_hyphens~,
+        verify_dns_length~,
+      )
+      is Some(ascii) {
+      return ascii
+    }
   }
   to_ascii_general(
     domain,
@@ -72,6 +80,7 @@ pub fn to_ascii(
     check_hyphens~,
     check_bidi~,
     check_joiners~,
+    check_idna2008~,
     verify_dns_length~,
   )
 }
@@ -84,6 +93,7 @@ fn to_ascii_general(
   check_hyphens~ : Bool,
   check_bidi~ : Bool,
   check_joiners~ : Bool,
+  check_idna2008~ : Bool,
   verify_dns_length~ : Bool,
 ) -> String raise IdnaError {
   // Map and normalize before splitting. Labels are validated below, after
@@ -140,6 +150,9 @@ fn to_ascii_general(
         check_bidi~,
         statuses_known=normalized is None,
       )
+      if check_idna2008 {
+        validate_idna2008_label(unicode_label)
+      }
       // Encoding the Unicode form must give the A-label back (V7). The
       // decoded label always encodes back to an A-label in canonical form,
       // so it is encoded again only when mapping changed it.
@@ -162,6 +175,9 @@ fn to_ascii_general(
         check_bidi~,
         statuses_known~,
       )
+      if check_idna2008 {
+        validate_idna2008_label(label)
+      }
       if is_all_ascii(label) {
         output.write_view(label)
         label.length()
@@ -245,16 +261,19 @@ pub fn to_unicode(
   check_hyphens~ : Bool = true,
   check_bidi~ : Bool = true,
   check_joiners~ : Bool = true,
+  check_idna2008~ : Bool = false,
 ) -> String raise IdnaError {
   // ToUnicode does not verify DNS lengths.
-  if ascii_fast_path(
-      domain,
-      use_std3_ascii_rules~,
-      check_hyphens~,
-      verify_dns_length=false,
-    )
-    is Some(unicode) {
-    return unicode
+  if !check_idna2008 {
+    if ascii_fast_path(
+        domain,
+        use_std3_ascii_rules~,
+        check_hyphens~,
+        verify_dns_length=false,
+      )
+      is Some(unicode) {
+      return unicode
+    }
   }
   to_unicode_general(
     domain,
@@ -262,6 +281,7 @@ pub fn to_unicode(
     check_hyphens~,
     check_bidi~,
     check_joiners~,
+    check_idna2008~,
   )
 }
 
@@ -273,6 +293,7 @@ fn to_unicode_general(
   check_hyphens~ : Bool,
   check_bidi~ : Bool,
   check_joiners~ : Bool,
+  check_idna2008~ : Bool,
 ) -> String raise IdnaError {
   // Split into labels first (before mapping, to handle Punycode)
   let length = domain.length()
@@ -310,6 +331,9 @@ fn to_unicode_general(
       check_bidi~,
       statuses_known=normalized is None,
     )
+    if check_idna2008 {
+      validate_idna2008_label(unicode_label)
+    }
     domain_bidi = domain_bidi | label_bidi
     output.write_view(unicode_label)
     if end == length {

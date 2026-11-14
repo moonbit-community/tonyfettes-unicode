@@ -28,6 +28,7 @@ fn check_fast_path(domain : String) -> Unit raise {
             check_hyphens~,
             check_bidi=true,
             check_joiners=true,
+            check_idna2008=false,
             verify_dns_length~,
           )
         catch {
@@ -58,6 +59,7 @@ fn check_fast_path(domain : String) -> Unit raise {
           check_hyphens~,
           check_bidi=true,
           check_joiners=true,
+          check_idna2008=false,
         )
       catch {
         _ =>
