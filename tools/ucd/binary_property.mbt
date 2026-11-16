@@ -19,6 +19,7 @@ const BinaryTrieLeafShift : Int32 = 7
 ///
 /// A set of code points that is not a Unicode property passes `lookup`, the
 /// name of the lookup function, and `lookup_doc`, its one-line description.
+/// Set `exported=false` for a lookup used only inside its generated package.
 ///
 /// The top level maps `cp >> 10` to a mid block, the mid level maps the next
 /// three bits to a leaf block, and each leaf block holds one bit per code
@@ -28,9 +29,11 @@ fn write_binary_property_trie(
   property~ : String,
   lookup? : String,
   lookup_doc? : String,
+  exported~ : Bool = true,
   ranges : Array[@parsing.CodePointRange],
 ) -> Unit raise {
   let prefix = property.to_lower()
+  let visibility = if exported { "pub " } else { "" }
   let lookup = lookup.unwrap_or("is_\{prefix}")
   let lookup_doc = lookup_doc.unwrap_or(
     "Check whether a character has the Unicode \{property} property",
@@ -91,7 +94,7 @@ fn write_binary_property_trie(
     (
       $|///|
       $|/// \{lookup_doc}
-      $|pub fn \{lookup}(c : Char) -> Bool {
+      $|\{visibility}fn \{lookup}(c : Char) -> Bool {
       $|  let cp = c.to_int()
       $|  if cp >= \{@emitter.hex_literal(BinaryTrieLimit)} {
       $|    return \{high_check}

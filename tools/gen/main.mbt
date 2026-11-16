@@ -150,6 +150,10 @@ async fn generate_ucd(g : Generator) -> Unit {
       @ucd.parse_special_casing(g.ucd("SpecialCasing.txt")),
     ),
   )
+  g.write(
+    "ucd/case_mapping/case_context_data.mbt",
+    @ucd.emit_case_context(g.ucd("DerivedCoreProperties.txt")),
+  )
   g.write("ucd/xid/xid.mbt", @ucd.emit_xid(g.ucd("DerivedCoreProperties.txt")))
   // Each binary property lives in a package named after it.
   for

@@ -20,8 +20,8 @@ fn mapping_string(field : StringView) -> String raise {
 
 ///|
 /// The simple mappings of UnicodeData.txt, replaced by the unconditional
-/// full mappings of SpecialCasing.txt. Conditional mappings, which need
-/// context or a language, are skipped, as the library skips them.
+/// full mappings of SpecialCasing.txt. These are the character-level mappings;
+/// language-independent conditional string mappings are tested separately.
 async fn read_expected() -> Expected {
   let expected = { upper: Map([]), lower: Map([]), title: Map([]), }
   let unicode_data = @support.read_data_file("UnicodeData.txt")
@@ -110,4 +110,96 @@ async test "UnicodeData.txt and SpecialCasing.txt full mappings for every scalar
   let all = all.to_string()
   assert_true(@ucd.uppercase(all) == all_upper.to_string())
   assert_true(@ucd.lowercase(all) == all_lower.to_string())
+}
+
+///|
+async test "SpecialCasing.txt language-independent conditional string mappings" {
+  let unconditional = read_expected()
+  let special_casing = @support.read_data_file("SpecialCasing.txt")
+  let mut conditional = 0
+  for raw_line in special_casing.split("\n") {
+    let line = raw_line.split("#").next().unwrap().trim()
+    if line.is_empty() {
+      continue
+    }
+    guard line.split(";").collect() is [cp, lower, _, _, condition, ..] else {
+      fail("Invalid SpecialCasing record")
+    }
+    let condition = condition.trim()
+    if condition.is_empty() {
+      continue
+    }
+    // Default casing does not apply Turkish, Azeri or Lithuanian tailorings.
+    if condition =~ re"^(tr|az|lt)( |$)" {
+      continue
+    }
+    guard condition == "Final_Sigma" else {
+      fail("Untested language-independent casing condition: \{condition}")
+    }
+    let input = mapping_string(cp)
+    let cp = @support.parse_hex_int(cp)
+    let final_form = mapping_string(lower)
+    let ordinary_form = unconditional.lower.get(cp).unwrap_or(input)
+    // Prefixes and suffixes are already lowercase. The booleans encode the
+    // contexts from Unicode Table 3-17, independently of the implementation.
+    let prefixes = [
+      ("", false),
+      ("a", true),
+      ("a\u{0301}", true),
+      ("\u{0301}", false),
+      ("\u{0345}", false),
+      ("a\u{0345}", true),
+      ("a ", false),
+      ("a0", false),
+      ("a中", false),
+      ("a'", true),
+      ("a\u{1D185}", true),
+      ("a\u{E0100}", true),
+      ("\u{10428}", true),
+      ("ª", true),
+      ("a\u{200D}", true),
+    ]
+    let suffixes = [
+      ("", true),
+      ("a", false),
+      ("\u{0301}", true),
+      ("\u{0301}a", false),
+      ("\u{0345}", true),
+      ("\u{0345}a", false),
+      (" a", true),
+      ("0a", true),
+      ("中a", true),
+      ("'a", false),
+      ("\u{1D185}a", false),
+      ("\u{E0100}a", false),
+      ("\u{10428}", false),
+      ("ª", false),
+      ("\u{200D}", true),
+    ]
+    for (prefix, cased_before) in prefixes {
+      for (suffix, no_cased_after) in suffixes {
+        let mapped = if cased_before && no_cased_after {
+          final_form
+        } else {
+          ordinary_form
+        }
+        @debug.assert_eq(
+          @ucd.lowercase("\{prefix}\{input}\{suffix}"),
+          "\{prefix}\{mapped}\{suffix}",
+          msg="\{condition}: prefix=\{Repr(prefix)}, suffix=\{Repr(suffix)}",
+        )
+      }
+    }
+    conditional += 1
+  }
+  assert_true(conditional > 0)
+}
+
+///|
+test "lowercase: long case-ignorable runs between successive sigmas" {
+  let marks = "\u{0345}\u{E0100}".repeat(2048)
+  @debug.assert_eq(
+    @ucd.lowercase("AΣ\{marks}Σ\{marks}"),
+    "aσ\{marks}ς\{marks}",
+  )
 }

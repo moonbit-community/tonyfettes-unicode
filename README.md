@@ -266,7 +266,7 @@ Root package for Unicode Character Database helpers.
 | `to_lowercase(Char) -> String` | Full lowercase mapping. |
 | `to_titlecase(Char) -> String` | Full titlecase mapping. |
 | `uppercase(StringView) -> String` | Full uppercase mapping of a string, built at once. Context-free: conditional SpecialCasing.txt mappings are not applied. |
-| `lowercase(StringView) -> String` | Full lowercase mapping of a string, built at once. Context-free: Σ always maps to σ, never to final ς, and language-specific mappings are not applied. |
+| `lowercase(StringView) -> String` | Unicode default full lowercase conversion, including Final_Sigma: `ΟΣ` becomes `ος`. Language-specific mappings are not applied. |
 
 The Joining_Group value `Pe` shares its name with a General_Category value.
 Where the type is not known from the context, write `@ucd.JoiningGroup::Pe` or

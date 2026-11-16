@@ -57,15 +57,14 @@ pub fn uppercase(s : StringView) -> String {
 }
 
 ///|
-/// Get the full lowercase mapping of a string, with every character replaced
-/// by its full lowercase mapping. For example, "İSTANBUL" maps to
-/// "i\u{0307}stanbul". Unlike calling `to_lowercase` on each character, this
-/// builds one string and allocates nothing per character.
+/// Convert a string to lowercase using Unicode default full case conversion.
+/// For example, "İSTANBUL" maps to "i\u{0307}stanbul". The Final_Sigma
+/// condition is evaluated in the input: "ΟΣ" maps to "ος", while "ΟΣΑ"
+/// maps to "οσα". Calling `to_lowercase` on individual characters cannot
+/// apply this context-dependent mapping.
 ///
-/// The mapping is context-free: the conditional mappings of
-/// SpecialCasing.txt, which depend on the surrounding text or the language,
-/// are not applied, so Σ always maps to σ and never to the final form ς.
-/// Unpaired surrogates are copied as they are.
+/// Language-specific mappings are not applied. Unpaired surrogates are
+/// copied as they are.
 pub fn lowercase(s : StringView) -> String {
   @case_mapping.lowercase(s)
 }
