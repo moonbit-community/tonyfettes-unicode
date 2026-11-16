@@ -50,13 +50,23 @@ pub impl Show for IdnaError with fn output(self, logger) {
 let ace_prefix : String = "xn--"
 
 ///|
-/// Convert a domain name to ASCII (for DNS lookup)
-/// This is the main entry point for IDNA ToASCII operation
+/// Converts a domain name to ASCII for DNS lookup.
 ///
-/// `check_idna2008` additionally rejects Unicode label characters classified
-/// as DISALLOWED or UNASSIGNED by IDNA2008. `check_contexto` checks the
-/// RFC 5892 CONTEXTO rules. Both default to false and preserve UTS #46
-/// mapping and normalization; ContextJ remains controlled by `check_joiners`.
+/// Applies UTS #46 mapping and NFC normalization before validating Unicode
+/// labels, including labels decoded from Punycode.
+///
+/// - `use_std3_ascii_rules` (default `true`): restricts ASCII label characters
+///   to letters, digits, and hyphens.
+/// - `check_hyphens` (default `true`): rejects leading or trailing hyphens and
+///   labels with hyphens in both the third and fourth positions.
+/// - `check_bidi` (default `true`): applies the RFC 5893 Bidi rule.
+/// - `check_joiners` (default `true`): checks the RFC 5892 CONTEXTJ rules for
+///   ZWNJ (U+200C) and ZWJ (U+200D).
+/// - `check_idna2008` (default `false`): restricts Unicode label characters
+///   to the IDNA2008 PVALID, CONTEXTJ, and CONTEXTO categories.
+/// - `check_contexto` (default `false`): checks the RFC 5892 CONTEXTO rules.
+/// - `verify_dns_length` (default `true`): checks ASCII label and domain lengths
+///   against DNS limits.
 pub fn to_ascii(
   domain : String,
   use_std3_ascii_rules~ : Bool = true,
@@ -256,13 +266,21 @@ fn encodes_to_ace_label(
 }
 
 ///|
-/// Convert a domain name to Unicode (for display)
-/// This is the main entry point for IDNA ToUnicode operation
+/// Converts a domain name to Unicode for display.
 ///
-/// `check_idna2008` additionally rejects Unicode label characters classified
-/// as DISALLOWED or UNASSIGNED by IDNA2008. `check_contexto` checks the
-/// RFC 5892 CONTEXTO rules. Both apply to decoded A-labels as well as Unicode
-/// input, default to false, and preserve UTS #46 mapping and normalization.
+/// Applies UTS #46 mapping and NFC normalization before validating Unicode
+/// labels, including labels decoded from Punycode. DNS lengths are not checked.
+///
+/// - `use_std3_ascii_rules` (default `true`): restricts ASCII label characters
+///   to letters, digits, and hyphens.
+/// - `check_hyphens` (default `true`): rejects leading or trailing hyphens and
+///   labels with hyphens in both the third and fourth positions.
+/// - `check_bidi` (default `true`): applies the RFC 5893 Bidi rule.
+/// - `check_joiners` (default `true`): checks the RFC 5892 CONTEXTJ rules for
+///   ZWNJ (U+200C) and ZWJ (U+200D).
+/// - `check_idna2008` (default `false`): restricts Unicode label characters
+///   to the IDNA2008 PVALID, CONTEXTJ, and CONTEXTO categories.
+/// - `check_contexto` (default `false`): checks the RFC 5892 CONTEXTO rules.
 pub fn to_unicode(
   domain : String,
   use_std3_ascii_rules~ : Bool = true,
