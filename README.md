@@ -458,11 +458,16 @@ The version is a plain `MAJOR.MINOR.PATCH` with no prerelease suffix. `prepare`
 refuses to run unless the Git worktree is clean and the eight published
 manifests already agree on one version, which it then rewrites to the new one.
 
-Review and commit the resulting manifest changes, open a pull request, and wait
-for CI to pass before merging: `main` is protected and rejects direct pushes.
-Publication is a separate, explicit step that does not require a Git tag. Run
-the `publish-package` workflow in GitHub Actions, or run the underlying command
-from a clean checkout of the commit to publish:
+Review and commit the resulting manifest changes, push the branch, open a pull
+request, and wait for CI to pass. Publication is a separate, explicit step that
+does not require merging into `main` or creating a Git tag. In GitHub Actions,
+run the `publish-package` workflow and select the branch to publish under
+**Use workflow from**. The selected branch must contain this workflow version;
+the run checks out its exact triggering commit (`github.sha`), even if the branch
+moves afterward. The run name includes the branch and commit SHA.
+
+Alternatively, run the underlying command from a clean checkout of the commit
+to publish:
 
 ```bash
 moon run --target native tools/release -- publish \
