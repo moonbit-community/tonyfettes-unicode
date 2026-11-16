@@ -3,31 +3,40 @@
 /// The caller passes a mapped, normalized label containing a CONTEXTO
 /// character. Script tests use the Unicode Script property, not blocks or
 /// Script_Extensions.
-fn validate_contexto(label : StringView) -> Unit raise IdnaError {
-  let chars = label.to_array()
+fn validate_contexto(
+  label : StringView,
+  has_katakana_middle_dot~ : Bool,
+) -> Unit raise IdnaError {
+  // U+0000 cannot satisfy any of the preceding-character conditions.
+  let mut previous = '\u{0000}'
   let mut has_japanese = false
-  let mut has_katakana_middle_dot = false
   let mut has_arabic_indic_digits = false
   let mut has_extended_arabic_indic_digits = false
-  for i, c in chars {
+  for c in label {
+    // Check a required successor when it arrives, before the current
+    // character's own rule, so the earlier violation still takes precedence.
+    if previous == '\u{00B7}' && c != 'l' {
+      raise InvalidContextO(cp=0x00B7)
+    }
+    if previous == '\u{0375}' || (has_katakana_middle_dot && !has_japanese) {
+      let properties = @idna_data.lookup_idna_properties(c)
+      if previous == '\u{0375}' && !properties.is_greek() {
+        raise InvalidContextO(cp=0x0375)
+      }
+      if properties.is_japanese() {
+        has_japanese = true
+      }
+    }
     match c {
       '\u{00B7}' => {
-        // Catalan middle dot must occur between two lowercase l's.
-        guard i > 0 && chars[i - 1] == 'l' && chars.get(i + 1) is Some('l') else {
-          raise InvalidContextO(cp=c.to_int())
-        }
-      }
-      '\u{0375}' => {
-        guard chars.get(i + 1) is Some(next) && @idna_data.is_greek(next) else {
-          raise InvalidContextO(cp=c.to_int())
-        }
+        // The following l is checked on the next iteration.
+        guard previous == 'l' else { raise InvalidContextO(cp=c.to_int()) }
       }
       '\u{05F3}' | '\u{05F4}' => {
-        guard i > 0 && @idna_data.is_hebrew(chars[i - 1]) else {
+        guard @idna_data.lookup_idna_properties(previous).is_hebrew() else {
           raise InvalidContextO(cp=c.to_int())
         }
       }
-      '\u{30FB}' => has_katakana_middle_dot = true
       '\u{0660}'..<='\u{0669}' => {
         guard !has_extended_arabic_indic_digits else {
           raise InvalidContextO(cp=c.to_int())
@@ -42,9 +51,11 @@ fn validate_contexto(label : StringView) -> Unit raise IdnaError {
       }
       _ => ()
     }
-    if !has_japanese && @idna_data.is_japanese(c) {
-      has_japanese = true
-    }
+    previous = c
+  }
+  // A final middle dot or Greek numeral sign has no required successor.
+  if previous is ('\u{00B7}' | '\u{0375}') {
+    raise InvalidContextO(cp=previous.to_int())
   }
   // U+30FB itself has Script=Common, so it cannot satisfy its own rule.
   if has_katakana_middle_dot && !has_japanese {

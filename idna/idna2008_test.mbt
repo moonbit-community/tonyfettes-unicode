@@ -2,16 +2,23 @@
 fn expect_idna2008_rejection(
   domain : String,
   expected_cp : Int32,
+  check_contexto~ : Bool = false,
 ) -> Unit raise {
   for ascii in [true, false] {
     try {
       if ascii {
-        @idna.to_ascii(domain, use_std3_ascii_rules=false, check_idna2008=true)
+        @idna.to_ascii(
+          domain,
+          use_std3_ascii_rules=false,
+          check_idna2008=true,
+          check_contexto~,
+        )
       } else {
         @idna.to_unicode(
           domain,
           use_std3_ascii_rules=false,
           check_idna2008=true,
+          check_contexto~,
         )
       }
     } catch {
@@ -128,6 +135,7 @@ test "CONTEXTO: valid contexts survive Unicode and ACE conversion" {
     label in [
       "l·l", "\u{0375}α", "\u{0375}\u{1F00}", "א\u{05F3}", "א\u{05F4}", "・カ",
       "カ・", "・あ", "・中", "・\u{20000}", "\u{0660}\u{0669}", "\u{06F0}\u{06F9}",
+      "l·l·l", "\u{0375}\u{0375}α", "א\u{05F3}\u{05F4}", "\u{20000}・l·l",
     ] {
     // Pure digit labels test CONTEXTO independently of RFC 5893.
     let ace = @idna.to_ascii(label, check_bidi=false)
@@ -156,7 +164,11 @@ test "CONTEXTO: valid contexts survive Unicode and ACE conversion" {
 
 ///|
 test "CONTEXTO: middle dot requires an immediate l on both sides" {
-  for label in ["·", "·l", "l·", "a·l", "l·a", "l·\u{0301}l"] {
+  for
+    label in [
+      "·", "·l", "l·", "a·l", "l·a", "l·\u{0301}l", "l··l", "l·\u{20000}",
+      "\u{20000}·l",
+    ] {
     expect_contexto_rejection(label, expected_cp=0x00B7)
     let ace = @idna.to_ascii(label, check_bidi=false)
     expect_contexto_rejection(ace, expected_cp=0x00B7)
@@ -170,10 +182,27 @@ test "CONTEXTO: middle dot requires an immediate l on both sides" {
 ///|
 test "CONTEXTO: Greek numeral sign checks following Script not block" {
   // U+03E3 is Coptic despite belonging to the Greek and Coptic block.
-  for label in ["\u{0375}", "\u{0375}a", "α\u{0375}", "\u{0375}\u{03E3}"] {
+  for
+    label in [
+      "\u{0375}", "\u{0375}a", "α\u{0375}", "\u{0375}\u{03E3}", "\u{0375}\u{0375}",
+    ] {
     expect_contexto_rejection(label, expected_cp=0x0375)
     let ace = @idna.to_ascii(label, check_bidi=false)
     expect_contexto_rejection(ace, expected_cp=0x0375)
+  }
+  // A supplementary Greek Script character satisfies the neighbor rule,
+  // independently of its exclusion from the IDNA2008 allowed character set.
+  let label = "\u{0375}\u{1D200}"
+  let ace = @idna.to_ascii(label, check_bidi=false)
+  for input in [label, ace] {
+    @test.assert_eq(
+      @idna.to_ascii(input, check_contexto=true, check_bidi=false),
+      ace,
+    )
+    @test.assert_eq(
+      @idna.to_unicode(input, check_contexto=true, check_bidi=false),
+      label,
+    )
   }
 }
 
@@ -186,6 +215,8 @@ test "CONTEXTO: Hebrew punctuation requires preceding Hebrew Script" {
       ("\u{05F3}א", 0x05F3),
       ("a\u{05F3}", 0x05F3),
       ("a\u{05F4}", 0x05F4),
+      ("\u{20000}\u{05F3}", 0x05F3),
+      ("א\u{20000}\u{05F4}", 0x05F4),
     ] {
     expect_contexto_rejection(label, expected_cp=cp)
     let ace = @idna.to_ascii(label, check_bidi=false)
@@ -243,6 +274,24 @@ test "CONTEXTO: adjacent labels cannot supply immediate context" {
 }
 
 ///|
+test "CONTEXTO: neighboring violations precede later and deferred errors" {
+  for
+    (label, cp) in [
+      ("l·\u{05F3}", 0x00B7),
+      ("\u{0375}·", 0x0375),
+      ("・l·a", 0x00B7),
+      ("・l·", 0x00B7),
+      ("・\u{0375}", 0x0375),
+      ("\u{0660}\u{0375}\u{06F0}", 0x0375),
+      ("\u{0660}\u{06F0}\u{0375}", 0x06F0),
+    ] {
+    expect_contexto_rejection(label, expected_cp=cp)
+    let ace = @idna.to_ascii(label, check_bidi=false)
+    expect_contexto_rejection(ace, expected_cp=cp)
+  }
+}
+
+///|
 test "IDNA2008 repertoire and CONTEXTO flags are independent" {
   inspect(@idna.to_unicode("a·b", check_idna2008=true), content="a·b")
   expect_contexto_rejection("a·b", expected_cp=0x00B7)
@@ -254,6 +303,13 @@ test "IDNA2008 repertoire and CONTEXTO flags are independent" {
     @idna.to_unicode("xn--53h.example", check_contexto=true),
     content="☕.example",
   )
+  // The label's character validation finishes before contextual rules run,
+  // so the disallowed coffee character takes precedence over the middle dot.
+  let label = "a·☕"
+  let ace = @idna.to_ascii(label)
+  for input in [label, ace] {
+    expect_idna2008_rejection(input, 0x2615, check_contexto=true)
+  }
   inspect(
     @idna.to_ascii("-example", check_idna2008=true, check_hyphens=false),
     content="-example",

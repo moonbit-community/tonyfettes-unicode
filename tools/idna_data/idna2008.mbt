@@ -46,12 +46,26 @@ pub fn emit_idna2008(idna2008 : String, scripts : String) -> String raise {
   out.write_value_trie(
     property="IDNA2008",
     prefix="idna2008",
-    lookup="fn lookup_idna2008_properties",
+    lookup="fn lookup_idna_property_bits",
     lookup_doc=[
       "Bits for IDNA2008 allowed characters (1), Greek (2), Hebrew (4),", "and Hiragana, Katakana or Han (8).",
     ],
     value_bits=4,
     parse_idna2008_properties(idna2008, scripts),
+  )
+  out.write(
+    (
+      $|///|
+      $|/// IDNA2008 character validity and CONTEXTO Script properties.
+      $|struct IdnaProperties(Int)
+      $|
+      $|///|
+      $|/// Look up a character's IDNA properties once for all needed checks.
+      $|pub fn lookup_idna_properties(c : Char) -> IdnaProperties {
+      $|  IdnaProperties(lookup_idna_property_bits(c))
+      $|}
+      $|
+    ),
   )
   for
     (name, flag, description) in [
@@ -68,8 +82,8 @@ pub fn emit_idna2008(idna2008 : String, scripts : String) -> String raise {
       (
         $|///|
         $|/// \{description}
-        $|pub fn \{name}(c : Char) -> Bool {
-        $|  (lookup_idna2008_properties(c) & \{flag}) != 0
+        $|pub fn IdnaProperties::\{name}(self : IdnaProperties) -> Bool {
+        $|  (self.0 & \{flag}) != 0
         $|}
         $|
       ),

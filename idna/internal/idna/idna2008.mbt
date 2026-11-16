@@ -341,7 +341,7 @@ let idna2008_high_ranges : ReadOnlyArray[Int32] = [0x400000]
 ///|
 /// Bits for IDNA2008 allowed characters (1), Greek (2), Hebrew (4),
 /// and Hiragana, Katakana or Han (8).
-fn lookup_idna2008_properties(c : Char) -> Int32 {
+fn lookup_idna_property_bits(c : Char) -> Int32 {
   let cp = c.to_int()
   if cp >= 0x40000 {
     // Binary search for the last range starting at or before `cp`.
@@ -364,25 +364,35 @@ fn lookup_idna2008_properties(c : Char) -> Int32 {
 }
 
 ///|
+/// IDNA2008 character validity and CONTEXTO Script properties.
+struct IdnaProperties(Int32)
+
+///|
+/// Look up a character's IDNA properties once for all needed checks.
+pub fn lookup_idna_properties(c : Char) -> IdnaProperties {
+  IdnaProperties(lookup_idna_property_bits(c))
+}
+
+///|
 /// Whether a character is PVALID, CONTEXTJ or CONTEXTO in IDNA2008.
-pub fn is_idna2008_allowed(c : Char) -> Bool {
-  (lookup_idna2008_properties(c) & 1) != 0
+pub fn IdnaProperties::is_idna2008_allowed(self : IdnaProperties) -> Bool {
+  (self.0 & 1) != 0
 }
 
 ///|
 /// Whether a character has Script=Greek.
-pub fn is_greek(c : Char) -> Bool {
-  (lookup_idna2008_properties(c) & 2) != 0
+pub fn IdnaProperties::is_greek(self : IdnaProperties) -> Bool {
+  (self.0 & 2) != 0
 }
 
 ///|
 /// Whether a character has Script=Hebrew.
-pub fn is_hebrew(c : Char) -> Bool {
-  (lookup_idna2008_properties(c) & 4) != 0
+pub fn IdnaProperties::is_hebrew(self : IdnaProperties) -> Bool {
+  (self.0 & 4) != 0
 }
 
 ///|
 /// Whether a character has Script=Hiragana, Katakana or Han.
-pub fn is_japanese(c : Char) -> Bool {
-  (lookup_idna2008_properties(c) & 8) != 0
+pub fn IdnaProperties::is_japanese(self : IdnaProperties) -> Bool {
+  (self.0 & 8) != 0
 }

@@ -45,6 +45,7 @@ fn validate_label(
   // looks for joiners and gathers what the Bidi rule needs.
   let mut has_joiner = false
   let mut has_contexto = false
+  let mut has_katakana_middle_dot = false
   let bidi = LabelBidi::new()
   for c in label {
     if !statuses_known {
@@ -53,7 +54,8 @@ fn validate_label(
       // The table has these valid; STD3 rules allow only LDH in ASCII.
       raise DisallowedCodePoint(cp=c.to_int())
     }
-    if check_idna2008 && !@idna_data.is_idna2008_allowed(c) {
+    if check_idna2008 &&
+      !@idna_data.lookup_idna_properties(c).is_idna2008_allowed() {
       raise DisallowedCodePoint(cp=c.to_int())
     }
     if c is ('\u{200C}' | '\u{200D}') {
@@ -69,6 +71,9 @@ fn validate_label(
       | '\u{0660}'..<='\u{0669}'
       | '\u{06F0}'..<='\u{06F9}') {
       has_contexto = true
+      if c == '\u{30FB}' {
+        has_katakana_middle_dot = true
+      }
     }
     if check_bidi {
       bidi.add(@bidi.bidi_class(c))
@@ -80,7 +85,7 @@ fn validate_label(
     validate_contextj(label)
   }
   if has_contexto {
-    validate_contexto(label)
+    validate_contexto(label, has_katakana_middle_dot~)
   }
   if check_bidi {
     bidi.flags()
