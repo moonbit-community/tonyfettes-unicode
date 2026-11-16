@@ -220,6 +220,13 @@ async fn generate_idna(g : Generator) -> Unit {
     "idna/internal/idna/mapping.mbt",
     @idna_data.emit_mapping(g.source("idna/IdnaMappingTable.txt")),
   )
+  g.write(
+    "idna/internal/idna/idna2008.mbt",
+    @idna_data.emit_idna2008(
+      g.source("idna/Idna2008.txt"),
+      g.ucd("Scripts.txt"),
+    ),
+  )
 }
 
 ///|

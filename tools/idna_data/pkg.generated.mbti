@@ -2,6 +2,8 @@
 package "moonbit-community/unicode-tools/idna_data"
 
 // Values
+pub fn emit_idna2008(String, String) -> String raise
+
 pub fn emit_mapping(String) -> String raise
 
 // Errors

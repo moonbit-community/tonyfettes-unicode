@@ -15,6 +15,7 @@ pub(all) suberror IdnaError {
   EmptyLabel
   InvalidBidi
   InvalidJoiner
+  InvalidContextO(cp~ : Int32)
   InvalidAcePrefix
   LeadingCombiningMark
 }
@@ -37,6 +38,8 @@ pub impl Show for IdnaError with fn output(self, logger) {
     EmptyLabel => logger.write_string("EmptyLabel")
     InvalidBidi => logger.write_string("InvalidBidi")
     InvalidJoiner => logger.write_string("InvalidJoiner")
+    InvalidContextO(cp~) =>
+      logger.write_string("InvalidContextO(cp=\{cp.to_string()})")
     InvalidAcePrefix => logger.write_string("InvalidAcePrefix")
     LeadingCombiningMark => logger.write_string("LeadingCombiningMark")
   }
@@ -49,17 +52,25 @@ let ace_prefix : String = "xn--"
 ///|
 /// Convert a domain name to ASCII (for DNS lookup)
 /// This is the main entry point for IDNA ToASCII operation
+///
+/// `check_idna2008` additionally rejects Unicode label characters classified
+/// as DISALLOWED or UNASSIGNED by IDNA2008. `check_contexto` checks the
+/// RFC 5892 CONTEXTO rules. Both default to false and preserve UTS #46
+/// mapping and normalization; ContextJ remains controlled by `check_joiners`.
 pub fn to_ascii(
   domain : String,
   use_std3_ascii_rules~ : Bool = true,
   check_hyphens~ : Bool = true,
   check_bidi~ : Bool = true,
   check_joiners~ : Bool = true,
+  check_idna2008~ : Bool = false,
+  check_contexto~ : Bool = false,
   verify_dns_length~ : Bool = true,
 ) -> String raise IdnaError {
   if ascii_fast_path(
       domain,
-      use_std3_ascii_rules~,
+      // IDNA2008 also limits plain ASCII labels to LDH after lowercasing.
+      use_std3_ascii_rules=use_std3_ascii_rules || check_idna2008,
       check_hyphens~,
       verify_dns_length~,
     )
@@ -72,6 +83,8 @@ pub fn to_ascii(
     check_hyphens~,
     check_bidi~,
     check_joiners~,
+    check_idna2008~,
+    check_contexto~,
     verify_dns_length~,
   )
 }
@@ -84,6 +97,8 @@ fn to_ascii_general(
   check_hyphens~ : Bool,
   check_bidi~ : Bool,
   check_joiners~ : Bool,
+  check_idna2008~ : Bool,
+  check_contexto~ : Bool,
   verify_dns_length~ : Bool,
 ) -> String raise IdnaError {
   // Map and normalize before splitting. Labels are validated below, after
@@ -137,6 +152,8 @@ fn to_ascii_general(
         use_std3_ascii_rules~,
         check_hyphens~,
         check_joiners~,
+        check_idna2008~,
+        check_contexto~,
         check_bidi~,
         statuses_known=normalized is None,
       )
@@ -159,6 +176,8 @@ fn to_ascii_general(
         use_std3_ascii_rules~,
         check_hyphens~,
         check_joiners~,
+        check_idna2008~,
+        check_contexto~,
         check_bidi~,
         statuses_known~,
       )
@@ -239,17 +258,24 @@ fn encodes_to_ace_label(
 ///|
 /// Convert a domain name to Unicode (for display)
 /// This is the main entry point for IDNA ToUnicode operation
+///
+/// `check_idna2008` additionally rejects Unicode label characters classified
+/// as DISALLOWED or UNASSIGNED by IDNA2008. `check_contexto` checks the
+/// RFC 5892 CONTEXTO rules. Both apply to decoded A-labels as well as Unicode
+/// input, default to false, and preserve UTS #46 mapping and normalization.
 pub fn to_unicode(
   domain : String,
   use_std3_ascii_rules~ : Bool = true,
   check_hyphens~ : Bool = true,
   check_bidi~ : Bool = true,
   check_joiners~ : Bool = true,
+  check_idna2008~ : Bool = false,
+  check_contexto~ : Bool = false,
 ) -> String raise IdnaError {
   // ToUnicode does not verify DNS lengths.
   if ascii_fast_path(
       domain,
-      use_std3_ascii_rules~,
+      use_std3_ascii_rules=use_std3_ascii_rules || check_idna2008,
       check_hyphens~,
       verify_dns_length=false,
     )
@@ -262,6 +288,8 @@ pub fn to_unicode(
     check_hyphens~,
     check_bidi~,
     check_joiners~,
+    check_idna2008~,
+    check_contexto~,
   )
 }
 
@@ -273,6 +301,8 @@ fn to_unicode_general(
   check_hyphens~ : Bool,
   check_bidi~ : Bool,
   check_joiners~ : Bool,
+  check_idna2008~ : Bool,
+  check_contexto~ : Bool,
 ) -> String raise IdnaError {
   // Split into labels first (before mapping, to handle Punycode)
   let length = domain.length()
@@ -307,6 +337,8 @@ fn to_unicode_general(
       use_std3_ascii_rules~,
       check_hyphens~,
       check_joiners~,
+      check_idna2008~,
+      check_contexto~,
       check_bidi~,
       statuses_known=normalized is None,
     )

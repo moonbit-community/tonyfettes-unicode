@@ -8,12 +8,20 @@ import {
 // Values
 pub fn lookup_idna_entry(Char) -> IdnaEntry
 
+pub fn lookup_idna_properties(Char) -> IdnaProperties
+
 // Errors
 
 // Types and methods
 type IdnaEntry
 pub fn IdnaEntry::status(Self) -> IdnaStatus
 pub fn IdnaEntry::write_mapping(Self, StringBuilder) -> Unit
+
+type IdnaProperties
+pub fn IdnaProperties::is_greek(Self) -> Bool
+pub fn IdnaProperties::is_hebrew(Self) -> Bool
+pub fn IdnaProperties::is_idna2008_allowed(Self) -> Bool
+pub fn IdnaProperties::is_japanese(Self) -> Bool
 
 #derive(Eq, @debug.Debug)
 pub(all) enum IdnaStatus {
