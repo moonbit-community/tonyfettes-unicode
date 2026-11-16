@@ -148,7 +148,7 @@ let idna2008_checked = try! @idna.to_ascii(
   check_idna2008=true,
   check_contexto=true,
 )
-// "xn--bb-eka.at" — UTS #46 mapping still lowercases the input.
+// "xn--bb-eka.at" — UTS #46 mapping lowercases the input.
 ```
 
 Both functions support IDNA2008 label validation through the opt-in
@@ -313,31 +313,24 @@ The available forms are `NFD`, `NFC`, `NFKD`, and `NFKC`.
 | `to_ascii(String, ...) -> String raise IdnaError` | Convert a domain name to ASCII form for DNS use. |
 | `to_unicode(String, ...) -> String raise IdnaError` | Convert an ASCII or ACE domain name to Unicode form for display. |
 
-`to_ascii` accepts these optional checks, all defaulting to `true`:
+`to_ascii` accepts the following independent boolean options. `to_unicode`
+accepts the same options except `verify_dns_length` and does not check DNS
+lengths.
 
-- `use_std3_ascii_rules? : Bool`
-- `check_hyphens? : Bool`
-- `check_bidi? : Bool`
-- `check_joiners? : Bool`
-- `verify_dns_length? : Bool`
-
-`to_unicode` accepts the same options except `verify_dns_length`; they also
-default to `true`.
-
-Both functions also accept two independent options, defaulting to `false`:
-
-- `check_idna2008? : Bool` restricts the final Unicode labels to the IDNA2008
-  `PVALID`, `CONTEXTJ`, and `CONTEXTO` categories. Other code points raise
-  `DisallowedCodePoint(cp~)`. This repertoire check does not replace
-  `check_joiners`, which validates the context of `CONTEXTJ` characters.
-- `check_contexto? : Bool` applies the RFC 5892 ContextO rules, independently of
-  `check_idna2008`. A contextual violation raises `InvalidContextO(cp~)`.
+| Option | Default | Validation |
+| --- | --- | --- |
+| `use_std3_ascii_rules` | `true` | Restrict ASCII label characters to letters, digits, and hyphens. |
+| `check_hyphens` | `true` | Reject leading or trailing hyphens and labels with hyphens in both the third and fourth positions. |
+| `check_bidi` | `true` | Apply the RFC 5893 Bidi rule. |
+| `check_joiners` | `true` | Check the RFC 5892 CONTEXTJ rules for ZWNJ (U+200C) and ZWJ (U+200D). |
+| `check_idna2008` | `false` | Restrict Unicode label characters to IDNA2008 `PVALID`, `CONTEXTJ`, and `CONTEXTO`. Other code points raise `DisallowedCodePoint(cp~)`. |
+| `check_contexto` | `false` | Check the RFC 5892 CONTEXTO rules. Violations raise `InvalidContextO(cp~)`. |
+| `verify_dns_length` | `true` | Check ASCII label and domain lengths against DNS limits. |
 
 These options apply after UTS #46 mapping and NFC normalization, and to decoded
-ACE labels. For example, `ÖBB.at` is still mapped to `öbb.at`, while `☕.example`
-is rejected when `check_idna2008=true`. Enable both new options alongside the
-default checks to combine IDNA2008 repertoire and contextual validation with
-the existing label checks.
+ACE labels. For example, `ÖBB.at` is mapped to `öbb.at`, while `☕.example` is
+rejected when `check_idna2008=true`. Enable `check_idna2008` and `check_contexto`
+alongside the default checks for IDNA2008 label validation.
 
 ### `moonbit-community/unicode-bidi`
 

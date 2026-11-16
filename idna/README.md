@@ -12,14 +12,14 @@ processing. These options enable the IDNA2008 character and ContextO checks:
 
 - `check_idna2008=true` restricts the resulting Unicode labels to the IDNA2008
   `PVALID`, `CONTEXTJ`, and `CONTEXTO` categories. Other code points raise
-  `DisallowedCodePoint(cp~)`. This only checks the repertoire; `check_joiners`
-  remains responsible for validating `CONTEXTJ` characters in context.
+  `DisallowedCodePoint(cp~)`.
 - `check_contexto=true` independently validates the RFC 5892 ContextO rules.
   Violations raise `InvalidContextO(cp~)`.
 
-Both new options default to `false`. They also check Unicode labels decoded
-from Punycode. Enable both alongside the default checks to combine IDNA2008
-repertoire and contextual validation with the existing label checks.
+Both options default to `false`. They also check Unicode labels decoded from
+Punycode. Enable both alongside the default checks for IDNA2008 label
+validation. The `check_joiners` option checks CONTEXTJ rules and defaults to
+`true`.
 
 ```moonbit
 let ascii = try! @idna.to_ascii(
