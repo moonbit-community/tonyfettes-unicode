@@ -189,7 +189,8 @@ async fn prepare_release(root : StringView, version : String) -> Unit {
   println(
     "Release \{version} is prepared. Review and commit the manifest changes,",
   )
-  println("push the commit to the default branch, then run:")
+  println("push the branch, then publish it with the publish-package workflow")
+  println("or run the following command from this checkout:")
   println("moon run --target native tools/release -- publish --execute")
 }
 
