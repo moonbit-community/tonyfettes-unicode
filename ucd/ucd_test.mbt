@@ -681,7 +681,7 @@ test "joining_group: Pe is told apart from the General_Category value" {
 test "uppercase and lowercase: strings" {
   inspect(@ucd.uppercase("Straße \u{FB03}"), content="STRASSE FFI")
   inspect(@ucd.lowercase("İSTANBUL"), content="i\u{0307}stanbul")
-  // Context-free: the final sigma is not applied.
-  inspect(@ucd.lowercase("ΟΔΥΣΣΕΥΣ"), content="οδυσσευσ")
+  // Default string casing applies Final_Sigma.
+  inspect(@ucd.lowercase("ΟΔΥΣΣΕΥΣ"), content="οδυσσευς")
   inspect(@ucd.uppercase("Hello"[1:]), content="ELLO")
 }

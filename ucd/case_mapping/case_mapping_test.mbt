@@ -110,7 +110,7 @@ test "uppercase and lowercase: whole strings" {
   )
   inspect(
     @case_mapping.lowercase("ΟΔΥΣΣΕΥΣ"),
-    content="οδυσσευσ",
+    content="οδυσσευς",
   )
   inspect(
     @case_mapping.uppercase("世界こんにちは"),
@@ -139,9 +139,11 @@ test "uppercase and lowercase: expansions" {
 }
 
 ///|
-test "uppercase and lowercase: context-free" {
-  // A final capital sigma becomes σ, not ς.
-  inspect(@case_mapping.lowercase("ΣΑΣ"), content="σασ")
+test "uppercase and lowercase: default context without language tailoring" {
+  inspect(@case_mapping.lowercase("ΣΑΣ"), content="σας")
+  inspect(@case_mapping.lowercase("ΣΑΣΑ"), content="σασα")
+  // A single-character mapping has no surrounding context.
+  inspect(@case_mapping.full_lowercase('Σ'), content="σ")
   // Language-specific mappings are not applied.
   inspect(@case_mapping.uppercase("i"), content="I")
   inspect(@case_mapping.lowercase("I"), content="i")

@@ -4,6 +4,8 @@ package "moonbit-community/unicode-tools/ucd"
 // Values
 pub fn emit_binary_property(String, property~ : String, source~ : String) -> String raise
 
+pub fn emit_case_context(String) -> String raise
+
 pub fn emit_case_folding(String) -> String raise
 
 pub fn emit_case_mapping(UnicodeData, SpecialCasingData) -> String raise
