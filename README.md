@@ -13,7 +13,8 @@ segmentation. The generated tables target Unicode 18.0.0.
   identifier matching from Unicode section 3.13
 - Punycode encoding and decoding from RFC 3492
 - IDNA processing from UTS #46, including mapping, validation, Bidi checks,
-  joiner checks, and DNS length checks
+  joiner checks, and DNS length checks, with optional IDNA2008 character and
+  contextual validation
 - Unicode Bidirectional Algorithm support from UAX #9
 - Default line breaking opportunities from UAX #14
 - Extended grapheme cluster, word, and sentence segmentation from UAX #29
@@ -150,10 +151,10 @@ let idna2008_checked = try! @idna.to_ascii(
 // "xn--bb-eka.at" — UTS #46 mapping still lowercases the input.
 ```
 
-The additional IDNA2008 repertoire and ContextO checks are opt-in and default to
-`false`. They validate the Unicode labels after UTS #46 processing, including
-labels decoded from Punycode; they do not turn these functions into validators
-of unmodified IDNA2008 input.
+Both functions support IDNA2008 label validation through the opt-in
+`check_idna2008` and `check_contexto` options, which default to `false`. Enable
+both alongside the default checks. Validation applies after UTS #46 mapping
+and NFC normalization, including to Unicode labels decoded from Punycode.
 
 To handle validation failures:
 
@@ -336,8 +337,7 @@ These options apply after UTS #46 mapping and NFC normalization, and to decoded
 ACE labels. For example, `ÖBB.at` is still mapped to `öbb.at`, while `☕.example`
 is rejected when `check_idna2008=true`. Enable both new options alongside the
 default checks to combine IDNA2008 repertoire and contextual validation with
-the existing label checks. This retains UTS #46 input processing; it is not
-strict validation of the original input.
+the existing label checks.
 
 ### `moonbit-community/unicode-bidi`
 
