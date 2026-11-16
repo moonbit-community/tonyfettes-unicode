@@ -9,11 +9,11 @@ repository = "https://github.com/moonbit-community/tonyfettes-unicode"
 description = "Workspace-only Unicode conformance tests"
 
 import {
-  "moonbit-community/unicode@0.7.1",
-  "moonbit-community/unicode-data@0.7.1",
-  "moonbit-community/unicode-normalization@0.7.1",
-  "moonbit-community/unicode-bidi@0.7.1",
-  "moonbit-community/unicode-segmentation@0.7.1",
-  "moonbit-community/unicode-idna@0.7.1",
-  "moonbit-community/unicode-casefold@0.7.1",
+  "moonbit-community/unicode@0.8.0",
+  "moonbit-community/unicode-data@0.8.0",
+  "moonbit-community/unicode-normalization@0.8.0",
+  "moonbit-community/unicode-bidi@0.8.0",
+  "moonbit-community/unicode-segmentation@0.8.0",
+  "moonbit-community/unicode-idna@0.8.0",
+  "moonbit-community/unicode-casefold@0.8.0",
 }
