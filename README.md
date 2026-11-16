@@ -141,7 +141,19 @@ let checked = try! @idna.to_ascii(
   check_joiners=true,
   verify_dns_length=true,
 )
+
+let idna2008_checked = try! @idna.to_ascii(
+  "ÖBB.at",
+  check_idna2008=true,
+  check_contexto=true,
+)
+// "xn--bb-eka.at" — UTS #46 mapping still lowercases the input.
 ```
+
+The additional IDNA2008 repertoire and ContextO checks are opt-in and default to
+`false`. They validate the Unicode labels after UTS #46 processing, including
+labels decoded from Punycode; they do not turn these functions into validators
+of unmodified IDNA2008 input.
 
 To handle validation failures:
 
@@ -310,6 +322,22 @@ The available forms are `NFD`, `NFC`, `NFKD`, and `NFKC`.
 
 `to_unicode` accepts the same options except `verify_dns_length`; they also
 default to `true`.
+
+Both functions also accept two independent options, defaulting to `false`:
+
+- `check_idna2008? : Bool` restricts the final Unicode labels to the IDNA2008
+  `PVALID`, `CONTEXTJ`, and `CONTEXTO` categories. Other code points raise
+  `DisallowedCodePoint(cp~)`. This repertoire check does not replace
+  `check_joiners`, which validates the context of `CONTEXTJ` characters.
+- `check_contexto? : Bool` applies the RFC 5892 ContextO rules, independently of
+  `check_idna2008`. A contextual violation raises `InvalidContextO(cp~)`.
+
+These options apply after UTS #46 mapping and NFC normalization, and to decoded
+ACE labels. For example, `ÖBB.at` is still mapped to `öbb.at`, while `☕.example`
+is rejected when `check_idna2008=true`. Enable both new options alongside the
+default checks to combine IDNA2008 repertoire and contextual validation with
+the existing label checks. This retains UTS #46 input processing; it is not
+strict validation of the original input.
 
 ### `moonbit-community/unicode-bidi`
 

@@ -9,12 +9,15 @@
 /// Every caller passes a label it has just mapped and normalized to NFC, so
 /// the label is not checked for NFC again. `statuses_known` tells that the
 /// mapping and normalization left the label as it was, so that every
-/// character already has a valid status.
+/// character already has a valid UTS #46 status. IDNA2008 repertoire checks
+/// are independent and cannot be skipped on that basis.
 fn validate_label(
   label : StringView,
   use_std3_ascii_rules~ : Bool,
   check_hyphens~ : Bool,
   check_joiners~ : Bool,
+  check_idna2008~ : Bool,
+  check_contexto~ : Bool,
   check_bidi~ : Bool,
   statuses_known~ : Bool,
 ) -> Int32 raise IdnaError {
@@ -41,6 +44,7 @@ fn validate_label(
   // Check 6 (every character has a valid status) in the same pass that
   // looks for joiners and gathers what the Bidi rule needs.
   let mut has_joiner = false
+  let mut has_contexto = false
   let bidi = LabelBidi::new()
   for c in label {
     if !statuses_known {
@@ -49,8 +53,22 @@ fn validate_label(
       // The table has these valid; STD3 rules allow only LDH in ASCII.
       raise DisallowedCodePoint(cp=c.to_int())
     }
+    if check_idna2008 && !@idna_data.is_idna2008_allowed(c) {
+      raise DisallowedCodePoint(cp=c.to_int())
+    }
     if c is ('\u{200C}' | '\u{200D}') {
       has_joiner = true
+    }
+    if check_contexto &&
+      c
+      is ('\u{00B7}'
+      | '\u{0375}'
+      | '\u{05F3}'
+      | '\u{05F4}'
+      | '\u{30FB}'
+      | '\u{0660}'..<='\u{0669}'
+      | '\u{06F0}'..<='\u{06F9}') {
+      has_contexto = true
     }
     if check_bidi {
       bidi.add(@bidi.bidi_class(c))
@@ -60,6 +78,9 @@ fn validate_label(
   // Check 7: ContextJ rules (when check_joiners)
   if check_joiners && has_joiner {
     validate_contextj(label)
+  }
+  if has_contexto {
+    validate_contexto(label)
   }
   if check_bidi {
     bidi.flags()

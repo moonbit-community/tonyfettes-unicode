@@ -9,6 +9,7 @@ pub(all) suberror IdnaError {
   EmptyLabel
   InvalidBidi
   InvalidJoiner
+  InvalidContextO(cp~ : Int32)
   InvalidAcePrefix
   LeadingCombiningMark
 }
@@ -31,6 +32,8 @@ pub impl Show for IdnaError with fn output(self, logger) {
     EmptyLabel => logger.write_string("EmptyLabel")
     InvalidBidi => logger.write_string("InvalidBidi")
     InvalidJoiner => logger.write_string("InvalidJoiner")
+    InvalidContextO(cp~) =>
+      logger.write_string("InvalidContextO(cp=\{cp.to_string()})")
     InvalidAcePrefix => logger.write_string("InvalidAcePrefix")
     LeadingCombiningMark => logger.write_string("LeadingCombiningMark")
   }
@@ -59,6 +62,7 @@ fn legacy_error(error : @impl.IdnaError) -> IdnaError {
     @impl.EmptyLabel => EmptyLabel
     @impl.InvalidBidi => InvalidBidi
     @impl.InvalidJoiner => InvalidJoiner
+    @impl.InvalidContextO(cp~) => InvalidContextO(cp~)
     @impl.InvalidAcePrefix => InvalidAcePrefix
     @impl.LeadingCombiningMark => LeadingCombiningMark
   }
@@ -71,6 +75,8 @@ pub fn to_ascii(
   check_hyphens~ : Bool = true,
   check_bidi~ : Bool = true,
   check_joiners~ : Bool = true,
+  check_idna2008~ : Bool = false,
+  check_contexto~ : Bool = false,
   verify_dns_length~ : Bool = true,
 ) -> String raise IdnaError {
   @impl.to_ascii(
@@ -79,6 +85,8 @@ pub fn to_ascii(
     check_hyphens~,
     check_bidi~,
     check_joiners~,
+    check_idna2008~,
+    check_contexto~,
     verify_dns_length~,
   ) catch {
     error => raise legacy_error(error)
@@ -92,6 +100,8 @@ pub fn to_unicode(
   check_hyphens~ : Bool = true,
   check_bidi~ : Bool = true,
   check_joiners~ : Bool = true,
+  check_idna2008~ : Bool = false,
+  check_contexto~ : Bool = false,
 ) -> String raise IdnaError {
   @impl.to_unicode(
     domain,
@@ -99,6 +109,8 @@ pub fn to_unicode(
     check_hyphens~,
     check_bidi~,
     check_joiners~,
+    check_idna2008~,
+    check_contexto~,
   ) catch {
     error => raise legacy_error(error)
   }

@@ -6,6 +6,14 @@ import {
 }
 
 // Values
+pub fn is_greek(Char) -> Bool
+
+pub fn is_hebrew(Char) -> Bool
+
+pub fn is_idna2008_allowed(Char) -> Bool
+
+pub fn is_japanese(Char) -> Bool
+
 pub fn lookup_idna_entry(Char) -> IdnaEntry
 
 // Errors
