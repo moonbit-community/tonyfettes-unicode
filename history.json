@@ -2122,5 +2122,140 @@
       "moonbit-wasm": 1.0033,
       "moonbit-js": 1.0044
     }
+  },
+  {
+    "about": {
+      "date": "2026-11-18T09:34:20Z",
+      "rounds": 2,
+      "machine": "Intel(R) Xeon(R) 6973P-C, Linux x86_64",
+      "versions": {
+        "moon": "moon 0.1.20261117 (eb64713 2026-11-17)",
+        "Node": "v24.22.2 (ICU 78.3)"
+      },
+      "base": {
+        "commit": "6868b840bfadf01445554ae6c9062d4acf08f6fc",
+        "subject": "Merge pull request #97 from moonbit-community/fix/clear-deprecation-warnings",
+        "title": "fix: clear warnings and migrate the data generator to current async APIs",
+        "date": "2026-11-18T17:17:25+08:00",
+        "dirty": true
+      },
+      "head": {
+        "commit": "eea6ebe0ec665bc7aa0be118e74e6cf211997274",
+        "subject": "Merge pull request #98 from moonbit-community/release/0.8.1",
+        "title": "release: 0.8.1",
+        "date": "2026-11-18T17:30:42+08:00",
+        "dirty": false
+      }
+    },
+    "operations": {
+      "norm/nfc": {
+        "moonbit-native": 1.0229,
+        "moonbit-wasm-gc": 0.99604,
+        "moonbit-wasm": 0.9951,
+        "moonbit-js": 1.0042
+      },
+      "norm/nfd": {
+        "moonbit-native": 1.0191,
+        "moonbit-wasm-gc": 1.0004,
+        "moonbit-wasm": 1.0058,
+        "moonbit-js": 1.0112
+      },
+      "norm/nfkc": {
+        "moonbit-native": 1.0287,
+        "moonbit-wasm-gc": 0.99965,
+        "moonbit-wasm": 1.0076,
+        "moonbit-js": 1.0157
+      },
+      "norm/nfkd": {
+        "moonbit-native": 1.0362,
+        "moonbit-wasm-gc": 1.0058,
+        "moonbit-wasm": 1.0101,
+        "moonbit-js": 1.0037
+      },
+      "norm/nfd>nfc": {
+        "moonbit-native": 1.03,
+        "moonbit-wasm-gc": 0.99239,
+        "moonbit-wasm": 1.0063,
+        "moonbit-js": 1.0126
+      },
+      "norm/is_nfc": {
+        "moonbit-native": 1.0202,
+        "moonbit-wasm-gc": 0.99815,
+        "moonbit-wasm": 0.99979,
+        "moonbit-js": 0.99993
+      },
+      "seg/graphemes": {
+        "moonbit-native": 1.0207,
+        "moonbit-wasm-gc": 1.0022,
+        "moonbit-wasm": 1.0253,
+        "moonbit-js": 0.9992
+      },
+      "bidi/process": {
+        "moonbit-native": 0.97993,
+        "moonbit-wasm-gc": 0.98986,
+        "moonbit-wasm": 0.99988,
+        "moonbit-js": 0.99235
+      },
+      "idna/to_ascii": {
+        "moonbit-native": 1.0231,
+        "moonbit-wasm-gc": 1.0021,
+        "moonbit-wasm": 0.9895,
+        "moonbit-js": 1.0042
+      },
+      "idna/to_unicode": {
+        "moonbit-native": 1.0341,
+        "moonbit-wasm-gc": 0.99669,
+        "moonbit-wasm": 1.0017,
+        "moonbit-js": 1.0086
+      },
+      "puny/encode": {
+        "moonbit-native": 1.0391,
+        "moonbit-wasm-gc": 0.98296,
+        "moonbit-wasm": 1.0223,
+        "moonbit-js": 1.0151
+      },
+      "puny/decode": {
+        "moonbit-native": 1.0321,
+        "moonbit-wasm-gc": 0.96742,
+        "moonbit-wasm": 1.0097,
+        "moonbit-js": 0.99963
+      },
+      "case/simple_upper": {
+        "moonbit-native": 0.99988,
+        "moonbit-wasm-gc": 0.99417,
+        "moonbit-wasm": 0.99937,
+        "moonbit-js": 0.99868
+      },
+      "case/full_upper": {
+        "moonbit-native": 1.0033,
+        "moonbit-wasm-gc": 0.99743,
+        "moonbit-wasm": 1.0026,
+        "moonbit-js": 1.0029
+      },
+      "case/fold": {
+        "moonbit-native": 0.99813,
+        "moonbit-wasm-gc": 0.99902,
+        "moonbit-wasm": 1.0042,
+        "moonbit-js": 1.0044
+      },
+      "case/nfkc_casefold": {
+        "moonbit-native": 1.0019,
+        "moonbit-wasm-gc": 0.98564,
+        "moonbit-wasm": 0.99067,
+        "moonbit-js": 0.98621
+      },
+      "prop/general_category_Ll": {
+        "moonbit-native": 0.99981,
+        "moonbit-wasm-gc": 1.0013,
+        "moonbit-wasm": 1.0009,
+        "moonbit-js": 1.0262
+      }
+    },
+    "spread": {
+      "moonbit-native": 1.0357,
+      "moonbit-wasm-gc": 1.0216,
+      "moonbit-wasm": 1.0212,
+      "moonbit-js": 1.0296
+    }
   }
 ]
