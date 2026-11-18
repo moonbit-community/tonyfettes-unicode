@@ -85,7 +85,7 @@ fn map_string(
     Lower => ('A'.to_int(), 32)
   }
   let length = s.length()
-  let out = StringBuilder(size_hint=length)
+  let out = StringBuilder(capacity=length)
   // Code units before `copied` are in `out`.
   let mut copied = 0
   for index = 0; index < length; {

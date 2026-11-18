@@ -44,15 +44,16 @@ async fn Generator::source(self : Generator, path : String) -> String {
   } else {
     println("Downloading \{name}...")
     let url = "https://www.unicode.org/Public/\{UnicodeVersion}/\{path}"
-    let (response, content) = @http.get_text(url)
+    let (response, body) = @http.get(url)
     guard response.code >= 200 && response.code < 300 else {
       fail("Download failed for \{url}: HTTP \{response.code}")
     }
+    let content = body.text()
     @fs.mkdir(
       cache_directory,
       permission=0o755,
       recursive=true,
-      allow_exist=true,
+      allow_existing=true,
     )
     @fs.write_text(cache_path, content, permission=0o644)
     content
@@ -79,7 +80,7 @@ async fn Generator::write(
       directory.to_owned(),
       permission=0o755,
       recursive=true,
-      allow_exist=true,
+      allow_existing=true,
     )
   }
   @fs.write_text(full_path, source, permission=0o644)
