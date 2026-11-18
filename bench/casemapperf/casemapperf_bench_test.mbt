@@ -19,7 +19,7 @@ fn data_directory() -> String raise {
 /// Uppercase `text` one character at a time, as callers had to before the
 /// string-level functions.
 fn uppercase_by_char(text : String) -> String {
-  let out = StringBuilder(size_hint=text.length())
+  let out = StringBuilder(capacity=text.length())
   for c in text {
     out.write_string(@ucd.to_uppercase(c))
   }

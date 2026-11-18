@@ -84,7 +84,7 @@ fn map_text(
 /// units, which the mapping leaves as they are.
 fn mapping_builder(text : StringView, offset : Int32) -> StringBuilder {
   // The size hint counts bytes, two per UTF-16 code unit.
-  let builder = StringBuilder(size_hint=2 * text.length())
+  let builder = StringBuilder(capacity=2 * text.length())
   builder.write_view(text[:offset])
   builder
 }
