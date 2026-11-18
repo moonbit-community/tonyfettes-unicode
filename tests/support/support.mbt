@@ -23,13 +23,13 @@ pub async fn read_data_file(name : String) -> String {
 ///|
 /// Parse a hexadecimal integer, e.g. `"1E0A"`.
 pub fn parse_hex_int(text : StringView) -> Int32 raise {
-  @string.parse_int(text.trim(), base=16)
+  @string.parse_int(text.trim(), radix=16)
 }
 
 ///|
 /// Parse a decimal integer.
 pub fn parse_decimal_int(text : StringView) -> Int32 raise {
-  @string.parse_int(text.trim(), base=10)
+  @string.parse_int(text.trim(), radix=10)
 }
 
 ///|

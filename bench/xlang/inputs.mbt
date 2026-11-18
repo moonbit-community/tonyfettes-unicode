@@ -15,7 +15,7 @@ async fn write_text(path : String, text : String) -> Unit {
 /// The harnesses list these directories, so the inputs are defined only here.
 async fn prepare_inputs(root : String, directory : String) -> Unit {
   if @fs.exists(directory) {
-    @fs.rmdir(directory, recursive=true)
+    @fs.remove(directory, recursive=true)
   }
   for group in ["norm", "normd", "seg", "bidi", "case"] {
     @fs.mkdir("\{directory}/\{group}", permission=0o755, recursive=true)
@@ -133,7 +133,7 @@ async fn prepare_inputs(root : String, directory : String) -> Unit {
 ///|
 /// `text` with every character replaced by its full uppercase mapping.
 fn uppercase(text : String) -> String {
-  let result = StringBuilder(size_hint=text.length())
+  let result = StringBuilder(capacity=text.length())
   for c in text {
     result.write_string(@ucd.to_uppercase(c))
   }

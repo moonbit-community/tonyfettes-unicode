@@ -17,7 +17,7 @@ fn data_directory() -> String raise {
 
 ///|
 fn uppercase(text : String) -> String {
-  let out = StringBuilder(size_hint=text.length())
+  let out = StringBuilder(capacity=text.length())
   for c in text {
     out.write_string(@ucd.to_uppercase(c))
   }

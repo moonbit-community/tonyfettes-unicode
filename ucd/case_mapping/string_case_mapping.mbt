@@ -170,7 +170,7 @@ fn map_non_ascii(
     // A view of a whole string gives that string back without a copy.
     return s.to_owned()
   }
-  let out = StringBuilder(size_hint=length)
+  let out = StringBuilder(capacity=length)
   // Code units before `copied` are in `out`.
   let mut copied = 0
   for index = first_change; index < length; {

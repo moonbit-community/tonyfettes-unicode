@@ -154,7 +154,7 @@ fn Folding::first_change(self : Folding, s : StringView) -> Int32 {
 /// code points that fold to themselves are copied at once.
 fn Folding::fold_from(self : Folding, s : StringView, index : Int32) -> String {
   let length = s.length()
-  let out = StringBuilder(size_hint=length)
+  let out = StringBuilder(capacity=length)
   // Code units before `copied` are in `out`.
   let mut copied = 0
   for index = index; index < length; {

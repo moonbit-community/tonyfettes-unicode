@@ -39,12 +39,12 @@ pub fn data_lines(content : StringView) -> Iter[Array[StringView]] {
 
 ///|
 pub fn parse_hex_int(text : StringView) -> Int32 raise {
-  @string.parse_int(text.trim(), base=16)
+  @string.parse_int(text.trim(), radix=16)
 }
 
 ///|
 pub fn parse_decimal_int(text : StringView) -> Int32 raise {
-  @string.parse_int(text.trim(), base=10)
+  @string.parse_int(text.trim(), radix=10)
 }
 
 ///|
