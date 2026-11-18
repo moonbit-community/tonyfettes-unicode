@@ -1,6 +1,6 @@
 name = "moonbit-community/unicode-segmentation"
 
-version = "0.8.0"
+version = "0.8.1"
 
 license = "Apache-2.0"
 
@@ -20,5 +20,5 @@ keywords = [
 ]
 
 import {
-  "moonbit-community/unicode-data@0.8.0",
+  "moonbit-community/unicode-data@0.8.1",
 }
