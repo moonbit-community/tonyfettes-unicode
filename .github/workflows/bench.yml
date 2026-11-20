@@ -45,6 +45,7 @@ concurrency:
   queue: max
 
 env:
+  MOON_SEPARATE_COMPILATION: "1"
   DATA_BRANCH: bench-data
 
 jobs:
