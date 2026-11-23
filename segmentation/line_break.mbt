@@ -96,7 +96,7 @@ pub fn LineBreaks::next(self : LineBreaks) -> StringView {
 /// opportunity() in the loop body for the segment just yielded. Collected
 /// views retain their text and positions, but do not store the break kind.
 pub fn LineBreaks::iter(self : LineBreaks) -> Iter[StringView] {
-  Iter::new(() => {
+  Iter(() => {
     let segment = self.next()
     if segment.is_empty() {
       None

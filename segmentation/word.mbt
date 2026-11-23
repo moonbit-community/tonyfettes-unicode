@@ -93,7 +93,7 @@ pub fn Words::next(self : Words) -> StringView {
 ///|
 /// Iterate over the remaining words, consuming the same cursor as `next`.
 pub fn Words::iter(self : Words) -> Iter[StringView] {
-  Iter::new(() => {
+  Iter(() => {
     let word = self.next()
     if word.is_empty() {
       None

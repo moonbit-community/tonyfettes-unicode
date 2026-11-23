@@ -219,7 +219,7 @@ pub fn Graphemes::next(self : Graphemes) -> StringView {
 /// Iterate over the remaining clusters. The iterator advances this cursor, so
 /// clusters it yields are not returned by `next` again.
 pub fn Graphemes::iter(self : Graphemes) -> Iter[StringView] {
-  Iter::new(() => {
+  Iter(() => {
     let cluster = self.next()
     if cluster.is_empty() {
       None

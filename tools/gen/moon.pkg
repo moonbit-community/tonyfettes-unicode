@@ -6,7 +6,6 @@ import {
   "moonbit-community/unicode-tools/bidi_data",
   "moonbit-community/unicode-tools/segmentation_data",
   "moonbitlang/core/argparse",
-  "moonbitlang/core/async",
   "moonbitlang/core/async/fs",
   "moonbitlang/core/async/http",
   "moonbitlang/core/async/shell",
