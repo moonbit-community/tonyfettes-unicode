@@ -26,22 +26,50 @@ const IMPL = {
 const ORDER = Object.keys(IMPL);
 const BACKENDS = ["moonbit-native", "moonbit-wasm-gc", "moonbit-wasm", "moonbit-js"];
 
+const GROUPS = [
+  ["all", "All"],
+  ["norm", "Normalization"],
+  ["seg", "Segmentation"],
+  ["bidi", "Bidi"],
+  ["idna", "IDNA & Punycode"],
+  ["case", "Case & properties"],
+];
+const opGroup = op => {
+  const prefix = op.split("/")[0];
+  if (prefix === "puny") return "idna";
+  if (prefix === "prop") return "case";
+  return prefix;
+};
+
 const OPS = [
   ["norm/nfc", "NFC"], ["norm/nfd", "NFD"], ["norm/nfkc", "NFKC"], ["norm/nfkd", "NFKD"],
   ["norm/nfd>nfc", "NFD → NFC"], ["norm/is_nfc", "Is it NFC?"],
-  ["seg/graphemes", "Grapheme clusters"], ["bidi/process", "Bidi levels"],
-  ["idna/to_ascii", "IDNA ToASCII"], ["idna/to_unicode", "IDNA ToUnicode"],
+  ["seg/graphemes", "Grapheme clusters"], ["seg/word_segments", "Word segments"],
+  ["seg/words", "Words (filtered)"], ["seg/sentences", "Sentences"], ["seg/line_breaks", "Line breaks"],
+  ["bidi/process", "Bidi levels"], ["bidi/reorder", "Bidi reorder"], ["bidi/requires_bidi", "Requires bidi"],
+  ["idna/to_ascii", "IDNA ToASCII"], ["idna/to_ascii_2008", "IDNA2008 ToASCII"], ["idna/to_unicode", "IDNA ToUnicode"],
   ["puny/encode", "Punycode encode"], ["puny/decode", "Punycode decode"],
   ["case/simple_upper", "Simple uppercase"], ["case/full_upper", "Full uppercase"],
-  ["case/fold", "Case folding"], ["case/nfkc_casefold", "NFKC_Casefold"],
-  ["prop/general_category_Ll", "General category"],
+  ["case/full_lower", "Full lowercase"], ["case/fold", "Case folding"],
+  ["case/canonical_fold", "Canonical fold"], ["case/nfkc_casefold", "NFKC_Casefold"],
+  ["case/caseless_match", "Caseless match"],
+  ["prop/general_category_Ll", "General category"], ["prop/alphabetic", "Alphabetic"],
+  ["prop/line_break_AL", "Line break prop"],
 ];
 const OP_LABEL = Object.fromEntries(OPS);
 const perCall = op => op.startsWith("idna/") || op.startsWith("puny/");
 const unit = op => perCall(op) ? "ns / call" : "ns / code point";
 const JS_API = {
-  norm: "String.prototype.normalize", seg: "Intl.Segmenter",
-  "idna/to_ascii": "url.domainToASCII", "idna/to_unicode": "url.domainToUnicode", puny: "node:punycode",
+  norm: "String.prototype.normalize",
+  "seg/graphemes": "Intl.Segmenter (grapheme)",
+  "seg/word_segments": "Intl.Segmenter (word)",
+  "seg/words": "Intl.Segmenter (word, isWordLike)",
+  "seg/sentences": "Intl.Segmenter (sentence)",
+  "idna/to_ascii": "url.domainToASCII",
+  "idna/to_unicode": "url.domainToUnicode",
+  puny: "node:punycode",
+  "case/full_upper": "String.prototype.toUpperCase",
+  "case/full_lower": "String.prototype.toLowerCase",
 };
 
 // The repository, from the Pages address <owner>.github.io/<repository>/.
@@ -259,10 +287,38 @@ function renderHistory(history) {
       notes.map(n => `<span class="when">${n}</span>`).join("") + `</td>${cells}</tr>`;
   };
 
+  let group = recall("ub-history-group") || "all";
+  const allHistoryOps = () => {
+    const known = new Set(OPS.map(([op]) => op));
+    const extras = [];
+    for (const run of runs) {
+      for (const op of Object.keys(run.operations || {})) {
+        if (!known.has(op) && run.operations[op]?.[backend] != null) {
+          known.add(op);
+          extras.push([op, op]);
+        }
+      }
+    }
+    return [
+      ...OPS.filter(([op]) => runs.some(run => run.operations?.[op]?.[backend] != null)),
+      ...extras,
+    ];
+  };
+  const drawGroupChips = () => {
+    const allOps = allHistoryOps();
+    const presentGroups = GROUPS.filter(([g]) => g === "all" || allOps.some(([op]) => opGroup(op) === g));
+    if (!presentGroups.some(([g]) => g === group)) group = "all";
+    chips("history-group-chips", presentGroups, group, value => {
+      group = value;
+      remember("ub-history-group", value);
+      draw();
+    });
+  };
   const draw = () => {
-    const ops = OPS.filter(([op]) => runs.some(run => run.operations?.[op]?.[backend] != null));
+    const allOps = allHistoryOps();
+    const ops = group === "all" ? allOps : allOps.filter(([op]) => opGroup(op) === group);
     const shown = showAll ? runs : runs.slice(0, LIMIT);
-    const head = `<thead><tr><th>merge</th>${ops.map(([, label]) => `<th class="op">${label}</th>`).join("")}</tr></thead>`;
+    const head = `<thead><tr><th>merge</th>${ops.map(([, label]) => `<th class="op">${escapeHtml(label)}</th>`).join("")}</tr></thead>`;
     const rows = shown.map((run, i) => {
       const sha = shaOf(run);
       const on = range != null && i >= range.lo && i <= range.hi;
@@ -319,8 +375,10 @@ function renderHistory(history) {
   chips("backend-chips", present.map(b => [b, IMPL[b].label.replace("MoonBit ", "")]), backend, value => {
     backend = value;
     remember("ub-backend", value);
+    drawGroupChips();
     draw();
   });
+  drawGroupChips();
   draw();
 }
 
@@ -353,11 +411,11 @@ function renderSnapshot(snapshot) {
   renderSnapshotMeta(snapshot.about || {});
   const DATA = snapshot.cases;
   // Only implementations that take UTF-16 strings, so every comparison reads
-  // the same bytes. Cases left with no peer for MoonBit are dropped.
+  // the same bytes.
   const UTF16 = new Set(["moonbit-native", "moonbit-wasm-gc", "moonbit-wasm", "moonbit-js", "rust icu4x-utf16", "icu4c", "node", "rust unicode-bidi-utf16"]);
   for (const [key, row] of Object.entries(DATA)) {
     for (const impl of Object.keys(row)) if (!UTF16.has(impl)) delete row[impl];
-    if (!Object.keys(row).some(i => !i.startsWith("moonbit-"))) delete DATA[key];
+    if (!Object.keys(row).length) delete DATA[key];
   }
   // op -> { input -> { impl -> ns } }
   const byOp = {};
@@ -380,7 +438,7 @@ function renderSnapshot(snapshot) {
     if (!vals.length || refVal == null) return null;
     const max = Math.max(...vals.map(([, v]) => v));
     const c = el("article", { className: "card" });
-    c.appendChild(el("div", { className: "card-head" }, `<h3>${OP_LABEL[op]}</h3><span class="unit">${unit(op)}</span>`));
+    c.appendChild(el("div", { className: "card-head" }, `<h3>${escapeHtml(OP_LABEL[op] || op)}</h3><span class="unit">${unit(op)}</span>`));
     if (opts.api) c.appendChild(el("div", { className: "api" }, opts.api));
     const bars = el("div", { className: "bars" });
     for (const [i, v] of vals) {
@@ -401,32 +459,69 @@ function renderSnapshot(snapshot) {
 
   // Against ICU
   const ICU_IMPLS = ["moonbit-native", "moonbit-wasm-gc", "moonbit-wasm", "rust icu4x-utf16", "icu4c", "rust unicode-bidi-utf16"];
+  const ICU_RIVALS = ["rust icu4x-utf16", "icu4c", "rust unicode-bidi-utf16"];
   legend("legend-icu", ICU_IMPLS.filter(i => Object.values(DATA).some(row => i in row)));
   const gridIcu = document.getElementById("grid-icu");
-  const ICU_OPS = ["norm/nfc", "norm/nfd", "norm/nfkc", "norm/nfkd", "norm/nfd>nfc", "norm/is_nfc", "seg/graphemes",
-    "bidi/process", "idna/to_ascii", "idna/to_unicode", "case/simple_upper", "prop/general_category_Ll"];
-  for (const op of ICU_OPS) {
-    const rivals = ["rust icu4x-utf16", "icu4c", "rust unicode-bidi-utf16"]
-      .map(i => [i, geomean(op, i)]).filter(([, v]) => v != null).sort((a, b) => a[1] - b[1]);
-    const c = card(op, ICU_IMPLS, "moonbit-native", {
-      api: op === "bidi/process" ? "ICU4X has no bidi resolver in this harness"
-        : op.startsWith("idna") || op.startsWith("case") || op.startsWith("prop") ? "ICU4X is measured here only on UTF-8" : "",
-      verdict: refVal => {
-        if (!rivals.length) return "";
-        const [best, bv] = rivals[0];
-        const w = relWords(bv / refVal);
-        return `MoonBit native vs ${IMPL[best].label}, the fastest of the others: <b class="${w.cls}">${w.text}</b>`;
-      },
-    });
-    if (c) gridIcu.appendChild(c);
-  }
+  const ICU_OPS = [
+    "norm/nfc", "norm/nfd", "norm/nfkc", "norm/nfkd", "norm/nfd>nfc", "norm/is_nfc",
+    "seg/graphemes", "seg/word_segments", "seg/words", "seg/sentences", "seg/line_breaks",
+    "bidi/process", "bidi/reorder",
+    "idna/to_ascii", "idna/to_unicode",
+    "case/simple_upper", "case/full_upper", "case/full_lower", "case/fold",
+    "case/canonical_fold", "case/nfkc_casefold", "case/caseless_match",
+    "prop/general_category_Ll", "prop/alphabetic", "prop/line_break_AL",
+  ];
+  const icuApiNote = op => {
+    if (op.startsWith("bidi/")) return "ICU4X has no bidi resolver in this harness";
+    if (op === "seg/word_segments" || op === "seg/line_breaks") return "ICU4C and ICU4X apply dictionary/LSTM rules on Thai/CJK";
+    if (op === "seg/words") return "ICU4C root BreakIterator vs MoonBit default UAX #29";
+    if (op === "case/canonical_fold" || op === "case/nfkc_casefold" || op === "case/caseless_match") return "ICU4C on UTF-16";
+    if (op.startsWith("idna/") || op.startsWith("case/") || op.startsWith("prop/")) return "ICU4X is measured here only on UTF-8";
+    return "";
+  };
+  const availableIcuOps = ICU_OPS.filter(op =>
+    geomean(op, "moonbit-native") != null && ICU_RIVALS.some(r => geomean(op, r) != null));
+  const icuGroups = GROUPS.filter(([g]) => g === "all" || availableIcuOps.some(op => opGroup(op) === g));
+  let icuGroup = recall("ub-icu-group") || "all";
+  if (!icuGroups.some(([g]) => g === icuGroup)) icuGroup = "all";
+  const renderIcuGrid = () => {
+    gridIcu.innerHTML = "";
+    const ops = icuGroup === "all" ? availableIcuOps : availableIcuOps.filter(op => opGroup(op) === icuGroup);
+    for (const op of ops) {
+      const rivals = ICU_RIVALS
+        .map(i => [i, geomean(op, i)]).filter(([, v]) => v != null).sort((a, b) => a[1] - b[1]);
+      if (!rivals.length) continue;
+      const c = card(op, ICU_IMPLS, "moonbit-native", {
+        api: icuApiNote(op),
+        verdict: refVal => {
+          const [best, bv] = rivals[0];
+          const w = relWords(bv / refVal);
+          return `MoonBit native vs ${IMPL[best].label}, the fastest of the others: <b class="${w.cls}">${w.text}</b>`;
+        },
+      });
+      if (c) gridIcu.appendChild(c);
+    }
+  };
+  chips("icu-group-chips", icuGroups, icuGroup, value => {
+    icuGroup = value;
+    remember("ub-icu-group", value);
+    renderIcuGrid();
+  });
+  renderIcuGrid();
+  if (!availableIcuOps.length) document.getElementById("icu4x").hidden = true;
 
   // JS
-  const JS_OPS = ["norm/nfc", "norm/nfd", "norm/nfkc", "norm/nfkd", "norm/nfd>nfc", "seg/graphemes",
-    "idna/to_ascii", "idna/to_unicode", "puny/encode", "puny/decode"];
+  const JS_OPS = [
+    "norm/nfc", "norm/nfd", "norm/nfkc", "norm/nfkd", "norm/nfd>nfc",
+    "seg/graphemes", "seg/word_segments", "seg/words", "seg/sentences",
+    "idna/to_ascii", "idna/to_unicode",
+    "puny/encode", "puny/decode",
+    "case/full_upper", "case/full_lower",
+  ];
   legend("legend-js", ["moonbit-js", "node", "moonbit-native"]);
   const gridJs = document.getElementById("grid-js");
   for (const op of JS_OPS) {
+    if (geomean(op, "node") == null) continue;
     const api = JS_API[op] || JS_API[op.split("/")[0]];
     const c = card(op, ["moonbit-js", "node", "moonbit-native"], "moonbit-js", {
       api: "built-in: " + api,
@@ -461,9 +556,17 @@ function renderSnapshot(snapshot) {
 
   // Every case
   const baseSel = document.getElementById("baseline");
-  const SHOWN_OPS = OPS.filter(([op]) => byOp[op]);
+  const knownOps = new Set(OPS.map(([op]) => op));
+  const extraOps = Object.keys(byOp).filter(op => !knownOps.has(op)).map(op => [op, op]);
+  const SHOWN_OPS = [...OPS.filter(([op]) => byOp[op]), ...extraOps];
+  const caseGroups = GROUPS.filter(([g]) => g === "all" || SHOWN_OPS.some(([op]) => opGroup(op) === g));
   let curOp = recall("ub-op");
   if (!byOp[curOp]) curOp = byOp["norm/nfd>nfc"] ? "norm/nfd>nfc" : SHOWN_OPS[0]?.[0];
+  let caseGroup = recall("ub-case-group") || "all";
+  if (!caseGroups.some(([g]) => g === caseGroup)) caseGroup = "all";
+  if (caseGroup !== "all" && curOp && opGroup(curOp) !== caseGroup) {
+    curOp = SHOWN_OPS.find(([op]) => opGroup(op) === caseGroup)?.[0] || curOp;
+  }
   const implsFor = op => {
     const present = new Set();
     for (const row of Object.values(byOp[op])) Object.keys(row).forEach(k => present.add(k));
@@ -489,7 +592,21 @@ function renderSnapshot(snapshot) {
     const gm = `<tr class="gm"><td>geometric mean</td>${impls.map(i => cell(geomean(curOp, i), geomean(curOp, base))).join("")}</tr>`;
     document.getElementById("case-table").innerHTML = head + `<tbody>${body}${gm}</tbody>`;
   };
-  chips("op-chips", SHOWN_OPS, curOp, op => { curOp = op; remember("ub-op", op); renderTable(); });
+  const renderOpChips = () => {
+    const filtered = caseGroup === "all" ? SHOWN_OPS : SHOWN_OPS.filter(([op]) => opGroup(op) === caseGroup);
+    if (!filtered.some(([op]) => op === curOp)) {
+      curOp = filtered[0]?.[0] || curOp;
+      if (curOp) remember("ub-op", curOp);
+    }
+    chips("op-chips", filtered, curOp, op => { curOp = op; remember("ub-op", op); renderTable(); });
+  };
+  chips("case-group-chips", caseGroups, caseGroup, value => {
+    caseGroup = value;
+    remember("ub-case-group", value);
+    renderOpChips();
+    renderTable();
+  });
+  renderOpChips();
   baseSel.onchange = renderTable;
   renderTable();
   document.getElementById("case-count").textContent = `All ${Object.keys(DATA).length} cases`;

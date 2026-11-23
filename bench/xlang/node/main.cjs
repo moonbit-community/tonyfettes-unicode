@@ -67,15 +67,49 @@ function benchNormalization(inputs) {
 }
 
 function benchSegmentation(inputs) {
-  const segmenter = new Intl.Segmenter(undefined, { granularity: 'grapheme' });
+  const graphemeSegmenter = new Intl.Segmenter(undefined, { granularity: 'grapheme' });
+  const wordSegmenter = new Intl.Segmenter(undefined, { granularity: 'word' });
+  const sentenceSegmenter = new Intl.Segmenter(undefined, { granularity: 'sentence' });
   for (const name of names(`${inputs}/seg`)) {
     const text = read(`${inputs}/seg/${name}.txt`);
-    const count = () => {
+    const units = codePoints(text);
+    const countGraphemes = () => {
       let clusters = 0;
-      for (const _ of segmenter.segment(text)) clusters++;
+      for (const _ of graphemeSegmenter.segment(text)) clusters++;
       return clusters;
     };
-    measure(`seg/graphemes/${name}`, codePoints(text), count(), count);
+    const countWordSegments = () => {
+      let segments = 0;
+      for (const _ of wordSegmenter.segment(text)) segments++;
+      return segments;
+    };
+    const countWords = () => {
+      let words = 0;
+      for (const segment of wordSegmenter.segment(text)) {
+        if (segment.isWordLike) words++;
+      }
+      return words;
+    };
+    const countSentences = () => {
+      let segments = 0;
+      for (const _ of sentenceSegmenter.segment(text)) segments++;
+      return segments;
+    };
+    measure(`seg/graphemes/${name}`, units, countGraphemes(), countGraphemes);
+    measure(`seg/word_segments/${name}`, units, countWordSegments(), countWordSegments);
+    measure(`seg/words/${name}`, units, countWords(), countWords);
+    measure(`seg/sentences/${name}`, units, countSentences(), countSentences);
+  }
+}
+
+function benchCase(inputs) {
+  for (const name of names(`${inputs}/case`)) {
+    const text = read(`${inputs}/case/${name}.txt`);
+    const units = codePoints(text);
+    measure(`case/full_upper/${name}`, units, codePoints(text.toUpperCase()),
+      () => keep(text.toUpperCase()));
+    measure(`case/full_lower/${name}`, units, codePoints(text.toLowerCase()),
+      () => keep(text.toLowerCase()));
   }
 }
 
@@ -101,7 +135,13 @@ if (!inputs) {
   console.error('usage: node main.cjs <inputs> [group]');
   process.exit(2);
 }
-const groups = { norm: benchNormalization, seg: benchSegmentation, idna: benchIdna, puny: benchPunycode };
+const groups = {
+  norm: benchNormalization,
+  seg: benchSegmentation,
+  idna: benchIdna,
+  puny: benchPunycode,
+  case: benchCase,
+};
 for (const [name, bench] of Object.entries(groups)) {
   if (!group || group === name) bench(inputs);
 }

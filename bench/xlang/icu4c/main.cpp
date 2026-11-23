@@ -17,6 +17,7 @@
 #include <unicode/brkiter.h>
 #include <unicode/normalizer2.h>
 #include <unicode/ubidi.h>
+#include <unicode/ubrk.h>
 #include <unicode/uchar.h>
 #include <unicode/uidna.h>
 #include <unicode/unistr.h>
@@ -137,25 +138,59 @@ static void bench_normalization(const std::string &inputs) {
 
 static void bench_segmentation(const std::string &inputs) {
   UErrorCode status = U_ZERO_ERROR;
-  BreakIterator *iterator = BreakIterator::createCharacterInstance(Locale::getRoot(), status);
+  BreakIterator *grapheme_iter = BreakIterator::createCharacterInstance(Locale::getRoot(), status);
+  BreakIterator *word_iter = BreakIterator::createWordInstance(Locale::getRoot(), status);
+  BreakIterator *sentence_iter = BreakIterator::createSentenceInstance(Locale::getRoot(), status);
+  BreakIterator *line_iter = BreakIterator::createLineInstance(Locale::getRoot(), status);
   check_status(status, "BreakIterator");
   for (const std::string &name : names(inputs + "/seg")) {
     UnicodeString text = read(inputs + "/seg/" + name + ".txt");
-    auto count = [&]() {
+    long units = text.countChar32();
+    auto count_segments = [&](BreakIterator *iterator) {
       iterator->setText(text);
-      long clusters = 0;
-      while (iterator->next() != BreakIterator::DONE) clusters++;
-      return clusters;
+      long segments = 0;
+      while (iterator->next() != BreakIterator::DONE) segments++;
+      return segments;
     };
-    measure("seg/graphemes/" + name, text.countChar32(), count(), count);
+    auto count_graphemes = [&]() { return count_segments(grapheme_iter); };
+    auto count_word_segments = [&]() { return count_segments(word_iter); };
+    auto count_words = [&]() {
+      word_iter->setText(text);
+      long words = 0;
+      while (word_iter->next() != BreakIterator::DONE) {
+        if (word_iter->getRuleStatus() != UBRK_WORD_NONE) words++;
+      }
+      return words;
+    };
+    auto count_sentences = [&]() { return count_segments(sentence_iter); };
+    auto count_line_breaks = [&]() { return count_segments(line_iter); };
+    measure("seg/graphemes/" + name, units, count_graphemes(), count_graphemes);
+    measure("seg/word_segments/" + name, units, count_word_segments(), count_word_segments);
+    measure("seg/words/" + name, units, count_words(), count_words);
+    measure("seg/sentences/" + name, units, count_sentences(), count_sentences);
+    measure("seg/line_breaks/" + name, units, count_line_breaks(), count_line_breaks);
   }
-  delete iterator;
+  delete grapheme_iter;
+  delete word_iter;
+  delete sentence_iter;
+  delete line_iter;
 }
 
 static void bench_bidi(const std::string &inputs) {
   UBiDi *bidi = ubidi_open();
+  auto reorder = [&](UBiDi *para, int32_t length) {
+    UnicodeString destination;
+    int32_t capacity = length + 16;
+    UErrorCode status = U_ZERO_ERROR;
+    int32_t written = ubidi_writeReordered(
+        para, destination.getBuffer(capacity), capacity,
+        UBIDI_DO_MIRRORING | UBIDI_REMOVE_BIDI_CONTROLS, &status);
+    destination.releaseBuffer(U_SUCCESS(status) ? written : 0);
+    return destination;
+  };
   for (const std::string &name : names(inputs + "/bidi")) {
     UnicodeString text = read(inputs + "/bidi/" + name + ".txt");
+    long units = text.countChar32();
     UErrorCode status = U_ZERO_ERROR;
     ubidi_setPara(bidi, text.getBuffer(), text.length(), UBIDI_DEFAULT_LTR, nullptr, &status);
     const UBiDiLevel *levels = ubidi_getLevels(bidi, &status);
@@ -163,13 +198,19 @@ static void bench_bidi(const std::string &inputs) {
     long level_sum = 0;
     for (int32_t i = 0; i < text.length(); i++)
       if (!U16_IS_TRAIL(text[i])) level_sum += levels[i];
-    measure("bidi/process/" + name, text.countChar32(), level_sum, [&]() {
+    measure("bidi/process/" + name, units, level_sum, [&]() {
       UErrorCode status = U_ZERO_ERROR;
       ubidi_setPara(bidi, text.getBuffer(), text.length(), UBIDI_DEFAULT_LTR, nullptr, &status);
       // Levels are computed lazily; ask for them as the other harnesses do.
       const UBiDiLevel *levels = ubidi_getLevels(bidi, &status);
       return (long)levels[text.length() - 1] + ubidi_getProcessedLength(bidi);
     });
+    // Ensure `bidi` holds the resolved paragraph before timing visual reordering.
+    status = U_ZERO_ERROR;
+    ubidi_setPara(bidi, text.getBuffer(), text.length(), UBIDI_DEFAULT_LTR, nullptr, &status);
+    check_status(status, "ubidi_setPara");
+    measure("bidi/reorder/" + name, units, reorder(bidi, text.length()).countChar32(),
+            [&]() { return (long)reorder(bidi, text.length()).length(); });
   }
   ubidi_close(bidi);
 }
@@ -215,11 +256,29 @@ static void bench_idna(const std::string &inputs) {
 
 static void bench_properties(const std::string &inputs) {
   UErrorCode status = U_ZERO_ERROR;
+  const Normalizer2 *nfd = Normalizer2::getNFDInstance(status);
   const Normalizer2 *nfkc_casefold = Normalizer2::getNFKCCasefoldInstance(status);
   check_status(status, "Normalizer2");
-  // Full default case folding into a fresh destination per call. Folding
-  // expands a UTF-16 code unit to at most three. UnicodeString::foldCase
-  // copies the source first and takes twice as long.
+  // Full default case mapping and folding into a fresh destination per call.
+  // Case operations expand a UTF-16 code unit to at most three.
+  auto to_upper = [](const UnicodeString &source) {
+    UnicodeString destination;
+    int32_t capacity = source.length() * 3;
+    UErrorCode status = U_ZERO_ERROR;
+    int32_t length = u_strToUpper(destination.getBuffer(capacity), capacity, source.getBuffer(),
+                                  source.length(), "", &status);
+    destination.releaseBuffer(U_SUCCESS(status) ? length : 0);
+    return destination;
+  };
+  auto to_lower = [](const UnicodeString &source) {
+    UnicodeString destination;
+    int32_t capacity = source.length() * 3;
+    UErrorCode status = U_ZERO_ERROR;
+    int32_t length = u_strToLower(destination.getBuffer(capacity), capacity, source.getBuffer(),
+                                  source.length(), "", &status);
+    destination.releaseBuffer(U_SUCCESS(status) ? length : 0);
+    return destination;
+  };
   auto fold = [](const UnicodeString &source) {
     UnicodeString destination;
     int32_t capacity = source.length() * 3;
@@ -229,9 +288,13 @@ static void bench_properties(const std::string &inputs) {
     destination.releaseBuffer(U_SUCCESS(status) ? length : 0);
     return destination;
   };
+  auto canonical_fold = [&](const UnicodeString &source) {
+    return normalized(nfd, fold(normalized(nfd, source)));
+  };
   // These are calls into the ICU shared library: nothing is inlined into the loop.
   for (const std::string &name : names(inputs + "/case")) {
     UnicodeString text = read(inputs + "/case/" + name + ".txt");
+    UnicodeString folded = fold(text);
     long units = text.countChar32();
     auto simple_upper = [&]() {
       long sum = 0;
@@ -242,6 +305,11 @@ static void bench_properties(const std::string &inputs) {
       }
       return sum;
     };
+    auto caseless_match = [&]() {
+      UErrorCode status = U_ZERO_ERROR;
+      return (long)(u_strCaseCompare(text.getBuffer(), text.length(), folded.getBuffer(),
+                                     folded.length(), U_FOLD_CASE_DEFAULT, &status) == 0);
+    };
     auto lowercase_letters = [&]() {
       long count = 0;
       for (int32_t i = 0; i < text.length();) {
@@ -251,12 +319,39 @@ static void bench_properties(const std::string &inputs) {
       }
       return count;
     };
+    auto alphabetic = [&]() {
+      long count = 0;
+      for (int32_t i = 0; i < text.length();) {
+        UChar32 c = text.char32At(i);
+        count += u_hasBinaryProperty(c, UCHAR_ALPHABETIC);
+        i += U16_LENGTH(c);
+      }
+      return count;
+    };
+    auto line_break_al = [&]() {
+      long count = 0;
+      for (int32_t i = 0; i < text.length();) {
+        UChar32 c = text.char32At(i);
+        count += u_getIntPropertyValue(c, UCHAR_LINE_BREAK) == U_LB_ALPHABETIC;
+        i += U16_LENGTH(c);
+      }
+      return count;
+    };
     measure("case/simple_upper/" + name, units, simple_upper(), simple_upper);
-    measure("case/fold/" + name, units, fold(text).countChar32(),
+    measure("case/full_upper/" + name, units, to_upper(text).countChar32(),
+            [&]() { return (long)to_upper(text).length(); });
+    measure("case/full_lower/" + name, units, to_lower(text).countChar32(),
+            [&]() { return (long)to_lower(text).length(); });
+    measure("case/fold/" + name, units, folded.countChar32(),
             [&]() { return (long)fold(text).length(); });
+    measure("case/canonical_fold/" + name, units, canonical_fold(text).countChar32(),
+            [&]() { return (long)canonical_fold(text).length(); });
     measure("case/nfkc_casefold/" + name, units, normalized(nfkc_casefold, text).countChar32(),
             [&]() { return (long)normalized(nfkc_casefold, text).length(); });
+    measure("case/caseless_match/" + name, units, caseless_match(), caseless_match);
     measure("prop/general_category_Ll/" + name, units, lowercase_letters(), lowercase_letters);
+    measure("prop/alphabetic/" + name, units, alphabetic(), alphabetic);
+    measure("prop/line_break_AL/" + name, units, line_break_al(), line_break_al);
   }
 }
 

@@ -57,7 +57,10 @@ def bench_normalization(inputs):
 def bench_case(inputs):
     for name in names(f"{inputs}/case"):
         text = read(f"{inputs}/case/{name}.txt")
-        measure(f"case/fold/{name}", len(text), len(text.casefold()), text.casefold)
+        units = len(text)
+        measure(f"case/full_upper/{name}", units, len(text.upper()), text.upper)
+        measure(f"case/full_lower/{name}", units, len(text.lower()), text.lower)
+        measure(f"case/fold/{name}", units, len(text.casefold()), text.casefold)
 
 
 if __name__ == "__main__":

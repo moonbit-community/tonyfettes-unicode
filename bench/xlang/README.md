@@ -95,17 +95,27 @@ time relative to `moonbit-native` on the same cases.
 - The IDNA options are only approximately aligned: UTS #46 non-transitional
   processing without STD3 rules, with each library's own defaults otherwise.
 - `uniseg` implements an older Unicode version, so its grapheme cluster count
-  differs on Devanagari text.
-- `case/full_upper` compares MoonBit's `uppercase`, which builds one string
-  for the whole text, with Rust's `char::to_uppercase` iterator, which is
-  counted without building anything.
+  differs on Devanagari text. ICU4C, ICU4X (`new_auto`) and `Intl.Segmenter`
+  apply dictionary or LSTM word and line breaking on Thai and Chinese, whereas
+  MoonBit and `unicode-segmentation` follow the default UAX #29 / UAX #14 rules.
+- `bidi/reorder` measures visual reordering on a pre-resolved paragraph.
+  MoonBit's `reorder_string` and ICU4C's `ubidi_writeReordered` mirror glyphs
+  and strip formatting controls; `unicode-bidi`'s `reorder_line` reorders
+  without mirroring. `bidi/requires_bidi` and `idna/to_ascii_2008` are measured
+  on MoonBit only.
+- `case/full_upper` and `case/full_lower` build a new string for the whole text
+  across MoonBit (`uppercase`/`lowercase`), ICU4C (`u_strToUpper`/`u_strToLower`),
+  ICU4X (`uppercase_to_string`/`lowercase_to_string`), Rust `std`
+  (`str::to_uppercase`/`str::to_lowercase`), Go `x/text`, Node
+  (`toUpperCase`/`toLowerCase`) and Python (`str.upper`/`str.lower`).
 - `case/fold` is full default case folding (statuses C and F, no Turkic
   mappings): ICU4C's `u_strFoldCase` on UTF-16, ICU4X's `fold_string`, Go's
   `cases.Fold()` and Python's `str.casefold`. ICU4X and Go return the input
   when folding changes nothing, as on the CJK input; the others always build
-  a new string, and Python has a dedicated loop for ASCII-only strings. Node
-  and the Rust standard library have no full case folding, and only ICU4C
-  has `nfkc_casefold`.
+  a new string, and Python has a dedicated loop for ASCII-only strings.
+  `case/canonical_fold` (`NFD(fold(NFD(s)))`), `case/nfkc_casefold` and
+  `case/caseless_match` (comparing each input against its case-folded form)
+  are paired with ICU4C on UTF-16.
 - ICU4C's per-character functions are calls into a shared library, and every
   Node case crosses from JavaScript into the runtime.
 - Other processes disturb the measurement. The report's noise table shows how

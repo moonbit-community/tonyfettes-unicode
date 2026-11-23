@@ -137,7 +137,8 @@ fn bench_normalization(inputs : String) -> Unit raise {
 fn bench_segmentation(inputs : String) -> Unit raise {
   for name in names("\{inputs}/seg") {
     let text = read("\{inputs}/seg/\{name}.txt")
-    let count = () => {
+    let units = text.char_length()
+    let count_graphemes = () => {
       let cursor = @segmentation.graphemes(text)
       let mut clusters = 0
       while cursor.next().length() > 0 {
@@ -145,7 +146,53 @@ fn bench_segmentation(inputs : String) -> Unit raise {
       }
       clusters
     }
-    measure("seg/graphemes/\{name}", text.char_length(), count(), count)
+    let count_word_segments = () => {
+      let cursor = @segmentation.word_segments(text)
+      let mut segments = 0
+      while cursor.next().length() > 0 {
+        segments += 1
+      }
+      segments
+    }
+    let count_words = () => {
+      let cursor = @segmentation.words(text)
+      let mut segments = 0
+      while cursor.next().length() > 0 {
+        segments += 1
+      }
+      segments
+    }
+    let count_sentences = () => {
+      let cursor = @segmentation.sentences(text)
+      let mut segments = 0
+      while cursor.next().length() > 0 {
+        segments += 1
+      }
+      segments
+    }
+    let count_line_breaks = () => {
+      let cursor = @segmentation.line_breaks(text)
+      let mut segments = 0
+      while cursor.next().length() > 0 {
+        segments += 1
+      }
+      segments
+    }
+    measure("seg/graphemes/\{name}", units, count_graphemes(), count_graphemes)
+    measure(
+      "seg/word_segments/\{name}",
+      units,
+      count_word_segments(),
+      count_word_segments,
+    )
+    measure("seg/words/\{name}", units, count_words(), count_words)
+    measure("seg/sentences/\{name}", units, count_sentences(), count_sentences)
+    measure(
+      "seg/line_breaks/\{name}",
+      units,
+      count_line_breaks(),
+      count_line_breaks,
+    )
   }
 }
 
@@ -153,13 +200,21 @@ fn bench_segmentation(inputs : String) -> Unit raise {
 fn bench_bidi(inputs : String) -> Unit raise {
   for name in names("\{inputs}/bidi") {
     let text = read("\{inputs}/bidi/\{name}.txt")
+    let units = text.char_length()
+    let para = @bidi.process(text)
     let mut level_sum = 0
-    for level in @bidi.process(text).levels {
+    for level in para.levels {
       level_sum += level
     }
-    measure("bidi/process/\{name}", text.char_length(), level_sum, () => {
+    measure("bidi/process/\{name}", units, level_sum, () => {
       keep_levels(@bidi.process(text).levels)
     })
+    let reordered = @bidi.reorder_string(para)
+    measure("bidi/reorder/\{name}", units, reordered.char_length(), () => {
+      keep_string(@bidi.reorder_string(para))
+    })
+    let requires_bidi = () => if @bidi.requires_bidi(text) { 1 } else { 0 }
+    measure("bidi/requires_bidi/\{name}", units, requires_bidi(), requires_bidi)
   }
 }
 
@@ -169,10 +224,28 @@ fn bench_idna(inputs : String) -> Unit raise {
     // Every input converts successfully without STD3 rules, so the closures
     // time successful conversions only.
     let ascii = @idna.to_ascii(domain, use_std3_ascii_rules=false)
+    let ascii_2008 = @idna.to_ascii(
+      domain,
+      use_std3_ascii_rules=false,
+      check_idna2008=true,
+      check_contexto=true,
+    )
     let unicode = @idna.to_unicode(domain, use_std3_ascii_rules=false)
     measure("idna/to_ascii/\{name}", 1, ascii.char_length(), () => {
       keep_string(
         @idna.to_ascii(domain, use_std3_ascii_rules=false) catch {
+          _ => domain
+        },
+      )
+    })
+    measure("idna/to_ascii_2008/\{name}", 1, ascii_2008.char_length(), () => {
+      keep_string(
+        @idna.to_ascii(
+          domain,
+          use_std3_ascii_rules=false,
+          check_idna2008=true,
+          check_contexto=true,
+        ) catch {
           _ => domain
         },
       )
@@ -205,6 +278,7 @@ fn bench_properties(inputs : String) -> Unit raise {
   for name in names("\{inputs}/case") {
     let text = read("\{inputs}/case/\{name}.txt")
     let units = text.char_length()
+    let folded = @casefold.case_fold(text)
     let simple_upper = () => {
       let mut sum = 0
       for c in text {
@@ -212,10 +286,35 @@ fn bench_properties(inputs : String) -> Unit raise {
       }
       sum
     }
+    let caseless_match = () => {
+      if @casefold.caseless_match(text, folded) {
+        1
+      } else {
+        0
+      }
+    }
     let lowercase_letters = () => {
       let mut count = 0
       for c in text {
         if @ucd.general_category(c) is Ll {
+          count += 1
+        }
+      }
+      count
+    }
+    let alphabetic = () => {
+      let mut count = 0
+      for c in text {
+        if @ucd.is_alphabetic(c) {
+          count += 1
+        }
+      }
+      count
+    }
+    let line_break_al = () => {
+      let mut count = 0
+      for c in text {
+        if @ucd.line_break(c) is AL {
           count += 1
         }
       }
@@ -228,9 +327,16 @@ fn bench_properties(inputs : String) -> Unit raise {
       @ucd.uppercase(text).char_length(),
       () => keep_string(@ucd.uppercase(text)),
     )
+    measure(
+      "case/full_lower/\{name}",
+      units,
+      @ucd.lowercase(text).char_length(),
+      () => keep_string(@ucd.lowercase(text)),
+    )
     for
       (label, fold) in [
         ("fold", @casefold.case_fold),
+        ("canonical_fold", @casefold.canonical_case_fold),
         ("nfkc_casefold", @casefold.nfkc_casefold),
       ] {
       measure("case/\{label}/\{name}", units, fold(text).char_length(), () => {
@@ -238,11 +344,19 @@ fn bench_properties(inputs : String) -> Unit raise {
       })
     }
     measure(
+      "case/caseless_match/\{name}",
+      units,
+      caseless_match(),
+      caseless_match,
+    )
+    measure(
       "prop/general_category_Ll/\{name}",
       units,
       lowercase_letters(),
       lowercase_letters,
     )
+    measure("prop/alphabetic/\{name}", units, alphabetic(), alphabetic)
+    measure("prop/line_break_AL/\{name}", units, line_break_al(), line_break_al)
   }
 }
 
