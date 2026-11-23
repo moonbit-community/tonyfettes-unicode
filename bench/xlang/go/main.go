@@ -15,6 +15,7 @@ import (
 	"github.com/rivo/uniseg"
 	"golang.org/x/net/idna"
 	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 	"golang.org/x/text/unicode/bidi"
 	"golang.org/x/text/unicode/norm"
 )
@@ -114,9 +115,37 @@ func benchNormalization(inputs string) {
 func benchSegmentation(inputs string) {
 	for _, name := range names(inputs + "/seg") {
 		text := read(inputs + "/seg/" + name + ".txt")
-		measure("uniseg", "seg/graphemes/"+name, utf8.RuneCountInString(text),
+		units := utf8.RuneCountInString(text)
+		countWordSegments := func() int {
+			state, rest, count := -1, text, 0
+			for len(rest) > 0 {
+				_, rest, state = uniseg.FirstWordInString(rest, state)
+				count++
+			}
+			return count
+		}
+		countSentences := func() int {
+			state, rest, count := -1, text, 0
+			for len(rest) > 0 {
+				_, rest, state = uniseg.FirstSentenceInString(rest, state)
+				count++
+			}
+			return count
+		}
+		countLineBreaks := func() int {
+			state, rest, count := -1, text, 0
+			for len(rest) > 0 {
+				_, rest, _, state = uniseg.FirstLineSegmentInString(rest, state)
+				count++
+			}
+			return count
+		}
+		measure("uniseg", "seg/graphemes/"+name, units,
 			uniseg.GraphemeClusterCount(text),
 			func() int { return uniseg.GraphemeClusterCount(text) })
+		measure("uniseg", "seg/word_segments/"+name, units, countWordSegments(), countWordSegments)
+		measure("uniseg", "seg/sentences/"+name, units, countSentences(), countSentences)
+		measure("uniseg", "seg/line_breaks/"+name, units, countLineBreaks(), countLineBreaks)
 	}
 }
 
@@ -181,8 +210,14 @@ func benchProperties(inputs string) {
 			}
 			return count
 		}
+		upper := cases.Upper(language.Und)
+		lower := cases.Lower(language.Und)
 		fold := cases.Fold()
 		measure("std", "case/simple_upper/"+name, units, simpleUpper(), simpleUpper)
+		measure("x/text", "case/full_upper/"+name, units, utf8.RuneCountInString(upper.String(text)),
+			func() int { return len(upper.String(text)) })
+		measure("x/text", "case/full_lower/"+name, units, utf8.RuneCountInString(lower.String(text)),
+			func() int { return len(lower.String(text)) })
 		measure("x/text", "case/fold/"+name, units, utf8.RuneCountInString(fold.String(text)),
 			func() int { return len(fold.String(text)) })
 		measure("std", "prop/general_category_Ll/"+name, units, lowercaseLetters(), lowercaseLetters)

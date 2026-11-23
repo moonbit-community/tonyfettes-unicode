@@ -5,9 +5,16 @@ use std::hint::black_box;
 use std::time::Instant;
 
 use icu_casemap::CaseMapper;
+use icu_locale_core::LanguageIdentifier;
 use icu_normalizer::{ComposingNormalizerBorrowed, DecomposingNormalizerBorrowed};
-use icu_properties::{props::GeneralCategory, CodePointMapData};
-use icu_segmenter::GraphemeClusterSegmenter;
+use icu_properties::{
+    props::{Alphabetic, GeneralCategory, LineBreak},
+    CodePointMapData, CodePointSetData,
+};
+use icu_segmenter::{
+    options::{LineBreakOptions, SentenceBreakInvariantOptions, WordBreakInvariantOptions},
+    GraphemeClusterSegmenter, LineSegmenter, SentenceSegmenter, WordSegmenter,
+};
 use unicode_normalization::UnicodeNormalization;
 use unicode_segmentation::UnicodeSegmentation;
 
@@ -129,19 +136,49 @@ fn bench_normalization(inputs: &str) {
 }
 
 fn bench_segmentation(inputs: &str) {
-    let segmenter = GraphemeClusterSegmenter::new();
+    let grapheme_segmenter = GraphemeClusterSegmenter::new();
+    let word_segmenter = WordSegmenter::new_auto(WordBreakInvariantOptions::default());
+    let sentence_segmenter = SentenceSegmenter::new(SentenceBreakInvariantOptions::default());
+    let line_segmenter = LineSegmenter::new_auto(LineBreakOptions::default());
     for name in names(format!("{inputs}/seg")) {
         let text = read(format!("{inputs}/seg/{name}.txt"));
         let text16: Vec<u16> = text.encode_utf16().collect();
         let units = chars(&text);
+
         let case = format!("seg/graphemes/{name}");
         measure("unicode-segmentation", &case, units, text.graphemes(true).count(),
             || black_box(&text).graphemes(true).count());
         // ICU4X yields boundaries, including the one at offset 0.
-        measure("icu4x-utf8", &case, units, segmenter.segment_str(&text).count() - 1,
-            || segmenter.segment_str(black_box(&text)).count() - 1);
-        measure("icu4x-utf16", &case, units, segmenter.segment_utf16(&text16).count() - 1,
-            || segmenter.segment_utf16(black_box(&text16)).count() - 1);
+        measure("icu4x-utf8", &case, units, grapheme_segmenter.segment_str(&text).count() - 1,
+            || grapheme_segmenter.segment_str(black_box(&text)).count() - 1);
+        measure("icu4x-utf16", &case, units, grapheme_segmenter.segment_utf16(&text16).count() - 1,
+            || grapheme_segmenter.segment_utf16(black_box(&text16)).count() - 1);
+
+        let case = format!("seg/word_segments/{name}");
+        measure("unicode-segmentation", &case, units, text.split_word_bounds().count(),
+            || black_box(&text).split_word_bounds().count());
+        measure("icu4x-utf8", &case, units, word_segmenter.segment_str(&text).count() - 1,
+            || word_segmenter.segment_str(black_box(&text)).count() - 1);
+        measure("icu4x-utf16", &case, units, word_segmenter.segment_utf16(&text16).count() - 1,
+            || word_segmenter.segment_utf16(black_box(&text16)).count() - 1);
+
+        let case = format!("seg/words/{name}");
+        measure("unicode-segmentation", &case, units, text.unicode_words().count(),
+            || black_box(&text).unicode_words().count());
+
+        let case = format!("seg/sentences/{name}");
+        measure("unicode-segmentation", &case, units, text.split_sentence_bounds().count(),
+            || black_box(&text).split_sentence_bounds().count());
+        measure("icu4x-utf8", &case, units, sentence_segmenter.segment_str(&text).count() - 1,
+            || sentence_segmenter.segment_str(black_box(&text)).count() - 1);
+        measure("icu4x-utf16", &case, units, sentence_segmenter.segment_utf16(&text16).count() - 1,
+            || sentence_segmenter.segment_utf16(black_box(&text16)).count() - 1);
+
+        let case = format!("seg/line_breaks/{name}");
+        measure("icu4x-utf8", &case, units, line_segmenter.segment_str(&text).count() - 1,
+            || line_segmenter.segment_str(black_box(&text)).count() - 1);
+        measure("icu4x-utf16", &case, units, line_segmenter.segment_utf16(&text16).count() - 1,
+            || line_segmenter.segment_utf16(black_box(&text16)).count() - 1);
     }
 }
 
@@ -151,6 +188,7 @@ fn bench_bidi(inputs: &str) {
         let text16: Vec<u16> = text.encode_utf16().collect();
         let units = chars(&text);
         let info = unicode_bidi::BidiInfo::new(&text, None);
+        let info16 = unicode_bidi::utf16::BidiInfo::new(&text16, None);
         let level_sum: usize =
             text.char_indices().map(|(i, _)| info.levels[i].number() as usize).sum();
         let case = format!("bidi/process/{name}");
@@ -158,6 +196,16 @@ fn bench_bidi(inputs: &str) {
             || black_box(unicode_bidi::BidiInfo::new(black_box(&text), None)).levels.len());
         measure("unicode-bidi-utf16", &case, units, level_sum,
             || black_box(unicode_bidi::utf16::BidiInfo::new(black_box(&text16), None)).levels.len());
+
+        let para = &info.paragraphs[0];
+        let para16 = &info16.paragraphs[0];
+        let reordered = info.reorder_line(para, para.range.clone());
+        let reordered16 = info16.reorder_line(para16, para16.range.clone());
+        let case = format!("bidi/reorder/{name}");
+        measure("unicode-bidi", &case, units, chars(&reordered),
+            || black_box(info.reorder_line(para, para.range.clone())).len());
+        measure("unicode-bidi-utf16", &case, units, chars16(&reordered16),
+            || black_box(info16.reorder_line(para16, para16.range.clone())).len());
     }
 }
 
@@ -186,14 +234,14 @@ fn bench_punycode(inputs: &str) {
 fn bench_properties(inputs: &str) {
     let mapper = CaseMapper::new();
     let categories = CodePointMapData::<GeneralCategory>::new();
+    let alphabetic_set = CodePointSetData::new::<Alphabetic>();
+    let line_breaks = CodePointMapData::<LineBreak>::new();
+    let root_lang = LanguageIdentifier::UNKNOWN;
     for name in names(format!("{inputs}/case")) {
         let text = read(format!("{inputs}/case/{name}.txt"));
         let units = chars(&text);
         let simple_upper =
             |s: &str| s.chars().fold(0usize, |sum, c| sum ^ mapper.simple_uppercase(c) as usize);
-        // An iterator per character, counted without building a string; MoonBit's
-        // `uppercase` builds one string for the whole text.
-        let full_upper = |s: &str| s.chars().map(|c| c.to_uppercase().count()).sum::<usize>();
         let lowercase_icu4x = |s: &str| {
             s.chars().filter(|&c| categories.get(c) == GeneralCategory::LowercaseLetter).count()
         };
@@ -205,10 +253,23 @@ fn bench_properties(inputs: &str) {
                 })
                 .count()
         };
+        let alphabetic_icu4x = |s: &str| s.chars().filter(|&c| alphabetic_set.contains(c)).count();
+        let alphabetic_std = |s: &str| s.chars().filter(|c| c.is_alphabetic()).count();
+        let line_break_al_icu4x = |s: &str| {
+            s.chars().filter(|&c| line_breaks.get(c) == LineBreak::Alphabetic).count()
+        };
         measure("icu4x-utf8", &format!("case/simple_upper/{name}"), units, simple_upper(&text),
             || simple_upper(black_box(&text)));
-        measure("std", &format!("case/full_upper/{name}"), units, full_upper(&text),
-            || full_upper(black_box(&text)));
+        measure("std", &format!("case/full_upper/{name}"), units, chars(&text.to_uppercase()),
+            || black_box(black_box(&text).to_uppercase()).len());
+        measure("icu4x-utf8", &format!("case/full_upper/{name}"), units,
+            chars(&mapper.uppercase_to_string(&text, &root_lang)),
+            || black_box(mapper.uppercase_to_string(black_box(&text), &root_lang)).len());
+        measure("std", &format!("case/full_lower/{name}"), units, chars(&text.to_lowercase()),
+            || black_box(black_box(&text).to_lowercase()).len());
+        measure("icu4x-utf8", &format!("case/full_lower/{name}"), units,
+            chars(&mapper.lowercase_to_string(&text, &root_lang)),
+            || black_box(mapper.lowercase_to_string(black_box(&text), &root_lang)).len());
         measure("icu4x-utf8", &format!("case/fold/{name}"), units, chars(&mapper.fold_string(&text)),
             || black_box(mapper.fold_string(black_box(&text))).len());
         let case = format!("prop/general_category_Ll/{name}");
@@ -216,6 +277,14 @@ fn bench_properties(inputs: &str) {
             || lowercase_icu4x(black_box(&text)));
         measure("unicode-general-category", &case, units, lowercase_ugc(&text),
             || lowercase_ugc(black_box(&text)));
+        let case = format!("prop/alphabetic/{name}");
+        measure("icu4x-utf8", &case, units, alphabetic_icu4x(&text),
+            || alphabetic_icu4x(black_box(&text)));
+        measure("std", &case, units, alphabetic_std(&text),
+            || alphabetic_std(black_box(&text)));
+        let case = format!("prop/line_break_AL/{name}");
+        measure("icu4x-utf8", &case, units, line_break_al_icu4x(&text),
+            || line_break_al_icu4x(black_box(&text)));
     }
 }
 

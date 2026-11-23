@@ -26,6 +26,7 @@
     </div>
     <div class="controls">
       <div class="ctl"><span class="eyebrow">Backend</span><div class="chips" id="backend-chips" role="group" aria-label="Backend"></div></div>
+      <div class="ctl"><span class="eyebrow">Group</span><div class="chips" id="history-group-chips" role="group" aria-label="Operation group"></div></div>
       <div class="ctl"><span class="eyebrow">Combine</span><div class="chips" id="combine-chips" role="group" aria-label="Combine merges"></div></div>
     </div>
     <div id="history-body"></div>
@@ -47,6 +48,9 @@
       <h2>Against ICU4X and ICU4C</h2>
       <p class="muted">Geometric mean over each operation's inputs. MoonBit, ICU4C and ICU4X's UTF-16 API all work on UTF-16, and only libraries that take UTF-16 are shown, so every bar reads the same bytes. ICU4C is used through <code>UnicodeString</code>, ICU4X through its <code>_utf16</code> APIs. The verdict under each chart compares MoonBit native with the fastest of the others. MoonBit runs on two WebAssembly backends: wasm-gc, whose objects V8's garbage collector manages, and wasm, which keeps everything in linear memory with reference counting.</p>
     </div>
+    <div class="controls">
+      <div class="ctl"><span class="eyebrow">Group</span><div class="chips" id="icu-group-chips" role="group" aria-label="Operation group"></div></div>
+    </div>
     <div class="legend" id="legend-icu"></div>
     <div class="grid" id="grid-icu"></div>
   </section>
@@ -55,7 +59,7 @@
     <div class="prose" style="display:flex;flex-direction:column;gap:10px">
       <div class="eyebrow">JavaScript backend</div>
       <h2>MoonBit compiled to JS vs the built-ins</h2>
-      <p class="answer">JavaScript does have built-ins for some of this. <code>String.prototype.normalize</code> and <code>Intl.Segmenter</code> are implemented in C++ inside V8, on top of ICU4C. Node also ships <code>url.domainToASCII</code> (the ada URL parser) and the deprecated <code>punycode</code> module, which is plain JS. There is no built-in for bidi resolution or an NFC check, so those have no JS counterpart here.</p>
+      <p class="answer">JavaScript has built-ins for many of these operations. <code>String.prototype.normalize</code>, <code>toUpperCase</code>, <code>toLowerCase</code> and <code>Intl.Segmenter</code> (grapheme, word and sentence granularity) are implemented in C++ inside V8, on top of ICU4C. Node also ships <code>url.domainToASCII</code> (the ada URL parser) and the deprecated <code>punycode</code> module, which is plain JS. There is no built-in for line breaking, bidi resolution, case folding or an NFC check, so those have no JS counterpart here.</p>
       <p class="muted">So this pits MoonBit compiled to JavaScript against native ICU code reached through V8. Every Node case pays the cost of crossing from JavaScript into the runtime, and <code>domainToASCII</code> converts the string to UTF-8 inside it. <code>domainToUnicode</code> first runs the whole ToASCII conversion and then decodes the result back, so it always costs more than ToASCII.</p>
     </div>
     <div class="legend" id="legend-js"></div>
@@ -69,6 +73,7 @@
       <p class="muted">Each cell is the fastest round of the snapshot. The second line is the time relative to the baseline you pick: green is faster, red is slower.</p>
     </div>
     <div class="controls">
+      <div class="ctl"><span class="eyebrow">Group</span><div class="chips" id="case-group-chips" role="group" aria-label="Operation group"></div></div>
       <div class="ctl"><span class="eyebrow">Operation</span><div class="chips" id="op-chips" role="group" aria-label="Operation"></div></div>
       <div class="ctl"><label class="eyebrow" for="baseline">Relative to</label><select id="baseline"></select></div>
     </div>
@@ -84,7 +89,9 @@
       <p><b>Inputs.</b> Normalization uses the 14 ICU normperf corpora, as they are and converted to NFD. <code>NFD → NFC</code> composes the decomposed copy, forcing real work. Most corpora are already NFC, so MoonBit, ICU4X and Node can return the input unchanged on NFC, NFKC and the NFC check.</p>
       <p><b>Encodings.</b> Every implementation shown in the snapshot takes UTF-16: MoonBit's <code>String</code>, ICU4C's <code>UnicodeString</code>, ICU4X's <code>_utf16</code> APIs, <code>unicode-bidi</code>'s UTF-16 module and JavaScript strings. The harness also measures Rust libraries that read UTF-8. They are left out here: UTF-8 makes ASCII cheaper and CJK dearer, so those numbers mix the encoding with the algorithm.</p>
       <p><b>Builds.</b> MoonBit native is compiled through C with clang. Wasm-gc and wasm run in V8 under <code>moonrun</code>. The JS backend runs under Node. The Rust harness is a release build (fat LTO, one codegen unit) with ICU4X's compiled data.</p>
-      <p><b>Case and categories.</b> The harness feeds ICU4X and Rust's <code>std</code> these per-character lookups from UTF-8 strings, so the snapshot compares them with ICU4C only. Full uppercase mapping has no UTF-16 peer and is not shown there.</p>
+      <p><b>Segmentation.</b> MoonBit implements the default UAX #29 and UAX #14 rules without dictionary tailoring. ICU4C, ICU4X (<code>new_auto</code>) and <code>Intl.Segmenter</code> apply dictionary or LSTM word and line breaking on scripts such as Thai and Chinese, so segment counts differ on those inputs.</p>
+      <p><b>Bidi reordering.</b> <code>Bidi reorder</code> times visual reordering on a pre-resolved paragraph. MoonBit's <code>reorder_string</code> and ICU4C's <code>ubidi_writeReordered</code> both apply glyph mirroring and strip formatting controls; <code>unicode-bidi</code>'s <code>reorder_line</code> reorders without mirroring. <code>Requires bidi</code> and <code>IDNA2008 ToASCII</code> have no UTF-16 peer in this harness and appear in the history and per-case table only.</p>
+      <p><b>Case and categories.</b> ICU4C's full case mappings, case folding, canonical folding, NFKC_Casefold, caseless match and property queries all run on UTF-16, while the Rust harness runs ICU4X and <code>std</code> on UTF-8. <code>Caseless match</code> compares each input against its case-folded form so every call traverses the full string.</p>
       <p><b>Wasm and wasm-gc.</b> The wasm backend shares the native backend's SIMD path, so it beats wasm-gc on NFC, NFKC and the NFC check, where the clean-text scan dominates. Elsewhere it is usually slower: it reference-counts and allocates with MoonBit's own allocator inside linear memory, while wasm-gc allocates from V8's collector. Results also depend on what ran earlier in the same process, as V8's heap grows, so both the snapshot and the changes on main come from runs of the full suite.</p>
     </div>
   </section>
