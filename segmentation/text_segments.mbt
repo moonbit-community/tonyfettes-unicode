@@ -22,7 +22,7 @@ fn TextSegments::next(self : TextSegments) -> StringView {
 
 ///|
 fn TextSegments::iter(self : TextSegments) -> Iter[StringView] {
-  Iter::new(() => {
+  Iter(() => {
     let segment = self.next()
     if segment.is_empty() {
       None
