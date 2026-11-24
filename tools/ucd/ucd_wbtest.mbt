@@ -166,15 +166,16 @@ test "emit XID table" {
       #|E0100..E01EF ; XID_Continue
     ),
   )
+  // Single-range XID_Start uses a direct comparison; multi-range XID_Continue uses a trie.
+  inspect(source.contains("cp >= 0x41 && cp <= 0x5A"), content="true")
   inspect(
-    source.contains("let xid_start_trie_leaf : Bytes = ["),
+    source.contains("let xid_continue_bmp_leaf : Bytes = ["),
     content="true",
   )
   inspect(
     source.contains("pub fn is_xid_continue(c : Char) -> Bool"),
     content="true",
   )
-  inspect(source.contains("    return false\n"), content="true")
   inspect(
     source.contains("    return (cp >= 0xE0100 && cp <= 0xE01EF)\n"),
     content="true",
@@ -184,31 +185,15 @@ test "emit XID table" {
 ///|
 test "binary property trie shares identical blocks" {
   let out = @emitter.Emitter::new()
-  write_binary_property_trie(out, property="Test", [{ start: 0x41, end: 0x5A, }])
+  write_binary_property_trie(out, property="Test", [
+    { start: 0x41, end: 0x5A, },
+    { start: 0x61, end: 0x7A, },
+  ])
   let source = out.finish()
-  // One leaf block holds A-Z; every other block is the shared empty block.
+  // Block 0 holds A-Z and a-z; every remaining BMP block shares empty block 1.
   inspect(
     source.contains(
-      (
-        #|let test_trie_mid : Bytes = [
-        #|  0,
-        #|  1,
-        #|  1,
-        #|  1,
-        #|  1,
-        #|  1,
-        #|  1,
-        #|  1,
-        #|  1,
-        #|  1,
-        #|  1,
-        #|  1,
-        #|  1,
-        #|  1,
-        #|  1,
-        #|  1,
-        #|]
-      ),
+      "let test_bmp_index : Bytes = [\n  0,\n" + "  1,\n".repeat(255) + "]",
     ),
     content="true",
   )
@@ -250,7 +235,7 @@ test "emit case mapping records and special mappings" {
   let source = emit_case_mapping(data, special)
   for
     expected in [
-      "let case_trie_top : Bytes", "let case_trie_mid : Bytes", "let case_trie_leaf : Bytes",
+      "let case_bmp_index : Bytes", "let case_bmp_leaf : Bytes", "let case_supp_top : Bytes",
       // Records in order of first use: no mapping, U+0041 (shared with
       // U+00C0), U+0061, and U+00DF with special upper and title mappings.
        "let case_upper_deltas : ReadOnlyArray[Int] = [\n  0,\n  0,\n  -32,\n  0,\n]",
@@ -297,7 +282,7 @@ test "emit White_Space table" {
   inspect(source.contains("/// White_Space lookup data\n"), content="true")
   inspect(source.contains("/// Generated from PropList.txt\n"), content="true")
   inspect(
-    source.contains("let white_space_trie_top : Bytes = ["),
+    source.contains("let white_space_bmp_index : Bytes = ["),
     content="true",
   )
   inspect(
@@ -320,8 +305,7 @@ test "emit East_Asian_Width table" {
   for
     expected in [
       "/// East_Asian_Width lookup data\n/// Generated from EastAsianWidth.txt\n",
-      "let eaw_trie_top : Bytes = [", "let eaw_trie_mid : ReadOnlyArray[Int] = [",
-      "let eaw_trie_leaf : Bytes = [",
+      "let eaw_bmp_index : Bytes = [", "let eaw_bmp_leaf : Bytes = [", "let eaw_supp_top : Bytes = [",
       // Planes 4 and up: N from U+40000, A at U+E0100, N again from U+E0101.
        "  0x200003,\n  0x700800,\n  0x70080B,\n]", "pub fn lookup_east_asian_width(c : Char) -> Int {",
     ] {
@@ -360,10 +344,10 @@ test "emit Emoji tables" {
   )
   for
     expected in [
-      "/// Generated from emoji-data.txt and emoji-variation-sequences.txt\n", "let emoji_presentation_trie_top : Bytes = [",
-      "pub fn is_emoji_presentation(c : Char) -> Bool", "let emoji_modifier_trie_leaf : Bytes = [",
-      "pub fn is_emoji_modifier(c : Char) -> Bool", "pub fn is_emoji_modifier_base(c : Char) -> Bool",
-      "pub fn is_extended_pictographic(c : Char) -> Bool", "/// Check whether a character starts an emoji variation sequence\npub fn has_emoji_variation_sequence(c : Char) -> Bool",
+      "/// Generated from emoji-data.txt and emoji-variation-sequences.txt\n", "pub fn is_emoji_presentation(c : Char) -> Bool",
+      "cp >= 0x1F3FB && cp <= 0x1F3FF", "pub fn is_emoji_modifier(c : Char) -> Bool",
+      "pub fn is_emoji_modifier_base(c : Char) -> Bool", "pub fn is_extended_pictographic(c : Char) -> Bool",
+      "/// Check whether a character starts an emoji variation sequence\npub fn has_emoji_variation_sequence(c : Char) -> Bool",
     ] {
     guard source.contains(expected) else {
       fail("Generated source is missing: \{expected}")
@@ -386,7 +370,7 @@ test "emit Joining_Type table" {
   for
     expected in [
       "/// Joining_Type lookup data\n/// Generated from DerivedJoiningType.txt\n",
-      "let joining_type_trie_top : Bytes = [", "let joining_type_trie_leaf : Bytes = [",
+      "let joining_type_bmp_index : Bytes = [", "let joining_type_bmp_leaf : Bytes = [",
       // Planes 4 and up: U from U+40000, T at U+E0100..U+E01EF, U again after.
        "  0x200000,\n  0x700805,\n  0x700F80,\n]", "pub fn lookup_joining_type(c : Char) -> Int {",
     ] {
@@ -473,7 +457,7 @@ test "emit Hangul_Syllable_Type table" {
   for
     expected in [
       "/// Hangul_Syllable_Type lookup data\n/// Generated from HangulSyllableType.txt\n",
-      "let hangul_syllable_type_trie_leaf : Bytes = [", "pub fn lookup_hangul_syllable_type(c : Char) -> Int {",
+      "let hangul_syllable_type_bmp_leaf : Bytes = [", "pub fn lookup_hangul_syllable_type(c : Char) -> Int {",
     ] {
     guard source.contains(expected) else {
       fail("Generated source is missing: \{expected}")
@@ -504,7 +488,7 @@ test "emit Joining_Group table and enum in dictionary order" {
   for
     expected in [
       "/// Joining_Group lookup data\n/// Generated from DerivedJoiningGroup.txt\n",
-      "let joining_group_trie_leaf : Bytes = [", "/// Returns ordinal value (0-5) corresponding to JoiningGroup enum\n",
+      "let joining_group_bmp_leaf : Bytes = [", "/// Returns ordinal value (0-5) corresponding to JoiningGroup enum\n",
       "pub fn lookup_joining_group(c : Char) -> Int {",
     ] {
     guard source.contains(expected) else {
@@ -537,7 +521,7 @@ test "emit Line_Break table and enum" {
   let source = emit_line_break(lines.to_string())
   for
     expected in [
-      "/// Line_Break lookup data\n/// Generated from LineBreak.txt\n", "let line_break_trie_leaf : Bytes = [",
+      "/// Line_Break lookup data\n/// Generated from LineBreak.txt\n", "let line_break_bmp_leaf : Bytes = [",
       "/// Returns ordinal value (0-48) corresponding to LineBreak enum\n", "pub fn lookup_line_break(c : Char) -> Int {",
     ] {
     guard source.contains(expected) else {
@@ -608,15 +592,10 @@ test "punctuation and mark tables come from General_Category" {
   )
   let source = emit_punctuation(data)
   assert_true(source.contains("pub fn is_punctuation(c : Char) -> Bool"))
-  assert_true(source.contains("punctuation_trie_top"))
+  assert_true(source.contains("punctuation_bmp_index"))
   let marks = emit_marks(data)
   assert_true(marks.contains("pub fn is_mark(c : Char) -> Bool"))
-  // U+0300 and U+0301 are the two lowest bits of one leaf byte, and no mark
-  // lies above the trie.
-  assert_true(
-    marks.contains(
-      "let mark_trie_leaf : Bytes = [\n" + "  0,\n".repeat(16) + "  3,\n",
-    ),
-  )
-  assert_true(marks.contains("    return false\n"))
+  // U+0300 and U+0301 form a single contiguous range, so no trie is emitted.
+  assert_true(marks.contains("cp >= 0x300 && cp <= 0x301"))
+  assert_true(!marks.contains("mark_bmp_index"))
 }

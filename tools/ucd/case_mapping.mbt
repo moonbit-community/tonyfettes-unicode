@@ -1,13 +1,20 @@
 ///|
+/// BMP lookups use a two-level trie with 64-entry blocks.
+const CaseTrieBmpLimit : Int32 = 0x10000
+
+///|
+const CaseTrieBmpShift : Int32 = 6
+
+///|
 /// The trie covers planes 0-1, which hold every case mapping.
 const CaseTrieLimit : Int32 = 0x20000
 
 ///|
-/// Each top-level trie entry covers `1 << CaseTrieTopShift` code points.
+/// Each supplementary top-level trie entry covers `1 << CaseTrieTopShift` code points.
 const CaseTrieTopShift : Int32 = 8
 
 ///|
-/// Each leaf block holds `1 << CaseTrieLeafShift` record indices.
+/// Each supplementary leaf block holds `1 << CaseTrieLeafShift` record indices.
 const CaseTrieLeafShift : Int32 = 4
 
 ///|
@@ -100,39 +107,99 @@ pub fn emit_case_mapping(
   guard records.length() <= 0x100 else {
     fail("Case mapping has too many distinct records for one byte")
   }
-  // Leaf level: blocks of record indices.
-  let leaf = @emitter.deduplicate_blocks(values, 1 << CaseTrieLeafShift)
-  // Mid level: blocks of leaf block indices; `mid.ids` is the top level.
-  let mid = @emitter.deduplicate_blocks(
-    leaf.ids,
+  // BMP two-level trie: 64-entry blocks -> 1024-entry Bytes index.
+  let bmp = @emitter.deduplicate_blocks(
+    values[:CaseTrieBmpLimit].to_owned(),
+    1 << CaseTrieBmpShift,
+  )
+  guard bmp.ids.all(id => id < 0x100) else {
+    fail("Case mapping BMP trie has too many blocks for one byte")
+  }
+  // Plane 1 three-level trie: 16-entry leaf blocks.
+  let supp_leaf = @emitter.deduplicate_blocks(
+    values[CaseTrieBmpLimit:CaseTrieLimit].to_owned(),
+    1 << CaseTrieLeafShift,
+  )
+  let supp_mid = @emitter.deduplicate_blocks(
+    supp_leaf.ids,
     1 << (CaseTrieTopShift - CaseTrieLeafShift),
   )
-  guard mid.ids.all(id => id < 0x100) else {
-    fail("Case mapping trie has too many mid blocks for one byte")
+  guard supp_mid.ids.all(id => id < 0x100) else {
+    fail("Case mapping plane-1 trie has too many mid blocks for one byte")
   }
-  guard mid.blocks.all(id => id < 0x100) else {
-    fail("Case mapping trie has too many leaf blocks for one byte")
+  guard supp_mid.blocks.all(id => id < 0x100) else {
+    fail("Case mapping plane-1 trie has too many leaf blocks for one byte")
   }
-  let mid_mask = (1 << (CaseTrieTopShift - CaseTrieLeafShift)) - 1
+  let bmp_mask = (1 << CaseTrieBmpShift) - 1
+  let mid_shift = CaseTrieTopShift - CaseTrieLeafShift
+  let mid_mask = (1 << mid_shift) - 1
   let leaf_mask = (1 << CaseTrieLeafShift) - 1
+  // Validate every index and decoded record before emitting unsafe_get.
+  for cp in 0..<CaseTrieBmpLimit {
+    let idx = cp >> CaseTrieBmpShift
+    let off = (bmp.ids[idx] << CaseTrieBmpShift) | (cp & bmp_mask)
+    guard idx >= 0 &&
+      idx < bmp.ids.length() &&
+      off >= 0 &&
+      off < bmp.blocks.length() else {
+      fail(
+        "Case mapping BMP index out of bounds at \{@emitter.hex_literal(cp)}",
+      )
+    }
+    let rec = bmp.blocks[off]
+    guard rec == values[cp] && rec >= 0 && rec < records.length() else {
+      fail("Case mapping BMP mismatch at \{@emitter.hex_literal(cp)}")
+    }
+  }
+  for cp in CaseTrieBmpLimit..<CaseTrieLimit {
+    let top_idx = (cp - CaseTrieBmpLimit) >> CaseTrieTopShift
+    let mid_idx = (supp_mid.ids[top_idx] << mid_shift) |
+      ((cp >> CaseTrieLeafShift) & mid_mask)
+    let off = (supp_mid.blocks[mid_idx] << CaseTrieLeafShift) | (cp & leaf_mask)
+    guard top_idx >= 0 &&
+      top_idx < supp_mid.ids.length() &&
+      mid_idx >= 0 &&
+      mid_idx < supp_mid.blocks.length() &&
+      off >= 0 &&
+      off < supp_leaf.blocks.length() else {
+      fail(
+        "Case mapping plane-1 index out of bounds at \{@emitter.hex_literal(cp)}",
+      )
+    }
+    let rec = supp_leaf.blocks[off]
+    guard rec == values[cp] && rec >= 0 && rec < records.length() else {
+      fail("Case mapping plane-1 mismatch at \{@emitter.hex_literal(cp)}")
+    }
+  }
+  let bmp_limit = @emitter.hex_literal(CaseTrieBmpLimit)
   let out = @emitter.Emitter::new()
   out.write_file_header(
     "Case mapping lookup data", "UnicodeData.txt and SpecialCasing.txt",
   )
   out.write_byte_array(
-    "Case mapping trie top level: `cp >> \{CaseTrieTopShift}` to mid block index",
-    "case_trie_top",
-    mid.ids,
+    "Case mapping BMP trie index: `cp >> \{CaseTrieBmpShift}` to leaf block index",
+    "case_bmp_index",
+    bmp.ids,
   )
   out.write_byte_array(
-    "Case mapping trie mid level: leaf block indices",
-    "case_trie_mid",
-    mid.blocks,
+    "Case mapping BMP trie leaf: record indices in blocks of \{1 << CaseTrieBmpShift}",
+    "case_bmp_leaf",
+    bmp.blocks,
   )
   out.write_byte_array(
-    "Case mapping trie leaf level: record indices in blocks of \{1 << CaseTrieLeafShift}",
-    "case_trie_leaf",
-    leaf.blocks,
+    "Case mapping plane-1 trie top level: `(cp - \{bmp_limit}) >> \{CaseTrieTopShift}` to mid block index",
+    "case_supp_top",
+    supp_mid.ids,
+  )
+  out.write_byte_array(
+    "Case mapping plane-1 trie mid level: leaf block indices",
+    "case_supp_mid",
+    supp_mid.blocks,
+  )
+  out.write_byte_array(
+    "Case mapping plane-1 trie leaf level: record indices in blocks of \{1 << CaseTrieLeafShift}",
+    "case_supp_leaf",
+    supp_leaf.blocks,
   )
   for index, table in cases {
     out.write_int_array(
@@ -170,16 +237,29 @@ pub fn emit_case_mapping(
   out.write(
     (
       $|///|
-      $|/// Index of the record holding a character's case mappings
-      $|fn lookup_case_record(c : Char) -> Int {
-      $|  let cp = c.to_int()
+      $|/// Cold supplementary case record lookup for `cp >= \{bmp_limit}`.
+      $|#inline(never)
+      $|fn lookup_case_record_supp(cp : Int) -> Int {
       $|  if cp >= \{@emitter.hex_literal(CaseTrieLimit)} {
       $|    return 0
       $|  }
-      $|  let mid = (case_trie_top[cp >> \{CaseTrieTopShift}].to_int() << \{CaseTrieTopShift - CaseTrieLeafShift}) |
+      $|  // SAFETY: cp is in [\{bmp_limit}, \{@emitter.hex_literal(CaseTrieLimit)}); generator validated all indices.
+      $|  let mid = (case_supp_top.unsafe_get((cp - \{bmp_limit}) >> \{CaseTrieTopShift}).to_int() << \{mid_shift}) |
       $|    ((cp >> \{CaseTrieLeafShift}) & \{mid_mask})
-      $|  let leaf = case_trie_mid[mid].to_int()
-      $|  case_trie_leaf[(leaf << \{CaseTrieLeafShift}) | (cp & \{leaf_mask})].to_int()
+      $|  let leaf = case_supp_mid.unsafe_get(mid).to_int()
+      $|  case_supp_leaf.unsafe_get((leaf << \{CaseTrieLeafShift}) | (cp & \{leaf_mask})).to_int()
+      $|}
+      $|
+      $|///|
+      $|/// Index of the record holding a character's case mappings
+      $|fn lookup_case_record(c : Char) -> Int {
+      $|  let cp = c.to_int()
+      $|  if cp >= \{bmp_limit} {
+      $|    return lookup_case_record_supp(cp)
+      $|  }
+      $|  // SAFETY: cp is in [0, \{bmp_limit}); generator validated all indices.
+      $|  let block = case_bmp_index.unsafe_get(cp >> \{CaseTrieBmpShift}).to_int()
+      $|  case_bmp_leaf.unsafe_get((block << \{CaseTrieBmpShift}) | (cp & \{bmp_mask})).to_int()
       $|}
       $|
     ),
@@ -193,7 +273,7 @@ pub fn emit_case_mapping(
         $|/// Look up simple \{name}case mapping for a character
         $|/// Returns the character itself if no mapping exists
         $|pub fn lookup_simple_\{name}case(c : Char) -> Char {
-        $|  (c.to_int() + case_\{name}_deltas[lookup_case_record(c)]).unsafe_to_char()
+        $|  (c.to_int() + case_\{name}_deltas.unsafe_get(lookup_case_record(c))).unsafe_to_char()
         $|}
         $|
         $|///|
@@ -201,15 +281,15 @@ pub fn emit_case_mapping(
         $|/// Returns the character itself if no mapping exists
         $|pub fn full_\{name}case(c : Char) -> String {
         $|  let record = lookup_case_record(c)
-        $|  if (case_special_flags[record].to_int() & \{flag}) != 0 {
+        $|  if (case_special_flags.unsafe_get(record).to_int() & \{flag}) != 0 {
         $|    let index = find_special_\{name}(c.to_int())
         $|    if index >= 0 {
         $|      return special_\{name}_strings[index]
         $|    }
         $|  }
-        $|  let target = c.to_int() + case_\{name}_deltas[record]
+        $|  let target = c.to_int() + case_\{name}_deltas.unsafe_get(record)
         $|  if target < 0x80 {
-        $|    ascii_strings[target]
+        $|    ascii_strings.unsafe_get(target)
         $|  } else {
         $|    target.unsafe_to_char().to_string()
         $|  }
@@ -220,13 +300,13 @@ pub fn emit_case_mapping(
         $|/// Returns Some(array of chars) if a mapping exists, None otherwise
         $|pub fn lookup_full_\{name}case(c : Char) -> Array[Char]? {
         $|  let record = lookup_case_record(c)
-        $|  if (case_special_flags[record].to_int() & \{flag}) != 0 {
+        $|  if (case_special_flags.unsafe_get(record).to_int() & \{flag}) != 0 {
         $|    let index = find_special_\{name}(c.to_int())
         $|    if index >= 0 {
         $|      return Some(special_\{name}_strings[index].to_array())
         $|    }
         $|  }
-        $|  let delta = case_\{name}_deltas[record]
+        $|  let delta = case_\{name}_deltas.unsafe_get(record)
         $|  if delta == 0 {
         $|    None
         $|  } else {
