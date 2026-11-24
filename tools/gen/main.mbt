@@ -236,18 +236,21 @@ async fn generate_idna(g : Generator) -> Unit {
 
 ///|
 async fn generate_bidi(g : Generator) -> Unit {
+  let mirroring = g.ucd("BidiMirroring.txt")
+  let brackets = g.ucd("BidiBrackets.txt")
   g.write(
     "bidi/bidi_class.mbt",
-    @bidi_data.emit_bidi_class(g.ucd("extracted/DerivedBidiClass.txt")),
+    @bidi_data.emit_bidi_class(
+      g.ucd("extracted/DerivedBidiClass.txt"),
+      mirroring~,
+      brackets~,
+    ),
   )
   g.write(
     "bidi/internal/bidi/mirrored.mbt",
-    @bidi_data.emit_mirrored(g.ucd("BidiMirroring.txt")),
+    @bidi_data.emit_mirrored(mirroring),
   )
-  g.write(
-    "bidi/internal/bidi/bracket.mbt",
-    @bidi_data.emit_bracket(g.ucd("BidiBrackets.txt")),
-  )
+  g.write("bidi/internal/bidi/bracket.mbt", @bidi_data.emit_bracket(brackets))
 }
 
 ///|

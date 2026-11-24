@@ -2,7 +2,7 @@
 package "moonbit-community/unicode-tools/bidi_data"
 
 // Values
-pub fn emit_bidi_class(String) -> String raise
+pub fn emit_bidi_class(String, mirroring? : String, brackets? : String) -> String raise
 
 pub fn emit_bracket(String) -> String raise
 

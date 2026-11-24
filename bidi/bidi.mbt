@@ -295,7 +295,7 @@ pub fn reorder_string(para : BidiParagraph) -> String {
     let c = para.chars[i]
     let level = para.levels[i]
     // Apply mirroring for RTL levels (odd levels)
-    if level % 2 == 1 {
+    if level % 2 == 1 && has_mirroring_glyph(c) {
       sb.write_char(@bidi_data.bidi_mirroring_glyph(c))
     } else {
       sb.write_char(c)
@@ -307,7 +307,7 @@ pub fn reorder_string(para : BidiParagraph) -> String {
 ///|
 /// Get the mirrored glyph for a character if in RTL context
 pub fn get_mirrored(c : Char, level : Int32) -> Char {
-  if level % 2 == 1 {
+  if level % 2 == 1 && has_mirroring_glyph(c) {
     @bidi_data.bidi_mirroring_glyph(c)
   } else {
     c

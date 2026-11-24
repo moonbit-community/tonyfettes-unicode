@@ -192,9 +192,8 @@ fn find_bracket_pairs(
       _ => continue
     }
     let c = chars[idx]
-    let bracket_type = @bidi_data.bracket_type(c)
-    match bracket_type {
-      Open =>
+    match lookup_bracket_tag(c) {
+      1 =>
         // Push to stack
         if stack.length() < 63 { // BD16 limit
           stack.push({ bracket: c, char_index: idx, sequence_position, })
@@ -203,7 +202,7 @@ fn find_bracket_pairs(
           overflow = true
           break
         }
-      Close =>
+      2 =>
         // Find matching opening bracket
         if @bidi_data.paired_bracket(c) is Some(matching_open) {
           let matching_canonical = canonical_bracket(matching_open)
@@ -237,7 +236,7 @@ fn find_bracket_pairs(
             }
           }
         }
-      None => ()
+      _ => ()
     }
   }
 
