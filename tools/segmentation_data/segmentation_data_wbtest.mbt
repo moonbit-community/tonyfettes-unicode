@@ -45,8 +45,8 @@ test "grapheme break trie, high ranges, and constants" {
   )
   for
     expected in [
-      "let grapheme_break_trie_top : Bytes", "let grapheme_break_trie_mid : ReadOnlyArray[Int]",
-      "let grapheme_break_trie_leaf : Bytes", "let grapheme_break_high_ranges : ReadOnlyArray[Int]",
+      "let grapheme_break_bmp_index : Bytes", "let grapheme_break_bmp_leaf : Bytes",
+      "let grapheme_break_supp_top : Bytes", "let grapheme_break_high_ranges : ReadOnlyArray[Int]",
       // Planes 4 and up: Other from U+40000, Control at U+E0001, Other again
       // from U+E0002.
        "  0x2000000,\n  0x7000083,\n  0x7000100,\n]", "const GcbCR : Int = 1", "const GcbRegionalIndicator : Int = 6",

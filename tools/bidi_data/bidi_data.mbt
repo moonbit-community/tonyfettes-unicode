@@ -89,18 +89,44 @@ let bidi_classes : ReadOnlyArray[(String, String)] = [
 
 ///|
 /// Emit the `BidiClass` enum and Bidi_Class data from `DerivedBidiClass.txt`
-/// as a three-level trie for planes 0-3, with packed ranges for the remaining
-/// planes.
-pub fn emit_bidi_class(content : String) -> String raise {
+/// as a two-level BMP trie plus out-of-line supplementary tables.
+///
+/// Each 8-bit trie entry packs:
+/// - bits 0..4: `BidiClass` ordinal (0-22)
+/// - bit 5: 1 if the code point has a `Bidi_Mirroring_Glyph` entry
+/// - bits 6..7: `Bidi_Paired_Bracket_Type` (0 = None, 1 = Open, 2 = Close)
+pub fn emit_bidi_class(
+  content : String,
+  mirroring~ : String = "",
+  brackets~ : String = "",
+) -> String raise {
   let values = @parsing.parse_enumerated_ordinals(
     content,
     property="Bidi_Class",
     default="L",
     name => bidi_classes.search_by(entry => name == entry.0 || name == entry.1),
   )
+  if !mirroring.is_empty() {
+    for entry in parse_mirroring(mirroring) {
+      values[entry.code_point] = values[entry.code_point] | 32
+    }
+  }
+  if !brackets.is_empty() {
+    for entry in parse_brackets(brackets) {
+      // bracket_type: 0 = Open -> 1, 1 = Close -> 2.
+      let tag = if entry.bracket_type == 0 {
+        1
+      } else if entry.bracket_type == 1 {
+        2
+      } else {
+        0
+      }
+      values[entry.code_point] = values[entry.code_point] | (tag << 6)
+    }
+  }
   let out = @emitter.Emitter::new()
   out.write_file_header(
-    "Full Bidi_Class lookup for Unicode Bidirectional Algorithm (UAX #9)", "DerivedBidiClass.txt",
+    "Full Bidi_Class lookup for Unicode Bidirectional Algorithm (UAX #9)", "DerivedBidiClass.txt, BidiMirroring.txt and BidiBrackets.txt",
   )
   out.write_enum(
     type_name="BidiClass",
@@ -114,11 +140,12 @@ pub fn emit_bidi_class(content : String) -> String raise {
   out.write_value_trie(
     property="Bidi_Class",
     prefix="bidi",
-    lookup="fn lookup_bidi_class_code",
+    lookup="fn lookup_bidi_entry",
     lookup_doc=[
-      "Look up the Bidi_Class code (the `BidiClass` constructor index).",
+      "Look up packed Bidi entry: bits 0..4 BidiClass, bit 5 mirrored glyph, bits 6..7 bracket type (0=None, 1=Open, 2=Close).",
     ],
-    value_bits=5,
+    value_bits=8,
+    range_value_bits=5,
     values,
   )
   out.write(bidi_class_implementation)
@@ -129,7 +156,18 @@ pub fn emit_bidi_class(content : String) -> String raise {
 let bidi_class_implementation : String =
   #|///|
   #|fn lookup_bidi_class(c : Char) -> BidiClass {
-  #|  bidi_from_code(lookup_bidi_class_code(c))
+  #|  bidi_from_code(lookup_bidi_entry(c) & 31)
+  #|}
+  #|
+  #|///|
+  #|fn has_mirroring_glyph(c : Char) -> Bool {
+  #|  (lookup_bidi_entry(c) & 32) != 0
+  #|}
+  #|
+  #|///|
+  #|/// Packed bracket type: 0 = None, 1 = Open, 2 = Close.
+  #|fn lookup_bracket_tag(c : Char) -> Int {
+  #|  lookup_bidi_entry(c) >> 6
   #|}
   #|
   #|///|

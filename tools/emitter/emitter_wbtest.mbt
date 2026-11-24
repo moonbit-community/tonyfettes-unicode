@@ -32,14 +32,17 @@ test "value trie shares blocks and packs the higher planes" {
   let source = out.finish()
   for
     expected in [
-      // One leaf block holds `A`; every other block is the shared zero block.
-      "let test_trie_leaf : Bytes = [\n" +
-      "  0,\n".repeat(16) +
+      // One 64-entry BMP leaf block holds `A` (at offset 1 of block 1);
+      // every other block is the shared zero block.
+      "let test_bmp_index : Bytes = [\n  0,\n  1,\n  0,\n",
+      "let test_bmp_leaf : Bytes = [\n" +
+      "  0,\n".repeat(64) +
       "  0,\n  1,\n" +
-      "  0,\n".repeat(14) +
+      "  0,\n".repeat(62) +
       "]",
       // Planes 4 and up: 0 from U+40000, 2 at U+E0001, 0 again from U+E0002.
       "let test_high_ranges : ReadOnlyArray[Int] = [\n  0x200000,\n  0x70000A,\n  0x700010,\n]",
+      "#inline(never)\nfn test_lookup_supplementary(cp : Int) -> Int {",
       "/// Look up the test value\n/// of a character\nfn lookup_test(c : Char) -> Int {",
       "let key = (cp << 3) | 7",
     ] {
@@ -91,18 +94,16 @@ test "value trie stores wide values in two bytes and narrow high ranges" {
   let source = out.finish()
   for
     expected in [
-      // `A` is the second value of its block, the high half of the first
-      // pair: 0x123 << 16.
-      "let test_trie_leaf : ReadOnlyArray[Int] = [\n  0,\n".repeat(1) +
-      "  0,\n".repeat(7) +
+      // `A` (0x41) is the second value of BMP block 1, the high half of its
+      // first packed pair (after 32 zero pairs for block 0): 0x123 << 16.
+      "let test_bmp_leaf : ReadOnlyArray[Int] = [\n" +
+      "  0,\n".repeat(32) +
       "  19070976,\n",
       "let test_high_ranges : ReadOnlyArray[Int] = [\n  0x200000,\n  0x70000A,\n  0x700010,\n]",
-      // One leaf block index per entry: U+0040 starts leaf block 1.
-      "let test_trie_mid : ReadOnlyArray[Int] = [\n" +
-      "  0,\n".repeat(4) +
-      "  1,\n",
-      "  let leaf = test_trie_mid[mid]\n",
-      "(test_trie_leaf[offset >> 1] >> ((offset & 1) << 4)) & 0xFFFF",
+      // U+0040 starts BMP leaf block 1.
+      "let test_bmp_index : Bytes = [\n  0,\n  1,\n",
+      "  let block = test_bmp_index.unsafe_get(cp >> 6).to_int()\n",
+      "(test_bmp_leaf.unsafe_get(offset >> 1) >> ((offset & 1) << 4)) & 0xFFFF",
     ] {
     guard source.contains(expected) else {
       fail("Generated source is missing: \{expected}")
