@@ -2732,5 +2732,212 @@
       "moonbit-wasm": 1.0046,
       "moonbit-js": 1.007
     }
+  },
+  {
+    "about": {
+      "date": "2026-11-24T05:15:00Z",
+      "rounds": 2,
+      "machine": "INTEL(R) XEON(R) PLATINUM 8573C, Linux x86_64",
+      "versions": {
+        "moon": "moon 0.1.20261119 (738607b 2026-11-19)",
+        "Node": "v24.22.3 (ICU 78.3)"
+      },
+      "base": {
+        "commit": "18745d927e27290946db28fb542ae24717e35bcc",
+        "subject": "feat(bench): expand xlang benchmark coverage and update dashboard (#101)",
+        "title": "Add benchmark coverage for word/sentence/line segmentation, bidi reordering and requires_bidi, IDNA2008 ToASCII, full lowercase, canonical case folding, caseless matching, and Alphabetic/Line_Break properties across MoonBit and peer harnesses (ICU4C, Rust/ICU4X, Go, Node, Python). Update the GitHub Pages dashboard with all 29 operations and group filters.",
+        "date": "2026-11-23T18:32:52+08:00",
+        "dirty": false
+      },
+      "head": {
+        "commit": "30905907b9e3fbb408104b52a182212120f63e59",
+        "subject": "perf: two-level BMP tries and bidi flag packing (#102)",
+        "title": "* perf: use two-level BMP tries with validated unchecked lookups",
+        "date": "2026-11-24T13:09:13+08:00",
+        "dirty": false
+      }
+    },
+    "operations": {
+      "norm/nfc": {
+        "moonbit-native": 1.0039,
+        "moonbit-wasm-gc": 1.0003,
+        "moonbit-wasm": 0.99841,
+        "moonbit-js": 0.99958
+      },
+      "norm/nfd": {
+        "moonbit-native": 1.0391,
+        "moonbit-wasm-gc": 1.0233,
+        "moonbit-wasm": 1.0278,
+        "moonbit-js": 1.0058
+      },
+      "norm/nfkc": {
+        "moonbit-native": 1.0016,
+        "moonbit-wasm-gc": 1.0011,
+        "moonbit-wasm": 1.0038,
+        "moonbit-js": 0.99331
+      },
+      "norm/nfkd": {
+        "moonbit-native": 1.0388,
+        "moonbit-wasm-gc": 1.0396,
+        "moonbit-wasm": 1.0444,
+        "moonbit-js": 1.004
+      },
+      "norm/nfd>nfc": {
+        "moonbit-native": 1.0229,
+        "moonbit-wasm-gc": 1.0119,
+        "moonbit-wasm": 1.0116,
+        "moonbit-js": 0.98516
+      },
+      "norm/is_nfc": {
+        "moonbit-native": 1.0043,
+        "moonbit-wasm-gc": 1.0017,
+        "moonbit-wasm": 1.0009,
+        "moonbit-js": 1.0038
+      },
+      "seg/graphemes": {
+        "moonbit-native": 0.7904,
+        "moonbit-wasm-gc": 0.9711,
+        "moonbit-wasm": 0.86572,
+        "moonbit-js": 0.81427
+      },
+      "seg/word_segments": {
+        "moonbit-native": 0.98196,
+        "moonbit-wasm-gc": 0.97496,
+        "moonbit-wasm": 0.84402,
+        "moonbit-js": 0.9829
+      },
+      "seg/words": {
+        "moonbit-native": 0.96021,
+        "moonbit-wasm-gc": 0.97408,
+        "moonbit-wasm": 0.82647,
+        "moonbit-js": 0.97627
+      },
+      "seg/sentences": {
+        "moonbit-native": 0.89288,
+        "moonbit-wasm-gc": 1.0037,
+        "moonbit-wasm": 0.85222,
+        "moonbit-js": 0.9886
+      },
+      "seg/line_breaks": {
+        "moonbit-native": 0.96221,
+        "moonbit-wasm-gc": 0.95931,
+        "moonbit-wasm": 0.96042,
+        "moonbit-js": 0.95944
+      },
+      "bidi/process": {
+        "moonbit-native": 0.8813,
+        "moonbit-wasm-gc": 0.98549,
+        "moonbit-wasm": 0.91321,
+        "moonbit-js": 0.83824
+      },
+      "bidi/reorder": {
+        "moonbit-native": 0.75184,
+        "moonbit-wasm-gc": 0.83717,
+        "moonbit-wasm": 0.83478,
+        "moonbit-js": 0.91745
+      },
+      "bidi/requires_bidi": {
+        "moonbit-native": 0.64721,
+        "moonbit-wasm-gc": 0.92194,
+        "moonbit-wasm": 0.91398,
+        "moonbit-js": 0.75947
+      },
+      "idna/to_ascii": {
+        "moonbit-native": 0.90538,
+        "moonbit-wasm-gc": 0.97124,
+        "moonbit-wasm": 0.9679,
+        "moonbit-js": 0.99409
+      },
+      "idna/to_ascii_2008": {
+        "moonbit-native": 0.90003,
+        "moonbit-wasm-gc": 0.98096,
+        "moonbit-wasm": 0.94336,
+        "moonbit-js": 0.97244
+      },
+      "idna/to_unicode": {
+        "moonbit-native": 0.90638,
+        "moonbit-wasm-gc": 0.96594,
+        "moonbit-wasm": 0.98092,
+        "moonbit-js": 0.93496
+      },
+      "puny/encode": {
+        "moonbit-native": 0.98286,
+        "moonbit-wasm-gc": 0.99883,
+        "moonbit-wasm": 1.0315,
+        "moonbit-js": 0.99634
+      },
+      "puny/decode": {
+        "moonbit-native": 1.0004,
+        "moonbit-wasm-gc": 0.99203,
+        "moonbit-wasm": 1.0071,
+        "moonbit-js": 1.0006
+      },
+      "case/simple_upper": {
+        "moonbit-native": 0.47813,
+        "moonbit-wasm-gc": 0.79564,
+        "moonbit-wasm": 0.48869,
+        "moonbit-js": 0.66203
+      },
+      "case/full_upper": {
+        "moonbit-native": 0.98121,
+        "moonbit-wasm-gc": 0.98781,
+        "moonbit-wasm": 0.91502,
+        "moonbit-js": 0.95296
+      },
+      "case/full_lower": {
+        "moonbit-native": 1.0195,
+        "moonbit-wasm-gc": 0.9775,
+        "moonbit-wasm": 0.908,
+        "moonbit-js": 0.92555
+      },
+      "case/fold": {
+        "moonbit-native": 0.99025,
+        "moonbit-wasm-gc": 1.0125,
+        "moonbit-wasm": 0.86094,
+        "moonbit-js": 0.83582
+      },
+      "case/canonical_fold": {
+        "moonbit-native": 1.0132,
+        "moonbit-wasm-gc": 1.0323,
+        "moonbit-wasm": 0.91437,
+        "moonbit-js": 0.93914
+      },
+      "case/nfkc_casefold": {
+        "moonbit-native": 1.0097,
+        "moonbit-wasm-gc": 1.0064,
+        "moonbit-wasm": 0.92056,
+        "moonbit-js": 0.91792
+      },
+      "case/caseless_match": {
+        "moonbit-native": 0.96594,
+        "moonbit-wasm-gc": 1.0006,
+        "moonbit-wasm": 0.93392,
+        "moonbit-js": 0.91449
+      },
+      "prop/general_category_Ll": {
+        "moonbit-native": 0.38975,
+        "moonbit-wasm-gc": 0.82889,
+        "moonbit-wasm": 0.54004,
+        "moonbit-js": 0.69002
+      },
+      "prop/alphabetic": {
+        "moonbit-native": 0.62915,
+        "moonbit-wasm-gc": 0.88743,
+        "moonbit-wasm": 0.62126,
+        "moonbit-js": 0.67323
+      },
+      "prop/line_break_AL": {
+        "moonbit-native": 0.3565,
+        "moonbit-wasm-gc": 0.98099,
+        "moonbit-wasm": 0.57701,
+        "moonbit-js": 0.7008
+      }
+    },
+    "spread": {
+      "moonbit-native": 1.0108,
+      "moonbit-wasm-gc": 1.0113,
+      "moonbit-wasm": 1.0109,
+      "moonbit-js": 1.0124
+    }
   }
 ]
