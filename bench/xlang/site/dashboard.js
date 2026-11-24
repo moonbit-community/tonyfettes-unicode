@@ -22,6 +22,11 @@ const IMPL = {
   "rust unicode-bidi-utf16": { label: "unicode-bidi (UTF-16)", color: "--other" },
   "rust std": { label: "Rust std", color: "--other" },
   "rust unicode-general-category": { label: "unicode-general-category", color: "--other" },
+  "go x/text": { label: "Go x/text", color: "--other" },
+  "go uniseg": { label: "Go uniseg", color: "--other" },
+  "go x/net/idna": { label: "Go x/net/idna", color: "--other" },
+  "go std": { label: "Go std", color: "--other" },
+  "python": { label: "Python", color: "--other" },
 };
 const ORDER = Object.keys(IMPL);
 const BACKENDS = ["moonbit-native", "moonbit-wasm-gc", "moonbit-wasm", "moonbit-js"];
@@ -410,13 +415,6 @@ function renderSnapshot(snapshot) {
   }
   renderSnapshotMeta(snapshot.about || {});
   const DATA = snapshot.cases;
-  // Only implementations that take UTF-16 strings, so every comparison reads
-  // the same bytes.
-  const UTF16 = new Set(["moonbit-native", "moonbit-wasm-gc", "moonbit-wasm", "moonbit-js", "rust icu4x-utf16", "icu4c", "node", "rust unicode-bidi-utf16"]);
-  for (const [key, row] of Object.entries(DATA)) {
-    for (const impl of Object.keys(row)) if (!UTF16.has(impl)) delete row[impl];
-    if (!Object.keys(row).length) delete DATA[key];
-  }
   // op -> { input -> { impl -> ns } }
   const byOp = {};
   for (const [key, row] of Object.entries(DATA)) {
@@ -458,8 +456,8 @@ function renderSnapshot(snapshot) {
   };
 
   // Against ICU
-  const ICU_IMPLS = ["moonbit-native", "moonbit-wasm-gc", "moonbit-wasm", "rust icu4x-utf16", "icu4c", "rust unicode-bidi-utf16"];
-  const ICU_RIVALS = ["rust icu4x-utf16", "icu4c", "rust unicode-bidi-utf16"];
+  const ICU_IMPLS = ["moonbit-native", "moonbit-wasm-gc", "moonbit-wasm", "rust icu4x-utf16", "rust icu4x-utf8", "icu4c", "rust idna", "rust unicode-bidi-utf16"];
+  const ICU_RIVALS = ["rust icu4x-utf16", "rust icu4x-utf8", "icu4c", "rust idna", "rust unicode-bidi-utf16"];
   legend("legend-icu", ICU_IMPLS.filter(i => Object.values(DATA).some(row => i in row)));
   const gridIcu = document.getElementById("grid-icu");
   const ICU_OPS = [
@@ -467,6 +465,7 @@ function renderSnapshot(snapshot) {
     "seg/graphemes", "seg/word_segments", "seg/words", "seg/sentences", "seg/line_breaks",
     "bidi/process", "bidi/reorder",
     "idna/to_ascii", "idna/to_unicode",
+    "puny/encode", "puny/decode",
     "case/simple_upper", "case/full_upper", "case/full_lower", "case/fold",
     "case/canonical_fold", "case/nfkc_casefold", "case/caseless_match",
     "prop/general_category_Ll", "prop/alphabetic", "prop/line_break_AL",
@@ -476,7 +475,8 @@ function renderSnapshot(snapshot) {
     if (op === "seg/word_segments" || op === "seg/line_breaks") return "ICU4C and ICU4X apply dictionary/LSTM rules on Thai/CJK";
     if (op === "seg/words") return "ICU4C root BreakIterator vs MoonBit default UAX #29";
     if (op === "case/canonical_fold" || op === "case/nfkc_casefold" || op === "case/caseless_match") return "ICU4C on UTF-16";
-    if (op.startsWith("idna/") || op.startsWith("case/") || op.startsWith("prop/")) return "ICU4X is measured here only on UTF-8";
+    if (op.startsWith("idna/") || op.startsWith("puny/")) return "Rust idna operates on UTF-8 (backed by ICU4X)";
+    if (op.startsWith("case/") || op.startsWith("prop/")) return "ICU4X is measured on UTF-8";
     return "";
   };
   const availableIcuOps = ICU_OPS.filter(op =>
