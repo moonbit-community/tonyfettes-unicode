@@ -8,10 +8,10 @@
 /// inside a cluster are not exposed. This does not change UAX #29 segmentation
 /// or recompute line breaking classes per cluster.
 ///
-/// The first query after a grapheme prepares line breaking context for the
-/// whole input in O(n) time and space. Subsequent queries scan that context
-/// forward, taking O(n) total time over a complete traversal. Traversal without
-/// this query does not initialize or run the line breaking algorithm.
+/// The first query after a grapheme initializes a streaming line break cursor
+/// in O(1) space. Subsequent queries advance it forward, taking O(n) total time
+/// over a complete traversal. Traversal without this query does not initialize
+/// or run the line breaking algorithm.
 ///
 /// ```mbt check
 /// test {

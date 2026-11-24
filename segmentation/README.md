@@ -48,12 +48,11 @@ surrogate pairs stay together; unpaired surrogates use the default `Other`
 property. Word and sentence rules are evaluated independently of grapheme
 segmentation; their boundaries are not forced to cluster ends.
 
-Construction takes O(n) time and space to prepare boundary context and store
-segment ends. Complete traversal takes O(n) time; `words` additionally scans
-each segment to apply its filter, still in O(n) total time. No locale
-tailoring, abbreviation dictionary, or dictionary-based word segmentation
-is applied. In particular, default word boundaries do not provide linguistic
-Chinese or Thai word recognition.
+Construction takes O(1) time and space; complete traversal streams forward in
+O(n) time without copying the text. No locale tailoring, abbreviation
+dictionary, or dictionary-based word segmentation is applied. In particular,
+default word boundaries do not provide linguistic Chinese or Thai word
+recognition.
 
 All 1,944 `WordBreakTest.txt` and 512 `SentenceBreakTest.txt` cases from
 Unicode 18.0.0 run directly from `tests/data/` in `tests/segmentation_tests`.
@@ -74,11 +73,11 @@ grapheme clusters. `next() -> StringView` returns an empty view at exhaustion;
 `iter() -> Iter[StringView]` consumes the same cursor.
 
 `Graphemes::line_break() -> BreakOpportunity` queries the boundary after the
-last returned cluster. The first query after a cluster prepares line breaking
-context for the whole input in O(n) time and space. Subsequent queries scan
-forward in O(n) total time over the traversal. Querying repeatedly does not
-advance the grapheme cursor, and queries may be skipped between clusters.
-Traversal without this query does not run the line breaking algorithm.
+last returned cluster. The first query after a cluster initializes a streaming
+line break cursor in O(1) space. Subsequent queries advance it forward in O(n)
+total time over the traversal. Querying repeatedly does not advance the grapheme
+cursor, and queries may be skipped between clusters. Traversal without this
+query does not run the line breaking algorithm.
 
 The query exposes only opportunities at complete cluster ends. Default UAX
 #14 can allow a break inside a cluster, for example between SPACE and a
@@ -108,8 +107,8 @@ processing that segment; collecting the views does not retain their kinds.
   is processed independently of surrounding text.
 - Empty input produces no segments. Exhausted cursors keep returning an empty
   view at the end of the input.
-- Construction takes O(n) time and space to prepare character context.
-  Iteration scans that context once without copying the text.
+- Construction takes O(1) time and space; iteration streams forward in O(n)
+  time without copying the text.
 - Valid surrogate pairs stay together. Unpaired surrogates use `SG -> AL`.
 
 ## Break kinds and cursor state

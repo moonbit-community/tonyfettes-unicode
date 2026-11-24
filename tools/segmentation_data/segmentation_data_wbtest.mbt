@@ -87,3 +87,86 @@ test "unknown property values are rejected" {
     _ => fail("expected an unknown Indic_Conjunct_Break to be rejected")
   }
 }
+
+///|
+test "line break packing resolves LB1, subtypes, and auxiliary bits" {
+  let values = parse_line_break_values(
+    (
+      #|0028          ; OP
+      #|0041          ; AL
+      #|2018          ; QU
+      #|2019          ; QU
+      #|25CC          ; AL
+      #|3008          ; OP
+      #|0E01          ; SA
+      #|0E31          ; SA
+      #|1FFFD         ; ID
+      #|
+    ),
+    (
+      #|0028;LEFT PARENTHESIS;Ps;0;ON;;;;;Y;;;;;
+      #|0041;LATIN CAPITAL LETTER A;Lu;0;L;;;;;N;;;;0061;
+      #|2018;LEFT SINGLE QUOTATION MARK;Pi;0;ON;;;;;N;;;;;
+      #|2019;RIGHT SINGLE QUOTATION MARK;Pf;0;ON;;;;;N;;;;;
+      #|25CC;DOTTED CIRCLE;So;0;ON;;;;;N;;;;;
+      #|3008;LEFT ANGLE BRACKET;Ps;0;ON;;;;;Y;;;;;
+      #|0E01;THAI CHARACTER KO KAI;Lo;0;L;;;;;N;;;;;
+      #|0E31;THAI CHARACTER MAI HAN-AKAT;Mn;0;NSM;;;;;N;;;;;
+      #|
+    ),
+    (
+      #|3008          ; W
+      #|
+    ),
+    (
+      #|1FFFD         ; Extended_Pictographic
+      #|
+    ),
+  )
+  inspect(values[0x28], content=lb_code("OP").to_string())
+  inspect(
+    values[0x3008],
+    content=(lb_code("OPEA") | LbEastAsianBit).to_string(),
+  )
+  inspect(values[0x2018], content=lb_code("QUPi").to_string())
+  inspect(values[0x2019], content=lb_code("QUPf").to_string())
+  inspect(values[0x25CC], content=lb_code("DottedCircle").to_string())
+  inspect(values[0x0E01], content=lb_code("AL").to_string())
+  inspect(values[0x0E31], content=lb_code("CM").to_string())
+  inspect(
+    values[0x1FFFD],
+    content=(lb_code("ID") | LbPotentialEmojiBit).to_string(),
+  )
+}
+
+///|
+test "word break packing includes word-like and extended pictographic bits" {
+  let source = emit_word_break(
+    (
+      #|0041          ; ALetter
+      #|0030          ; Numeric
+      #|
+    ),
+    (
+      #|0030;DIGIT ZERO;Nd;0;EN;;0;0;0;N;;;;;
+      #|
+    ),
+    (
+      #|0041          ; Alphabetic
+      #|
+    ),
+    (
+      #|00A9          ; Extended_Pictographic
+      #|
+    ),
+  )
+  for
+    expected in [
+      "const WbClassMask : Int = 31", "const WbWordLikeBit : Int = 32", "const WbExtendedPictographicBit : Int = 64",
+      "fn word_break_value(cp : Int) -> Int",
+    ] {
+    guard source.contains(expected) else {
+      fail("Generated word break source is missing: \{expected}")
+    }
+  }
+}
