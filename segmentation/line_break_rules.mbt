@@ -1,218 +1,284 @@
 ///|
-/// Apply UAX #14 revision 57 in rule order at a significant boundary.
-/// LB1, LB9, and LB10 are resolved in prepare_units; LB2/LB3 in the cursor.
-/// Context summaries make each decision constant-time, including long runs
-/// of spaces, numeric punctuation, combining marks, and regional indicators.
-fn boundary(units : Array[BreakUnit], index : Int32) -> BreakOpportunity? {
-  let left = units[index - 1]
-  let right = units[index]
-  let a = left.class_
-  let b = right.class_
-  let before = class_at(units, index - 2)
-  let after = class_at(units, index + 1)
-  // LB4-LB6: mandatory breaks, with CR LF kept together.
-  if a == @ucd.CR && b == @ucd.LF {
-    return None
+/// Summary of the non-SP base preceding a run of spaces (for LB8, LB14, LB15a,
+/// LB16, LB17).
+const SpaceRuleNone : Int32 = 0
+
+///|
+const SpaceRuleZW : Int32 = 1
+
+///|
+/// Covers both LB14 (`OP SP* ×`) and LB15a (`... QUPi SP* ×`).
+const SpaceRuleOP : Int32 = 2
+
+///|
+const SpaceRuleCLCP : Int32 = 3
+
+///|
+const SpaceRuleB2 : Int32 = 4
+
+///|
+fn update_space_rule(
+  prev_cls : Int32,
+  new_cls : Int32,
+  current : Int32,
+) -> Int32 {
+  if new_cls == LbSP {
+    return current
   }
-  if a is (BK | CR | LF | NL) {
-    return Some(Mandatory)
+  match new_cls {
+    LbZW => SpaceRuleZW
+    LbOP | LbOPEA => SpaceRuleOP
+    LbQUPi =>
+      if prev_cls
+        is (LbNone
+        | LbBK
+        | LbCR
+        | LbLF
+        | LbNL
+        | LbOP
+        | LbOPEA
+        | LbQU
+        | LbQUPi
+        | LbQUPf
+        | LbGL
+        | LbSP
+        | LbZW) {
+        SpaceRuleOP
+      } else {
+        SpaceRuleNone
+      }
+    LbCL | LbCP | LbCPEA => SpaceRuleCLCP
+    LbB2 => SpaceRuleB2
+    _ => SpaceRuleNone
   }
-  if b is (BK | CR | LF | NL) {
-    return None
+}
+
+///|
+fn is_lb15b_after(cls : Int32) -> Bool {
+  cls
+  is (LbNone
+  | LbSP
+  | LbGL
+  | LbWJ
+  | LbCL
+  | LbQU
+  | LbQUPi
+  | LbQUPf
+  | LbCP
+  | LbCPEA
+  | LbEX
+  | LbIS
+  | LbSY
+  | LbBK
+  | LbCR
+  | LbLF
+  | LbNL
+  | LbZW)
+}
+
+///|
+fn lb_is_aksara(cls : Int32) -> Bool {
+  cls is (LbAK | LbAS | LbDottedCircle)
+}
+
+///|
+/// Peek the next significant unit starting after a base of class `prev_cls`
+/// whose base code point ended at `pos`, skipping any LB9 marks absorbed by
+/// `prev_cls` and applying LB10 if the next unit is a remaining CM/ZWJ.
+/// Returns `(val, base_end)` with `val == 0` (`LbNone`) at end of text.
+fn lb_peek_next_unit(
+  text : StringView,
+  pos : Int32,
+  prev_cls : Int32,
+) -> (Int32, Int32) {
+  let length = text.length()
+  let mut offset = pos
+  let absorb = !(prev_cls is (LbBK | LbCR | LbLF | LbNL | LbSP | LbZW))
+  while offset < length {
+    let cp = code_point_at(text, offset, length)
+    let next_offset = offset + (if cp >= 0x10000 { 2 } else { 1 })
+    let raw_val = line_break_value(cp)
+    let raw_cls = raw_val & LbClassMask
+    if raw_cls >= LbCM {
+      if absorb {
+        offset = next_offset
+        continue
+      }
+      return (LbAL, next_offset)
+    }
+    return (raw_val, next_offset)
   }
-  // LB7-LB8a: explicit spaces and zero-width controls precede LB9.
-  if b is (SP | ZW) {
-    return None
+  (0, length)
+}
+
+///|
+/// Resolve UAX #14 revision 57 context-dependent boundaries (pairs marked
+/// `LbPairContext` in `line_break_pair_table`, with `left_ends_with_zwj == false`).
+fn lb_context_boundary(
+  text : StringView,
+  right_base_end : Int32,
+  left_val : Int32,
+  right_val : Int32,
+  before_val : Int32,
+  left_numeric : Bool,
+  before_numeric : Bool,
+  space_rule : Int32,
+  regional_odd : Bool,
+) -> Int32 {
+  let a = left_val & LbClassMask
+  let b = right_val & LbClassMask
+  // Fast path for SP (by far the most frequent context pair in prose).
+  // LB6 (b in BK|CR|LF|NL) and LB7 (b in SP|ZW) are already decided by the
+  // pair table before reaching here.
+  if a == LbSP {
+    if space_rule == SpaceRuleNone {
+      if b == LbIS {
+        let (after_val, _) = lb_peek_next_unit(text, right_base_end, b)
+        return if (after_val & LbClassMask) == LbNU {
+          LbPairAllowed
+        } else {
+          LbPairProhibited
+        }
+      }
+      if b == LbQUPf {
+        let (after_val, _) = lb_peek_next_unit(text, right_base_end, b)
+        if is_lb15b_after(after_val & LbClassMask) {
+          return LbPairProhibited
+        }
+        return LbPairAllowed
+      }
+      return if b is (LbWJ | LbCL | LbCP | LbCPEA | LbEX | LbSY) {
+        LbPairProhibited
+      } else {
+        LbPairAllowed
+      }
+    }
+    // LB8: ZW SP* ÷
+    if space_rule == SpaceRuleZW {
+      return LbPairAllowed
+    }
+    // LB11, LB13
+    if b is (LbWJ | LbCL | LbCP | LbCPEA | LbEX | LbSY) {
+      return LbPairProhibited
+    }
+    // LB14 & LB15a: (OP | ... QUPi) SP* ×
+    if space_rule == SpaceRuleOP {
+      return LbPairProhibited
+    }
+    // LB15b
+    if b == LbQUPf {
+      let (after_val, _) = lb_peek_next_unit(text, right_base_end, b)
+      if is_lb15b_after(after_val & LbClassMask) {
+        return LbPairProhibited
+      }
+    }
+    // LB15c-LB15d
+    if b == LbIS {
+      let (after_val, _) = lb_peek_next_unit(text, right_base_end, b)
+      return if (after_val & LbClassMask) == LbNU {
+        LbPairAllowed
+      } else {
+        LbPairProhibited
+      }
+    }
+    // LB16-LB17
+    if (space_rule == SpaceRuleCLCP && b == LbNS) ||
+      (space_rule == SpaceRuleB2 && b == LbB2) {
+      return LbPairProhibited
+    }
+    // LB18: SP ÷
+    return LbPairAllowed
   }
-  let base_index = left.space_base
-  let base = class_at(units, base_index)
-  if base == @ucd.ZW {
-    return Some(Allowed)
+  // Non-SP context pairs (all rules through LB14 are already decided by the
+  // pair table). Evaluate LB15a..LB31 in exact rule order.
+  let before = before_val & LbClassMask
+  // LB15a: initial quote after permitted context.
+  if a == LbQUPi && space_rule == SpaceRuleOP {
+    return LbPairProhibited
   }
-  if left.ends_with_zwj {
-    return None
+  // LB15b: final quote before permitted context.
+  if b == LbQUPf {
+    let (after_val, _) = lb_peek_next_unit(text, right_base_end, b)
+    if is_lb15b_after(after_val & LbClassMask) {
+      return LbPairProhibited
+    }
   }
-  // LB11-LB12a.
-  if a == @ucd.WJ || b == @ucd.WJ || a == @ucd.GL {
-    return None
+  // LB15d
+  if b == LbIS {
+    return LbPairProhibited
   }
-  if b == @ucd.GL && !(a is (SP | HY | HH)) {
-    return None
+  // LB16-LB17
+  if (a is (LbCL | LbCP | LbCPEA) && b == LbNS) || (a == LbB2 && b == LbB2) {
+    return LbPairProhibited
   }
-  // LB13-LB14.
-  if b is (CL | CP | EX | SY) {
-    return None
+  // LB19-LB19a: unresolved quotes and East Asian surroundings.
+  if b is (LbQU | LbQUPf) || a is (LbQU | LbQUPi) {
+    return LbPairProhibited
   }
-  if base == @ucd.OP {
-    return None
+  if b == LbQUPi {
+    if (left_val & LbEastAsianBit) == 0 {
+      return LbPairProhibited
+    }
+    let (after_val, _) = lb_peek_next_unit(text, right_base_end, b)
+    if (after_val & LbEastAsianBit) == 0 {
+      return LbPairProhibited
+    }
   }
-  // LB15a: initial quote after start, a hard break, or permitted context.
-  if base == @ucd.QU &&
-    units[base_index].initial_quote &&
-    class_at(units, base_index - 1)
-    is (XX | BK | CR | LF | NL | OP | QU | GL | SP | ZW) {
-    return None
+  if a == LbQUPf &&
+    ((right_val & LbEastAsianBit) == 0 || (before_val & LbEastAsianBit) == 0) {
+    return LbPairProhibited
   }
-  // LB15b: final quote before end or the listed following context.
-  if b == @ucd.QU &&
-    right.final_quote &&
-    after
-    is (XX
-    | SP
-    | GL
-    | WJ
-    | CL
-    | QU
-    | CP
-    | EX
-    | IS
-    | SY
-    | BK
-    | CR
-    | LF
-    | NL
-    | ZW) {
-    return None
+  // LB20-LB20a
+  if a == LbCB || b == LbCB {
+    return LbPairAllowed
   }
-  // LB15c-LB15d.
-  if a == @ucd.SP && b == @ucd.IS && after == @ucd.NU {
-    return Some(Allowed)
+  if a is (LbHY | LbHH) &&
+    b is (LbAL | LbDottedCircle | LbHL) &&
+    before is (LbNone | LbBK | LbCR | LbLF | LbNL | LbSP | LbZW | LbCB | LbGL) {
+    return LbPairProhibited
   }
-  if b == @ucd.IS {
-    return None
+  // LB21a
+  if before == LbHL && a is (LbHY | LbHH) && b != LbHL {
+    return LbPairProhibited
   }
-  // LB16-LB18.
-  if base is (CL | CP) && b == @ucd.NS {
-    return None
+  // LB25: numeric sequences.
+  if b is (LbPO | LbPR) &&
+    (left_numeric || (a is (LbCL | LbCP | LbCPEA) && before_numeric)) {
+    return LbPairProhibited
   }
-  if base == @ucd.B2 && b == @ucd.B2 {
-    return None
+  if a is (LbPO | LbPR) && b is (LbOP | LbOPEA) {
+    let (after_val, after_end) = lb_peek_next_unit(text, right_base_end, b)
+    let after = after_val & LbClassMask
+    if after == LbNU {
+      return LbPairProhibited
+    }
+    if after == LbIS {
+      let (after2_val, _) = lb_peek_next_unit(text, after_end, LbIS)
+      if (after2_val & LbClassMask) == LbNU {
+        return LbPairProhibited
+      }
+    }
   }
-  if a == @ucd.SP {
-    return Some(Allowed)
+  if b == LbNU && (a is (LbHY | LbIS) || left_numeric) {
+    return LbPairProhibited
   }
-  // LB19-LB19a: unresolved quotes and their East Asian surroundings.
-  if (b == @ucd.QU && !right.initial_quote) ||
-    (a == @ucd.QU && !left.final_quote) {
-    return None
+  // LB28a: Brahmic orthographic syllables.
+  if a == LbVI && b is (LbAK | LbDottedCircle) && lb_is_aksara(before) {
+    return LbPairProhibited
   }
-  if b == @ucd.QU &&
-    (
-      !left.east_asian ||
-      !units.get(index + 1).map(u => u.east_asian).unwrap_or(false)
-    ) {
-    return None
+  if lb_is_aksara(a) && lb_is_aksara(b) {
+    let (after_val, _) = lb_peek_next_unit(text, right_base_end, b)
+    if (after_val & LbClassMask) == LbVF {
+      return LbPairProhibited
+    }
   }
-  if a == @ucd.QU &&
-    (
-      !right.east_asian ||
-      !units.get(index - 2).map(u => u.east_asian).unwrap_or(false)
-    ) {
-    return None
+  // LB30a-LB30b
+  if a == LbRI && b == LbRI && regional_odd {
+    return LbPairProhibited
   }
-  // LB20-LB20a.
-  if a == @ucd.CB || b == @ucd.CB {
-    return Some(Allowed)
+  if b == LbEM && (a == LbEB || (left_val & LbPotentialEmojiBit) != 0) {
+    return LbPairProhibited
   }
-  if a is (HY | HH) &&
-    b is (AL | HL) &&
-    before is (XX | BK | CR | LF | NL | SP | ZW | CB | GL) {
-    return None
-  }
-  // LB21-LB22.
-  if b is (BA | HH | HY | NS) || a == @ucd.BB {
-    return None
-  }
-  if before == @ucd.HL && a is (HY | HH) && b != @ucd.HL {
-    return None
-  }
-  if a == @ucd.SY && b == @ucd.HL {
-    return None
-  }
-  if b == @ucd.IN {
-    return None
-  }
-  // LB23-LB24.
-  if (a is (AL | HL) && b == @ucd.NU) || (a == @ucd.NU && b is (AL | HL)) {
-    return None
-  }
-  if (a == @ucd.PR && b is (ID | EB | EM)) ||
-    (a is (ID | EB | EM) && b == @ucd.PO) {
-    return None
-  }
-  if (a is (PR | PO) && b is (AL | HL)) || (a is (AL | HL) && b is (PR | PO)) {
-    return None
-  }
-  // LB25: numeric prefixes/suffixes, parentheses, decimals and separators.
-  if b is (PO | PR) &&
-    (
-      left.numeric ||
-      (
-        a is (CL | CP) &&
-        units.get(index - 2).map(u => u.numeric).unwrap_or(false)
-      )
-    ) {
-    return None
-  }
-  if a is (PO | PR) &&
-    (
-      b == @ucd.NU ||
-      (
-        b == @ucd.OP &&
-        (
-          after == @ucd.NU ||
-          (after == @ucd.IS && class_at(units, index + 2) == @ucd.NU)
-        )
-      )
-    ) {
-    return None
-  }
-  if b == @ucd.NU && (a is (HY | IS) || left.numeric) {
-    return None
-  }
-  // LB26-LB27: Korean syllable blocks.
-  if (a == @ucd.JL && b is (JL | JV | H2 | H3)) ||
-    (a is (JV | H2) && b is (JV | JT)) ||
-    (a is (JT | H3) && b == @ucd.JT) {
-    return None
-  }
-  if (a is (JL | JV | JT | H2 | H3) && b == @ucd.PO) ||
-    (a == @ucd.PR && b is (JL | JV | JT | H2 | H3)) {
-    return None
-  }
-  // LB28-LB28a: alphabetics and Brahmic orthographic syllables.
-  if a is (AL | HL) && b is (AL | HL) {
-    return None
-  }
-  if a == @ucd.AP && right.aksara() {
-    return None
-  }
-  if left.aksara() && b is (VF | VI) {
-    return None
-  }
-  if a == @ucd.VI &&
-    (b == @ucd.AK || right.code_point == 0x25CC) &&
-    units.get(index - 2).map(u => u.aksara()).unwrap_or(false) {
-    return None
-  }
-  if left.aksara() && right.aksara() && after == @ucd.VF {
-    return None
-  }
-  // LB29-LB30.
-  if a == @ucd.IS && b is (AL | HL) {
-    return None
-  }
-  if (a is (AL | HL | NU) && b == @ucd.OP && !right.east_asian) ||
-    (a == @ucd.CP && !left.east_asian && b is (AL | HL | NU)) {
-    return None
-  }
-  // LB30a-LB30b.
-  if a == @ucd.RI && b == @ucd.RI && left.regional_count % 2 == 1 {
-    return None
-  }
-  if b == @ucd.EM && (a == @ucd.EB || left.potential_emoji) {
-    return None
-  }
-  // LB31.
-  Some(Allowed)
+  // LB31
+  LbPairAllowed
 }

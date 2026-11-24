@@ -1,14 +1,19 @@
 ///|
 /// A forward cursor over all default UAX #29 word segments, including spaces
 /// and punctuation. Create with `word_segments`.
-struct WordSegments(TextSegments)
+struct WordSegments {
+  text : StringView
+  mut offset : Int32
+  mut word_like : Bool
+}
 
 ///|
 /// Split text at the default Unicode 18.0.0 word boundaries. Segments are
 /// contiguous views covering the input exactly. The input view is processed
 /// independently of surrounding text, without dictionary or locale tailoring.
-/// Construction takes O(n) time and space; traversal does not copy the text.
-/// Unpaired surrogates have Word_Break=Other; valid pairs stay together.
+/// Construction takes O(1) time and space; traversal streams forward in O(n)
+/// time without copying the text. Unpaired surrogates have Word_Break=Other;
+/// valid pairs stay together.
 ///
 /// ```mbt check
 /// test {
@@ -22,19 +27,34 @@ struct WordSegments(TextSegments)
 /// }
 /// ```
 pub fn word_segments(text : StringView) -> WordSegments {
-  WordSegments({ text, ends: word_segment_ends(text), index: 0, offset: 0, })
+  { text, offset: 0, word_like: false, }
 }
 
 ///|
 /// Return the next segment, or an empty view at the input's end on exhaustion.
 pub fn WordSegments::next(self : WordSegments) -> StringView {
-  self.0.next()
+  let text = self.text
+  let length = text.length()
+  let start = self.offset
+  if start >= length {
+    return text.unsafe_view(start~, end=start)
+  }
+  let end = self.next_word_boundary(start, length)
+  self.offset = end
+  text.unsafe_view(start~, end~)
 }
 
 ///|
 /// Iterate over the remaining segments, consuming the same cursor as `next`.
 pub fn WordSegments::iter(self : WordSegments) -> Iter[StringView] {
-  self.0.iter()
+  Iter(() => {
+    let segment = self.next()
+    if segment.is_empty() {
+      None
+    } else {
+      Some(segment)
+    }
+  })
 }
 
 ///|
@@ -47,8 +67,8 @@ struct Words(WordSegments)
 /// character or a character in General_Category=Number (Nd, Nl, or No).
 /// The entire matching segment is retained, including internal punctuation.
 /// This filtering policy is a convenience over UAX #29 word boundaries, not
-/// dictionary word recognition. Construction takes O(n) time and space;
-/// traversal scans the segments without copying text.
+/// dictionary word recognition. Construction takes O(1) time and space;
+/// traversal streams forward in O(n) time without copying text.
 ///
 /// ```mbt check
 /// test {
@@ -70,21 +90,8 @@ pub fn words(text : StringView) -> Words {
 /// the input's end once exhausted, including when the input has no words.
 pub fn Words::next(self : Words) -> StringView {
   for segment = self.0.next() {
-    if segment.is_empty() {
+    if segment.is_empty() || self.0.word_like {
       return segment
-    }
-    let mut offset = 0
-    while offset < segment.length() {
-      let cp = code_point_at(segment, offset, segment.length())
-      offset += if cp >= 0x10000 { 2 } else { 1 }
-      if cp >= 0xD800 && cp <= 0xDFFF {
-        continue
-      }
-      let character = cp.unsafe_to_char()
-      if @ucd.is_alphabetic(character) ||
-        @ucd.general_category(character) is (@ucd.Nd | @ucd.Nl | @ucd.No) {
-        return segment
-      }
     }
     continue self.0.next()
   }

@@ -255,22 +255,39 @@ async fn generate_bidi(g : Generator) -> Unit {
 
 ///|
 async fn generate_segmentation(g : Generator) -> Unit {
+  let unicode_data = g.ucd("UnicodeData.txt")
+  let derived_core = g.ucd("DerivedCoreProperties.txt")
+  let emoji_data = g.ucd("emoji/emoji-data.txt")
   g.write(
     "segmentation/grapheme_break_property.mbt",
     @segmentation_data.emit_grapheme_break(
       g.ucd("auxiliary/GraphemeBreakProperty.txt"),
-      g.ucd("emoji/emoji-data.txt"),
-      g.ucd("DerivedCoreProperties.txt"),
+      emoji_data,
+      derived_core,
     ),
   )
   g.write(
     "segmentation/word_break_property.mbt",
-    @segmentation_data.emit_word_break(g.ucd("auxiliary/WordBreakProperty.txt")),
+    @segmentation_data.emit_word_break(
+      g.ucd("auxiliary/WordBreakProperty.txt"),
+      unicode_data,
+      derived_core,
+      emoji_data,
+    ),
   )
   g.write(
     "segmentation/sentence_break_property.mbt",
     @segmentation_data.emit_sentence_break(
       g.ucd("auxiliary/SentenceBreakProperty.txt"),
+    ),
+  )
+  g.write(
+    "segmentation/line_break_property.mbt",
+    @segmentation_data.emit_line_break(
+      g.ucd("LineBreak.txt"),
+      unicode_data,
+      g.ucd("EastAsianWidth.txt"),
+      emoji_data,
     ),
   )
 }

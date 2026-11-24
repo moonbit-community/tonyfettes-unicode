@@ -25,10 +25,17 @@ pub extend BreakOpportunity with Debug::{to_repr}
 /// A forward cursor over text segments ending at default UAX #14 opportunities.
 struct LineBreaks {
   text : StringView
-  units : Array[BreakUnit]
-  mut index : Int32
   mut offset : Int32
   mut opportunity : BreakOpportunity
+  mut started : Bool
+  mut left_val : Int32
+  mut left_end : Int32
+  mut left_ends_with_zwj : Bool
+  mut before_val : Int32
+  mut left_numeric : Bool
+  mut before_numeric : Bool
+  mut space_rule : Int32
+  mut regional_odd : Bool
 }
 
 ///|
@@ -41,10 +48,10 @@ struct LineBreaks {
 ///
 /// Nonempty input ends with one Mandatory boundary; empty input yields nothing.
 /// Unpaired surrogates are resolved as SG -> AL; valid pairs stay together.
-/// Construction prepares character context in O(n) time and space; iteration
-/// scans it once without copying the text. No locale tailoring, dictionary
-/// segmentation, or width-based wrapping is applied. The unicode-data
-/// line_break property query remains unresolved.
+/// Construction takes O(1) time and space; traversal streams forward in O(n)
+/// time without copying the text. No locale tailoring, dictionary segmentation,
+/// or width-based wrapping is applied. The unicode-data line_break property
+/// query remains unresolved.
 ///
 /// ```mbt check
 /// test {
@@ -59,10 +66,17 @@ struct LineBreaks {
 pub fn line_breaks(text : StringView) -> LineBreaks {
   {
     text,
-    units: prepare_units(text),
-    index: 1,
     offset: 0,
     opportunity: Prohibited,
+    started: false,
+    left_val: 0,
+    left_end: 0,
+    left_ends_with_zwj: false,
+    before_val: 0,
+    left_numeric: false,
+    before_numeric: false,
+    space_rule: SpaceRuleNone,
+    regional_odd: false,
   }
 }
 
@@ -71,24 +85,127 @@ pub fn line_breaks(text : StringView) -> LineBreaks {
 /// exhausted. The returned view retains its offsets in the backing string.
 /// Empty results do not change opportunity().
 pub fn LineBreaks::next(self : LineBreaks) -> StringView {
-  while self.index <= self.units.length() {
-    let index = self.index
-    self.index += 1
-    let kind = if index == self.units.length() {
-      Mandatory
-    } else {
-      boundary(self.units, index).unwrap_or(Prohibited)
+  let text = self.text
+  let length = text.length()
+  let start = self.offset
+  if start >= length {
+    return text.unsafe_view(start~, end=start)
+  }
+  let mut left_val = self.left_val
+  let mut left_end = self.left_end
+  let mut left_ends_with_zwj = self.left_ends_with_zwj
+  let mut before_val = self.before_val
+  let mut left_numeric = self.left_numeric
+  let mut before_numeric = self.before_numeric
+  let mut space_rule = self.space_rule
+  let mut regional_odd = self.regional_odd
+  if !self.started {
+    let first = text.unsafe_get(0).to_int()
+    let mut cp = first
+    let mut cp_end = 1
+    if first >= 0xD800 && first <= 0xDBFF && cp_end < length {
+      let second = text.unsafe_get(cp_end).to_int()
+      if second >= 0xDC00 && second <= 0xDFFF {
+        cp = 0x10000 + ((first - 0xD800) << 10) + second - 0xDC00
+        cp_end += 1
+      }
     }
-    if kind != Prohibited {
-      let start = self.offset
-      self.offset = self.units[index - 1].end
-      self.opportunity = kind
-      // `units` carry the UTF-16 end of every code point, so both offsets are
-      // in range and on character boundaries: a raw view needs no checking.
-      return self.text.unsafe_view(start~, end=self.offset)
+    let raw_val = line_break_value(cp)
+    let raw_cls = raw_val & LbClassMask
+    left_ends_with_zwj = raw_cls == LbZWJ
+    left_val = if raw_cls >= LbCM { LbAL } else { raw_val }
+    let cls = left_val & LbClassMask
+    left_end = cp_end
+    before_val = 0
+    before_numeric = false
+    left_numeric = cls == LbNU
+    space_rule = update_space_rule(LbNone, cls, SpaceRuleNone)
+    regional_odd = cls == LbRI
+    self.started = true
+  }
+  while left_end < length {
+    // SAFETY: left_end < length; surrogate trail is checked before reading.
+    let first = text.unsafe_get(left_end).to_int()
+    let mut cp = first
+    let mut cp_end = left_end + 1
+    if first >= 0xD800 && first <= 0xDBFF && cp_end < length {
+      let second = text.unsafe_get(cp_end).to_int()
+      if second >= 0xDC00 && second <= 0xDFFF {
+        cp = 0x10000 + ((first - 0xD800) << 10) + second - 0xDC00
+        cp_end += 1
+      }
+    }
+    let raw_val = line_break_value(cp)
+    let raw_cls = raw_val & LbClassMask
+    let a = left_val & LbClassMask
+    // LB9: combining marks and ZWJ attach to any base other than BK/CR/LF/NL/SP/ZW.
+    if raw_cls >= LbCM && !(a is (LbBK | LbCR | LbLF | LbNL | LbSP | LbZW)) {
+      left_end = cp_end
+      left_ends_with_zwj = raw_cls == LbZWJ
+      continue
+    }
+    // LB10: remaining CM/ZWJ acts as AL (no East Asian or emoji flags), while
+    // retaining ends_with_zwj for LB8a.
+    let right_ends_with_zwj = raw_cls == LbZWJ
+    let right_val = if raw_cls >= LbCM { LbAL } else { raw_val }
+    let b = right_val & LbClassMask
+    // When left_ends_with_zwj is true, LB4/LB5/LB8 cannot apply (LB9 does not
+    // attach ZWJ to BK/CR/LF/NL/SP/ZW), so LB6/LB7/LB8a always prohibit a break.
+    let action = if left_ends_with_zwj {
+      LbPairProhibited
+    } else {
+      // SAFETY: a and b are in 1..47, below LbPairClasses (48).
+      let pair = line_break_pair_table
+        .unsafe_get(a * LbPairClasses + b)
+        .to_int()
+      if pair != LbPairContext {
+        pair
+      } else {
+        lb_context_boundary(
+          text, cp_end, left_val, right_val, before_val, left_numeric, before_numeric,
+          space_rule, regional_odd,
+        )
+      }
+    }
+    let break_end = left_end
+    // Advance state to commit `right` as the next `left`.
+    before_val = left_val
+    before_numeric = left_numeric
+    left_val = right_val
+    left_end = cp_end
+    left_ends_with_zwj = right_ends_with_zwj
+    left_numeric = b == LbNU || (b is (LbSY | LbIS) && before_numeric)
+    space_rule = update_space_rule(a, b, space_rule)
+    regional_odd = b == LbRI && !regional_odd
+    if action != LbPairProhibited {
+      self.left_val = left_val
+      self.left_end = left_end
+      self.left_ends_with_zwj = left_ends_with_zwj
+      self.before_val = before_val
+      self.left_numeric = left_numeric
+      self.before_numeric = before_numeric
+      self.space_rule = space_rule
+      self.regional_odd = regional_odd
+      self.offset = break_end
+      self.opportunity = if action == LbPairMandatory {
+        Mandatory
+      } else {
+        Allowed
+      }
+      return text.unsafe_view(start~, end=break_end)
     }
   }
-  self.text.unsafe_view(start=self.offset, end=self.offset)
+  self.left_val = left_val
+  self.left_end = length
+  self.left_ends_with_zwj = left_ends_with_zwj
+  self.before_val = before_val
+  self.left_numeric = left_numeric
+  self.before_numeric = before_numeric
+  self.space_rule = space_rule
+  self.regional_odd = regional_odd
+  self.offset = length
+  self.opportunity = Mandatory
+  text.unsafe_view(start~, end=length)
 }
 
 ///|
