@@ -1,10 +1,12 @@
 supported_targets = "-all+native+wasm"
 
 import {
+  "moonbit-community/unicode-data" @ucd,
   "moonbit-community/unicode-segmentation" @segmentation,
   "moonbit-community/unicode-tests/support",
   "moonbitlang/core/async",
   "moonbitlang/core/debug",
+  "moonbitlang/core/random",
 } for "test"
 
 options(

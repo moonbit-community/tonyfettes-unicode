@@ -31,6 +31,7 @@ fn parse_boundary_segments(line : StringView) -> Array[String]? raise {
 ///|
 async test "GraphemeBreakTest.txt conformance" {
   let content = @support.read_data_file("GraphemeBreakTest.txt")
+  assert_true(content.has_prefix("# GraphemeBreakTest-18.0.0.txt"))
   let mut cases = 0
   for line_number, raw_line in content.split("\n") {
     let line = match raw_line.split_once("#") {
@@ -40,7 +41,11 @@ async test "GraphemeBreakTest.txt conformance" {
     if line.is_empty() {
       continue
     }
-    guard parse_boundary_segments(line) is Some(expected) else { continue }
+    guard parse_boundary_segments(line) is Some(expected) else {
+      fail(
+        "Unexpected surrogate in GraphemeBreakTest.txt line \{line_number + 1}",
+      )
+    }
     let input = expected.join("")
     let actual = @segmentation.graphemes(input)
       .iter()
@@ -53,6 +58,6 @@ async test "GraphemeBreakTest.txt conformance" {
     )
     cases += 1
   }
-  // Guard against a parser that silently skips every line.
-  assert_true(cases > 500)
+  // Exact fixture count: deleting/skipping any test must fail.
+  assert_eq(cases, 853)
 }
