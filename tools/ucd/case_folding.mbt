@@ -50,19 +50,33 @@ fn parse_fold_mappings(
 }
 
 ///|
-/// Number of distinct deltas a folding trie can encode: its values fit in a
-/// byte, and kinds 0 and 1 are taken.
-const FoldDeltaLimit : Int32 = 254
+/// Number of distinct deltas a folding trie can encode: kinds 0 and 1 are
+/// taken, and bit 7 holds the normalization quick-check flag (`0x80`).
+const FoldDeltaLimit : Int32 = 126
+
+///|
+/// Bit 7 of a folding trie entry:
+/// - For `case_folding`: set when the code point or any code point in its
+///   folding has `CCC != 0` or `NFD_QC != Yes`.
+/// - For `nfkc_casefold`: set when any code point in the NFKC_CF output
+///   (the code point itself when unchanged) has `CCC != 0` or `NFC_QC != Yes`.
+const FoldNormFlagBit : Int32 = 0x80
+
+///|
+/// Mask for the folding kind in bits 0..6.
+const FoldKindMask : Int32 = 0x7F
 
 ///|
 /// Emit folding data in two parts.
 ///
-/// `<prefix>_kind` is a byte-valued trie giving every code point a kind:
-/// 0 when the code point folds to itself, 1 when its mapping must be looked up
-/// with `lookup_<prefix>`, and from 2 on an index into `<prefix>_deltas`, for
-/// a mapping to the single code point `cp + <prefix>_deltas[kind]`. The most
-/// frequent deltas get a kind, so nearly every cased letter is folded without
-/// a search.
+/// `<prefix>_kind` is a byte-valued trie giving every code point a 7-bit kind
+/// in bits 0..6 and a normalization flag in bit 7 (`0x80`):
+/// - kind 0: the code point folds to itself
+/// - kind 1: its mapping must be looked up with `lookup_<prefix>`
+/// - kind >= 2: single-code-point mapping `cp + <prefix>_deltas[kind]`
+///
+/// The generator guarantees that every BMP code point with `kind >= 2` maps to
+/// a BMP code point, so BMP delta folding preserves UTF-16 length.
 ///
 /// `lookup_<prefix>` searches the entries holding a code point of kind 1:
 /// sorted range starts (plus range ends when some range covers more than one
@@ -73,11 +87,18 @@ fn emit_fold_mappings(
   entries : Array[FoldMapping],
   prefix : String,
   source : String,
+  norm_props : Array[Int32],
+  nfkc~ : Bool,
 ) -> String raise {
   let counts : Map[Int32, Int32] = Map([])
   for entry in entries {
     if entry.targets is [target] {
       for cp in entry.start..<=entry.end {
+        // Keep BMP-to-supplementary mappings in the searched table so BMP
+        // delta folding always writes a single UTF-16 code unit.
+        if cp < 0x10000 && target >= 0x10000 {
+          continue
+        }
         counts.set(target - cp, counts.get(target - cp).unwrap_or(0) + 1)
       }
     }
@@ -93,34 +114,87 @@ fn emit_fold_mappings(
   })
   let deltas = [0, 0]
   let kinds : Map[Int32, Int32] = Map([])
-  for pair in ranked[:FoldDeltaLimit] {
+  let delta_limit = if ranked.length() < FoldDeltaLimit {
+    ranked.length()
+  } else {
+    FoldDeltaLimit
+  }
+  for pair in ranked[:delta_limit] {
     kinds.set(pair.0, deltas.length())
     deltas.push(pair.0)
   }
+  // Normalization quick-check mask:
+  // - NFKC_Casefold ends with NFC: CCC != 0 or NFC_QC != Yes (bits 8..9)
+  // - Canonical case fold uses NFD: CCC != 0 or NFD_QC != Yes (bit 12)
+  let norm_mask = if nfkc { 255 | (3 << 8) } else { 255 | (1 << 12) }
   let values = FixedArray::make(@emitter.MaxCodePoint + 1, 0)
+  for cp in 0..<=@emitter.MaxCodePoint {
+    if (norm_props[cp] & norm_mask) != 0 {
+      values[cp] = FoldNormFlagBit
+    }
+  }
   let searched = []
   for entry in entries {
+    let target_needs_norm = entry.targets.any(t => {
+      (norm_props[t] & norm_mask) != 0
+    })
     let mut found = false
     for cp in entry.start..<=entry.end {
-      let kind = if entry.targets is [target] {
+      let kind = if entry.targets is [target] &&
+        !(cp < 0x10000 && target >= 0x10000) {
         kinds.get(target - cp).unwrap_or(1)
       } else {
         1
       }
-      values[cp] = kind
+      let flag = if nfkc {
+        if target_needs_norm {
+          FoldNormFlagBit
+        } else {
+          0
+        }
+      } else if target_needs_norm || (norm_props[cp] & norm_mask) != 0 {
+        FoldNormFlagBit
+      } else {
+        0
+      }
+      values[cp] = kind | flag
       found = found || kind == 1
     }
     if found {
       searched.push(entry)
     }
   }
-  // The folding code maps ASCII without the tables, A-Z to a-z only.
+  // The folding code maps ASCII without the tables, A-Z to a-z only, and
+  // relies on ASCII never needing normalization.
   for cp in 0..<0x80 {
     let delta = if cp >= 'A' && cp <= 'Z' { 32 } else { 0 }
-    guard values[cp] != 1 && deltas[values[cp]] == delta else {
+    let val = values[cp]
+    let kind = val & FoldKindMask
+    guard (val & FoldNormFlagBit) == 0 else {
+      fail(
+        "\{prefix} marks ASCII \{@emitter.hex_literal(cp)} as needing normalization",
+      )
+    }
+    guard kind != 1 && deltas[kind] == delta else {
       fail(
         "\{prefix} folds ASCII \{@emitter.hex_literal(cp)} other than A-Z to a-z",
       )
+    }
+  }
+  // Exhaustively verify delta indices and BMP preservation so runtime lookups
+  // can read `<prefix>_deltas` unchecked and write BMP deltas as one unit.
+  for cp in 0..<=@emitter.MaxCodePoint {
+    let kind = values[cp] & FoldKindMask
+    guard kind < deltas.length() else {
+      fail("\{prefix} kind out of bounds at \{@emitter.hex_literal(cp)}")
+    }
+    if cp < 0x10000 && kind >= 2 {
+      let target = cp + deltas[kind]
+      guard target >= 0 &&
+        target < 0x10000 &&
+        !(target >= 0xD800 && target <= 0xDFFF) else {
+        fail("\{prefix} BMP delta leaves BMP at \{@emitter.hex_literal(cp)}")
+      }
     }
   }
   let has_ranges = searched.any(e => e.start != e.end)
@@ -136,15 +210,22 @@ fn emit_fold_mappings(
   }
   let out = @emitter.Emitter::new()
   out.write_file_header("\{prefix} mapping data", source)
+  let flag_doc = if nfkc {
+    "Bit 7 (`0x80`) is set when any code point in the NFKC_CF output has CCC != 0 or NFC_QC != Yes."
+  } else {
+    "Bit 7 (`0x80`) is set when `cp` or any code point in its folding has CCC != 0 or NFD_QC != Yes."
+  }
   out.write_value_trie(
     property="\{prefix} kind",
     prefix="\{prefix}_kind",
     lookup="fn \{prefix}_kind",
     lookup_doc=[
-      "How `c` folds: 0 to itself, 1 to the mapping `lookup_\{prefix}` finds,",
-      "and from 2 on to the code point `c + \{prefix}_deltas[kind]`.",
+      "How `cp` folds in bits 0..6: 0 to itself, 1 to `lookup_\{prefix}`,",
+      "and from 2 on to `cp + \{prefix}_deltas[kind]`.",
+      flag_doc,
     ],
     value_bits=8,
+    takes_code_point=true,
     values,
   )
   out.write_int_array(
@@ -183,16 +264,16 @@ fn emit_fold_mappings(
   let (found_test, found_doc) = if has_ranges {
     (
       (
-        $|    } else if cp > \{prefix}_ends[mid] {
+        $|    } else if cp > \{prefix}_ends.unsafe_get(mid) {
       ),
-      "the range holding `c`",
+      "the range holding `cp`",
     )
   } else {
     (
       (
-        $|    } else if cp > \{prefix}_starts[mid] {
+        $|    } else if cp > \{prefix}_starts.unsafe_get(mid) {
       ),
-      "`c`",
+      "`cp`",
     )
   }
   out.write(
@@ -201,21 +282,21 @@ fn emit_fold_mappings(
       $|/// The mapping of \{found_doc}, as a view of `\{prefix}_text`, for
       $|/// a code point of kind 1. None means identity; an empty view means
       $|/// removal.
-      $|fn lookup_\{prefix}(c : Char) -> StringView? {
-      $|  let cp = c.to_int()
+      $|fn lookup_\{prefix}(cp : Int32) -> StringView? {
       $|  let mut low = 0
       $|  let mut high = \{prefix}_starts.length()
       $|  while low < high {
       $|    let mid = (low + high) / 2
-      $|    if cp < \{prefix}_starts[mid] {
+      $|    // SAFETY: 0 <= low <= mid < high <= starts.length(), and offsets has starts.length() + 1 entries.
+      $|    if cp < \{prefix}_starts.unsafe_get(mid) {
       $|      high = mid
       $|\{found_test}
       $|      low = mid + 1
       $|    } else {
       $|      return Some(
       $|        \{prefix}_text.unsafe_view(
-      $|          start=\{prefix}_offsets[mid].to_int(),
-      $|          end=\{prefix}_offsets[mid + 1].to_int(),
+      $|          start=\{prefix}_offsets.unsafe_get(mid).to_int(),
+      $|          end=\{prefix}_offsets.unsafe_get(mid + 1).to_int(),
       $|        ),
       $|      )
       $|    }
@@ -229,19 +310,32 @@ fn emit_fold_mappings(
 }
 
 ///|
-pub fn emit_case_folding(content : String) -> String raise {
+pub fn emit_case_folding(
+  content : String,
+  unicode_data : UnicodeData,
+  derived_properties : String,
+) -> String raise {
+  let norm_props = normalization_values(unicode_data.ccc, derived_properties)
   emit_fold_mappings(
     parse_fold_mappings(content, nfkc=false),
     "case_folding",
-    "CaseFolding.txt (C and F mappings)",
+    "CaseFolding.txt (C and F mappings), UnicodeData.txt, and DerivedNormalizationProps.txt",
+    norm_props,
+    nfkc=false,
   )
 }
 
 ///|
-pub fn emit_nfkc_casefold(content : String) -> String raise {
+pub fn emit_nfkc_casefold(
+  unicode_data : UnicodeData,
+  derived_properties : String,
+) -> String raise {
+  let norm_props = normalization_values(unicode_data.ccc, derived_properties)
   emit_fold_mappings(
-    parse_fold_mappings(content, nfkc=true),
+    parse_fold_mappings(derived_properties, nfkc=true),
     "nfkc_casefold",
-    "DerivedNormalizationProps.txt (NFKC_CF)",
+    "DerivedNormalizationProps.txt (NFKC_CF) and UnicodeData.txt",
+    norm_props,
+    nfkc=true,
   )
 }

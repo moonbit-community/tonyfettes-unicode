@@ -209,13 +209,19 @@ async fn generate_ucd(g : Generator) -> Unit {
 
 ///|
 async fn generate_casefold(g : Generator) -> Unit {
+  let unicode_data = @ucd.parse_unicode_data(g.ucd("UnicodeData.txt"))
+  let derived_properties = g.ucd("DerivedNormalizationProps.txt")
   g.write(
     "casefold/case_folding_data.mbt",
-    @ucd.emit_case_folding(g.ucd("CaseFolding.txt")),
+    @ucd.emit_case_folding(
+      g.ucd("CaseFolding.txt"),
+      unicode_data,
+      derived_properties,
+    ),
   )
   g.write(
     "casefold/nfkc_casefold_data.mbt",
-    @ucd.emit_nfkc_casefold(g.ucd("DerivedNormalizationProps.txt")),
+    @ucd.emit_nfkc_casefold(unicode_data, derived_properties),
   )
 }
 
