@@ -6,7 +6,7 @@ pub fn emit_binary_property(String, property~ : String, source~ : String) -> Str
 
 pub fn emit_case_context(String) -> String raise
 
-pub fn emit_case_folding(String) -> String raise
+pub fn emit_case_folding(String, UnicodeData, String) -> String raise
 
 pub fn emit_case_mapping(UnicodeData, SpecialCasingData) -> String raise
 
@@ -36,7 +36,7 @@ pub fn emit_line_break_enum() -> String raise
 
 pub fn emit_marks(UnicodeData) -> String raise
 
-pub fn emit_nfkc_casefold(String) -> String raise
+pub fn emit_nfkc_casefold(UnicodeData, String) -> String raise
 
 pub fn emit_normalization(UnicodeData, Array[Int32], String) -> String raise
 
