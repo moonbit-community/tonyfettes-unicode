@@ -18,6 +18,18 @@ const CaseTrieTopShift : Int32 = 8
 const CaseTrieLeafShift : Int32 = 4
 
 ///|
+/// Sentinel stored in `case_full_upper_deltas` / `case_full_lower_deltas` for
+/// records whose full mapping needs special handling (multi-character mapping
+/// or Final_Sigma on U+03A3). Strictly larger than any valid code point delta.
+const CaseSpecialSentinel : Int32 = 0x4000_0000
+
+///|
+/// Internal flag bit marking U+03A3 (Final_Sigma) so it gets a dedicated
+/// record with `CaseSpecialSentinel` in `case_full_lower_deltas` without
+/// changing its simple lowercase delta or `case_special_flags` bits 0..2.
+const CaseFinalSigmaFlag : Int32 = 8
+
+///|
 /// One case conversion: its simple mappings as per-code-point deltas, and
 /// the full mappings that differ from the simple one.
 priv struct CaseTable {
@@ -87,11 +99,33 @@ pub fn emit_case_mapping(
   let values = Array::make(CaseTrieLimit, 0)
   for code_point in 0..<CaseTrieLimit {
     let record = cases.map(table => table.deltas[code_point])
+    for index, table in cases {
+      let delta = record[index]
+      if delta != 0 {
+        let target = code_point + delta
+        if code_point < CaseTrieBmpLimit {
+          guard target >= 0 && target < CaseTrieBmpLimit else {
+            fail(
+              "BMP simple \{table.name}case mapping crosses BMP at \{@emitter.hex_literal(code_point)}",
+            )
+          }
+        } else {
+          guard target >= CaseTrieBmpLimit && target <= 0x10FFFF else {
+            fail(
+              "Supplementary simple \{table.name}case mapping leaves supplementary plane at \{@emitter.hex_literal(code_point)}",
+            )
+          }
+        }
+      }
+    }
     let mut flags = 0
     for bit, table in cases {
       if table.special.contains(code_point) {
         flags = flags | (1 << bit)
       }
+    }
+    if code_point == 0x03A3 && cases[1].deltas[code_point] != 0 {
+      flags = flags | CaseFinalSigmaFlag
     }
     record.push(flags)
     values[code_point] = match record_ids.get(record) {
@@ -212,7 +246,40 @@ pub fn emit_case_mapping(
   out.write_byte_array(
     "Special full mappings of each record: bit 0 upper, bit 1 lower, bit 2 title",
     "case_special_flags",
-    records.map(record => record[cases.length()]),
+    records.map(record => record[cases.length()] & 7),
+  )
+  out.write(
+    (
+      $|///|
+      $|/// Sentinel in `case_full_upper_deltas` and `case_full_lower_deltas`
+      $|/// indicating that the character needs special full mapping or Final_Sigma.
+      $|const CaseSpecialSentinel : Int = \{@emitter.hex_literal(CaseSpecialSentinel)}
+      $|
+    ),
+  )
+  out.write_int_array(
+    "Full uppercase mapping of each record: `target - code point`, or `CaseSpecialSentinel` for special mappings",
+    "case_full_upper_deltas",
+    records.map(record => {
+      if (record[cases.length()] & 1) != 0 {
+        CaseSpecialSentinel
+      } else {
+        record[0]
+      }
+    }),
+    hex=false,
+  )
+  out.write_int_array(
+    "Full lowercase mapping of each record: `target - code point`, or `CaseSpecialSentinel` for special mappings or Final_Sigma",
+    "case_full_lower_deltas",
+    records.map(record => {
+      if (record[cases.length()] & (2 | CaseFinalSigmaFlag)) != 0 {
+        CaseSpecialSentinel
+      } else {
+        record[1]
+      }
+    }),
+    hex=false,
   )
   for table in cases {
     let code_points = table.special.keys().collect()
@@ -248,6 +315,14 @@ pub fn emit_case_mapping(
       $|    ((cp >> \{CaseTrieLeafShift}) & \{mid_mask})
       $|  let leaf = case_supp_mid.unsafe_get(mid).to_int()
       $|  case_supp_leaf.unsafe_get((leaf << \{CaseTrieLeafShift}) | (cp & \{leaf_mask})).to_int()
+      $|}
+      $|
+      $|///|
+      $|/// Index of the record holding a BMP code point's case mappings (`0 <= cp < \{bmp_limit}`).
+      $|fn lookup_case_record_bmp(cp : Int) -> Int {
+      $|  // SAFETY: callers guarantee cp is in [0, \{bmp_limit}); generator validated all indices.
+      $|  let block = case_bmp_index.unsafe_get(cp >> \{CaseTrieBmpShift}).to_int()
+      $|  case_bmp_leaf.unsafe_get((block << \{CaseTrieBmpShift}) | (cp & \{bmp_mask})).to_int()
       $|}
       $|
       $|///|

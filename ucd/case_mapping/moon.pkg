@@ -1,3 +1,12 @@
 import {
+  "moonbitlang/core/v128",
+}
+
+import {
   "moonbitlang/core/debug",
 } for "test"
+
+// Only the native and Wasm backends reach the `moonbitlang/core/v128` import,
+// so the other backends would report it as unused.
+
+warnings = "-unused_package"
