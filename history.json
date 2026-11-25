@@ -3558,5 +3558,211 @@
       "moonbit-wasm": 1.0095,
       "moonbit-js": 1.0074
     }
+  },
+  {
+    "about": {
+      "date": "2026-11-25T12:22:09Z",
+      "rounds": 2,
+      "machine": "AMD EPYC 9V45 96-Core Processor, Linux x86_64",
+      "versions": {
+        "moon": "moon 0.1.20261119 (738607b 2026-11-19)",
+        "Node": "v24.22.3 (ICU 78.3)"
+      },
+      "base": {
+        "commit": "26d137e0ec3af0cc019550cba17ae13fbcfd5c3d",
+        "subject": "perf(bidi): use visual-run reordering and fuse paragraph resolution passes (#106)",
+        "date": "2026-11-25T20:00:05+08:00",
+        "dirty": false
+      },
+      "head": {
+        "commit": "2942a58fd875df83a3f7e88c51b81db9aba922be",
+        "subject": "perf(ucd): optimize full uppercase and lowercase string mapping (#107)",
+        "title": "Speeds up @ucd.uppercase and @ucd.lowercase across all four MoonBit targets:",
+        "date": "2026-11-25T20:17:17+08:00",
+        "dirty": false
+      }
+    },
+    "operations": {
+      "norm/nfc": {
+        "moonbit-native": 1.0316,
+        "moonbit-wasm-gc": 1.0065,
+        "moonbit-wasm": 1.0107,
+        "moonbit-js": 0.98199
+      },
+      "norm/nfd": {
+        "moonbit-native": 1.0317,
+        "moonbit-wasm-gc": 1.0003,
+        "moonbit-wasm": 1.0613,
+        "moonbit-js": 0.98001
+      },
+      "norm/nfkc": {
+        "moonbit-native": 1.0234,
+        "moonbit-wasm-gc": 1.0046,
+        "moonbit-wasm": 0.99092,
+        "moonbit-js": 0.97691
+      },
+      "norm/nfkd": {
+        "moonbit-native": 1.0222,
+        "moonbit-wasm-gc": 1.0017,
+        "moonbit-wasm": 1.1044,
+        "moonbit-js": 0.99034
+      },
+      "norm/nfd>nfc": {
+        "moonbit-native": 1.0131,
+        "moonbit-wasm-gc": 1.009,
+        "moonbit-wasm": 0.96602,
+        "moonbit-js": 0.98297
+      },
+      "norm/is_nfc": {
+        "moonbit-native": 1.0257,
+        "moonbit-wasm-gc": 1.0015,
+        "moonbit-wasm": 1.0168,
+        "moonbit-js": 0.93203
+      },
+      "seg/graphemes": {
+        "moonbit-native": 0.88434,
+        "moonbit-wasm-gc": 1.0028,
+        "moonbit-wasm": 0.98825,
+        "moonbit-js": 0.98828
+      },
+      "seg/word_segments": {
+        "moonbit-native": 0.97391,
+        "moonbit-wasm-gc": 1.0044,
+        "moonbit-wasm": 1.0162,
+        "moonbit-js": 0.99069
+      },
+      "seg/words": {
+        "moonbit-native": 0.9531,
+        "moonbit-wasm-gc": 1.0007,
+        "moonbit-wasm": 1.0254,
+        "moonbit-js": 0.98929
+      },
+      "seg/sentences": {
+        "moonbit-native": 1.0071,
+        "moonbit-wasm-gc": 1.018,
+        "moonbit-wasm": 0.99596,
+        "moonbit-js": 0.9858
+      },
+      "seg/line_breaks": {
+        "moonbit-native": 1.018,
+        "moonbit-wasm-gc": 0.99306,
+        "moonbit-wasm": 0.98581,
+        "moonbit-js": 0.99038
+      },
+      "bidi/process": {
+        "moonbit-native": 1.0014,
+        "moonbit-wasm-gc": 1.0161,
+        "moonbit-wasm": 1.0206,
+        "moonbit-js": 0.98429
+      },
+      "bidi/reorder": {
+        "moonbit-native": 0.99404,
+        "moonbit-wasm-gc": 1.0246,
+        "moonbit-wasm": 1.0267,
+        "moonbit-js": 0.97921
+      },
+      "bidi/requires_bidi": {
+        "moonbit-native": 0.97869,
+        "moonbit-wasm-gc": 1.0129,
+        "moonbit-wasm": 0.99308,
+        "moonbit-js": 0.98774
+      },
+      "idna/to_ascii": {
+        "moonbit-native": 1.0009,
+        "moonbit-wasm-gc": 1.0233,
+        "moonbit-wasm": 1.0113,
+        "moonbit-js": 0.99333
+      },
+      "idna/to_ascii_2008": {
+        "moonbit-native": 1.01,
+        "moonbit-wasm-gc": 1.0427,
+        "moonbit-wasm": 0.99439,
+        "moonbit-js": 0.99036
+      },
+      "idna/to_unicode": {
+        "moonbit-native": 0.97427,
+        "moonbit-wasm-gc": 1.0261,
+        "moonbit-wasm": 0.95601,
+        "moonbit-js": 0.98225
+      },
+      "puny/encode": {
+        "moonbit-native": 1.0416,
+        "moonbit-wasm-gc": 1.0098,
+        "moonbit-wasm": 1.0205,
+        "moonbit-js": 1.012
+      },
+      "puny/decode": {
+        "moonbit-native": 1.0207,
+        "moonbit-wasm-gc": 1.0278,
+        "moonbit-wasm": 1.0247,
+        "moonbit-js": 1.0103
+      },
+      "case/simple_upper": {
+        "moonbit-native": 1.0043,
+        "moonbit-wasm-gc": 1.0155,
+        "moonbit-wasm": 1.0001,
+        "moonbit-js": 1.0181
+      },
+      "case/full_upper": {
+        "moonbit-native": 0.29041,
+        "moonbit-wasm-gc": 0.42658,
+        "moonbit-wasm": 0.25044,
+        "moonbit-js": 0.33833
+      },
+      "case/full_lower": {
+        "moonbit-native": 0.38037,
+        "moonbit-wasm-gc": 0.43243,
+        "moonbit-wasm": 0.29735,
+        "moonbit-js": 0.42756
+      },
+      "case/fold": {
+        "moonbit-native": 1.0949,
+        "moonbit-wasm-gc": 1.0249,
+        "moonbit-wasm": 1.0038,
+        "moonbit-js": 1.0111
+      },
+      "case/canonical_fold": {
+        "moonbit-native": 1.0243,
+        "moonbit-wasm-gc": 1.0274,
+        "moonbit-wasm": 1.0052,
+        "moonbit-js": 1.0128
+      },
+      "case/nfkc_casefold": {
+        "moonbit-native": 1.0076,
+        "moonbit-wasm-gc": 1.027,
+        "moonbit-wasm": 1.0553,
+        "moonbit-js": 1.0132
+      },
+      "case/caseless_match": {
+        "moonbit-native": 1.1612,
+        "moonbit-wasm-gc": 1.024,
+        "moonbit-wasm": 0.99645,
+        "moonbit-js": 1.0178
+      },
+      "prop/general_category_Ll": {
+        "moonbit-native": 0.80665,
+        "moonbit-wasm-gc": 1.0316,
+        "moonbit-wasm": 1.0056,
+        "moonbit-js": 1.022
+      },
+      "prop/alphabetic": {
+        "moonbit-native": 1.0172,
+        "moonbit-wasm-gc": 1.0127,
+        "moonbit-wasm": 1.0196,
+        "moonbit-js": 1.0189
+      },
+      "prop/line_break_AL": {
+        "moonbit-native": 0.99056,
+        "moonbit-wasm-gc": 1.0272,
+        "moonbit-wasm": 0.99984,
+        "moonbit-js": 1.0218
+      }
+    },
+    "spread": {
+      "moonbit-native": 1.0414,
+      "moonbit-wasm-gc": 1.0304,
+      "moonbit-wasm": 1.0287,
+      "moonbit-js": 1.0194
+    }
   }
 ]
