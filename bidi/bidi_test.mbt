@@ -361,3 +361,73 @@ test "requires_bidi: no character below the Hebrew block needs it" {
   }
   assert_true(@bidi.bidi_class('\u{0590}').is_strong_rtl())
 }
+
+///|
+/// Reference reorder_string built directly from reorder() + get_mirrored().
+fn reference_reorder_string(para : @bidi.BidiParagraph) -> String {
+  let sb = StringBuilder()
+  for i in @bidi.reorder(para) {
+    sb.write_char(@bidi.get_mirrored(para.chars[i], para.levels[i]))
+  }
+  sb.to_string()
+}
+
+///|
+test "reorder_string: matches reference across fast paths and edge cases" {
+  let cases : Array[(String, @bidi.Direction?)] = [
+    ("", None),
+    ("\u{200B}\u{202A}\u{202C}", None),
+    ("Hello world 123", None),
+    ("abc 😀 𝒜𝒷 xyz", None),
+    ("a\u{200B}b\u{200B}c", None),
+    ("a \u{0660}\u{0661} b", None),
+    ("a \u{05D0}\u{05D1} b \u{05D2}\u{05D3} c", None),
+    ("a \u{05D0}\u{200B}\u{05D1} b", None),
+    ("a (\u{05D0}) [\u{05D1}] {\u{05D2}} <\u{05D3}>", None),
+    ("\u{05D0} (123) \u{05D1}", None),
+    // BMP <-> supplementary mirroring (U+221D <-> U+1DB10)
+    ("\u{05D0}\u{221D}\u{05D1}", None),
+    ("\u{05D0}\u{1DB10}\u{05D1}", None),
+    ("a \u{05D0}\u{221D}\u{05D1} b", Some(LTR)),
+    ("a \u{05D0}\u{1DB10}\u{05D1} b", Some(LTR)),
+    // Supplementary in isolated LTR/RTL runs
+    ("a 😀 \u{10800}\u{10801} 𝒜𝒷 b", Some(LTR)),
+    ("\u{10800}\u{10801} 😀 123 \u{10802}", None),
+    // Explicit isolates & embeddings & overrides
+    (
+      "abc \u{2067}\u{05E9}\u{05DC}\u{05D5}\u{05DD} (x) 12\u{2069} def \u{202B}\u{05E2}\u{05D1}\u{05E8}\u{05D9}\u{05EA}\u{202C} ",
+      None,
+    ),
+    ("\u{202E}abc(1)\u{202C}", Some(LTR)),
+    ("\u{2068}\u{05D0} 123\u{2069} abc", None),
+    // Leading isolate skipped by P2/P3
+    ("\u{2066}\u{05D0}\u{2069}abc", None),
+    ("\u{2069}\u{05D0}abc", None),
+    // Separators (S/B) and trailing whitespace (L1)
+    ("\u{05D0}  \t  \u{05D1}  ", Some(LTR)),
+    ("\u{05D0}  \n  \u{05D1}  ", Some(RTL)),
+    // Nested brackets
+    ("a (b [c {d} \u{05D0}] 1) \u{05D1} ", None),
+  ]
+  for entry in cases {
+    let (input, direction) = entry
+    let para = @bidi.process(input, direction?)
+    assert_eq(@bidi.reorder_string(para), reference_reorder_string(para))
+  }
+}
+
+///|
+test "reorder_string: U+221D mirrors to U+1DB10 and back" {
+  let rtl1 = @bidi.process("\u{05D0}\u{221D}\u{05D1}")
+  inspect(@bidi.reorder_string(rtl1), content="\u{05D1}\u{1DB10}\u{05D0}")
+  let rtl2 = @bidi.process("\u{05D0}\u{1DB10}\u{05D1}")
+  inspect(@bidi.reorder_string(rtl2), content="\u{05D1}\u{221D}\u{05D0}")
+}
+
+///|
+test "process: P2/P3 skips isolates and handles lone PDI" {
+  inspect(@bidi.process("\u{2066}\u{05D0}\u{2069}a").base_level, content="0")
+  inspect(@bidi.process("\u{2066}a\u{2069}\u{05D0}").base_level, content="1")
+  inspect(@bidi.process("\u{2069}\u{05D0}a").base_level, content="1")
+  inspect(@bidi.process("123 !@#").base_level, content="0")
+}

@@ -166,16 +166,51 @@ fn skip_left_to_right_blocks(
 }
 
 ///|
+/// Bitmasks over BidiClass ordinals (0..22) accumulated in a single scan.
+const RtlClassMask : Int32 = (1 << 1) | (1 << 2) | (1 << 6) // R | AL | AN
+
+///|
+const NsmClassBit : Int32 = 1 << 8 // NSM
+
+///|
+const BnClassBit : Int32 = 1 << 9 // BN
+
+///|
+const SeparatorClassMask : Int32 = (1 << 10) | (1 << 11) // B | S
+
+///|
+const L1ClassMask : Int32 = (1 << 10) |
+  (1 << 11) |
+  (1 << 12) |
+  (1 << 19) |
+  (1 << 20) |
+  (1 << 21) |
+  (1 << 22) // B | S | WS | LRI | RLI | FSI | PDI
+
+///|
+const ExplicitClassMask : Int32 = (1 << 14) |
+  (1 << 15) |
+  (1 << 16) |
+  (1 << 17) |
+  (1 << 18) |
+  (1 << 19) |
+  (1 << 20) |
+  (1 << 21) |
+  (1 << 22) // LRE..PDI
+
+///|
+/// Both open (bit 6) and close (bit 7) bracket tags present in lookup_bidi_entry.
+const BracketBothMask : Int32 = 192
+
+///|
 /// Process text according to the Unicode Bidirectional Algorithm
 /// If `direction` is omitted, infer it from the first strong character.
 /// Returns a BidiParagraph with resolved embedding levels for each character
 pub fn process(text : String, direction? : Direction) -> BidiParagraph {
-  let base_level = if direction is Some(direction) {
-    direction.level()
-  } else {
-    determine_paragraph_level(text, default_level=0)
+  match direction {
+    Some(dir) => process_internal(text, dir.level(), auto_level=false)
+    None => process_internal(text, 0, auto_level=true)
   }
-  process_at_base_level(text, base_level)
 }
 
 ///|
@@ -196,35 +231,65 @@ pub fn process_with_base_level(
   text : String,
   base_level : Int32,
 ) -> BidiParagraph {
-  process_at_base_level(text, base_level)
+  process_internal(text, base_level, auto_level=false)
 }
 
 ///|
-fn process_at_base_level(text : String, base_level : Int32) -> BidiParagraph {
-  // Convert to char array and get original classes
+fn process_internal(
+  text : String,
+  initial_base_level : Int32,
+  auto_level~ : Bool,
+) -> BidiParagraph {
+  // Single pass: decode chars, look up BidiClass + bracket tags,
+  // accumulate class bitmask, and fuse P2/P3 base-level detection when auto_level.
   let chars : Array[Char] = Array(capacity=text.length())
   let original_classes : Array[BidiClass] = Array(capacity=text.length())
-  let mut has_explicit = false
-  let mut has_rtl = false
+  let mut class_mask = 0
+  let mut entry_or = 0
+  let mut need_base_level = auto_level
+  let mut base_level = initial_base_level
+  let mut p2_isolate_count = 0
   for c in text {
-    let bc = lookup_bidi_class(c)
-    if bc.is_explicit() {
-      has_explicit = true
-    } else if bc is (R | AL | AN) {
-      has_rtl = true
+    let entry = lookup_bidi_entry(c)
+    let code = entry & 31
+    let bc = bidi_from_code(code)
+    entry_or = entry_or | entry
+    class_mask = class_mask | (1 << code)
+    if need_base_level {
+      match bc {
+        LRI | RLI | FSI => p2_isolate_count += 1
+        PDI => if p2_isolate_count > 0 { p2_isolate_count -= 1 }
+        AL | R =>
+          if p2_isolate_count == 0 {
+            base_level = 1
+            need_base_level = false
+          }
+        L =>
+          if p2_isolate_count == 0 {
+            base_level = 0
+            need_base_level = false
+          }
+        _ => ()
+      }
     }
     chars.push(c)
     original_classes.push(bc)
   }
+  let has_explicit = (class_mask & ExplicitClassMask) != 0
+  let has_rtl = (class_mask & RtlClassMask) != 0
+  let has_bn = (class_mask & BnClassBit) != 0
   if base_level == 0 && !has_explicit && !has_rtl {
     // With no R, AL, AN or explicit formatting character in a left-to-right
     // paragraph, W1-W7 and N0-N2 resolve every type but BN to L (the most
     // recent strong type, sos and eos are all L), so every level stays 0.
-    let resolved_classes : Array[BidiClass] = Array(
-      capacity=original_classes.length(),
-    )
-    for bc in original_classes {
-      resolved_classes.push(if bc is BN { BN } else { L })
+    let resolved_classes : Array[BidiClass] = if has_bn {
+      let arr : Array[BidiClass] = Array(capacity=original_classes.length())
+      for bc in original_classes {
+        arr.push(if bc is BN { BN } else { L })
+      }
+      arr
+    } else {
+      Array::make(chars.length(), BidiClass::L)
     }
     let levels : Array[Int32] = Array::make(chars.length(), 0)
     return { chars, original_classes, resolved_classes, levels, base_level, }
@@ -235,12 +300,15 @@ fn process_at_base_level(text : String, base_level : Int32) -> BidiParagraph {
 
   // Allocate levels array
   let levels : Array[Int32] = Array::make(chars.length(), base_level)
+  let has_nsm = (class_mask & NsmClassBit) != 0
   let sequences = if has_explicit {
     // X1-X10: Process explicit formatting characters
     let isolate_pairs = process_explicit(resolved_classes, levels, base_level)
 
     // Align NSM levels with the previous non-X9 character.
-    adjust_nsm_levels(original_classes, levels)
+    if has_nsm {
+      adjust_nsm_levels(original_classes, levels)
+    }
 
     // Compute isolating run sequences
     compute_isolating_run_sequences(
@@ -250,17 +318,29 @@ fn process_at_base_level(text : String, base_level : Int32) -> BidiParagraph {
     // Without embeddings, overrides or isolates, X1-X8 leave every type as
     // it is and every character at the paragraph level, so the paragraph is
     // one level run.
-    paragraph_run_sequence(resolved_classes, base_level)
+    paragraph_run_sequence(resolved_classes, base_level, has_bn~)
   }
-  let bracket_scratch = BracketScratch::new()
+  let has_brackets = (entry_or & BracketBothMask) == BracketBothMask
+  let bracket_scratch = if has_brackets {
+    Some(BracketScratch::new())
+  } else {
+    None
+  }
   for seq in sequences {
     // W1-W7: Resolve weak types
     resolve_weak_types(resolved_classes, levels, seq)
 
     // N0: Resolve bracket pairs, and the NSMs that follow a changed bracket
-    resolve_bracket_pairs(
-      bracket_scratch, chars, resolved_classes, original_classes, seq,
-    )
+    if bracket_scratch is Some(scratch) {
+      resolve_bracket_pairs(
+        scratch,
+        chars,
+        resolved_classes,
+        original_classes,
+        seq,
+        has_nsm~,
+      )
+    }
 
     // N1-N2: Resolve neutral types
     resolve_neutral_types(resolved_classes, levels, seq)
@@ -270,7 +350,14 @@ fn process_at_base_level(text : String, base_level : Int32) -> BidiParagraph {
   apply_implicit_levels(resolved_classes, levels)
 
   // L1: Reset whitespace and separator levels
-  reset_whitespace_levels(original_classes, levels, base_level)
+  if (class_mask & L1ClassMask) != 0 {
+    reset_whitespace_levels(
+      original_classes,
+      levels,
+      base_level,
+      has_separator=(class_mask & SeparatorClassMask) != 0,
+    )
+  }
   { chars, original_classes, resolved_classes, levels, base_level, }
 }
 
@@ -279,36 +366,25 @@ fn process_at_base_level(text : String, base_level : Int32) -> BidiParagraph {
 /// Returns array of character indices in visual order
 /// X9-removed characters (LRE, RLE, LRO, RLO, PDF, BN) are excluded
 pub fn reorder(para : BidiParagraph) -> Array[Int32] {
-  // X9: remove explicit formatting and BN before reordering.
-  let indices : Array[Int32] = [
-    for i, bc in para.original_classes if !bc.is_x9_removed() => i
-  ]
-  apply_reordering(indices, para.levels, para.base_level)
+  reorder_indices(para.original_classes, para.levels)
 }
 
 ///|
 /// Reorder text and return the visually-ordered string
 pub fn reorder_string(para : BidiParagraph) -> String {
-  let order = reorder(para)
-  let sb = StringBuilder()
-  for i in order {
-    let c = para.chars[i]
-    let level = para.levels[i]
-    // Apply mirroring for RTL levels (odd levels)
-    if level % 2 == 1 && has_mirroring_glyph(c) {
-      sb.write_char(@bidi_data.bidi_mirroring_glyph(c))
-    } else {
-      sb.write_char(c)
-    }
-  }
-  sb.to_string()
+  reorder_to_string(
+    para.chars,
+    para.original_classes,
+    para.levels,
+    para.base_level,
+  )
 }
 
 ///|
 /// Get the mirrored glyph for a character if in RTL context
 pub fn get_mirrored(c : Char, level : Int32) -> Char {
-  if level % 2 == 1 && has_mirroring_glyph(c) {
-    @bidi_data.bidi_mirroring_glyph(c)
+  if (level & 1) == 1 && has_mirroring_glyph(c) {
+    mirror_char(c)
   } else {
     c
   }

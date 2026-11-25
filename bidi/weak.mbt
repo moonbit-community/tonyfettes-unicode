@@ -30,8 +30,9 @@ fn resolve_weak_types(
   let mut previous_w1 = seq.sos
   // The most recent L, R or AL after W1, which W2 reads.
   let mut last_strong = seq.sos
-  for idx in indices {
-    let mut bc = types[idx]
+  for i in 0..<count {
+    let idx = indices.unsafe_get(i)
+    let mut bc = types.unsafe_get(idx)
     if bc is NSM {
       bc = if previous_w1.is_isolate_initiator() || previous_w1 is PDI {
         BidiClass::ON
@@ -52,7 +53,7 @@ fn resolve_weak_types(
       EN => if last_strong is AL { bc = BidiClass::AN }
       _ => ()
     }
-    types[idx] = bc
+    types.unsafe_set(idx, bc)
   }
 
   // W4: A single ES between two ENs becomes EN; a single CS between two
@@ -70,11 +71,11 @@ fn resolve_weak_types(
   // The most recent L or R, which W7 reads. W3 has removed AL.
   last_strong = seq.sos
   for i in 0..<count {
-    let idx = indices[i]
-    let mut bc = types[idx]
+    let idx = indices.unsafe_get(i)
+    let mut bc = types.unsafe_get(idx)
     if (bc is ES || bc is CS) && i > 0 && i < count - 1 {
       // The next character has not been through W4 yet, as in a W4-only pass.
-      let next_bc = types[indices[i + 1]]
+      let next_bc = types.unsafe_get(indices.unsafe_get(i + 1))
       if previous_w4 is EN && next_bc is EN {
         bc = BidiClass::EN
       } else if bc is CS && previous_w4 is AN && next_bc is AN {
@@ -82,51 +83,54 @@ fn resolve_weak_types(
       }
     }
     previous_w4 = bc
-    types[idx] = match bc {
-      ET =>
-        if previous_is_en {
-          if last_strong is L {
+    types.unsafe_set(
+      idx,
+      match bc {
+        ET =>
+          if previous_is_en {
+            if last_strong is L {
+              BidiClass::L
+            } else {
+              BidiClass::EN
+            }
+          } else {
+            if et_run_start < 0 {
+              et_run_start = i
+            }
+            BidiClass::ON
+          }
+        EN => {
+          let resolved = if last_strong is L {
             BidiClass::L
           } else {
             BidiClass::EN
           }
-        } else {
-          if et_run_start < 0 {
-            et_run_start = i
+          if et_run_start >= 0 {
+            for j in et_run_start..<i {
+              types.unsafe_set(indices.unsafe_get(j), resolved)
+            }
+            et_run_start = -1
           }
-          BidiClass::ON
+          previous_is_en = true
+          resolved
         }
-      EN => {
-        let resolved = if last_strong is L {
-          BidiClass::L
-        } else {
-          BidiClass::EN
-        }
-        if et_run_start >= 0 {
-          for j in et_run_start..<i {
-            types[indices[j]] = resolved
-          }
+        _ => {
+          previous_is_en = false
           et_run_start = -1
-        }
-        previous_is_en = true
-        resolved
-      }
-      _ => {
-        previous_is_en = false
-        et_run_start = -1
-        match bc {
-          ES | CS => BidiClass::ON
-          L => {
-            last_strong = BidiClass::L
-            bc
+          match bc {
+            ES | CS => BidiClass::ON
+            L => {
+              last_strong = BidiClass::L
+              bc
+            }
+            R => {
+              last_strong = BidiClass::R
+              bc
+            }
+            _ => bc
           }
-          R => {
-            last_strong = BidiClass::R
-            bc
-          }
-          _ => bc
         }
-      }
-    }
+      },
+    )
   }
 }
