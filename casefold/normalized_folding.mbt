@@ -21,29 +21,21 @@ pub fn canonical_case_fold(s : StringView) -> String {
         }
         return canonical_fold_direct(data, base, end, offset, s)
       }
-      offset += 1
-      while end - offset >= 4 {
-        let u0 = data.unsafe_get(offset).to_int()
-        let u1 = data.unsafe_get(offset + 1).to_int()
-        let u2 = data.unsafe_get(offset + 2).to_int()
-        let u3 = data.unsafe_get(offset + 3).to_int()
-        if (u0 | u1 | u2 | u3) < 0x80 &&
-          (u0 - 65).reinterpret_as_uint() >= 26 &&
-          (u1 - 65).reinterpret_as_uint() >= 26 &&
-          (u2 - 65).reinterpret_as_uint() >= 26 &&
-          (u3 - 65).reinterpret_as_uint() >= 26 {
-          offset += 4
-        } else {
-          break
-        }
-      }
+      offset = skip_clean_ascii_quads(data, offset + 1, end)
       continue
     }
-    let cp = if unit < 0xD800 || unit > 0xDBFF {
-      unit
-    } else {
-      decode_cp(data, offset, end)
+    if unit < 0xD800 || unit > 0xDBFF {
+      let val = case_fold_bmp_val(unit)
+      if val == 0 {
+        offset = skip_clean_canonical_quads(data, offset + 1, end)
+        continue
+      }
+      if (val & NormFlagBit) != 0 {
+        return canonical_fold_via_nfd(s)
+      }
+      return canonical_fold_direct(data, base, end, offset, s)
     }
+    let cp = decode_cp(data, offset, end)
     let val = case_folding_kind(cp)
     if (val & NormFlagBit) != 0 {
       return canonical_fold_via_nfd(s)
@@ -70,14 +62,25 @@ fn canonical_fold_from_lower(
   while offset < length {
     let unit = mapped.unsafe_get(offset).to_int()
     if unit < 0x80 {
-      offset = skip_ascii_units(mapped, offset + 1, length)
+      offset = if has_ascii_run(mapped, offset, length) {
+        skip_ascii_units(mapped, offset + 4, length)
+      } else {
+        offset + 1
+      }
       continue
     }
-    let cp = if unit < 0xD800 || unit > 0xDBFF {
-      unit
-    } else {
-      decode_cp(mapped, offset, length)
+    if unit < 0xD800 || unit > 0xDBFF {
+      let val = case_fold_bmp_val(unit)
+      if val == 0 {
+        offset = skip_clean_canonical_quads(mapped, offset + 1, length)
+        continue
+      }
+      if (val & NormFlagBit) != 0 {
+        return canonical_fold_via_nfd(mapped, ascii_lowered=true)
+      }
+      return canonical_fold_direct(mapped, 0, length, offset, mapped)
     }
+    let cp = decode_cp(mapped, offset, length)
     let val = case_folding_kind(cp)
     if (val & NormFlagBit) != 0 {
       return canonical_fold_via_nfd(mapped, ascii_lowered=true)
@@ -127,7 +130,7 @@ fn canonical_fold_direct(
       continue
     }
     if unit < 0xD800 || unit > 0xDBFF {
-      let val = case_folding_kind(unit)
+      let val = case_fold_bmp_val(unit)
       norm_flags = norm_flags | val
       let kind = val & KindMask
       if kind == KindIdentity {
@@ -251,10 +254,10 @@ fn canonical_fold_via_nfd(
       continue
     }
     if unit < 0xD800 || unit > 0xDBFF {
-      if (case_folding_kind(unit) & KindMask) != KindIdentity {
+      if (case_fold_bmp_val(unit) & KindMask) != KindIdentity {
         return fold_after_nfd_units(decomposed, offset)
       }
-      offset += 1
+      offset = skip_identity_fold_quads(decomposed, offset + 1, length)
       continue
     }
     let cp = decode_cp(decomposed, offset, length)
@@ -293,7 +296,7 @@ fn fold_after_nfd_units(data : String, first_change : Int32) -> String {
       continue
     }
     if unit < 0xD800 || unit > 0xDBFF {
-      let val = case_folding_kind(unit)
+      let val = case_fold_bmp_val(unit)
       let kind = val & KindMask
       if kind == KindIdentity {
         out.unsafe_set(out_len, unit.to_uint16())
@@ -408,26 +411,15 @@ pub fn nfkc_casefold(s : StringView) -> String {
         }
         return fold_nfkc_units(data, base, end, offset, norm_flags)
       }
-      offset += 1
-      while end - offset >= 4 {
-        let u0 = data.unsafe_get(offset).to_int()
-        let u1 = data.unsafe_get(offset + 1).to_int()
-        let u2 = data.unsafe_get(offset + 2).to_int()
-        let u3 = data.unsafe_get(offset + 3).to_int()
-        if (u0 | u1 | u2 | u3) < 0x80 &&
-          (u0 - 65).reinterpret_as_uint() >= 26 &&
-          (u1 - 65).reinterpret_as_uint() >= 26 &&
-          (u2 - 65).reinterpret_as_uint() >= 26 &&
-          (u3 - 65).reinterpret_as_uint() >= 26 {
-          offset += 4
-        } else {
-          break
-        }
-      }
+      offset = skip_clean_ascii_quads(data, offset + 1, end)
       continue
     }
     if unit < 0xD800 || unit > 0xDBFF {
-      let val = nfkc_casefold_kind(unit)
+      let val = nfkc_bmp_val(unit)
+      if val == 0 {
+        offset = skip_clean_nfkc_quads(data, offset + 1, end)
+        continue
+      }
       norm_flags = norm_flags | val
       if (val & KindMask) != KindIdentity {
         return fold_nfkc_units(data, base, end, offset, norm_flags)
@@ -463,11 +455,19 @@ fn nfkc_from_lower(
   while offset < length {
     let unit = mapped.unsafe_get(offset).to_int()
     if unit < 0x80 {
-      offset = skip_ascii_units(mapped, offset + 1, length)
+      offset = if has_ascii_run(mapped, offset, length) {
+        skip_ascii_units(mapped, offset + 4, length)
+      } else {
+        offset + 1
+      }
       continue
     }
     if unit < 0xD800 || unit > 0xDBFF {
-      let val = nfkc_casefold_kind(unit)
+      let val = nfkc_bmp_val(unit)
+      if val == 0 {
+        offset = skip_clean_nfkc_quads(mapped, offset + 1, length)
+        continue
+      }
       norm_flags = norm_flags | val
       if (val & KindMask) != KindIdentity {
         return fold_nfkc_units(mapped, 0, length, offset, norm_flags)
@@ -524,7 +524,7 @@ fn fold_nfkc_units(
       continue
     }
     if unit < 0xD800 || unit > 0xDBFF {
-      let val = nfkc_casefold_kind(unit)
+      let val = nfkc_bmp_val(unit)
       norm_flags = norm_flags | val
       let kind = val & KindMask
       if kind == KindIdentity {
@@ -619,26 +619,33 @@ fn fold_nfkc_units(
 pub fn canonical_case_fold(s : StringView) -> String {
   let data = s.data()
   let base = s.start_offset()
-  let end = base + s.length()
-  if js_ascii_run_end(data, base) >= end {
-    return js_to_lower(s.to_owned())
+  let length = s.length()
+  let end = base + length
+  if length == 0 {
+    return ""
   }
-  let mut offset = js_clean_ascii_end(data, base)
-  if offset > end {
-    offset = end
+  if data.unsafe_get(base) < 0x80 && js_ascii_run_end(data, base) >= end {
+    return js_ascii_to_lower(data, base, end)
   }
-  let mut has_change = false
+  let mut offset = base
+  let mut first_change = -1
   while offset < end {
     let unit = data.unsafe_get(offset).to_int()
     if unit < 0x80 {
       if (unit - 65).reinterpret_as_uint() < 26 {
-        has_change = true
+        if first_change < 0 {
+          first_change = offset
+        }
         offset += 1
         continue
       }
-      offset = js_clean_ascii_end(data, offset + 1)
-      if offset > end {
-        offset = end
+      if has_js_ascii_run(data, offset, end) {
+        offset = js_clean_ascii_end(data, offset + 1)
+        if offset > end {
+          offset = end
+        }
+      } else {
+        offset += 1
       }
       continue
     }
@@ -647,17 +654,21 @@ pub fn canonical_case_fold(s : StringView) -> String {
     } else {
       decode_cp(data, offset, end)
     }
-    let val = case_folding_kind(cp)
+    let val = if cp < 0x10000 {
+      case_fold_bmp_val(cp)
+    } else {
+      case_folding_kind(cp)
+    }
     if (val & NormFlagBit) != 0 {
       return canonical_fold_via_nfd_js(s)
     }
-    if val != KindIdentity {
-      has_change = true
+    if val != KindIdentity && first_change < 0 {
+      first_change = offset
     }
     offset += if cp >= 0x10000 { 2 } else { 1 }
   }
-  if has_change {
-    fold_full_js(data, base, end, base)
+  if first_change >= 0 {
+    fold_full_js(data, base, end, first_change)
   } else {
     s.to_owned()
   }
@@ -668,14 +679,18 @@ pub fn canonical_case_fold(s : StringView) -> String {
 fn canonical_fold_via_nfd_js(s : StringView) -> String {
   let decomposed = @normalization.nfd(s)
   let length = decomposed.length()
-  let mut offset = js_clean_ascii_end(decomposed, 0)
+  let mut offset = 0
   while offset < length {
     let unit = decomposed.unsafe_get(offset).to_int()
     if unit < 0x80 {
       if (unit - 65).reinterpret_as_uint() < 26 {
         return fold_after_nfd_js(decomposed, offset)
       }
-      offset = js_clean_ascii_end(decomposed, offset + 1)
+      if has_js_ascii_run(decomposed, offset, length) {
+        offset = js_clean_ascii_end(decomposed, offset + 1)
+      } else {
+        offset += 1
+      }
       continue
     }
     let cp = if unit < 0xD800 || unit > 0xDBFF {
@@ -683,7 +698,12 @@ fn canonical_fold_via_nfd_js(s : StringView) -> String {
     } else {
       decode_cp(decomposed, offset, length)
     }
-    if (case_folding_kind(cp) & KindMask) != KindIdentity {
+    let val = if cp < 0x10000 {
+      case_fold_bmp_val(cp)
+    } else {
+      case_folding_kind(cp)
+    }
+    if (val & KindMask) != KindIdentity {
       return fold_after_nfd_js(decomposed, offset)
     }
     offset += if cp >= 0x10000 { 2 } else { 1 }
@@ -702,6 +722,21 @@ fn fold_after_nfd_js(data : String, first_change : Int32) -> String {
   while offset < length {
     let unit = data.unsafe_get(offset).to_int()
     if unit < 0x80 {
+      if has_js_ascii_run(data, offset, length) {
+        let ascii_end = js_ascii_run_end(data, offset)
+        if ascii_end - offset >= 16 {
+          let clean_end = js_clean_ascii_end(data, offset)
+          if clean_end < ascii_end {
+            if copied < clean_end {
+              out.write_view(data.unsafe_view(start=copied, end=clean_end))
+            }
+            out.write_string(js_ascii_to_lower(data, clean_end, ascii_end))
+            copied = ascii_end
+          }
+          offset = ascii_end
+          continue
+        }
+      }
       if (unit - 65).reinterpret_as_uint() < 26 {
         if copied < offset {
           out.write_view(data.unsafe_view(start=copied, end=offset))
@@ -718,7 +753,11 @@ fn fold_after_nfd_js(data : String, first_change : Int32) -> String {
       decode_cp(data, offset, length)
     }
     let width = if cp >= 0x10000 { 2 } else { 1 }
-    let val = case_folding_kind(cp)
+    let val = if width == 1 {
+      case_fold_bmp_val(cp)
+    } else {
+      case_folding_kind(cp)
+    }
     let kind = val & KindMask
     if kind != KindIdentity {
       changed_norm_flags = changed_norm_flags | val
@@ -757,14 +796,15 @@ fn fold_after_nfd_js(data : String, first_change : Int32) -> String {
 pub fn nfkc_casefold(s : StringView) -> String {
   let data = s.data()
   let base = s.start_offset()
-  let end = base + s.length()
-  if js_ascii_run_end(data, base) >= end {
-    return js_to_lower(s.to_owned())
+  let length = s.length()
+  let end = base + length
+  if length == 0 {
+    return ""
   }
-  let mut offset = js_clean_ascii_end(data, base)
-  if offset > end {
-    offset = end
+  if data.unsafe_get(base) < 0x80 && js_ascii_run_end(data, base) >= end {
+    return js_ascii_to_lower(data, base, end)
   }
+  let mut offset = base
   let mut norm_flags = 0
   while offset < end {
     let unit = data.unsafe_get(offset).to_int()
@@ -772,9 +812,13 @@ pub fn nfkc_casefold(s : StringView) -> String {
       if (unit - 65).reinterpret_as_uint() < 26 {
         return fold_nfkc_js(data, base, end, offset, norm_flags)
       }
-      offset = js_clean_ascii_end(data, offset + 1)
-      if offset > end {
-        offset = end
+      if has_js_ascii_run(data, offset, end) {
+        offset = js_clean_ascii_end(data, offset + 1)
+        if offset > end {
+          offset = end
+        }
+      } else {
+        offset += 1
       }
       continue
     }
@@ -783,7 +827,11 @@ pub fn nfkc_casefold(s : StringView) -> String {
     } else {
       decode_cp(data, offset, end)
     }
-    let val = nfkc_casefold_kind(cp)
+    let val = if cp < 0x10000 {
+      nfkc_bmp_val(cp)
+    } else {
+      nfkc_casefold_kind(cp)
+    }
     norm_flags = norm_flags | val
     if (val & KindMask) != KindIdentity {
       return fold_nfkc_js(data, base, end, offset, norm_flags)
@@ -813,6 +861,24 @@ fn fold_nfkc_js(
   while offset < end {
     let unit = data.unsafe_get(offset).to_int()
     if unit < 0x80 {
+      if has_js_ascii_run(data, offset, end) {
+        let mut ascii_end = js_ascii_run_end(data, offset)
+        if ascii_end > end {
+          ascii_end = end
+        }
+        if ascii_end - offset >= 16 {
+          let clean_end = js_clean_ascii_end(data, offset)
+          if clean_end < ascii_end {
+            if copied < clean_end {
+              out.write_view(data.unsafe_view(start=copied, end=clean_end))
+            }
+            out.write_string(js_ascii_to_lower(data, clean_end, ascii_end))
+            copied = ascii_end
+          }
+          offset = ascii_end
+          continue
+        }
+      }
       if (unit - 65).reinterpret_as_uint() < 26 {
         if copied < offset {
           out.write_view(data.unsafe_view(start=copied, end=offset))
@@ -829,7 +895,7 @@ fn fold_nfkc_js(
       decode_cp(data, offset, end)
     }
     let width = if cp >= 0x10000 { 2 } else { 1 }
-    let val = nfkc_casefold_kind(cp)
+    let val = if width == 1 { nfkc_bmp_val(cp) } else { nfkc_casefold_kind(cp) }
     norm_flags = norm_flags | val
     let kind = val & KindMask
     if kind != KindIdentity {

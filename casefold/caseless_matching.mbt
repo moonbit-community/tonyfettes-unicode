@@ -76,6 +76,9 @@ pub fn caseless_match(a : StringView, b : StringView) -> Bool {
 ///|
 /// Case-insensitive equality under canonical equivalence (D145).
 pub fn canonical_caseless_match(a : StringView, b : StringView) -> Bool {
+  if a == b {
+    return true
+  }
   canonical_case_fold(a) == canonical_case_fold(b)
 }
 
@@ -84,5 +87,8 @@ pub fn canonical_caseless_match(a : StringView, b : StringView) -> Bool {
 /// NFKC_Casefold(NFD(b)). The initial NFD handles canonical equivalents with
 /// iota subscripts. This does not validate identifiers or detect confusables.
 pub fn identifier_caseless_match(a : StringView, b : StringView) -> Bool {
+  if a == b {
+    return true
+  }
   nfkc_casefold(@normalization.nfd(a)) == nfkc_casefold(@normalization.nfd(b))
 }
