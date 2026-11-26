@@ -119,9 +119,8 @@ fn to_ascii_general(
   // character has a valid status.
   let statuses_known = physical_equal(processed, domain)
   let length = processed.length()
-  // Punycode is longer than the label it encodes; the size hint counts
-  // bytes, two per UTF-16 code unit.
-  let output = StringBuilder(capacity=4 * length)
+  // Punycode is longer than the label it encodes.
+  let output = StringBuilder(capacity=2 * length)
   // The `validate_label` Bidi flags of every label so far, or-ed together.
   let mut domain_bidi = 0
   // The first label that the DNS length checks reject. Like the Bidi
@@ -324,8 +323,7 @@ fn to_unicode_general(
 ) -> String raise IdnaError {
   // Split into labels first (before mapping, to handle Punycode)
   let length = domain.length()
-  // The size hint counts bytes, two per UTF-16 code unit.
-  let output = StringBuilder(capacity=2 * length)
+  let output = StringBuilder(capacity=length)
   let mut domain_bidi = 0
   let mut start = 0
   for ;; {

@@ -136,9 +136,8 @@ pub fn encode(input : StringView) -> String raise PunycodeError {
       basic_to_string(input)
     }
   }
-  // Reserve the input and a few digits for each code unit; the size hint
-  // counts bytes, two per UTF-16 code unit.
-  let output = StringBuilder(capacity=2 * (1 + 4 * input.length()))
+  // Reserve the input and a few digits for each code unit.
+  let output = StringBuilder(capacity=1 + 4 * input.length())
   ignore(encode_extended(input, output))
   output.to_string()
 }
@@ -360,8 +359,7 @@ pub fn decode(input : StringView) -> String raise PunycodeError {
   }
 
   if JsStrings {
-    // The size hint counts bytes, so the builder is filled exactly.
-    let result = StringBuilder(capacity=2 * output_units)
+    let result = StringBuilder(capacity=output_units)
     for i in 0..<output_length {
       result.write_char(output[i].unsafe_to_char())
     }

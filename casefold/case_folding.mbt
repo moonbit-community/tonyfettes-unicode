@@ -138,6 +138,202 @@ fn skip_ascii_units(s : String, start : Int32, end : Int32) -> Int32 {
 }
 
 ///|
+/// Branchless BMP lookup for full case folding (`unit` in `0..0xFFFF`).
+#inline
+fn case_fold_bmp_val(unit : Int32) -> Int32 {
+  let block = case_folding_kind_bmp_index.unsafe_get(unit >> 6).to_int()
+  case_folding_kind_bmp_leaf.unsafe_get((block << 6) | (unit & 63)).to_int()
+}
+
+///|
+/// Branchless BMP lookup for NFKC_Casefold (`unit` in `0..0xFFFF`).
+#inline
+fn nfkc_bmp_val(unit : Int32) -> Int32 {
+  let block = nfkc_casefold_kind_bmp_index.unsafe_get(unit >> 6).to_int()
+  nfkc_casefold_kind_bmp_leaf.unsafe_get((block << 6) | (unit & 63)).to_int()
+}
+
+///|
+/// Whether at least 8 units remain and the next four units starting at
+/// `data[pos]` are all ASCII (`< 0x80`), justifying SIMD ASCII skipping.
+#cfg(not(target="js"))
+#inline
+fn has_ascii_run(data : String, pos : Int32, view_end : Int32) -> Bool {
+  view_end - pos >= 8 &&
+  (
+    data.unsafe_get(pos + 1) |
+    data.unsafe_get(pos + 2) |
+    data.unsafe_get(pos + 3)
+  ) <
+  0x80
+}
+
+///|
+/// Sparse probe for a >= 16-unit ASCII run on JS before invoking sticky RegExp.
+#cfg(target="js")
+#inline
+fn has_js_ascii_run(data : String, pos : Int32, view_end : Int32) -> Bool {
+  view_end - pos >= 16 &&
+  (
+    data.unsafe_get(pos + 1) |
+    data.unsafe_get(pos + 2) |
+    data.unsafe_get(pos + 4) |
+    data.unsafe_get(pos + 8) |
+    data.unsafe_get(pos + 15)
+  ) <
+  0x80
+}
+
+///|
+/// Skip runs of four already-folded ASCII code units (no `A-Z`, no `>= 0x80`).
+#cfg(not(target="js"))
+fn skip_clean_ascii_quads(data : String, start : Int32, end : Int32) -> Int32 {
+  let mut offset = start
+  while end - offset >= 4 {
+    let u0 = data.unsafe_get(offset).to_int()
+    let u1 = data.unsafe_get(offset + 1).to_int()
+    let u2 = data.unsafe_get(offset + 2).to_int()
+    let u3 = data.unsafe_get(offset + 3).to_int()
+    if (u0 | u1 | u2 | u3) < 0x80 &&
+      (u0 - 65).reinterpret_as_uint() >= 26 &&
+      (u1 - 65).reinterpret_as_uint() >= 26 &&
+      (u2 - 65).reinterpret_as_uint() >= 26 &&
+      (u3 - 65).reinterpret_as_uint() >= 26 {
+      offset += 4
+    } else {
+      break
+    }
+  }
+  offset
+}
+
+///|
+/// Skip runs of four BMP code units (`< 0xD800`) whose full case-folding kind
+/// is `KindIdentity` (ignoring `NormFlagBit`, so Hanzi, Kana, and Hangul all
+/// stay on the quad fast path).
+#cfg(any(target="native", target="wasm"))
+fn skip_identity_fold_quads(
+  data : String,
+  start : Int32,
+  view_end : Int32,
+) -> Int32 {
+  for pos = start {
+    match data.unsafe_view(start=pos, end=view_end) {
+      [
+        '\u{0000}'..<='\u{d7ff}' as c0,
+        '\u{0000}'..<='\u{d7ff}' as c1,
+        '\u{0000}'..<='\u{d7ff}' as c2,
+        '\u{0000}'..<='\u{d7ff}' as c3,
+        ..,
+      ] if (
+          (
+            case_fold_bmp_val(c0.to_int()) |
+            case_fold_bmp_val(c1.to_int()) |
+            case_fold_bmp_val(c2.to_int()) |
+            case_fold_bmp_val(c3.to_int())
+          ) &
+          KindMask
+        ) ==
+        0 => continue pos + 4
+      _ => break pos
+    }
+  }
+}
+
+///|
+/// Skip runs of four BMP code units (`< 0xD800`) whose full case-folding leaf
+/// byte is 0 (`KindIdentity` and `NormFlagBit == 0`).
+#cfg(any(target="native", target="wasm"))
+fn skip_clean_canonical_quads(
+  data : String,
+  start : Int32,
+  view_end : Int32,
+) -> Int32 {
+  for pos = start {
+    match data.unsafe_view(start=pos, end=view_end) {
+      [
+        '\u{0000}'..<='\u{d7ff}' as c0,
+        '\u{0000}'..<='\u{d7ff}' as c1,
+        '\u{0000}'..<='\u{d7ff}' as c2,
+        '\u{0000}'..<='\u{d7ff}' as c3,
+        ..,
+      ] if (
+          case_fold_bmp_val(c0.to_int()) |
+          case_fold_bmp_val(c1.to_int()) |
+          case_fold_bmp_val(c2.to_int()) |
+          case_fold_bmp_val(c3.to_int())
+        ) ==
+        0 => continue pos + 4
+      _ => break pos
+    }
+  }
+}
+
+///|
+/// Skip runs of four BMP code units (`< 0xD800`) whose NFKC_Casefold leaf byte
+/// is 0 (`KindIdentity` and `NormFlagBit == 0`). Reads the leaf directly so
+/// blocks like U+3000..U+30FF (mostly clean Kana/punctuation) stay on the quad
+/// fast path.
+#cfg(any(target="native", target="wasm"))
+fn skip_clean_nfkc_quads(
+  data : String,
+  start : Int32,
+  view_end : Int32,
+) -> Int32 {
+  for pos = start {
+    match data.unsafe_view(start=pos, end=view_end) {
+      [
+        '\u{0000}'..<='\u{d7ff}' as c0,
+        '\u{0000}'..<='\u{d7ff}' as c1,
+        '\u{0000}'..<='\u{d7ff}' as c2,
+        '\u{0000}'..<='\u{d7ff}' as c3,
+        ..,
+      ] if (
+          nfkc_bmp_val(c0.to_int()) |
+          nfkc_bmp_val(c1.to_int()) |
+          nfkc_bmp_val(c2.to_int()) |
+          nfkc_bmp_val(c3.to_int())
+        ) ==
+        0 => continue pos + 4
+      _ => break pos
+    }
+  }
+}
+
+///|
+#cfg(not(any(target="js", target="native", target="wasm")))
+#inline
+fn skip_identity_fold_quads(
+  _data : String,
+  start : Int32,
+  _view_end : Int32,
+) -> Int32 {
+  start
+}
+
+///|
+#cfg(not(any(target="js", target="native", target="wasm")))
+#inline
+fn skip_clean_canonical_quads(
+  _data : String,
+  start : Int32,
+  _view_end : Int32,
+) -> Int32 {
+  start
+}
+
+///|
+#cfg(not(any(target="js", target="native", target="wasm")))
+#inline
+fn skip_clean_nfkc_quads(
+  _data : String,
+  start : Int32,
+  _view_end : Int32,
+) -> Int32 {
+  start
+}
+
+///|
 /// End offset of the ASCII run (`[\x00-\x7f]*`) in `s` starting at `start`.
 #cfg(target="js")
 extern "js" fn js_ascii_run_end(s : String, start : Int32) -> Int32 =
@@ -164,10 +360,14 @@ extern "js" fn js_clean_ascii_end(s : String, start : Int32) -> Int32 =
   #|})()
 
 ///|
-/// Built-in JS lowercase, used only when the string is proven pure ASCII.
+/// Built-in JS lowercase for a slice proven to be pure ASCII.
 #cfg(target="js")
-extern "js" fn js_to_lower(s : String) -> String =
-  #|(s) => s.toLowerCase()
+extern "js" fn js_ascii_to_lower(
+  s : String,
+  start : Int32,
+  end : Int32,
+) -> String =
+  #|(s, start, end) => (start === 0 && end === s.length ? s : s.slice(start, end)).toLowerCase()
 
 ///|
 /// Decode the code point at `offset` in `data` (bounded by `end`).
@@ -235,29 +435,14 @@ pub fn case_fold(s : StringView) -> String {
         }
         return fold_full_units(data, base, end, offset)
       }
-      offset += 1
-      while end - offset >= 4 {
-        let u0 = data.unsafe_get(offset).to_int()
-        let u1 = data.unsafe_get(offset + 1).to_int()
-        let u2 = data.unsafe_get(offset + 2).to_int()
-        let u3 = data.unsafe_get(offset + 3).to_int()
-        if (u0 | u1 | u2 | u3) < 0x80 &&
-          (u0 - 65).reinterpret_as_uint() >= 26 &&
-          (u1 - 65).reinterpret_as_uint() >= 26 &&
-          (u2 - 65).reinterpret_as_uint() >= 26 &&
-          (u3 - 65).reinterpret_as_uint() >= 26 {
-          offset += 4
-        } else {
-          break
-        }
-      }
+      offset = skip_clean_ascii_quads(data, offset + 1, end)
       continue
     }
     if unit < 0xD800 || unit > 0xDBFF {
-      if (case_folding_kind(unit) & KindMask) != KindIdentity {
+      if (case_fold_bmp_val(unit) & KindMask) != KindIdentity {
         return fold_full_units(data, base, end, offset)
       }
-      offset += 1
+      offset = skip_identity_fold_quads(data, offset + 1, end)
       continue
     }
     let cp = decode_cp(data, offset, end)
@@ -278,14 +463,18 @@ fn first_non_ascii_change_full(s : String, start : Int32, end : Int32) -> Int32 
   while offset < end {
     let unit = s.unsafe_get(offset).to_int()
     if unit < 0x80 {
-      offset = skip_ascii_units(s, offset + 1, end)
+      offset = if has_ascii_run(s, offset, end) {
+        skip_ascii_units(s, offset + 4, end)
+      } else {
+        offset + 1
+      }
       continue
     }
     if unit < 0xD800 || unit > 0xDBFF {
-      if (case_folding_kind(unit) & KindMask) != KindIdentity {
+      if (case_fold_bmp_val(unit) & KindMask) != KindIdentity {
         return offset
       }
-      offset += 1
+      offset = skip_identity_fold_quads(s, offset + 1, end)
       continue
     }
     let cp = decode_cp(s, offset, end)
@@ -335,7 +524,7 @@ fn fold_full_units(
       continue
     }
     if unit < 0xD800 || unit > 0xDBFF {
-      let kind = case_folding_kind(unit) & KindMask
+      let kind = case_fold_bmp_val(unit) & KindMask
       if kind == KindIdentity {
         out.unsafe_set(out_len, unit.to_uint16())
         out_len += 1
@@ -425,27 +614,31 @@ pub fn case_fold(s : StringView) -> String {
   let base = s.start_offset()
   let length = s.length()
   let end = base + length
-  if js_ascii_run_end(data, base) >= end {
-    return js_to_lower(s.to_owned())
+  if length == 0 {
+    return ""
   }
-  let mut offset = js_clean_ascii_end(data, base)
-  if offset > end {
-    offset = end
+  if data.unsafe_get(base) < 0x80 && js_ascii_run_end(data, base) >= end {
+    return js_ascii_to_lower(data, base, end)
   }
+  let mut offset = base
   while offset < end {
     let unit = data.unsafe_get(offset).to_int()
     if unit < 0x80 {
       if (unit - 65).reinterpret_as_uint() < 26 {
         return fold_full_js(data, base, end, offset)
       }
-      offset = js_clean_ascii_end(data, offset + 1)
-      if offset > end {
-        offset = end
+      if has_js_ascii_run(data, offset, end) {
+        offset = js_clean_ascii_end(data, offset + 1)
+        if offset > end {
+          offset = end
+        }
+      } else {
+        offset += 1
       }
       continue
     }
     if unit < 0xD800 || unit > 0xDBFF {
-      if (case_folding_kind(unit) & KindMask) != KindIdentity {
+      if (case_fold_bmp_val(unit) & KindMask) != KindIdentity {
         return fold_full_js(data, base, end, offset)
       }
       offset += 1
@@ -474,6 +667,24 @@ fn fold_full_js(
   while offset < end {
     let unit = data.unsafe_get(offset).to_int()
     if unit < 0x80 {
+      if has_js_ascii_run(data, offset, end) {
+        let mut ascii_end = js_ascii_run_end(data, offset)
+        if ascii_end > end {
+          ascii_end = end
+        }
+        if ascii_end - offset >= 16 {
+          let clean_end = js_clean_ascii_end(data, offset)
+          if clean_end < ascii_end {
+            if copied < clean_end {
+              out.write_view(data.unsafe_view(start=copied, end=clean_end))
+            }
+            out.write_string(js_ascii_to_lower(data, clean_end, ascii_end))
+            copied = ascii_end
+          }
+          offset = ascii_end
+          continue
+        }
+      }
       if (unit - 65).reinterpret_as_uint() < 26 {
         if copied < offset {
           out.write_view(data.unsafe_view(start=copied, end=offset))
@@ -490,7 +701,11 @@ fn fold_full_js(
       decode_cp(data, offset, end)
     }
     let width = if cp >= 0x10000 { 2 } else { 1 }
-    let kind = case_folding_kind(cp) & KindMask
+    let kind = if width == 1 {
+      case_fold_bmp_val(cp) & KindMask
+    } else {
+      case_folding_kind(cp) & KindMask
+    }
     if kind != KindIdentity {
       if copied < offset {
         out.write_view(data.unsafe_view(start=copied, end=offset))
